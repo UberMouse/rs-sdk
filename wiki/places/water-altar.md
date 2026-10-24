@@ -5,19 +5,19 @@ Inside the water ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:water-altar:0` | (2715, 4835) | water 1 | yes | no | - | carry Water talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:water-altar:0` | (2715, 4835) | (2715, 4835) | `{ x: 2715, z: 4835, radius: 3 }` | water 1 | yes | no | - | carry Water talisman |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:water-altar:0` | (2694, 4811) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
-| `tree:water-altar:1` | (2701, 4847) | [normal](../resources/tree/normal.md) 5 | yes | no | - | unreached |
-| `tree:water-altar:2` | (2701, 4825) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
-| `tree:water-altar:3` | (2709, 4810) | [normal](../resources/tree/normal.md) 3 | yes | no | - | unreached |
-| `tree:water-altar:4` | (2726, 4820) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
-| `tree:water-altar:5` | (2732, 4851) | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |
-| `tree:water-altar:6` | (2733, 4806) | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
-| `tree:water-altar:7` | (2738, 4828) | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:water-altar:0` | (2694, 4811) | (2694, 4811) | `{ x: 2694, z: 4811, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:1` | (2701, 4847) | x 2697-2708, z 4842-4850 | `{ x: 2703, z: 4846, radius: 11 }` | [normal](../resources/tree/normal.md) 5 | yes | no | - | unreached |
+| `tree:water-altar:2` | (2701, 4825) | (2701, 4825) | `{ x: 2701, z: 4825, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:3` | (2709, 4810) | x 2704-2712, z 4808-4812 | `{ x: 2708, z: 4810, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | unreached |
+| `tree:water-altar:4` | (2726, 4820) | (2726, 4820) | `{ x: 2726, z: 4820, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:5` | (2732, 4851) | x 2730-2733, z 4849-4852 | `{ x: 2732, z: 4851, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |
+| `tree:water-altar:6` | (2733, 4806) | (2733, 4806) | `{ x: 2733, z: 4806, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | unreached |
+| `tree:water-altar:7` | (2738, 4828) | x 2736-2739, z 4827-4829 | `{ x: 2738, z: 4828, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | unreached |

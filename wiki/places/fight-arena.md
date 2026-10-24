@@ -5,19 +5,19 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:fight-arena:0` | (2585, 3157) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:fight-arena:1` | (2587, 3169) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:fight-arena:0` | (2585, 3157) | (2585, 3157) | `{ x: 2585, z: 3157, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:fight-arena:1` | (2587, 3169) | (2587, 3169) | `{ x: 2587, z: 3169, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:fight-arena:0` | (2593, 3163) L3 | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:fight-arena:0` | (2593, 3163) L3 | x 2592-2594, z 3162-3163 L3 | x 2588-2598, z 3158-3167 L3 | `{ x: 2593, z: 3163, radius: 11, level: 3 }` | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:fight-arena:0` | (2593, 3162) L3 | Trapdoor 1 | down (2592, 9562) L3 by Open, then Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:fight-arena:0` | (2593, 3162) L3 | (2593, 3162) L3 | `{ x: 2593, z: 3162, radius: 3, level: 3 }` | Trapdoor 1 | down (2592, 9562) L3 by Open, then Climb-down | no | no | - | unreached |

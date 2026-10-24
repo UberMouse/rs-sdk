@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2769, 3398) | 3 | 5 | (2761, 3392)-(2778, 3404) | 500 ticks | - | no |
-| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2770, 3402) L1 | 5 | 5 | (2761, 3391)-(2779, 3411) | 500 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2769, 3398) | x 2766-2773, z 3397-3399 | 3 | 5 | x 2761-2778, z 3392-3404 | 500 ticks | - | `{ x: 2770, z: 3398, radius: 14 }` | no |
+| [Keep Le Faye (Kandarin)](../places/keep-le-faye.md) | (2770, 3402) L1 | x 2766-2774, z 3396-3406 L1 | 5 | 5 | x 2761-2779, z 3391-3411 L1 | 500 ticks | - | `{ x: 2770, z: 3401, radius: 17, level: 1 }` | no |
 
 ## Drops
 

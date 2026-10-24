@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:zanaris-bank:0` | (3153, 9578) | Banker 4 | no | no | - | wear Dramen staff |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `bank:zanaris-bank:0` | (3153, 9578) | x 3150-3154, z 9577-9580 | x 3150-3154, z 9577-9580 | `{ x: 3152, z: 9579, radius: 6 }` | Banker 4 | no | no | - | wear Dramen staff |

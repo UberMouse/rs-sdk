@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:ardougne-south-bank:0` | (2657, 3284) | Bank booth 2, Banker 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:ardougne-south-bank:0` | (2657, 3284) | x 2656-2657, z 3280-3286 | `{ x: 2657, z: 3283, radius: 7 }` | Bank booth 2, Banker 3 | no | no | - | - |

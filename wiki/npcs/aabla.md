@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3362, 3273) | 1 | 5 | (3357, 3268)-(3367, 3278) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | (3362, 3273) | (3362, 3273) | 1 | 5 | x 3357-3367, z 3268-3278 | 100 ticks | - | `{ x: 3362, z: 3273, radius: 11 }` | no |
 
 ## Interactions
 

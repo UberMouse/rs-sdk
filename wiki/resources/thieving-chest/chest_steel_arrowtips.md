@@ -15,7 +15,7 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Hemenster (Kandarin)](../../places/hemenster.md) | `thieving-chest:hemenster:0` | (2639, 3424) | (2640, 3424) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 48 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:1` | (2650, 3659) | (2649, 3659) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 123 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Hemenster (Kandarin)](../../places/hemenster.md) | `thieving-chest:hemenster:0` | (2639, 3424) | (2640, 3424) | (2639, 3424) | `{ x: 2639, z: 3424, radius: 3 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 48 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:1` | (2650, 3659) | (2649, 3659) | (2650, 3659) | `{ x: 2650, z: 3659, radius: 3 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 123 ticks |

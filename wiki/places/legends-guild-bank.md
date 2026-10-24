@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:legends-guild-bank:0` | (2732, 3379) L2 | Banker 4 | no | no | - | Legends Quest at stage 50 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `bank:legends-guild-bank:0` | (2732, 3379) L2 | x 2731-2733, z 3377-3381 L2 | x 2731-2733, z 3377-3381 L2 | `{ x: 2732, z: 3379, radius: 6, level: 2 }` | Banker 4 | no | no | - | Legends Quest at stage 50 |

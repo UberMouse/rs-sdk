@@ -5,24 +5,24 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:lumbridge-trees:0` | (3184, 3228) | [normal](../resources/tree/normal.md) 44, [oak](../resources/tree/oak.md) 2, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:lumbridge-trees:0` | (3184, 3228) | x 3168-3203, z 3208-3244 | `{ x: 3186, z: 3226, radius: 29 }` | [normal](../resources/tree/normal.md) 44, [oak](../resources/tree/oak.md) 2, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:lumbridge-trees:0` | (3169, 3244) | Giant spider 1, Spider 2 | yes | no | - | - |
-| `npc:lumbridge-trees:1` | (3185, 3244) | Goblin 3 | yes | no | - | - |
-| `npc:lumbridge-trees:2` | (3196, 3206) | Rat 1 | yes | no | - | - |
-| `npc:lumbridge-trees:3` | (3202, 3239) | Giant spider 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:lumbridge-trees:0` | (3169, 3244) | x 3168-3170, z 3243-3245 | x 3158-3180, z 3233-3255 | `{ x: 3169, z: 3244, radius: 19 }` | Giant spider 1, Spider 2 | yes | no | - | - |
+| `npc:lumbridge-trees:1` | (3185, 3244) | x 3183-3187, z 3244 | x 3168-3202, z 3229-3259 | `{ x: 3185, z: 3244, radius: 26 }` | Goblin 3 | yes | no | - | - |
+| `npc:lumbridge-trees:2` | (3196, 3206) | (3196, 3206) | x 3181-3211, z 3191-3221 | `{ x: 3196, z: 3206, radius: 25 }` | Rat 1 | yes | no | - | - |
+| `npc:lumbridge-trees:3` | (3202, 3239) | x 3200-3203, z 3238-3239 | x 3190-3213, z 3228-3249 | `{ x: 3202, z: 3239, radius: 20 }` | Giant spider 2 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:lumbridge-trees:0` | (3204, 3207) | Staircase 1 | up (3205, 3209) L1 by Climb-up | yes | no | - | - |
-| `connector:lumbridge-trees:1` | (3204, 3207) L1 | Staircase 1 | down (3205, 3209) by Climb or Climb-down; up (3205, 3209) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:lumbridge-trees:2` | (3204, 3229) | Staircase 1 | up (3205, 3228) L1 by Climb-up | yes | no | - | - |
-| `connector:lumbridge-trees:3` | (3204, 3229) L1 | Staircase 1 | down (3205, 3228) by Climb or Climb-down; up (3206, 3229) L2 by Climb or Climb-up | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:lumbridge-trees:0` | (3204, 3207) | (3204, 3207) | `{ x: 3204, z: 3207, radius: 3 }` | Staircase 1 | up (3205, 3209) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge-trees:1` | (3204, 3207) L1 | (3204, 3207) L1 | `{ x: 3204, z: 3207, radius: 3, level: 1 }` | Staircase 1 | down (3205, 3209) by Climb or Climb-down; up (3205, 3209) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:lumbridge-trees:2` | (3204, 3229) | (3204, 3229) | `{ x: 3204, z: 3229, radius: 3 }` | Staircase 1 | up (3205, 3228) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge-trees:3` | (3204, 3229) L1 | (3204, 3229) L1 | `{ x: 3204, z: 3229, radius: 3, level: 1 }` | Staircase 1 | down (3205, 3228) by Climb or Climb-down; up (3206, 3229) L2 by Climb or Climb-up | yes | no | - | - |

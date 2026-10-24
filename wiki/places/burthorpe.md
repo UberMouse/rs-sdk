@@ -5,63 +5,63 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:burthorpe:0` | (2906, 3537) | The Toad and Chicken (death_pub) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:burthorpe:0` | (2906, 3537) | (2906, 3537) | x 2905-2907, z 3536-3538 | `{ x: 2906, z: 3537, radius: 5 }` | The Toad and Chicken (death_pub) 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:burthorpe:0` | (2893, 3532) | Fire 1 | no | yes | - | - |
-| `fire:burthorpe:1` | (2909, 3529) | Fireplace 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:burthorpe:0` | (2893, 3532) | (2893, 3532) | `{ x: 2893, z: 3532, radius: 3 }` | Fire 1 | no | yes | - | - |
+| `fire:burthorpe:1` | (2909, 3529) | (2909, 3529) | `{ x: 2909, z: 3529, radius: 3 }` | Fireplace 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:burthorpe:0` | (2893, 3556) | Sink 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:burthorpe:0` | (2893, 3556) | (2893, 3556) | `{ x: 2893, z: 3556, radius: 3 }` | Sink 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:burthorpe:0` | (2873, 3530) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
-| `tree:burthorpe:1` | (2903, 3531) | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
-| `tree:burthorpe:2` | (2913, 3549) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:burthorpe:3` | (2914, 3530) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:burthorpe:4` | (2917, 3569) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:burthorpe:0` | (2873, 3530) | x 2871-2876, z 3525-3535 | `{ x: 2874, z: 3530, radius: 9 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
+| `tree:burthorpe:1` | (2903, 3531) | (2903, 3531) | `{ x: 2903, z: 3531, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
+| `tree:burthorpe:2` | (2913, 3549) | x 2910-2916, z 3548-3550 | `{ x: 2913, z: 3549, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:burthorpe:3` | (2914, 3530) | x 2913-2914, z 3527-3533 | `{ x: 2914, z: 3530, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:burthorpe:4` | (2917, 3569) | (2917, 3569) | `{ x: 2917, z: 3569, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:burthorpe:0` | (2885, 3531) | Soldier 2 | no | yes | - | - |
-| `npc:burthorpe:1` | (2893, 3559) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
-| `npc:burthorpe:2` | (2897, 3557) | Eadburg 1, Guard (death_guard1) 1, Guard (death_guard2) 1 | no | no | - | - |
-| `npc:burthorpe:3` | (2893, 3569) L1 | Archer (death_archer_trapped) 1 | no | no | - | Death Plateau at stage 70 |
-| `npc:burthorpe:4` | (2899, 3565) | Guard (death_guard1) 1, Servant 1 | no | no | - | - |
-| `npc:burthorpe:5` | (2899, 3549) | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
-| `npc:burthorpe:6` | (2900, 3539) | Soldier 1 | no | yes | - | - |
-| `npc:burthorpe:7` | (2904, 3558) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
-| `npc:burthorpe:8` | (2904, 3569) L1 | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
-| `npc:burthorpe:9` | (2909, 3541) | Penda 1, Soldier 2 | no | no | - | - |
-| `npc:burthorpe:10` | (2918, 3558) | Unferth 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:burthorpe:0` | (2885, 3531) | x 2885, z 3528-3533 | x 2880-2890, z 3523-3538 | `{ x: 2885, z: 3531, radius: 13 }` | Soldier 2 | no | yes | - | - |
+| `npc:burthorpe:1` | (2893, 3559) L1 | x 2892-2893, z 3558-3559 L1 | x 2890-2895, z 3556-3561 L1 | `{ x: 2893, z: 3559, radius: 8, level: 1 }` | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
+| `npc:burthorpe:2` | (2897, 3557) | x 2893-2900, z 3556-3558 | x 2888-2905, z 3551-3563 | `{ x: 2897, z: 3557, radius: 14 }` | Eadburg 1, Guard (death_guard1) 1, Guard (death_guard2) 1 | no | no | - | - |
+| `npc:burthorpe:3` | (2893, 3569) L1 | (2893, 3569) L1 | x 2891-2895, z 3567-3571 L1 | `{ x: 2893, z: 3569, radius: 6, level: 1 }` | Archer (death_archer_trapped) 1 | no | no | - | Death Plateau at stage 70 |
+| `npc:burthorpe:4` | (2899, 3565) | x 2896-2901, z 3564-3566 | x 2891-2906, z 3559-3571 | `{ x: 2899, z: 3565, radius: 13 }` | Guard (death_guard1) 1, Servant 1 | no | no | - | - |
+| `npc:burthorpe:5` | (2899, 3549) | x 2897-2900, z 3549 | x 2895-2902, z 3547-3551 | `{ x: 2899, z: 3549, radius: 8 }` | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
+| `npc:burthorpe:6` | (2900, 3539) | (2900, 3539) | x 2895-2905, z 3534-3544 | `{ x: 2900, z: 3539, radius: 11 }` | Soldier 1 | no | yes | - | - |
+| `npc:burthorpe:7` | (2904, 3558) L1 | x 2903-2905, z 3557-3559 L1 | x 2901-2907, z 3555-3561 L1 | `{ x: 2904, z: 3558, radius: 8, level: 1 }` | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
+| `npc:burthorpe:8` | (2904, 3569) L1 | x 2904, z 3568-3570 L1 | x 2902-2906, z 3566-3572 L1 | `{ x: 2904, z: 3569, radius: 7, level: 1 }` | Archer (death_archer1) 1, Archer (death_archer2) 1 | no | no | - | - |
+| `npc:burthorpe:9` | (2909, 3541) | x 2907-2911, z 3539-3542 | x 2902-2916, z 3534-3547 | `{ x: 2909, z: 3541, radius: 13 }` | Penda 1, Soldier 2 | no | no | - | - |
+| `npc:burthorpe:10` | (2918, 3558) | (2918, 3558) | x 2913-2923, z 3553-3563 | `{ x: 2918, z: 3558, radius: 11 }` | Unferth 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:burthorpe:0` | (2891, 3556) | Ladder 1 | up (2891, 3557) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe:1` | (2891, 3556) L1 | Ladder 1 | down (2891, 3557) by Climb-down | no | no | - | - |
-| `connector:burthorpe:2` | (2891, 3571) | Ladder 1 | up (2891, 3570) L1 by Climb-up | no | no | - | Death Plateau at stage 70 |
-| `connector:burthorpe:3` | (2891, 3571) L1 | Ladder 1 | down (2891, 3570) by Climb-down | no | no | - | Death Plateau at stage 70 |
-| `connector:burthorpe:4` | (2897, 3566) | Stairs 1 | up (2897, 3569) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe:5` | (2897, 3567) L1 | Stairs 1 | down (2897, 3565) by Climb-down | no | no | - | - |
-| `connector:burthorpe:6` | (2899, 3566) | Stairs 1 | - | no | no | - | - |
-| `connector:burthorpe:7` | (2906, 3556) | Ladder 1 | up (2905, 3556) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe:8` | (2906, 3556) L1 | Ladder 1 | down (2905, 3556) by Climb-down | no | no | - | - |
-| `connector:burthorpe:9` | (2906, 3571) | Ladder 1 | up (2905, 3571) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe:10` | (2906, 3571) L1 | Ladder 1 | down (2905, 3571) by Climb-down | no | no | - | - |
-| `connector:burthorpe:11` | (2914, 3539) | Staircase 1 | up (2914, 3542) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe:12` | (2914, 3540) L1 | Staircase 1 | down (2914, 3538) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:burthorpe:0` | (2891, 3556) | (2891, 3556) | `{ x: 2891, z: 3556, radius: 3 }` | Ladder 1 | up (2891, 3557) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe:1` | (2891, 3556) L1 | (2891, 3556) L1 | `{ x: 2891, z: 3556, radius: 3, level: 1 }` | Ladder 1 | down (2891, 3557) by Climb-down | no | no | - | - |
+| `connector:burthorpe:2` | (2891, 3571) | (2891, 3571) | `{ x: 2891, z: 3571, radius: 3 }` | Ladder 1 | up (2891, 3570) L1 by Climb-up | no | no | - | Death Plateau at stage 70 |
+| `connector:burthorpe:3` | (2891, 3571) L1 | (2891, 3571) L1 | `{ x: 2891, z: 3571, radius: 3, level: 1 }` | Ladder 1 | down (2891, 3570) by Climb-down | no | no | - | Death Plateau at stage 70 |
+| `connector:burthorpe:4` | (2897, 3566) | (2897, 3566) | `{ x: 2897, z: 3566, radius: 3 }` | Stairs 1 | up (2897, 3569) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe:5` | (2897, 3567) L1 | (2897, 3567) L1 | `{ x: 2897, z: 3567, radius: 3, level: 1 }` | Stairs 1 | down (2897, 3565) by Climb-down | no | no | - | - |
+| `connector:burthorpe:6` | (2899, 3566) | (2899, 3566) | `{ x: 2899, z: 3566, radius: 3 }` | Stairs 1 | - | no | no | - | - |
+| `connector:burthorpe:7` | (2906, 3556) | (2906, 3556) | `{ x: 2906, z: 3556, radius: 3 }` | Ladder 1 | up (2905, 3556) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe:8` | (2906, 3556) L1 | (2906, 3556) L1 | `{ x: 2906, z: 3556, radius: 3, level: 1 }` | Ladder 1 | down (2905, 3556) by Climb-down | no | no | - | - |
+| `connector:burthorpe:9` | (2906, 3571) | (2906, 3571) | `{ x: 2906, z: 3571, radius: 3 }` | Ladder 1 | up (2905, 3571) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe:10` | (2906, 3571) L1 | (2906, 3571) L1 | `{ x: 2906, z: 3571, radius: 3, level: 1 }` | Ladder 1 | down (2905, 3571) by Climb-down | no | no | - | - |
+| `connector:burthorpe:11` | (2914, 3539) | (2914, 3539) | `{ x: 2914, z: 3539, radius: 3 }` | Staircase 1 | up (2914, 3542) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe:12` | (2914, 3540) L1 | (2914, 3540) L1 | `{ x: 2914, z: 3540, radius: 3, level: 1 }` | Staircase 1 | down (2914, 3538) by Climb-down | no | no | - | - |

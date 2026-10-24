@@ -5,45 +5,45 @@ Ladder up to Edgeville at (3096, 3467); its part at z >= 9920 is Wilderness (sou
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:edgeville-dungeon:0` | (3124, 9878) | Fire 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:edgeville-dungeon:0` | (3124, 9878) | (3124, 9878) | `{ x: 3124, z: 9878, radius: 3 }` | Fire 1 | yes | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:edgeville-dungeon:0` | (3138, 9874) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 6, [copper](../resources/rock/copper.md) 2, [iron](../resources/rock/iron.md) 3, [mithril](../resources/rock/mithril.md) 1, [silver](../resources/rock/silver.md) 3, [tin](../resources/rock/tin.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:edgeville-dungeon:0` | (3138, 9874) | x 3134-3143, z 9868-9880 | `{ x: 3139, z: 9874, radius: 11 }` | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 6, [copper](../resources/rock/copper.md) 2, [iron](../resources/rock/iron.md) 3, [mithril](../resources/rock/mithril.md) 1, [silver](../resources/rock/silver.md) 3, [tin](../resources/rock/tin.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:edgeville-dungeon:0` | (3088, 9959) | Black Demon 3 | no | no | 6 | - |
-| `npc:edgeville-dungeon:1` | (3089, 9944) | Poison spider 3 | no | no | 4 | - |
-| `npc:edgeville-dungeon:2` | (3095, 9894) | Skeleton (skeleton_unagressive) 3 | yes | no | - | - |
-| `npc:edgeville-dungeon:3` | (3097, 9909) | Skeleton (skeleton_unagressive) 3 | yes | no | - | - |
-| `npc:edgeville-dungeon:4` | (3097, 9878) | Giant spider 2 | yes | no | - | - |
-| `npc:edgeville-dungeon:5` | (3100, 9834) | Giant 2 | yes | no | - | - |
-| `npc:edgeville-dungeon:6` | (3116, 9954) | Deadly red spider 9, Skeleton (giantskeleton) 7 | no | no | 5 | - |
-| `npc:edgeville-dungeon:7` | (3106, 9827) | Giant 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:8` | (3114, 9840) | Giant 9 | yes | no | - | - |
-| `npc:edgeville-dungeon:9` | (3112, 9884) | Rat 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:10` | (3114, 9910) | Skeleton (skeleton_unarmed) 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:11` | (3122, 9992) | Earth warrior 7 | no | no | 10 | 15 Agility |
-| `npc:edgeville-dungeon:12` | (3118, 9871) | Hobgoblin 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:13` | (3120, 9974) | Earth warrior 4 | no | no | 8 | 15 Agility |
-| `npc:edgeville-dungeon:14` | (3125, 9862) | Zombie 4 | yes | no | - | - |
-| `npc:edgeville-dungeon:15` | (3121, 9908) | Skeleton (skeleton_armed) 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:16` | (3125, 9879) | Hobgoblin 2, Rat 1 | yes | no | - | - |
-| `npc:edgeville-dungeon:17` | (3130, 9929) | Thug 9 | no | no | 2 | - |
-| `npc:edgeville-dungeon:18` | (3132, 9909) | Skeleton (skeleton_armed) 1, Skeleton (skeleton_unarmed) 4 | yes | no | - | - |
-| `npc:edgeville-dungeon:19` | (3140, 9872) | Skeleton (skeleton_armed) 5, Skeleton (skeleton_unarmed) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:edgeville-dungeon:0` | (3088, 9959) | x 3084-3092, z 9957-9961 | x 3078-3098, z 9951-9967 | `{ x: 3088, z: 9959, radius: 16 }` | Black Demon 3 | no | no | 6 | - |
+| `npc:edgeville-dungeon:1` | (3089, 9944) | x 3088-3090, z 9943-9945 | x 3078-3100, z 9933-9955 | `{ x: 3089, z: 9944, radius: 19 }` | Poison spider 3 | no | no | 4 | - |
+| `npc:edgeville-dungeon:2` | (3095, 9894) | x 3094-3096, z 9889-9899 | x 3091-3099, z 9886-9902 | `{ x: 3095, z: 9894, radius: 12 }` | Skeleton (skeleton_unagressive) 3 | yes | no | - | - |
+| `npc:edgeville-dungeon:3` | (3097, 9909) | x 3095-3099, z 9906-9912 | x 3092-3102, z 9903-9915 | `{ x: 3097, z: 9909, radius: 11 }` | Skeleton (skeleton_unagressive) 3 | yes | no | - | - |
+| `npc:edgeville-dungeon:4` | (3097, 9878) | x 3096-3097, z 9878 | x 3086-3107, z 9868-9888 | `{ x: 3097, z: 9878, radius: 18 }` | Giant spider 2 | yes | no | - | - |
+| `npc:edgeville-dungeon:5` | (3100, 9834) | x 3099-3100, z 9832-9836 | x 3096-3103, z 9829-9839 | `{ x: 3100, z: 9834, radius: 10 }` | Giant 2 | yes | no | - | - |
+| `npc:edgeville-dungeon:6` | (3116, 9954) | x 3101-3128, z 9948-9958 | x 3091-3138, z 9938-9968 | `{ x: 3115, z: 9953, radius: 32 }` | Deadly red spider 9, Skeleton (giantskeleton) 7 | no | no | 5 | - |
+| `npc:edgeville-dungeon:7` | (3106, 9827) | (3106, 9827) | x 3103-3109, z 9824-9830 | `{ x: 3106, z: 9827, radius: 8 }` | Giant 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:8` | (3114, 9840) | x 3107-3122, z 9831-9850 | x 3104-3125, z 9828-9853 | `{ x: 3115, z: 9841, radius: 21 }` | Giant 9 | yes | no | - | - |
+| `npc:edgeville-dungeon:9` | (3112, 9884) | (3112, 9884) | x 3097-3127, z 9869-9899 | `{ x: 3112, z: 9884, radius: 25 }` | Rat 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:10` | (3114, 9910) | (3114, 9910) | x 3106-3122, z 9902-9918 | `{ x: 3114, z: 9910, radius: 15 }` | Skeleton (skeleton_unarmed) 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:11` | (3122, 9992) | x 3116-3126, z 9988-9996 | x 3112-3130, z 9984-10000 | `{ x: 3121, z: 9992, radius: 16 }` | Earth warrior 7 | no | no | 10 | 15 Agility |
+| `npc:edgeville-dungeon:12` | (3118, 9871) | (3118, 9871) | x 3115-3121, z 9868-9874 | `{ x: 3118, z: 9871, radius: 8 }` | Hobgoblin 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:13` | (3120, 9974) | x 3118-3124, z 9971-9976 | x 3114-3128, z 9967-9980 | `{ x: 3121, z: 9974, radius: 13 }` | Earth warrior 4 | no | no | 8 | 15 Agility |
+| `npc:edgeville-dungeon:14` | (3125, 9862) | x 3119-3130, z 9860-9865 | x 3110-3139, z 9851-9874 | `{ x: 3125, z: 9863, radius: 23 }` | Zombie 4 | yes | no | - | - |
+| `npc:edgeville-dungeon:15` | (3121, 9908) | (3121, 9908) | x 3112-3130, z 9899-9917 | `{ x: 3121, z: 9908, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:16` | (3125, 9879) | x 3123-3128, z 9876-9882 | x 3108-3143, z 9861-9897 | `{ x: 3126, z: 9879, radius: 29 }` | Hobgoblin 2, Rat 1 | yes | no | - | - |
+| `npc:edgeville-dungeon:17` | (3130, 9929) | x 3123-3134, z 9921-9935 | x 3118-3139, z 9916-9940 | `{ x: 3129, z: 9928, radius: 20 }` | Thug 9 | no | no | 2 | - |
+| `npc:edgeville-dungeon:18` | (3132, 9909) | x 3128-3134, z 9904-9914 | x 3119-3143, z 9895-9923 | `{ x: 3131, z: 9909, radius: 22 }` | Skeleton (skeleton_armed) 1, Skeleton (skeleton_unarmed) 4 | yes | no | - | - |
+| `npc:edgeville-dungeon:19` | (3140, 9872) | x 3137-3144, z 9869-9877 | x 3128-3153, z 9860-9886 | `{ x: 3141, z: 9873, radius: 22 }` | Skeleton (skeleton_armed) 5, Skeleton (skeleton_unarmed) 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:edgeville-dungeon:0` | (3088, 9971) | Ladder 1 | up (3089, 3571) by Climb-up | no | no | 7 | - |
-| `connector:edgeville-dungeon:1` | (3096, 9867) | Ladder 1 | up (3096, 3468) by Climb-up | yes | no | - | - |
-| `connector:edgeville-dungeon:2` | (3116, 9852) | Ladder 1 | up (3115, 3452) by Climb-up | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:edgeville-dungeon:0` | (3088, 9971) | (3088, 9971) | `{ x: 3088, z: 9971, radius: 3 }` | Ladder 1 | up (3089, 3571) by Climb-up | no | no | 7 | - |
+| `connector:edgeville-dungeon:1` | (3096, 9867) | (3096, 9867) | `{ x: 3096, z: 9867, radius: 3 }` | Ladder 1 | up (3096, 3468) by Climb-up | yes | no | - | - |
+| `connector:edgeville-dungeon:2` | (3116, 9852) | (3116, 9852) | `{ x: 3116, z: 9852, radius: 3 }` | Ladder 1 | up (3115, 3452) by Climb-up | yes | no | - | - |

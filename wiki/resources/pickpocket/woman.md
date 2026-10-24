@@ -17,13 +17,13 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:4` | (3014, 3237) | (3014, 3237) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 51 ticks |
-| [Rimmington (Asgarnia)](../../places/rimmington.md) | `pickpocket:rimmington:0` | (2967, 3212) L1 | (2967, 3212) L1 | 1 | yes | no | - | - | Draynor bank (Draynor Village), 77 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:1` | (2567, 3083) | (2566, 3083) | 1 | no | no | - | - | Yanille bank (Yanille), 29 ticks |
-| [Draynor Village (Misthalin)](../../places/draynor-village.md) | `pickpocket:draynor-village:0` | (3097, 3269) L1 | (3097, 3269) L1 | 1 | yes | no | - | - | Draynor bank (Draynor Village), 25 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:3` | (3217, 3205) | (3217, 3205) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 86 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:5` | (3233, 3207) | (3233, 3207) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `pickpocket:asgarnia:4` | (3014, 3237) | (3014, 3237) | x 3011-3017, z 3236-3238 | x 3006-3022, z 3231-3243 | `{ x: 3014, z: 3237, radius: 13 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 51 ticks |
+| [Rimmington (Asgarnia)](../../places/rimmington.md) | `pickpocket:rimmington:0` | (2967, 3212) L1 | (2967, 3212) L1 | x 2967, z 3210-3213 L1 | x 2962-2972, z 3205-3218 L1 | `{ x: 2967, z: 3212, radius: 12, level: 1 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 77 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | x 2690-2699, z 3489-3497 | x 2685-2704, z 3484-3502 | `{ x: 2695, z: 3493, radius: 17 }` | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:1` | (2567, 3083) | (2566, 3083) | x 2566-2568, z 3081-3084 | x 2561-2573, z 3076-3089 | `{ x: 2567, z: 3083, radius: 13 }` | 1 | no | no | - | - | Yanille bank (Yanille), 29 ticks |
+| [Draynor Village (Misthalin)](../../places/draynor-village.md) | `pickpocket:draynor-village:0` | (3097, 3269) L1 | (3097, 3269) L1 | (3097, 3269) L1 | x 3092-3102, z 3264-3274 L1 | `{ x: 3097, z: 3269, radius: 11, level: 1 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 25 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:3` | (3217, 3205) | (3217, 3205) | (3217, 3205) | x 3212-3222, z 3200-3210 | `{ x: 3217, z: 3205, radius: 11 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 86 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:5` | (3233, 3207) | (3233, 3207) | x 3231-3235, z 3206-3207 | x 3226-3240, z 3201-3212 | `{ x: 3233, z: 3207, radius: 13 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | x 3278-3283, z 3496-3502 | x 3273-3288, z 3491-3507 | `{ x: 3281, z: 3499, radius: 15 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |

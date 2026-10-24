@@ -5,14 +5,14 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:al-kharid-mine:0` | (3300, 3309) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 3, [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 5, [tin](../resources/rock/tin.md) 1 | yes | no | - | - |
-| `rock:al-kharid-mine:1` | (3298, 3286) | [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:al-kharid-mine:0` | (3300, 3309) | x 3293-3305, z 3299-3318 | `{ x: 3299, z: 3309, radius: 15 }` | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 3, [copper](../resources/rock/copper.md) 3, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 5, [tin](../resources/rock/tin.md) 1 | yes | no | - | - |
+| `rock:al-kharid-mine:1` | (3298, 3286) | x 3294-3303, z 3284-3288 | `{ x: 3299, z: 3286, radius: 9 }` | [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:al-kharid-mine:0` | (3298, 3305) | Scorpion 6 | yes | no | - | - |
-| `npc:al-kharid-mine:1` | (3301, 3290) | Scorpion 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:al-kharid-mine:0` | (3298, 3305) | x 3292-3302, z 3297-3315 | x 3280-3314, z 3285-3327 | `{ x: 3297, z: 3306, radius: 31 }` | Scorpion 6 | yes | no | - | - |
+| `npc:al-kharid-mine:1` | (3301, 3290) | x 3299-3303, z 3288-3292 | x 3287-3315, z 3276-3304 | `{ x: 3301, z: 3290, radius: 23 }` | Scorpion 2 | yes | no | - | - |

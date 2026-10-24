@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Wilderness](../places/wilderness.md) | (3078, 3810) | 1 | 4 | (3074, 3806)-(3082, 3814) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3092, 3810) | 1 | 4 | (3088, 3806)-(3096, 3814) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3098, 3821) | 1 | 4 | (3094, 3817)-(3102, 3825) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3107, 3812) | 1 | 4 | (3103, 3808)-(3111, 3816) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3118, 3820) | 1 | 4 | (3114, 3816)-(3122, 3824) | 60 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Wilderness](../places/wilderness.md) | (3078, 3810) | (3078, 3810) | 1 | 4 | x 3074-3082, z 3806-3814 | 60 ticks | - | `{ x: 3078, z: 3810, radius: 9 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3092, 3810) | (3092, 3810) | 1 | 4 | x 3088-3096, z 3806-3814 | 60 ticks | - | `{ x: 3092, z: 3810, radius: 9 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3098, 3821) | (3098, 3821) | 1 | 4 | x 3094-3102, z 3817-3825 | 60 ticks | - | `{ x: 3098, z: 3821, radius: 9 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3107, 3812) | (3107, 3812) | 1 | 4 | x 3103-3111, z 3808-3816 | 60 ticks | - | `{ x: 3107, z: 3812, radius: 9 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3118, 3820) | (3118, 3820) | 1 | 4 | x 3114-3122, z 3816-3824 | 60 ticks | - | `{ x: 3118, z: 3820, radius: 9 }` | yes |
 
 ## Drops
 

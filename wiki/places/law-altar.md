@@ -5,6 +5,6 @@ Inside the law ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:law-altar:0` | (2463, 4831) | law 1 | no | no | - | carry Law talisman + no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:law-altar:0` | (2463, 4831) | (2463, 4831) | `{ x: 2463, z: 4831, radius: 3 }` | law 1 | no | no | - | carry Law talisman + no weapons/armour (Entrana rule) |

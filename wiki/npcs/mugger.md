@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3018, 3185) | 1 | 12 | (2999, 3170)-(3031, 3206) | 100 ticks | - | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2996, 9547) | 4 | 12 | (2981, 9532)-(3011, 9562) | 100 ticks | - | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3249, 3391) | 1 | 12 | (3226, 3378)-(3261, 3405) | 100 ticks | - | yes |
-| [Varrock West mine (Misthalin)](../places/varrock-west-mine.md) | (3175, 3361) | 1 | 12 | (3163, 3349)-(3187, 3373) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3018, 3185) | x 3011-3019, z 3182-3194 | 1 | 12 | x 2999-3031, z 3170-3206 | 100 ticks | - | `{ x: 3015, z: 3188, radius: 28 }` | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2996, 9547) | x 2993-2999, z 9544-9550 | 4 | 12 | x 2981-3011, z 9532-9562 | 100 ticks | - | `{ x: 2996, z: 9547, radius: 25 }` | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3249, 3391) | x 3238-3249, z 3390-3393 | 1 | 12 | x 3226-3261, z 3378-3405 | 100 ticks | - | `{ x: 3244, z: 3392, radius: 26 }` | yes |
+| [Varrock West mine (Misthalin)](../places/varrock-west-mine.md) | (3175, 3361) | (3175, 3361) | 1 | 12 | x 3163-3187, z 3349-3373 | 100 ticks | - | `{ x: 3175, z: 3361, radius: 20 }` | yes |
 
 ## Drops
 

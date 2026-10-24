@@ -5,105 +5,105 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:yanille:0` | (2566, 3098) | Frenita's Cookery Shop. (cookeryshop) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:yanille:0` | (2566, 3098) | (2566, 3098) | x 2561-2571, z 3093-3103 | `{ x: 2566, z: 3098, radius: 11 }` | Frenita's Cookery Shop. (cookeryshop) 1 | no | no | - | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:yanille:0` | (2614, 3080) | Anvil 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:yanille:0` | (2614, 3080) | x 2613-2616, z 3078-3081 | `{ x: 2615, z: 3080, radius: 6 }` | Anvil 3 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:yanille:0` | (2549, 3098) | Range 1 | no | no | - | - |
-| `range:yanille:1` | (2566, 3104) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:yanille:0` | (2549, 3098) | (2549, 3098) | `{ x: 2549, z: 3098, radius: 3 }` | Range 1 | no | no | - | - |
+| `range:yanille:1` | (2566, 3104) | (2566, 3104) | `{ x: 2566, z: 3104, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:yanille:0` | (2568, 3093) | Cooking pot 1 | no | no | - | - |
-| `fire:yanille:1` | (2570, 3082) | Fireplace 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:yanille:0` | (2568, 3093) | (2568, 3093) | `{ x: 2568, z: 3093, radius: 3 }` | Cooking pot 1 | no | no | - | - |
+| `fire:yanille:1` | (2570, 3082) | (2570, 3082) | `{ x: 2570, z: 3082, radius: 3 }` | Fireplace 1 | no | no | - | - |
 
 ## [Sand pits](../services/sand-pit.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `sand-pit:yanille:0` | (2542, 3103) | Sand pit 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `sand-pit:yanille:0` | (2542, 3103) | (2542, 3103) | `{ x: 2542, z: 3103, radius: 3 }` | Sand pit 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:yanille:0` | (2549, 3101) | Sink 1 | no | no | - | - |
-| `water-source:yanille:1` | (2556, 3113) | Fountain 1 | no | no | - | - |
-| `water-source:yanille:2` | (2566, 3093) | Sink 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:yanille:0` | (2549, 3101) | (2549, 3101) | `{ x: 2549, z: 3101, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:yanille:1` | (2556, 3113) | (2556, 3113) | `{ x: 2556, z: 3113, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:yanille:2` | (2566, 3093) | (2566, 3093) | `{ x: 2566, z: 3093, radius: 3 }` | Sink 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:yanille:0` | (2528, 3107) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:yanille:1` | (2537, 3067) | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:yanille:2` | (2540, 3087) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:yanille:3` | (2544, 3101) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:yanille:4` | (2572, 3089) | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 5 | no | no | - | - |
-| `tree:yanille:5` | (2604, 3066) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
-| `tree:yanille:6` | (2618, 3110) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:yanille:7` | (2617, 3077) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:yanille:0` | (2528, 3107) | x 2525-2535, z 3101-3113 | `{ x: 2530, z: 3107, radius: 11 }` | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| `tree:yanille:1` | (2537, 3067) | x 2533-2542, z 3064-3070 | `{ x: 2538, z: 3067, radius: 9 }` | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:yanille:2` | (2540, 3087) | (2540, 3087) | `{ x: 2540, z: 3087, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:yanille:3` | (2544, 3101) | (2544, 3101) | `{ x: 2544, z: 3101, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:yanille:4` | (2572, 3089) | x 2551-2600, z 3061-3114 | `{ x: 2576, z: 3088, radius: 40 }` | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 5 | no | no | - | - |
+| `tree:yanille:5` | (2604, 3066) | x 2592-2615, z 3061-3070 | `{ x: 2604, z: 3066, radius: 16 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
+| `tree:yanille:6` | (2618, 3110) | x 2612-2622, z 3102-3114 | `{ x: 2617, z: 3108, radius: 11 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| `tree:yanille:7` | (2617, 3077) | (2617, 3077) | `{ x: 2617, z: 3077, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:yanille:0` | (2547, 3112) L1 | [Watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - | Watch Tower at stage 1 or 18 Agility |
-| `pickpocket:yanille:1` | (2567, 3083) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | no | no | - | - |
-| `pickpocket:yanille:2` | (2596, 3105) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:yanille:0` | (2547, 3112) L1 | x 2544-2549, z 3112 L1 | x 2539-2554, z 3107-3117 L1 | `{ x: 2547, z: 3112, radius: 13, level: 1 }` | [Watchman](../resources/pickpocket/yanille_watchman.md) 2 | no | no | - | Watch Tower at stage 1 or 18 Agility |
+| `pickpocket:yanille:1` | (2567, 3083) | x 2566-2568, z 3081-3084 | x 2561-2573, z 3076-3089 | `{ x: 2567, z: 3083, radius: 13 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | no | no | - | - |
+| `pickpocket:yanille:2` | (2596, 3105) | x 2596, z 3104-3106 | x 2591-2601, z 3099-3111 | `{ x: 2596, z: 3105, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:yanille:0` | (2535, 3096) L1 | Soldier 6 | no | no | - | - |
-| `npc:yanille:1` | (2543, 3090) | Colonel Radick 1, Soldier 5, Tower guard 1 | no | no | - | - |
-| `npc:yanille:2` | (2537, 3078) L1 | Soldier 1 | no | no | - | - |
-| `npc:yanille:3` | (2540, 3102) | Soldier 1 | no | no | - | - |
-| `npc:yanille:4` | (2547, 3113) | Tower guard 2 | no | no | - | - |
-| `npc:yanille:5` | (2551, 3109) L1 | Soldier 1 | no | no | - | - |
-| `npc:yanille:6` | (2556, 3073) L1 | Soldier 2 | no | no | - | - |
-| `npc:yanille:7` | (2570, 3109) L1 | Soldier 2 | no | no | - | - |
-| `npc:yanille:8` | (2586, 3089) L1 | Wizard 1 | no | no | - | 66 Magic |
-| `npc:yanille:9` | (2588, 3090) | Wizard 1 | no | no | - | 66 Magic |
-| `npc:yanille:10` | (2593, 3090) L2 | Wizard 1 | no | no | - | 66 Magic |
-| `npc:yanille:11` | (2595, 3090) L1 | Wizard 1 | no | no | - | 66 Magic |
-| `npc:yanille:12` | (2600, 3062) | Dwarf 1 | no | no | - | - |
-| `npc:yanille:13` | (2600, 3109) L1 | Soldier 1 | no | no | - | - |
-| `npc:yanille:14` | (2604, 3114) | Cow 1 | no | no | - | - |
-| `npc:yanille:15` | (2608, 3061) | Dwarf 1 | no | no | - | - |
-| `npc:yanille:16` | (2615, 3074) L1 | Soldier 3 | no | no | - | - |
-| `npc:yanille:17` | (2610, 3107) L1 | Soldier 1 | no | no | - | - |
-| `npc:yanille:18` | (2619, 3097) L1 | Soldier 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:yanille:0` | (2535, 3096) L1 | x 2533-2539, z 3086-3107 L1 | x 2528-2544, z 3081-3112 L1 | `{ x: 2536, z: 3097, radius: 21, level: 1 }` | Soldier 6 | no | no | - | - |
+| `npc:yanille:1` | (2543, 3090) | x 2535-2547, z 3085-3094 | x 2527-2555, z 3077-3102 | `{ x: 2541, z: 3090, radius: 23 }` | Colonel Radick 1, Soldier 5, Tower guard 1 | no | no | - | - |
+| `npc:yanille:2` | (2537, 3078) L1 | (2537, 3078) L1 | x 2532-2542, z 3073-3083 L1 | `{ x: 2537, z: 3078, radius: 11, level: 1 }` | Soldier 1 | no | no | - | - |
+| `npc:yanille:3` | (2540, 3102) | (2540, 3102) | x 2535-2545, z 3097-3107 | `{ x: 2540, z: 3102, radius: 11 }` | Soldier 1 | no | no | - | - |
+| `npc:yanille:4` | (2547, 3113) | x 2545-2549, z 3112-3113 | x 2537-2557, z 3104-3121 | `{ x: 2547, z: 3113, radius: 17 }` | Tower guard 2 | no | no | - | - |
+| `npc:yanille:5` | (2551, 3109) L1 | (2551, 3109) L1 | x 2546-2556, z 3104-3114 L1 | `{ x: 2551, z: 3109, radius: 11, level: 1 }` | Soldier 1 | no | no | - | - |
+| `npc:yanille:6` | (2556, 3073) L1 | x 2553-2558, z 3073 L1 | x 2548-2563, z 3068-3078 L1 | `{ x: 2556, z: 3073, radius: 13, level: 1 }` | Soldier 2 | no | no | - | - |
+| `npc:yanille:7` | (2570, 3109) L1 | x 2567-2572, z 3109 L1 | x 2562-2577, z 3104-3114 L1 | `{ x: 2570, z: 3109, radius: 13, level: 1 }` | Soldier 2 | no | no | - | - |
+| `npc:yanille:8` | (2586, 3089) L1 | (2586, 3089) L1 | x 2581-2591, z 3084-3094 L1 | `{ x: 2586, z: 3089, radius: 11, level: 1 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:yanille:9` | (2588, 3090) | (2588, 3090) | x 2583-2593, z 3085-3095 | `{ x: 2588, z: 3090, radius: 11 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:yanille:10` | (2593, 3090) L2 | (2593, 3090) L2 | x 2588-2598, z 3085-3095 L2 | `{ x: 2593, z: 3090, radius: 11, level: 2 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:yanille:11` | (2595, 3090) L1 | (2595, 3090) L1 | x 2590-2600, z 3085-3095 L1 | `{ x: 2595, z: 3090, radius: 11, level: 1 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:yanille:12` | (2600, 3062) | (2600, 3062) | x 2587-2613, z 3049-3075 | `{ x: 2600, z: 3062, radius: 22 }` | Dwarf 1 | no | no | - | - |
+| `npc:yanille:13` | (2600, 3109) L1 | (2600, 3109) L1 | x 2595-2605, z 3104-3114 L1 | `{ x: 2600, z: 3109, radius: 11, level: 1 }` | Soldier 1 | no | no | - | - |
+| `npc:yanille:14` | (2604, 3114) | (2604, 3114) | x 2599-2609, z 3109-3119 | `{ x: 2604, z: 3114, radius: 11 }` | Cow 1 | no | no | - | - |
+| `npc:yanille:15` | (2608, 3061) | (2608, 3061) | x 2595-2621, z 3048-3074 | `{ x: 2608, z: 3061, radius: 22 }` | Dwarf 1 | no | no | - | - |
+| `npc:yanille:16` | (2615, 3074) L1 | x 2609-2620, z 3073-3077 L1 | x 2604-2625, z 3068-3082 L1 | `{ x: 2615, z: 3075, radius: 17, level: 1 }` | Soldier 3 | no | no | - | - |
+| `npc:yanille:17` | (2610, 3107) L1 | (2610, 3107) L1 | x 2605-2615, z 3102-3112 L1 | `{ x: 2610, z: 3107, radius: 11, level: 1 }` | Soldier 1 | no | no | - | - |
+| `npc:yanille:18` | (2619, 3097) L1 | x 2618-2620, z 3095-3099 L1 | x 2613-2625, z 3090-3104 L1 | `{ x: 2619, z: 3097, radius: 13, level: 1 }` | Soldier 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:yanille:0` | (2537, 3085) | Staircase 1 | up (2537, 3084) L1 by Climb-up | no | no | - | - |
-| `connector:yanille:1` | (2537, 3085) L1 | Staircase 1 | down (2537, 3088) by Climb-down | no | no | - | - |
-| `connector:yanille:2` | (2537, 3096) | Staircase 1 | up (2537, 3099) L1 by Climb-up | no | no | - | - |
-| `connector:yanille:3` | (2537, 3097) L1 | Staircase 1 | down (2537, 3095) by Climb-down | no | no | - | - |
-| `connector:yanille:4` | (2544, 3111) L1 | Ladder 1 | down (2543, 3111) by Climb-down | no | no | - | Watch Tower at stage 1 or 18 Agility |
-| `connector:yanille:5` | (2556, 3081) | Ladder 1 | up (2555, 3081) L1 by Climb-up | no | no | - | - |
-| `connector:yanille:6` | (2556, 3081) L1 | Ladder 1 | down (2555, 3081) by Climb-down | no | no | - | - |
-| `connector:yanille:7` | (2590, 3089) | Staircase 1 | up (2590, 3092) L1 by Climb-up | no | no | - | 66 Magic |
-| `connector:yanille:8` | (2590, 3090) L1 | Staircase 1 | down (2590, 3088) by Climb-down | no | no | - | 66 Magic |
-| `connector:yanille:9` | (2597, 3107) | Ladder 1 | up (2596, 3107) L1 by Climb-up | no | no | - | - |
-| `connector:yanille:10` | (2597, 3107) L1 | Ladder 1 | down (2596, 3107) by Climb-down | no | no | - | - |
-| `connector:yanille:11` | (2603, 3078) | Staircase 1 | down (2601, 9478) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:yanille:0` | (2537, 3085) | (2537, 3085) | `{ x: 2537, z: 3085, radius: 3 }` | Staircase 1 | up (2537, 3084) L1 by Climb-up | no | no | - | - |
+| `connector:yanille:1` | (2537, 3085) L1 | (2537, 3085) L1 | `{ x: 2537, z: 3085, radius: 3, level: 1 }` | Staircase 1 | down (2537, 3088) by Climb-down | no | no | - | - |
+| `connector:yanille:2` | (2537, 3096) | (2537, 3096) | `{ x: 2537, z: 3096, radius: 3 }` | Staircase 1 | up (2537, 3099) L1 by Climb-up | no | no | - | - |
+| `connector:yanille:3` | (2537, 3097) L1 | (2537, 3097) L1 | `{ x: 2537, z: 3097, radius: 3, level: 1 }` | Staircase 1 | down (2537, 3095) by Climb-down | no | no | - | - |
+| `connector:yanille:4` | (2544, 3111) L1 | (2544, 3111) L1 | `{ x: 2544, z: 3111, radius: 3, level: 1 }` | Ladder 1 | down (2543, 3111) by Climb-down | no | no | - | Watch Tower at stage 1 or 18 Agility |
+| `connector:yanille:5` | (2556, 3081) | (2556, 3081) | `{ x: 2556, z: 3081, radius: 3 }` | Ladder 1 | up (2555, 3081) L1 by Climb-up | no | no | - | - |
+| `connector:yanille:6` | (2556, 3081) L1 | (2556, 3081) L1 | `{ x: 2556, z: 3081, radius: 3, level: 1 }` | Ladder 1 | down (2555, 3081) by Climb-down | no | no | - | - |
+| `connector:yanille:7` | (2590, 3089) | (2590, 3089) | `{ x: 2590, z: 3089, radius: 3 }` | Staircase 1 | up (2590, 3092) L1 by Climb-up | no | no | - | 66 Magic |
+| `connector:yanille:8` | (2590, 3090) L1 | (2590, 3090) L1 | `{ x: 2590, z: 3090, radius: 3, level: 1 }` | Staircase 1 | down (2590, 3088) by Climb-down | no | no | - | 66 Magic |
+| `connector:yanille:9` | (2597, 3107) | (2597, 3107) | `{ x: 2597, z: 3107, radius: 3 }` | Ladder 1 | up (2596, 3107) L1 by Climb-up | no | no | - | - |
+| `connector:yanille:10` | (2597, 3107) L1 | (2597, 3107) L1 | `{ x: 2597, z: 3107, radius: 3, level: 1 }` | Ladder 1 | down (2596, 3107) by Climb-down | no | no | - | - |
+| `connector:yanille:11` | (2603, 3078) | (2603, 3078) | `{ x: 2603, z: 3078, radius: 3 }` | Staircase 1 | down (2601, 9478) by Climb-down | no | no | - | - |
 
 ## Areas within
 

@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | (3170, 3045) | 1 | 0 | (3170, 3045)-(3170, 3045) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Bedabin Camp (Kharidian Desert)](../places/bedabin-camp.md) | (3170, 3045) | (3170, 3045) | 1 | 0 | (3170, 3045) | 100 ticks | - | `{ x: 3170, z: 3045, radius: 3 }` | no |
 
 ## Interactions
 

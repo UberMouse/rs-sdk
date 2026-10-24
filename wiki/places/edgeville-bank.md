@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:edgeville-bank:0` | (3096, 3491) | Bank booth 4, Banker 4 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:edgeville-bank:0` | (3096, 3491) | x 3095-3098, z 3489-3493 | `{ x: 3097, z: 3491, radius: 6 }` | Bank booth 4, Banker 4 | yes | no | - | - |

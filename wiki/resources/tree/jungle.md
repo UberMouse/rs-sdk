@@ -23,24 +23,24 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `tree:karamja:0` | (2762, 2939) | (2762, 2943) | 35 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 154 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `tree:karamja:1` | (2783, 2923) | (2781, 2923) | 2 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:2` | (2795, 2940) | (2795, 2943) | 52 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 144 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `tree:karamja:3` | (2793, 2901) | (2793, 2901) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:4` | (2809, 2914) | (2809, 2914) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:5` | (2813, 2925) | (2813, 2925) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | 26 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 151 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `tree:karamja:7` | (2827, 2900) | (2827, 2900) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:9` | (2857, 2907) | (2857, 2906) | 3 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:10` | (2866, 2937) | (2866, 2941) | 50 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 175 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `tree:karamja:11` | (2883, 2911) | (2883, 2909) | 2 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:12` | (2895, 2926) | (2894, 2925) | 2 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:14` | (2916, 2916) | (2916, 2916) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:15` | (2923, 2903) | (2923, 2903) | 1 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:16` | (2936, 2940) | (2936, 2943) | 42 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 210 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `tree:karamja:18` | (2949, 2912) | (2947, 2912) | 4 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:19` | (2948, 2927) | (2947, 2927) | 2 | no | no | - | unreached | - |
-| [Karamja](../../places/karamja.md) | `tree:karamja:20` | (2956, 2897) | (2956, 2897) | 1 | no | no | - | unreached | - |
-| [Kharazi Jungle (Karamja)](../../places/kharazi-jungle.md) | `tree:kharazi-jungle:0` | (2852, 2925) | (2852, 2925) | 1 | no | no | - | unreached | - |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Karamja](../../places/karamja.md) | `tree:karamja:0` | (2762, 2939) | (2762, 2943) | x 2759-2765, z 2935-2942 | `{ x: 2762, z: 2939, radius: 8 }` | 35 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 154 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:1` | (2783, 2923) | (2781, 2923) | x 2779-2787, z 2922-2923 | `{ x: 2783, z: 2923, radius: 8 }` | 2 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:2` | (2795, 2940) | (2795, 2943) | x 2790-2801, z 2935-2942 | `{ x: 2796, z: 2939, radius: 11 }` | 52 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 144 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:3` | (2793, 2901) | (2793, 2901) | (2793, 2901) | `{ x: 2793, z: 2901, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:4` | (2809, 2914) | (2809, 2914) | (2809, 2914) | `{ x: 2809, z: 2914, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:5` | (2813, 2925) | (2813, 2925) | (2813, 2925) | `{ x: 2813, z: 2925, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:6` | (2819, 2937) | (2819, 2940) | x 2816-2825, z 2935-2940 | `{ x: 2821, z: 2938, radius: 9 }` | 26 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 151 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:7` | (2827, 2900) | (2827, 2900) | (2827, 2900) | `{ x: 2827, z: 2900, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:9` | (2857, 2907) | (2857, 2906) | x 2856-2858, z 2904-2913 | `{ x: 2857, z: 2909, radius: 9 }` | 3 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:10` | (2866, 2937) | (2866, 2941) | x 2860-2872, z 2935-2940 | `{ x: 2866, z: 2938, radius: 10 }` | 50 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 175 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:11` | (2883, 2911) | (2883, 2909) | x 2883, z 2907-2915 | `{ x: 2883, z: 2911, radius: 7 }` | 2 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:12` | (2895, 2926) | (2894, 2925) | x 2892-2897, z 2924-2927 | `{ x: 2895, z: 2926, radius: 7 }` | 2 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:14` | (2916, 2916) | (2916, 2916) | (2916, 2916) | `{ x: 2916, z: 2916, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:15` | (2923, 2903) | (2923, 2903) | (2923, 2903) | `{ x: 2923, z: 2903, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:16` | (2936, 2940) | (2936, 2943) | x 2931-2940, z 2929-2942 | `{ x: 2936, z: 2936, radius: 12 }` | 42 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 210 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `tree:karamja:18` | (2949, 2912) | (2947, 2912) | x 2941-2956, z 2908-2915 | `{ x: 2949, z: 2912, radius: 12 }` | 4 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:19` | (2948, 2927) | (2947, 2927) | x 2945-2950, z 2926-2927 | `{ x: 2948, z: 2927, radius: 7 }` | 2 | no | no | - | unreached | - |
+| [Karamja](../../places/karamja.md) | `tree:karamja:20` | (2956, 2897) | (2956, 2897) | (2956, 2897) | `{ x: 2956, z: 2897, radius: 3 }` | 1 | no | no | - | unreached | - |
+| [Kharazi Jungle (Karamja)](../../places/kharazi-jungle.md) | `tree:kharazi-jungle:0` | (2852, 2925) | (2852, 2925) | (2852, 2925) | `{ x: 2852, z: 2925, radius: 3 }` | 1 | no | no | - | unreached | - |

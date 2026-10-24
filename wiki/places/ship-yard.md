@@ -5,16 +5,16 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ship-yard:0` | (2986, 3060) | Shipyard worker 2 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:ship-yard:1` | (2987, 3049) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:ship-yard:2` | (2995, 3061) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:ship-yard:3` | (3000, 3046) | Foreman 1, Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ship-yard:0` | (2986, 3060) | x 2983-2988, z 3058-3061 | x 2978-2993, z 3053-3066 | `{ x: 2986, z: 3060, radius: 14 }` | Shipyard worker 2 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:1` | (2987, 3049) | (2987, 3049) | x 2982-2992, z 3044-3054 | `{ x: 2987, z: 3049, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:2` | (2995, 3061) | (2995, 3061) | x 2990-3000, z 3056-3066 | `{ x: 2995, z: 3061, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:ship-yard:3` | (3000, 3046) | x 2999-3001, z 3043-3049 | x 2994-3006, z 3038-3054 | `{ x: 3000, z: 3046, radius: 13 }` | Foreman 1, Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:ship-yard:0` | (2990, 3066) L1 | Ship's ladder 1 | up (2991, 3066) L2 by Climb-up | no | no | - | unreached |
-| `connector:ship-yard:1` | (2990, 3066) L2 | Ship's ladder 1 | down (2989, 3066) L1 by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:ship-yard:0` | (2990, 3066) L1 | (2990, 3066) L1 | `{ x: 2990, z: 3066, radius: 3, level: 1 }` | Ship's ladder 1 | up (2991, 3066) L2 by Climb-up | no | no | - | unreached |
+| `connector:ship-yard:1` | (2990, 3066) L2 | (2990, 3066) L2 | `{ x: 2990, z: 3066, radius: 3, level: 2 }` | Ship's ladder 1 | down (2989, 3066) L1 by Climb-down | no | no | - | unreached |

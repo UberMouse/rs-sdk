@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3015, 3515) | 6 | 5 | (3003, 3507)-(3034, 3522) | 50 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | (3015, 3515) | x 3008-3029, z 3512-3517 | 6 | 5 | x 3003-3034, z 3507-3522 | 50 ticks | - | `{ x: 3019, z: 3515, radius: 21 }` | yes |
 
 ## Drops
 

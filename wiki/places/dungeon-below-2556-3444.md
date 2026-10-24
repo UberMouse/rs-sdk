@@ -5,20 +5,20 @@ Ladder up at (2556, 3444); moss giants, skeletons and zombies. Descriptive name,
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:dungeon-below-2556-3444:0` | (2541, 9818) | [normal](../resources/tree/normal.md) 5 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:dungeon-below-2556-3444:0` | (2541, 9818) | x 2538-2544, z 9815-9822 | `{ x: 2541, z: 9819, radius: 8 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | Moss giant 1, Skeleton (skeleton_armed) 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
-| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | Moss giant 1, Skeleton (skeleton_armed) 2, Skeleton (skeleton_unarmed) 1, Zombie 1 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
-| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | Moss giant 1, Skeleton (skeleton_armed) 1, Zombie 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:dungeon-below-2556-3444:0` | (2529, 9843) | x 2528-2530, z 9841-9846 | x 2519-2539, z 9832-9855 | `{ x: 2529, z: 9844, radius: 19 }` | Moss giant 1, Skeleton (skeleton_armed) 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| `npc:dungeon-below-2556-3444:1` | (2542, 9817) | x 2538-2546, z 9813-9822 | x 2529-2555, z 9804-9831 | `{ x: 2542, z: 9818, radius: 23 }` | Moss giant 1, Skeleton (skeleton_armed) 2, Skeleton (skeleton_unarmed) 1, Zombie 1 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| `npc:dungeon-below-2556-3444:2` | (2543, 9844) | x 2541-2546, z 9840-9847 | x 2532-2555, z 9831-9856 | `{ x: 2544, z: 9844, radius: 21 }` | Moss giant 1, Skeleton (skeleton_armed) 1, Zombie 2 | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | Ladder 1 | up (2557, 3444) by Climb-up | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:dungeon-below-2556-3444:0` | (2556, 9844) | (2556, 9844) | `{ x: 2556, z: 9844, radius: 3 }` | Ladder 1 | up (2557, 3444) by Climb-up | no | no | - | carry Glarial's pebble + no weapons/armour (Glarials tomb rule) |

@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2547, 4580) | 1 | 5 | (2542, 4575)-(2552, 4585) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2547, 4580) | (2547, 4580) | 1 | 5 | x 2542-2552, z 4575-4585 | 100 ticks | - | `{ x: 2547, z: 4580, radius: 11 }` | no |
 
 ## Drops
 

@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2731, 9482) | 1 | 5 | (2726, 9477)-(2736, 9487) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2731, 9491) | 1 | 5 | (2726, 9486)-(2736, 9496) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2740, 9492) | 1 | 5 | (2735, 9487)-(2745, 9497) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2731, 9482) | (2731, 9482) | 1 | 5 | x 2726-2736, z 9477-9487 | 60 ticks | - | `{ x: 2731, z: 9482, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2731, 9491) | (2731, 9491) | 1 | 5 | x 2726-2736, z 9486-9496 | 60 ticks | - | `{ x: 2731, z: 9491, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2740, 9492) | (2740, 9492) | 1 | 5 | x 2735-2745, z 9487-9497 | 60 ticks | - | `{ x: 2740, z: 9492, radius: 11 }` | no |
 
 ## Drops
 

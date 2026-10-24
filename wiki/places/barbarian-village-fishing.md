@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:barbarian-village-fishing:0` | (3101, 3432) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:barbarian-village-fishing:0` | (3101, 3432) | x 3100-3102, z 3428-3436 | `{ x: 3101, z: 3432, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:barbarian-village-fishing:0` | (3107, 3429) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:barbarian-village-fishing:0` | (3107, 3429) | x 3104-3110, z 3424-3434 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | yes | - | - |

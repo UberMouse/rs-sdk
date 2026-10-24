@@ -17,16 +17,16 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:3` | (2981, 3378) | (2981, 3378) | 1 | yes | yes | - | - | Falador East bank (Falador), 18 ticks |
-| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | 1 | no | no | - | - | Catherby bank (Catherby), 8 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:2` | (2596, 3105) | (2596, 3105) | 1 | no | no | - | - | Yanille bank (Yanille), 12 ticks |
-| [Edgeville (Misthalin)](../../places/edgeville.md) | `pickpocket:edgeville:0` | (3098, 3509) | (3098, 3509) | 3 | yes | no | - | - | Edgeville bank (Edgeville), 11 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:2` | (3219, 3219) | (3219, 3219) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:4` | (3194, 3396) | (3194, 3396) | 1 | yes | no | - | - | Varrock West bank (Varrock), 24 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:10` | (3231, 3399) L1 | (3231, 3399) L1 | 1 | yes | no | - | - | Varrock East bank (Varrock), 34 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:12` | (3238, 3406) | (3238, 3406) | 1 | yes | no | - | - | Varrock East bank (Varrock), 19 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:3` | (2981, 3378) | (2981, 3378) | (2981, 3378) | x 2976-2986, z 3373-3383 | `{ x: 2981, z: 3378, radius: 11 }` | 1 | yes | yes | - | - | Falador East bank (Falador), 18 ticks |
+| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | x 2816-2817, z 3442-3443 | x 2811-2822, z 3437-3448 | `{ x: 2817, z: 3443, radius: 12 }` | 1 | no | no | - | - | Catherby bank (Catherby), 8 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | x 2690-2699, z 3489-3497 | x 2685-2704, z 3484-3502 | `{ x: 2695, z: 3493, radius: 17 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:2` | (2596, 3105) | (2596, 3105) | x 2596, z 3104-3106 | x 2591-2601, z 3099-3111 | `{ x: 2596, z: 3105, radius: 11 }` | 1 | no | no | - | - | Yanille bank (Yanille), 12 ticks |
+| [Edgeville (Misthalin)](../../places/edgeville.md) | `pickpocket:edgeville:0` | (3098, 3509) | (3098, 3509) | x 3092-3101, z 3508-3511 | x 3087-3106, z 3503-3516 | `{ x: 3097, z: 3510, radius: 16 }` | 3 | yes | no | - | - | Edgeville bank (Edgeville), 11 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:2` | (3219, 3219) | (3219, 3219) | x 3216-3221, z 3219 | x 3211-3226, z 3214-3224 | `{ x: 3219, z: 3219, radius: 13 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 83 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | x 3217-3231, z 3236-3240 | x 3212-3236, z 3231-3245 | `{ x: 3224, z: 3238, radius: 17 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:4` | (3194, 3396) | (3194, 3396) | (3194, 3396) | x 3189-3199, z 3391-3401 | `{ x: 3194, z: 3396, radius: 11 }` | 1 | yes | no | - | - | Varrock West bank (Varrock), 24 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:10` | (3231, 3399) L1 | (3231, 3399) L1 | (3231, 3399) L1 | x 3226-3236, z 3394-3404 L1 | `{ x: 3231, z: 3399, radius: 11, level: 1 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 34 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:12` | (3238, 3406) | (3238, 3406) | x 3237-3238, z 3406 | x 3232-3243, z 3401-3411 | `{ x: 3238, z: 3406, radius: 11 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 19 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | x 3278-3283, z 3496-3502 | x 3273-3288, z 3491-3507 | `{ x: 3281, z: 3499, radius: 15 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |

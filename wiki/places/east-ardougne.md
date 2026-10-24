@@ -5,197 +5,197 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:east-ardougne:0` | (2614, 3293) | Aemad's Adventuring Supplies. (adventurershop) 2 | no | no | - | - |
-| `shop:east-ardougne:1` | (2656, 3296) | Ardougne Spice Stall. (spicestall) 1, Zenesha's Plate Mail Body Shop. (topshop) 1 | no | no | - | - |
-| `shop:east-ardougne:2` | (2656, 3314) | Ardougne Baker's Stall. (bakery) 1, Ardougne Silver Stall. (silverstall) 1 | no | no | - | - |
-| `shop:east-ardougne:3` | (2666, 3295) | Ardougne Fur Stall. (furshop) 1 | no | no | - | - |
-| `shop:east-ardougne:4` | (2669, 3303) | Ardougne Gem Stall. (ardougnegemstall) 1 | no | no | - | - |
-| `shop:east-ardougne:5` | (2669, 3310) | Ardougne Baker's Stall. (bakery) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:east-ardougne:0` | (2614, 3293) | x 2613-2615, z 3292-3294 | x 2608-2620, z 3287-3299 | `{ x: 2614, z: 3293, radius: 12 }` | Aemad's Adventuring Supplies. (adventurershop) 2 | no | no | - | - |
+| `shop:east-ardougne:1` | (2656, 3296) | x 2653-2658, z 3295-3296 | x 2648-2663, z 3290-3301 | `{ x: 2656, z: 3296, radius: 13 }` | Ardougne Spice Stall. (spicestall) 1, Zenesha's Plate Mail Body Shop. (topshop) 1 | no | no | - | - |
+| `shop:east-ardougne:2` | (2656, 3314) | x 2654-2658, z 3311-3316 | x 2649-2663, z 3306-3321 | `{ x: 2656, z: 3314, radius: 14 }` | Ardougne Baker's Stall. (bakery) 1, Ardougne Silver Stall. (silverstall) 1 | no | no | - | - |
+| `shop:east-ardougne:3` | (2666, 3295) | (2666, 3295) | x 2661-2671, z 3290-3300 | `{ x: 2666, z: 3295, radius: 11 }` | Ardougne Fur Stall. (furshop) 1 | no | no | - | - |
+| `shop:east-ardougne:4` | (2669, 3303) | (2669, 3303) | (2669, 3303) | `{ x: 2669, z: 3303, radius: 3 }` | Ardougne Gem Stall. (ardougnegemstall) 1 | no | no | - | - |
+| `shop:east-ardougne:5` | (2669, 3310) | (2669, 3310) | x 2664-2674, z 3305-3315 | `{ x: 2669, z: 3310, radius: 11 }` | Ardougne Baker's Stall. (bakery) 1 | no | no | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:east-ardougne:0` | (2601, 3310) | Furnace 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:east-ardougne:0` | (2601, 3310) | (2601, 3310) | `{ x: 2601, z: 3310, radius: 3 }` | Furnace 1 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:east-ardougne:0` | (2617, 3317) | Range 1 | no | no | - | 13 Thieving |
-| `range:east-ardougne:1` | (2648, 3297) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:east-ardougne:0` | (2617, 3317) | (2617, 3317) | `{ x: 2617, z: 3317, radius: 3 }` | Range 1 | no | no | - | 13 Thieving |
+| `range:east-ardougne:1` | (2648, 3297) | (2648, 3297) | `{ x: 2648, z: 3297, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:east-ardougne:0` | (2565, 3267) | Fireplace 1 | no | no | - | - |
-| `fire:east-ardougne:1` | (2594, 3335) | Cooking pot 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:east-ardougne:0` | (2565, 3267) | (2565, 3267) | `{ x: 2565, z: 3267, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:east-ardougne:1` | (2594, 3335) | (2594, 3335) | `{ x: 2594, z: 3335, radius: 3 }` | Cooking pot 1 | no | no | - | unreached |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-wheel:east-ardougne:0` | (2587, 3327) | Potter's Wheel 2 | no | no | - | - |
-| `pottery-wheel:east-ardougne:1` | (2595, 3323) | Potter's Wheel 2 | no | no | - | no stand |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-wheel:east-ardougne:0` | (2587, 3327) | x 2586-2588, z 3327 | `{ x: 2587, z: 3327, radius: 4 }` | Potter's Wheel 2 | no | no | - | - |
+| `pottery-wheel:east-ardougne:1` | (2595, 3323) | x 2595, z 3321-3324 | `{ x: 2595, z: 3323, radius: 5 }` | Potter's Wheel 2 | no | no | - | no stand |
 
 ## [Pottery ovens](../services/pottery-oven.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-oven:east-ardougne:0` | (2591, 3325) | Pottery Oven 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-oven:east-ardougne:0` | (2591, 3325) | (2591, 3325) | `{ x: 2591, z: 3325, radius: 3 }` | Pottery Oven 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:east-ardougne:0` | (2617, 3325) | Sink 1 | no | no | - | - |
-| `water-source:east-ardougne:1` | (2628, 3324) | Sink 1 | no | no | - | the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) or Tribal Totem done |
-| `water-source:east-ardougne:2` | (2629, 3311) | Fountain 1 | no | no | - | - |
-| `water-source:east-ardougne:3` | (2640, 3311) | Fountain 1 | no | no | - | - |
-| `water-source:east-ardougne:4` | (2658, 3273) | Sink 1 | no | no | - | - |
-| `water-source:east-ardougne:5` | (2675, 3310) | Sink 1 | no | no | - | 1 Thieving |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:east-ardougne:0` | (2617, 3325) | (2617, 3325) | `{ x: 2617, z: 3325, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:east-ardougne:1` | (2628, 3324) | (2628, 3324) | `{ x: 2628, z: 3324, radius: 3 }` | Sink 1 | no | no | - | the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) or Tribal Totem done |
+| `water-source:east-ardougne:2` | (2629, 3311) | (2629, 3311) | `{ x: 2629, z: 3311, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:east-ardougne:3` | (2640, 3311) | (2640, 3311) | `{ x: 2640, z: 3311, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:east-ardougne:4` | (2658, 3273) | (2658, 3273) | `{ x: 2658, z: 3273, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:east-ardougne:5` | (2675, 3310) | (2675, 3310) | `{ x: 2675, z: 3310, radius: 3 }` | Sink 1 | no | no | - | 1 Thieving |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:east-ardougne:0` | (2617, 3309) | Altar 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:east-ardougne:0` | (2617, 3309) | (2617, 3309) | `{ x: 2617, z: 3309, radius: 3 }` | Altar 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:east-ardougne:0` | (2560, 3262) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:east-ardougne:1` | (2561, 3287) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:2` | (2561, 3325) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:3` | (2567, 3342) | [oak](../resources/tree/oak.md) 4 | no | no | - | - |
-| `tree:east-ardougne:4` | (2593, 3259) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:5` | (2582, 3274) | [oak](../resources/tree/oak.md) 3 | no | no | - | - |
-| `tree:east-ardougne:6` | (2601, 3317) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:east-ardougne:7` | (2592, 3345) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:east-ardougne:8` | (2606, 3341) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:9` | (2632, 3273) | [normal](../resources/tree/normal.md) 17, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
-| `tree:east-ardougne:10` | (2631, 3337) | [normal](../resources/tree/normal.md) 10, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:11` | (2629, 3299) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:east-ardougne:12` | (2646, 3313) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:east-ardougne:13` | (2672, 3329) | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 17 | no | no | - | - |
-| `tree:east-ardougne:14` | (2663, 3287) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:east-ardougne:0` | (2560, 3262) | (2560, 3262) | `{ x: 2560, z: 3262, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:east-ardougne:1` | (2561, 3287) | x 2560-2563, z 3281-3295 | `{ x: 2562, z: 3288, radius: 11 }` | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:2` | (2561, 3325) | (2561, 3325) | `{ x: 2561, z: 3325, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:3` | (2567, 3342) | x 2563-2573, z 3339-3344 | `{ x: 2568, z: 3342, radius: 9 }` | [oak](../resources/tree/oak.md) 4 | no | no | - | - |
+| `tree:east-ardougne:4` | (2593, 3259) | x 2578-2609, z 3255-3262 | `{ x: 2594, z: 3259, radius: 20 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:5` | (2582, 3274) | x 2581-2583, z 3270-3278 | `{ x: 2582, z: 3274, radius: 8 }` | [oak](../resources/tree/oak.md) 3 | no | no | - | - |
+| `tree:east-ardougne:6` | (2601, 3317) | x 2588-2605, z 3302-3327 | `{ x: 2597, z: 3315, radius: 19 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:east-ardougne:7` | (2592, 3345) | (2592, 3345) | `{ x: 2592, z: 3345, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:east-ardougne:8` | (2606, 3341) | x 2604-2607, z 3338-3343 | `{ x: 2606, z: 3341, radius: 7 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:9` | (2632, 3273) | x 2618-2640, z 3257-3286 | `{ x: 2629, z: 3272, radius: 22 }` | [normal](../resources/tree/normal.md) 17, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
+| `tree:east-ardougne:10` | (2631, 3337) | x 2624-2638, z 3331-3345 | `{ x: 2631, z: 3338, radius: 13 }` | [normal](../resources/tree/normal.md) 10, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:11` | (2629, 3299) | x 2625-2633, z 3294-3303 | `{ x: 2629, z: 3299, radius: 10 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:east-ardougne:12` | (2646, 3313) | x 2644-2648, z 3309-3317 | `{ x: 2646, z: 3313, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:east-ardougne:13` | (2672, 3329) | x 2649-2686, z 3286-3345 | `{ x: 2668, z: 3316, radius: 39 }` | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 17 | no | no | - | - |
+| `tree:east-ardougne:14` | (2663, 3287) | (2663, 3287) | `{ x: 2663, z: 3287, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Stalls
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `stall:east-ardougne:0` | (2660, 3312) | [Baker's stall](../resources/stall/bakers_stall_stealing.md) 2, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Silver stall](../resources/stall/silver_stall_stealing.md) 1 | no | no | - | - |
-| `stall:east-ardougne:1` | (2659, 3298) | [Fur stall](../resources/stall/fur_stall_stealing.md) 1, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Spice stall](../resources/stall/spice_stall_stealing.md) 1 | no | no | - | - |
-| `stall:east-ardougne:2` | (2667, 3303) | [Gem stall](../resources/stall/gem_stall_stealing.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `stall:east-ardougne:0` | (2660, 3312) | x 2655-2667, z 3310-3314 | `{ x: 2661, z: 3312, radius: 10 }` | [Baker's stall](../resources/stall/bakers_stall_stealing.md) 2, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Silver stall](../resources/stall/silver_stall_stealing.md) 1 | no | no | - | - |
+| `stall:east-ardougne:1` | (2659, 3298) | x 2656-2663, z 3296-3302 | `{ x: 2660, z: 3299, radius: 8 }` | [Fur stall](../resources/stall/fur_stall_stealing.md) 1, [Silk stall](../resources/stall/silk_stall_stealing.md) 1, [Spice stall](../resources/stall/spice_stall_stealing.md) 1 | no | no | - | - |
+| `stall:east-ardougne:2` | (2667, 3303) | (2667, 3303) | `{ x: 2667, z: 3303, radius: 3 }` | [Gem stall](../resources/stall/gem_stall_stealing.md) 1 | no | no | - | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `thieving-chest:east-ardougne:0` | (2588, 3291) L1 | [chest_ardougne_castle](../resources/thieving-chest/chest_ardougne_castle.md) 1 | no | no | - | 61 Thieving |
-| `thieving-chest:east-ardougne:1` | (2588, 3302) L1 | [chest_ardougne_castle](../resources/thieving-chest/chest_ardougne_castle.md) 1 | no | no | - | 61 Thieving |
-| `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | 13 Thieving |
-| `thieving-chest:east-ardougne:3` | (2671, 3300) L1 | [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | 16 Thieving |
-| `thieving-chest:east-ardougne:4` | (2673, 3307) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - | 1 Thieving |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `thieving-chest:east-ardougne:0` | (2588, 3291) L1 | (2588, 3291) L1 | `{ x: 2588, z: 3291, radius: 3, level: 1 }` | [chest_ardougne_castle](../resources/thieving-chest/chest_ardougne_castle.md) 1 | no | no | - | 61 Thieving |
+| `thieving-chest:east-ardougne:1` | (2588, 3302) L1 | (2588, 3302) L1 | `{ x: 2588, z: 3302, radius: 3, level: 1 }` | [chest_ardougne_castle](../resources/thieving-chest/chest_ardougne_castle.md) 1 | no | no | - | 61 Thieving |
+| `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | x 2612-2614, z 3314 L1 | `{ x: 2613, z: 3314, radius: 4, level: 1 }` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | 13 Thieving |
+| `thieving-chest:east-ardougne:3` | (2671, 3300) L1 | x 2671, z 3299-3301 L1 | `{ x: 2671, z: 3300, radius: 4, level: 1 }` | [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | 16 Thieving |
+| `thieving-chest:east-ardougne:4` | (2673, 3307) | (2673, 3307) | `{ x: 2673, z: 3307, radius: 3 }` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - | 1 Thieving |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:east-ardougne:0` | (2580, 3298) | [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 1, [Paladin](../resources/pickpocket/paladin.md) 7, [Warrior woman](../resources/pickpocket/warrior_woman.md) 3 | no | no | - | - |
-| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | [Paladin](../resources/pickpocket/paladin.md) 8 | no | no | - | - |
-| `pickpocket:east-ardougne:2` | (2573, 3322) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
-| `pickpocket:east-ardougne:3` | (2584, 3304) L1 | [Paladin](../resources/pickpocket/paladin.md) 5 | no | no | - | 61 Thieving |
-| `pickpocket:east-ardougne:4` | (2613, 3317) | [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
-| `pickpocket:east-ardougne:5` | (2628, 3294) | [Hero](../resources/pickpocket/hero.md) 1, [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | no | no | - | - |
-| `pickpocket:east-ardougne:6` | (2621, 3293) L1 | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
-| `pickpocket:east-ardougne:7` | (2636, 3339) | [Guard](../resources/pickpocket/ardougne_guard.md) 3 | no | no | - | - |
-| `pickpocket:east-ardougne:8` | (2659, 3308) | [Guard](../resources/pickpocket/ardougne_guard.md) 7, [Hero](../resources/pickpocket/hero.md) 2, [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 4, [Paladin](../resources/pickpocket/paladin.md) 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:east-ardougne:0` | (2580, 3298) | x 2571-2587, z 3286-3308 | x 2556-2602, z 3271-3323 | `{ x: 2579, z: 3297, radius: 38 }` | [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 1, [Paladin](../resources/pickpocket/paladin.md) 7, [Warrior woman](../resources/pickpocket/warrior_woman.md) 3 | no | no | - | - |
+| `pickpocket:east-ardougne:1` | (2581, 3289) L1 | x 2572-2587, z 3285-3293 L1 | x 2570-2589, z 3283-3295 L1 | `{ x: 2580, z: 3289, radius: 15, level: 1 }` | [Paladin](../resources/pickpocket/paladin.md) 8 | no | no | - | - |
+| `pickpocket:east-ardougne:2` | (2573, 3322) L1 | (2573, 3322) L1 | x 2568-2578, z 3317-3327 L1 | `{ x: 2573, z: 3322, radius: 11, level: 1 }` | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
+| `pickpocket:east-ardougne:3` | (2584, 3304) L1 | x 2581-2588, z 3301-3307 L1 | x 2579-2590, z 3299-3309 L1 | `{ x: 2585, z: 3304, radius: 11, level: 1 }` | [Paladin](../resources/pickpocket/paladin.md) 5 | no | no | - | 61 Thieving |
+| `pickpocket:east-ardougne:4` | (2613, 3317) | x 2612-2614, z 3316-3318 | x 2607-2619, z 3311-3323 | `{ x: 2613, z: 3317, radius: 12 }` | [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
+| `pickpocket:east-ardougne:5` | (2628, 3294) | x 2621-2632, z 3288-3299 | x 2616-2637, z 3283-3304 | `{ x: 2627, z: 3294, radius: 19 }` | [Hero](../resources/pickpocket/hero.md) 1, [Man](../resources/pickpocket/ardougnian_male1.md) 1, [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | no | no | - | - |
+| `pickpocket:east-ardougne:6` | (2621, 3293) L1 | (2621, 3293) L1 | x 2616-2626, z 3288-3298 L1 | `{ x: 2621, z: 3293, radius: 11, level: 1 }` | [Woman](../resources/pickpocket/ardougnian_female1.md) 1 | no | no | - | - |
+| `pickpocket:east-ardougne:7` | (2636, 3339) | x 2635-2637, z 3339-3340 | x 2630-2642, z 3334-3345 | `{ x: 2636, z: 3340, radius: 12 }` | [Guard](../resources/pickpocket/ardougne_guard.md) 3 | no | no | - | - |
+| `pickpocket:east-ardougne:8` | (2659, 3308) | x 2647-2671, z 3298-3318 | x 2632-2686, z 3283-3333 | `{ x: 2659, z: 3308, radius: 40 }` | [Guard](../resources/pickpocket/ardougne_guard.md) 7, [Hero](../resources/pickpocket/hero.md) 2, [Knight of Ardougne](../resources/pickpocket/knight_of_ardougne.md) 4, [Paladin](../resources/pickpocket/paladin.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:east-ardougne:0` | (2572, 3284) L2 | Archer 1 | no | no | - | - |
-| `npc:east-ardougne:1` | (2572, 3309) L2 | Archer 1 | no | no | - | - |
-| `npc:east-ardougne:2` | (2585, 3287) L2 | Archer 2 | no | no | - | unreached |
-| `npc:east-ardougne:3` | (2585, 3306) L2 | Archer 2 | no | no | - | unreached |
-| `npc:east-ardougne:4` | (2601, 3269) | Pit Scorpion 1 | no | no | - | - |
-| `npc:east-ardougne:5` | (2664, 3342) | Cow 5 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:east-ardougne:0` | (2572, 3284) L2 | (2572, 3284) L2 | x 2562-2582, z 3274-3294 L2 | `{ x: 2572, z: 3284, radius: 18, level: 2 }` | Archer 1 | no | no | - | - |
+| `npc:east-ardougne:1` | (2572, 3309) L2 | (2572, 3309) L2 | x 2562-2582, z 3299-3319 L2 | `{ x: 2572, z: 3309, radius: 18, level: 2 }` | Archer 1 | no | no | - | - |
+| `npc:east-ardougne:2` | (2585, 3287) L2 | x 2582-2588, z 3284-3290 L2 | x 2572-2598, z 3274-3300 L2 | `{ x: 2585, z: 3287, radius: 22, level: 2 }` | Archer 2 | no | no | - | unreached |
+| `npc:east-ardougne:3` | (2585, 3306) L2 | x 2582-2588, z 3303-3309 L2 | x 2572-2598, z 3293-3319 L2 | `{ x: 2585, z: 3306, radius: 22, level: 2 }` | Archer 2 | no | no | - | unreached |
+| `npc:east-ardougne:4` | (2601, 3269) | (2601, 3269) | x 2597-2605, z 3265-3273 | `{ x: 2601, z: 3269, radius: 9 }` | Pit Scorpion 1 | no | no | - | - |
+| `npc:east-ardougne:5` | (2664, 3342) | x 2657-2671, z 3341-3344 | x 2652-2676, z 3336-3349 | `{ x: 2664, z: 3343, radius: 17 }` | Cow 5 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:east-ardougne:0` | (2566, 3322) | Staircase 1 | up (2566, 3321) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:1` | (2566, 3322) L1 | Staircase 1 | down (2565, 3322) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:2` | (2568, 3268) | Staircase 1 | up (2568, 3267) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:3` | (2568, 3268) L1 | Staircase 1 | down (2568, 3271) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:4` | (2570, 3267) | Ladder 1 | down (2570, 9668) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:5` | (2571, 3288) L1 | Ladder 1 | up (2572, 3288) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:6` | (2571, 3288) L2 | Ladder 1 | down (2572, 3288) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:7` | (2571, 3291) L1 | Ladder 1 | up (2572, 3291) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:8` | (2571, 3291) L2 | Ladder 1 | down (2572, 3291) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:9` | (2571, 3295) | Staircase 1 | up (2571, 3294) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:10` | (2571, 3295) L1 | Staircase 1 | down (2571, 3298) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:11` | (2571, 3302) L1 | Ladder 1 | up (2572, 3302) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:12` | (2571, 3302) L2 | Ladder 1 | down (2572, 3302) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:13` | (2571, 3305) L1 | Ladder 1 | up (2572, 3305) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:14` | (2571, 3305) L2 | Ladder 1 | down (2572, 3305) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:15` | (2572, 3325) | Staircase 1 | up (2574, 3325) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:16` | (2573, 3271) L1 | Ladder 1 | up (2572, 3271) L2 by Climb-up | no | no | - | unreached |
-| `connector:east-ardougne:17` | (2573, 3271) L2 | Ladder 1 | down (2572, 3271) L1 by Climb-down | no | no | - | unreached |
-| `connector:east-ardougne:18` | (2573, 3325) L1 | Staircase 1 | down (2573, 3324) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:19` | (2575, 3331) | Staircase 1 | up (2578, 3331) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:20` | (2576, 3331) L1 | Staircase 1 | down (2574, 3331) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:21` | (2591, 3334) | Staircase 1 | up (2594, 3334) L1 by Climb-up | no | no | - | Plague City done |
-| `connector:east-ardougne:22` | (2592, 3334) L1 | Staircase 1 | down (2590, 3334) by Climb-down | no | no | - | Plague City done |
-| `connector:east-ardougne:23` | (2610, 3306) | Ladder 1 | up (2609, 3306) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:24` | (2610, 3306) L1 | Ladder 1 | down (2609, 3306) by Climb or Climb-down; up (2609, 3306) L2 by Climb or Climb-up | no | no | - | - |
-| `connector:east-ardougne:25` | (2610, 3306) L2 | Ladder 1 | down (2609, 3306) L1 by Climb or Climb-down; up (2609, 3306) L3 by Climb or Climb-up | no | no | - | - |
-| `connector:east-ardougne:26` | (2610, 3306) L3 | Ladder 1 | down (2609, 3306) L2 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:27` | (2617, 3315) | Ladder 1 | up (2616, 3315) L1 by Climb-up | no | no | - | 13 Thieving |
-| `connector:east-ardougne:28` | (2617, 3315) L1 | Ladder 1 | down (2616, 3315) by Climb-down | no | no | - | 13 Thieving |
-| `connector:east-ardougne:29` | (2617, 3323) | Ladder 1 | up (2616, 3323) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:30` | (2617, 3323) L1 | Ladder 1 | down (2616, 3323) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:31` | (2622, 3292) | Ladder 1 | up (2621, 3292) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:32` | (2622, 3292) L1 | Ladder 1 | down (2621, 3292) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:33` | (2631, 3322) L1 | Staircase 1 | down (2631, 3325) by Climb-down | no | no | - | Tribal Totem done or the trap on the stairs found (searching them, oploc2, sets bit 21 of %handelmort_traps_disabled, quests/quest_totem/scripts/quest_totem.rs2:130) + the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) + 21 Thieving |
-| `connector:east-ardougne:34` | (2632, 3294) | Manhole 1 | down (2631, 9694) by Open, then Climb down | no | no | - | - |
-| `connector:east-ardougne:35` | (2646, 3302) | Staircase 1 | up (2648, 3301) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:36` | (2647, 3302) L1 | Staircase 1 | down (2645, 3302) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:37` | (2648, 3294) | Staircase 1 | up (2649, 3296) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:38` | (2648, 3295) L1 | Staircase 1 | down (2648, 3293) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:39` | (2648, 3310) | Staircase 1 | up (2649, 3312) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:40` | (2649, 3281) L1 | Ladder 1 | up (2649, 3282) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:41` | (2649, 3281) L2 | Ladder 1 | down (2649, 3282) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:42` | (2649, 3286) L1 | Ladder 1 | up (2649, 3287) L2 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:43` | (2649, 3286) L2 | Ladder 1 | down (2649, 3287) L1 by Climb-down | no | no | - | - |
-| `connector:east-ardougne:44` | (2649, 3311) L1 | Staircase 1 | down (2650, 3311) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:45` | (2650, 3281) | Ladder 1 | up (2650, 3280) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:46` | (2650, 3281) L1 | Ladder 1 | down (2650, 3280) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:47` | (2650, 3286) | Ladder 1 | up (2650, 3285) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:48` | (2650, 3286) L1 | Ladder 1 | down (2650, 3285) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:49` | (2655, 3322) | Ladder 1 | up (2655, 3321) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:50` | (2655, 3322) L1 | Ladder 1 | down (2655, 3321) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:51` | (2662, 3291) L1 | Staircase 1 | down (2662, 3294) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:52` | (2662, 3293) | Staircase 1 | up (2661, 3291) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:53` | (2662, 3321) | Staircase 1 | up (2665, 3321) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:54` | (2663, 3321) L1 | Staircase 1 | down (2661, 3321) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:55` | (2665, 3290) | Ladder 1 | up (2665, 3291) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:56` | (2665, 3290) L1 | Ladder 1 | down (2665, 3291) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:57` | (2673, 3300) | Staircase 1 | up (2675, 3300) L1 by Climb-up | no | no | - | 16 Thieving |
-| `connector:east-ardougne:58` | (2674, 3300) L1 | Staircase 1 | down (2674, 3299) by Climb-down | no | no | - | 16 Thieving |
-| `connector:east-ardougne:59` | (2674, 3309) | Ladder 1 | up (2673, 3309) L1 by Climb-up | no | no | - | 1 Thieving |
-| `connector:east-ardougne:60` | (2674, 3309) L1 | Ladder 1 | down (2673, 3309) by Climb-down | no | no | - | 1 Thieving |
-| `connector:east-ardougne:61` | (2682, 3267) | Ship's ladder 1 | up (2681, 3267) L1 by Climb-up | no | no | - | - |
-| `connector:east-ardougne:62` | (2682, 3267) L1 | Ship's ladder 1 | down (2681, 3267) by Climb-down | no | no | - | - |
-| `connector:east-ardougne:63` | (2683, 3269) L1 | Gangplank 1 | down (2683, 3271) by Cross | no | no | - | - |
-| `connector:east-ardougne:64` | (2683, 3270) | Gangplank 1 | up (2683, 3268) L1 by Cross | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:east-ardougne:0` | (2566, 3322) | (2566, 3322) | `{ x: 2566, z: 3322, radius: 3 }` | Staircase 1 | up (2566, 3321) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:1` | (2566, 3322) L1 | (2566, 3322) L1 | `{ x: 2566, z: 3322, radius: 3, level: 1 }` | Staircase 1 | down (2565, 3322) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:2` | (2568, 3268) | (2568, 3268) | `{ x: 2568, z: 3268, radius: 3 }` | Staircase 1 | up (2568, 3267) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:3` | (2568, 3268) L1 | (2568, 3268) L1 | `{ x: 2568, z: 3268, radius: 3, level: 1 }` | Staircase 1 | down (2568, 3271) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:4` | (2570, 3267) | (2570, 3267) | `{ x: 2570, z: 3267, radius: 3 }` | Ladder 1 | down (2570, 9668) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:5` | (2571, 3288) L1 | (2571, 3288) L1 | `{ x: 2571, z: 3288, radius: 3, level: 1 }` | Ladder 1 | up (2572, 3288) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:6` | (2571, 3288) L2 | (2571, 3288) L2 | `{ x: 2571, z: 3288, radius: 3, level: 2 }` | Ladder 1 | down (2572, 3288) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:7` | (2571, 3291) L1 | (2571, 3291) L1 | `{ x: 2571, z: 3291, radius: 3, level: 1 }` | Ladder 1 | up (2572, 3291) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:8` | (2571, 3291) L2 | (2571, 3291) L2 | `{ x: 2571, z: 3291, radius: 3, level: 2 }` | Ladder 1 | down (2572, 3291) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:9` | (2571, 3295) | (2571, 3295) | `{ x: 2571, z: 3295, radius: 3 }` | Staircase 1 | up (2571, 3294) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:10` | (2571, 3295) L1 | (2571, 3295) L1 | `{ x: 2571, z: 3295, radius: 3, level: 1 }` | Staircase 1 | down (2571, 3298) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:11` | (2571, 3302) L1 | (2571, 3302) L1 | `{ x: 2571, z: 3302, radius: 3, level: 1 }` | Ladder 1 | up (2572, 3302) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:12` | (2571, 3302) L2 | (2571, 3302) L2 | `{ x: 2571, z: 3302, radius: 3, level: 2 }` | Ladder 1 | down (2572, 3302) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:13` | (2571, 3305) L1 | (2571, 3305) L1 | `{ x: 2571, z: 3305, radius: 3, level: 1 }` | Ladder 1 | up (2572, 3305) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:14` | (2571, 3305) L2 | (2571, 3305) L2 | `{ x: 2571, z: 3305, radius: 3, level: 2 }` | Ladder 1 | down (2572, 3305) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:15` | (2572, 3325) | (2572, 3325) | `{ x: 2572, z: 3325, radius: 3 }` | Staircase 1 | up (2574, 3325) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:16` | (2573, 3271) L1 | (2573, 3271) L1 | `{ x: 2573, z: 3271, radius: 3, level: 1 }` | Ladder 1 | up (2572, 3271) L2 by Climb-up | no | no | - | unreached |
+| `connector:east-ardougne:17` | (2573, 3271) L2 | (2573, 3271) L2 | `{ x: 2573, z: 3271, radius: 3, level: 2 }` | Ladder 1 | down (2572, 3271) L1 by Climb-down | no | no | - | unreached |
+| `connector:east-ardougne:18` | (2573, 3325) L1 | (2573, 3325) L1 | `{ x: 2573, z: 3325, radius: 3, level: 1 }` | Staircase 1 | down (2573, 3324) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:19` | (2575, 3331) | (2575, 3331) | `{ x: 2575, z: 3331, radius: 3 }` | Staircase 1 | up (2578, 3331) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:20` | (2576, 3331) L1 | (2576, 3331) L1 | `{ x: 2576, z: 3331, radius: 3, level: 1 }` | Staircase 1 | down (2574, 3331) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:21` | (2591, 3334) | (2591, 3334) | `{ x: 2591, z: 3334, radius: 3 }` | Staircase 1 | up (2594, 3334) L1 by Climb-up | no | no | - | Plague City done |
+| `connector:east-ardougne:22` | (2592, 3334) L1 | (2592, 3334) L1 | `{ x: 2592, z: 3334, radius: 3, level: 1 }` | Staircase 1 | down (2590, 3334) by Climb-down | no | no | - | Plague City done |
+| `connector:east-ardougne:23` | (2610, 3306) | (2610, 3306) | `{ x: 2610, z: 3306, radius: 3 }` | Ladder 1 | up (2609, 3306) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:24` | (2610, 3306) L1 | (2610, 3306) L1 | `{ x: 2610, z: 3306, radius: 3, level: 1 }` | Ladder 1 | down (2609, 3306) by Climb or Climb-down; up (2609, 3306) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:east-ardougne:25` | (2610, 3306) L2 | (2610, 3306) L2 | `{ x: 2610, z: 3306, radius: 3, level: 2 }` | Ladder 1 | down (2609, 3306) L1 by Climb or Climb-down; up (2609, 3306) L3 by Climb or Climb-up | no | no | - | - |
+| `connector:east-ardougne:26` | (2610, 3306) L3 | (2610, 3306) L3 | `{ x: 2610, z: 3306, radius: 3, level: 3 }` | Ladder 1 | down (2609, 3306) L2 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:27` | (2617, 3315) | (2617, 3315) | `{ x: 2617, z: 3315, radius: 3 }` | Ladder 1 | up (2616, 3315) L1 by Climb-up | no | no | - | 13 Thieving |
+| `connector:east-ardougne:28` | (2617, 3315) L1 | (2617, 3315) L1 | `{ x: 2617, z: 3315, radius: 3, level: 1 }` | Ladder 1 | down (2616, 3315) by Climb-down | no | no | - | 13 Thieving |
+| `connector:east-ardougne:29` | (2617, 3323) | (2617, 3323) | `{ x: 2617, z: 3323, radius: 3 }` | Ladder 1 | up (2616, 3323) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:30` | (2617, 3323) L1 | (2617, 3323) L1 | `{ x: 2617, z: 3323, radius: 3, level: 1 }` | Ladder 1 | down (2616, 3323) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:31` | (2622, 3292) | (2622, 3292) | `{ x: 2622, z: 3292, radius: 3 }` | Ladder 1 | up (2621, 3292) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:32` | (2622, 3292) L1 | (2622, 3292) L1 | `{ x: 2622, z: 3292, radius: 3, level: 1 }` | Ladder 1 | down (2621, 3292) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:33` | (2631, 3322) L1 | (2631, 3322) L1 | `{ x: 2631, z: 3322, radius: 3, level: 1 }` | Staircase 1 | down (2631, 3325) by Climb-down | no | no | - | Tribal Totem done or the trap on the stairs found (searching them, oploc2, sets bit 21 of %handelmort_traps_disabled, quests/quest_totem/scripts/quest_totem.rs2:130) + the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) + 21 Thieving |
+| `connector:east-ardougne:34` | (2632, 3294) | (2632, 3294) | `{ x: 2632, z: 3294, radius: 3 }` | Manhole 1 | down (2631, 9694) by Open, then Climb down | no | no | - | - |
+| `connector:east-ardougne:35` | (2646, 3302) | (2646, 3302) | `{ x: 2646, z: 3302, radius: 3 }` | Staircase 1 | up (2648, 3301) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:36` | (2647, 3302) L1 | (2647, 3302) L1 | `{ x: 2647, z: 3302, radius: 3, level: 1 }` | Staircase 1 | down (2645, 3302) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:37` | (2648, 3294) | (2648, 3294) | `{ x: 2648, z: 3294, radius: 3 }` | Staircase 1 | up (2649, 3296) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:38` | (2648, 3295) L1 | (2648, 3295) L1 | `{ x: 2648, z: 3295, radius: 3, level: 1 }` | Staircase 1 | down (2648, 3293) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:39` | (2648, 3310) | (2648, 3310) | `{ x: 2648, z: 3310, radius: 3 }` | Staircase 1 | up (2649, 3312) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:40` | (2649, 3281) L1 | (2649, 3281) L1 | `{ x: 2649, z: 3281, radius: 3, level: 1 }` | Ladder 1 | up (2649, 3282) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:41` | (2649, 3281) L2 | (2649, 3281) L2 | `{ x: 2649, z: 3281, radius: 3, level: 2 }` | Ladder 1 | down (2649, 3282) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:42` | (2649, 3286) L1 | (2649, 3286) L1 | `{ x: 2649, z: 3286, radius: 3, level: 1 }` | Ladder 1 | up (2649, 3287) L2 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:43` | (2649, 3286) L2 | (2649, 3286) L2 | `{ x: 2649, z: 3286, radius: 3, level: 2 }` | Ladder 1 | down (2649, 3287) L1 by Climb-down | no | no | - | - |
+| `connector:east-ardougne:44` | (2649, 3311) L1 | (2649, 3311) L1 | `{ x: 2649, z: 3311, radius: 3, level: 1 }` | Staircase 1 | down (2650, 3311) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:45` | (2650, 3281) | (2650, 3281) | `{ x: 2650, z: 3281, radius: 3 }` | Ladder 1 | up (2650, 3280) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:46` | (2650, 3281) L1 | (2650, 3281) L1 | `{ x: 2650, z: 3281, radius: 3, level: 1 }` | Ladder 1 | down (2650, 3280) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:47` | (2650, 3286) | (2650, 3286) | `{ x: 2650, z: 3286, radius: 3 }` | Ladder 1 | up (2650, 3285) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:48` | (2650, 3286) L1 | (2650, 3286) L1 | `{ x: 2650, z: 3286, radius: 3, level: 1 }` | Ladder 1 | down (2650, 3285) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:49` | (2655, 3322) | (2655, 3322) | `{ x: 2655, z: 3322, radius: 3 }` | Ladder 1 | up (2655, 3321) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:50` | (2655, 3322) L1 | (2655, 3322) L1 | `{ x: 2655, z: 3322, radius: 3, level: 1 }` | Ladder 1 | down (2655, 3321) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:51` | (2662, 3291) L1 | (2662, 3291) L1 | `{ x: 2662, z: 3291, radius: 3, level: 1 }` | Staircase 1 | down (2662, 3294) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:52` | (2662, 3293) | (2662, 3293) | `{ x: 2662, z: 3293, radius: 3 }` | Staircase 1 | up (2661, 3291) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:53` | (2662, 3321) | (2662, 3321) | `{ x: 2662, z: 3321, radius: 3 }` | Staircase 1 | up (2665, 3321) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:54` | (2663, 3321) L1 | (2663, 3321) L1 | `{ x: 2663, z: 3321, radius: 3, level: 1 }` | Staircase 1 | down (2661, 3321) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:55` | (2665, 3290) | (2665, 3290) | `{ x: 2665, z: 3290, radius: 3 }` | Ladder 1 | up (2665, 3291) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:56` | (2665, 3290) L1 | (2665, 3290) L1 | `{ x: 2665, z: 3290, radius: 3, level: 1 }` | Ladder 1 | down (2665, 3291) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:57` | (2673, 3300) | (2673, 3300) | `{ x: 2673, z: 3300, radius: 3 }` | Staircase 1 | up (2675, 3300) L1 by Climb-up | no | no | - | 16 Thieving |
+| `connector:east-ardougne:58` | (2674, 3300) L1 | (2674, 3300) L1 | `{ x: 2674, z: 3300, radius: 3, level: 1 }` | Staircase 1 | down (2674, 3299) by Climb-down | no | no | - | 16 Thieving |
+| `connector:east-ardougne:59` | (2674, 3309) | (2674, 3309) | `{ x: 2674, z: 3309, radius: 3 }` | Ladder 1 | up (2673, 3309) L1 by Climb-up | no | no | - | 1 Thieving |
+| `connector:east-ardougne:60` | (2674, 3309) L1 | (2674, 3309) L1 | `{ x: 2674, z: 3309, radius: 3, level: 1 }` | Ladder 1 | down (2673, 3309) by Climb-down | no | no | - | 1 Thieving |
+| `connector:east-ardougne:61` | (2682, 3267) | (2682, 3267) | `{ x: 2682, z: 3267, radius: 3 }` | Ship's ladder 1 | up (2681, 3267) L1 by Climb-up | no | no | - | - |
+| `connector:east-ardougne:62` | (2682, 3267) L1 | (2682, 3267) L1 | `{ x: 2682, z: 3267, radius: 3, level: 1 }` | Ship's ladder 1 | down (2681, 3267) by Climb-down | no | no | - | - |
+| `connector:east-ardougne:63` | (2683, 3269) L1 | (2683, 3269) L1 | `{ x: 2683, z: 3269, radius: 3, level: 1 }` | Gangplank 1 | down (2683, 3271) by Cross | no | no | - | - |
+| `connector:east-ardougne:64` | (2683, 3270) | (2683, 3270) | `{ x: 2683, z: 3270, radius: 3 }` | Gangplank 1 | up (2683, 3268) L1 by Cross | no | no | - | - |
 
 ## Areas within
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Monastery (Asgarnia)](../places/monastery.md) | (3046, 3488) L1 | 1 | 3 | (3043, 3485)-(3049, 3491) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Monastery (Asgarnia)](../places/monastery.md) | (3046, 3488) L1 | (3046, 3488) L1 | 1 | 3 | x 3043-3049, z 3485-3491 L1 | 100 ticks | - | `{ x: 3046, z: 3488, radius: 8, level: 1 }` | yes |
 
 ## Interactions
 

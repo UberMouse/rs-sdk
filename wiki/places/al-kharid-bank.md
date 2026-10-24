@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:al-kharid-bank:0` | (3268, 3167) | Bank booth 5, Banker 5 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:al-kharid-bank:0` | (3268, 3167) | x 3267-3268, z 3164-3169 | `{ x: 3268, z: 3167, radius: 7 }` | Bank booth 5, Banker 5 | yes | yes | - | - |

@@ -3,31 +3,31 @@
 
 26 sites, 11 of them in F2P; 16 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 2 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Ape Atoll](../places/ape-atoll.md) | `altar:ape-atoll:0` | (2797, 2794) | (2798, 2793) | Gorilla Statue 1 | no | wear any mm greegree + Monkey Madness at stage 10 |
-| [Ape Atoll](../places/ape-atoll.md) | `altar:ape-atoll:1` | (2797, 2800) L1 | (2797, 2799) L1 | Gorilla Statue 1 | no | wear any mm greegree + Monkey Madness at stage 10 |
-| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:0` | (2932, 3513) | (2932, 3514) | Chaos altar 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:1` | (2991, 3177) | (2991, 3176) | Altar 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:2` | (3051, 3498) L1 | (3050, 3498) L1 | Altar 1 | yes | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
-| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | `altar:black-knights-fortress:0` | (3027, 3510) L1 | (3027, 3511) L1 | Chaos altar 1 | yes | - |
-| [Druids' Circle (Asgarnia)](../places/druids-circle.md) | `altar:druids-circle:0` | (2925, 3483) | (2924, 3483) | Altar of Guthix 1 | no | - |
-| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `altar:heros-guild:0` | (2889, 3510) L1 | (2889, 3509) L1 | Altar 1 | no | Hero's Quest done |
-| [Entrana](../places/entrana.md) | `altar:entrana:0` | (2853, 3348) | (2852, 3348) | Altar 1 | no | no weapons/armour (Entrana rule) |
-| [Kandarin](../places/kandarin.md) | `altar:kandarin:0` | (2454, 3231) | (2454, 3230) | Chaos altar 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `altar:kandarin:1` | (2606, 3208) | (2606, 3208) | Altar 2 | no | - |
-| [Kandarin](../places/kandarin.md) | `altar:kandarin:2` | (2749, 3496) L1 | (2749, 3497) L1 | Altar 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `altar:east-ardougne:0` | (2617, 3309) | (2616, 3309) | Altar 1 | no | - |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | `altar:seers-village:0` | (2694, 3462) | (2693, 3462) | Altar 1 | no | - |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `altar:west-ardougne:0` | (2529, 3286) | (2528, 3286) | Altar 1 | no | Biohazard done |
-| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | `altar:duel-arena:0` | (3376, 3285) | (3375, 3285) | Altar 1 | no | - |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `altar:lumbridge:0` | (3243, 3205) | (3242, 3205) | Altar 1 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `altar:varrock:0` | (3253, 3486) | (3252, 3486) | Altar 1 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `altar:varrock:1` | (3259, 3381) | (3259, 3380) | Chaos altar 1 | yes | - |
-| [Varrock Palace (Varrock)](../places/palace.md) | `altar:palace:0` | (3208, 3494) L1 | (3207, 3494) L1 | Altar 1 | yes | - |
-| [Temple (Morytania)](../places/temple.md) | `altar:temple:0` | (3416, 3488) | (3415, 3488) | Altar 1 | no | Priest in Peril at stage 4 |
-| [Tutorial Island](../places/tutorial-island.md) | `altar:tutorial-island:0` | (3121, 3106) | (3120, 3106) | Altar 1 | yes | unreached |
-| [Underground Pass](../places/underground-pass.md) | `altar:underground-pass:0` | (2341, 9629) | (2340, 9629) | Altar 1 | no | Regicide at stage 13 + 56 Agility |
-| [Underground Pass](../places/underground-pass.md) | `altar:underground-pass:1` | (2414, 9680) | (2413, 9680) | Chaos altar 1 | no | unreached |
-| [Wilderness](../places/wilderness.md) | `altar:wilderness:0` | (2947, 3820) | (2948, 3820) | Chaos altar 1 | yes | - |
-| [Chaos Temple (Wilderness)](../places/chaos-temple.md) | `altar:chaos-temple:0` | (3239, 3608) | (3238, 3608) | Chaos altar 1 | yes | - |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+|---|---|---|---|---|---|---|---|---|
+| [Ape Atoll](../places/ape-atoll.md) | `altar:ape-atoll:0` | (2797, 2794) | (2798, 2793) | (2797, 2794) | `{ x: 2797, z: 2794, radius: 3 }` | Gorilla Statue 1 | no | wear any mm greegree + Monkey Madness at stage 10 |
+| [Ape Atoll](../places/ape-atoll.md) | `altar:ape-atoll:1` | (2797, 2800) L1 | (2797, 2799) L1 | (2797, 2800) L1 | `{ x: 2797, z: 2800, radius: 3, level: 1 }` | Gorilla Statue 1 | no | wear any mm greegree + Monkey Madness at stage 10 |
+| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:0` | (2932, 3513) | (2932, 3514) | (2932, 3513) | `{ x: 2932, z: 3513, radius: 3 }` | Chaos altar 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:1` | (2991, 3177) | (2991, 3176) | (2991, 3177) | `{ x: 2991, z: 3177, radius: 3 }` | Altar 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `altar:asgarnia:2` | (3051, 3498) L1 | (3050, 3498) L1 | (3051, 3498) L1 | `{ x: 3051, z: 3498, radius: 3, level: 1 }` | Altar 1 | yes | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
+| [Black Knights' Fortress (Asgarnia)](../places/black-knights-fortress.md) | `altar:black-knights-fortress:0` | (3027, 3510) L1 | (3027, 3511) L1 | (3027, 3510) L1 | `{ x: 3027, z: 3510, radius: 3, level: 1 }` | Chaos altar 1 | yes | - |
+| [Druids' Circle (Asgarnia)](../places/druids-circle.md) | `altar:druids-circle:0` | (2925, 3483) | (2924, 3483) | (2925, 3483) | `{ x: 2925, z: 3483, radius: 3 }` | Altar of Guthix 1 | no | - |
+| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | `altar:heros-guild:0` | (2889, 3510) L1 | (2889, 3509) L1 | (2889, 3510) L1 | `{ x: 2889, z: 3510, radius: 3, level: 1 }` | Altar 1 | no | Hero's Quest done |
+| [Entrana](../places/entrana.md) | `altar:entrana:0` | (2853, 3348) | (2852, 3348) | (2853, 3348) | `{ x: 2853, z: 3348, radius: 3 }` | Altar 1 | no | no weapons/armour (Entrana rule) |
+| [Kandarin](../places/kandarin.md) | `altar:kandarin:0` | (2454, 3231) | (2454, 3230) | (2454, 3231) | `{ x: 2454, z: 3231, radius: 3 }` | Chaos altar 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `altar:kandarin:1` | (2606, 3208) | (2606, 3208) | x 2604-2607, z 3208 | `{ x: 2606, z: 3208, radius: 5 }` | Altar 2 | no | - |
+| [Kandarin](../places/kandarin.md) | `altar:kandarin:2` | (2749, 3496) L1 | (2749, 3497) L1 | (2749, 3496) L1 | `{ x: 2749, z: 3496, radius: 3, level: 1 }` | Altar 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `altar:east-ardougne:0` | (2617, 3309) | (2616, 3309) | (2617, 3309) | `{ x: 2617, z: 3309, radius: 3 }` | Altar 1 | no | - |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | `altar:seers-village:0` | (2694, 3462) | (2693, 3462) | (2694, 3462) | `{ x: 2694, z: 3462, radius: 3 }` | Altar 1 | no | - |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `altar:west-ardougne:0` | (2529, 3286) | (2528, 3286) | (2529, 3286) | `{ x: 2529, z: 3286, radius: 3 }` | Altar 1 | no | Biohazard done |
+| [Duel Arena (Kharidian Desert)](../places/duel-arena.md) | `altar:duel-arena:0` | (3376, 3285) | (3375, 3285) | (3376, 3285) | `{ x: 3376, z: 3285, radius: 3 }` | Altar 1 | no | - |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `altar:lumbridge:0` | (3243, 3205) | (3242, 3205) | (3243, 3205) | `{ x: 3243, z: 3205, radius: 3 }` | Altar 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `altar:varrock:0` | (3253, 3486) | (3252, 3486) | (3253, 3486) | `{ x: 3253, z: 3486, radius: 3 }` | Altar 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `altar:varrock:1` | (3259, 3381) | (3259, 3380) | (3259, 3381) | `{ x: 3259, z: 3381, radius: 3 }` | Chaos altar 1 | yes | - |
+| [Varrock Palace (Varrock)](../places/palace.md) | `altar:palace:0` | (3208, 3494) L1 | (3207, 3494) L1 | (3208, 3494) L1 | `{ x: 3208, z: 3494, radius: 3, level: 1 }` | Altar 1 | yes | - |
+| [Temple (Morytania)](../places/temple.md) | `altar:temple:0` | (3416, 3488) | (3415, 3488) | (3416, 3488) | `{ x: 3416, z: 3488, radius: 3 }` | Altar 1 | no | Priest in Peril at stage 4 |
+| [Tutorial Island](../places/tutorial-island.md) | `altar:tutorial-island:0` | (3121, 3106) | (3120, 3106) | (3121, 3106) | `{ x: 3121, z: 3106, radius: 3 }` | Altar 1 | yes | unreached |
+| [Underground Pass](../places/underground-pass.md) | `altar:underground-pass:0` | (2341, 9629) | (2340, 9629) | (2341, 9629) | `{ x: 2341, z: 9629, radius: 3 }` | Altar 1 | no | Regicide at stage 13 + 56 Agility |
+| [Underground Pass](../places/underground-pass.md) | `altar:underground-pass:1` | (2414, 9680) | (2413, 9680) | (2414, 9680) | `{ x: 2414, z: 9680, radius: 3 }` | Chaos altar 1 | no | unreached |
+| [Wilderness](../places/wilderness.md) | `altar:wilderness:0` | (2947, 3820) | (2948, 3820) | (2947, 3820) | `{ x: 2947, z: 3820, radius: 3 }` | Chaos altar 1 | yes | - |
+| [Chaos Temple (Wilderness)](../places/chaos-temple.md) | `altar:chaos-temple:0` | (3239, 3608) | (3238, 3608) | (3239, 3608) | `{ x: 3239, z: 3608, radius: 3 }` | Chaos altar 1 | yes | - |

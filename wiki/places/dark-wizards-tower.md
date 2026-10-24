@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:dark-wizards-tower:0` | (2910, 3336) | [normal](../resources/tree/normal.md) 53 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:dark-wizards-tower:0` | (2910, 3336) | x 2899-2918, z 3328-3347 | `{ x: 2909, z: 3338, radius: 18 }` | [normal](../resources/tree/normal.md) 53 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:dark-wizards-tower:0` | (2908, 3334) | Dark wizard (bearded_dark_wizard) 5, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
-| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
-| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:dark-wizards-tower:0` | (2908, 3334) | x 2905-2910, z 3331-3337 | x 2902-2913, z 3328-3340 | `{ x: 2908, z: 3334, radius: 12 }` | Dark wizard (bearded_dark_wizard) 5, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
+| `npc:dark-wizards-tower:1` | (2908, 3335) L1 | x 2906-2909, z 3333-3336 L1 | x 2903-2912, z 3330-3339 L1 | `{ x: 2908, z: 3335, radius: 11, level: 1 }` | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
+| `npc:dark-wizards-tower:2` | (2908, 3335) L2 | x 2906-2910, z 3332-3336 L2 | x 2903-2913, z 3329-3339 L2 | `{ x: 2908, z: 3334, radius: 11, level: 2 }` | Dark wizard (bearded_dark_wizard) 2, Dark wizard (young_dark_wizard) 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:dark-wizards-tower:0` | (2907, 3334) | Staircase 1 | up (2908, 3336) L1 by Climb-up | no | no | - | - |
-| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | Staircase 1 | down (2908, 3336) by Climb or Climb-down; up (2908, 3336) L2 by Climb or Climb-up | no | no | - | - |
-| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | Staircase 1 | down (2908, 3336) L1 by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:dark-wizards-tower:0` | (2907, 3334) | (2907, 3334) | `{ x: 2907, z: 3334, radius: 3 }` | Staircase 1 | up (2908, 3336) L1 by Climb-up | no | no | - | - |
+| `connector:dark-wizards-tower:1` | (2907, 3334) L1 | (2907, 3334) L1 | `{ x: 2907, z: 3334, radius: 3, level: 1 }` | Staircase 1 | down (2908, 3336) by Climb or Climb-down; up (2908, 3336) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:dark-wizards-tower:2` | (2908, 3335) L2 | (2908, 3335) L2 | `{ x: 2908, z: 3335, radius: 3, level: 2 }` | Staircase 1 | down (2908, 3336) L1 by Climb-down | no | no | - | - |

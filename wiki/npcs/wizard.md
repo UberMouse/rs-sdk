@@ -24,21 +24,21 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2010, 4712) | 2 | 5 | (2005, 4705)-(2015, 4719) | 60 ticks | - | no |
-| - | (3109, 9558) | 1 | 5 | (3104, 9553)-(3114, 9563) | 60 ticks | - | yes |
-| [Misthalin](../places/misthalin.md) | (3111, 3167) | 2 | 5 | (3106, 3161)-(3116, 3173) | 60 ticks | - | yes |
-| [Misthalin](../places/misthalin.md) | (3148, 3200) | 1 | 5 | (3143, 3195)-(3153, 3205) | 100 ticks | - | yes |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2589, 3084) | 1 | 5 | (2584, 3079)-(2594, 3089) | 60 ticks | - | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2593, 3084) L1 | 1 | 5 | (2588, 3079)-(2598, 3089) | 60 ticks | - | no |
-| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2588, 3087) L2 | 2 | 5 | (2581, 3080)-(2594, 3093) | 60 ticks | - | no |
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3109, 3158) | 2 | 5 | (3102, 3153)-(3115, 3163) | 60 ticks | - | yes |
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L1 | 2 | 5 | (3102, 3152)-(3117, 3162) | 60 ticks | - | yes |
-| [Yanille (Kandarin)](../places/yanille.md) | (2588, 3090) | 1 | 5 | (2583, 3085)-(2593, 3095) | 60 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2586, 3089) L1 | 1 | 5 | (2581, 3084)-(2591, 3094) | 60 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2595, 3090) L1 | 1 | 5 | (2590, 3085)-(2600, 3095) | 60 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2593, 3090) L2 | 1 | 5 | (2588, 3085)-(2598, 3095) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2010, 4712) | x 2010, z 4710-4714 | 2 | 5 | x 2005-2015, z 4705-4719 | 60 ticks | - | `{ x: 2010, z: 4712, radius: 12 }` | no |
+| - | (3109, 9558) | (3109, 9558) | 1 | 5 | x 3104-3114, z 9553-9563 | 60 ticks | - | `{ x: 3109, z: 9558, radius: 11 }` | yes |
+| [Misthalin](../places/misthalin.md) | (3111, 3167) | x 3111, z 3166-3168 | 2 | 5 | x 3106-3116, z 3161-3173 | 60 ticks | - | `{ x: 3111, z: 3167, radius: 11 }` | yes |
+| [Misthalin](../places/misthalin.md) | (3148, 3200) | (3148, 3200) | 1 | 5 | x 3143-3153, z 3195-3205 | 100 ticks | - | `{ x: 3148, z: 3200, radius: 11 }` | yes |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2589, 3084) | (2589, 3084) | 1 | 5 | x 2584-2594, z 3079-3089 | 60 ticks | - | `{ x: 2589, z: 3084, radius: 11 }` | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2593, 3084) L1 | (2593, 3084) L1 | 1 | 5 | x 2588-2598, z 3079-3089 L1 | 60 ticks | - | `{ x: 2593, z: 3084, radius: 11, level: 1 }` | no |
+| [Wizards' Guild (Yanille)](../places/wizards-guild.md) | (2588, 3087) L2 | x 2586-2589, z 3085-3088 L2 | 2 | 5 | x 2581-2594, z 3080-3093 L2 | 60 ticks | - | `{ x: 2588, z: 3087, radius: 13, level: 2 }` | no |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3109, 3158) | x 3107-3110, z 3158 | 2 | 5 | x 3102-3115, z 3153-3163 | 60 ticks | - | `{ x: 3109, z: 3158, radius: 12 }` | yes |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L1 | x 3107-3112, z 3157 L1 | 2 | 5 | x 3102-3117, z 3152-3162 L1 | 60 ticks | - | `{ x: 3110, z: 3157, radius: 13, level: 1 }` | yes |
+| [Yanille (Kandarin)](../places/yanille.md) | (2588, 3090) | (2588, 3090) | 1 | 5 | x 2583-2593, z 3085-3095 | 60 ticks | - | `{ x: 2588, z: 3090, radius: 11 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2586, 3089) L1 | (2586, 3089) L1 | 1 | 5 | x 2581-2591, z 3084-3094 L1 | 60 ticks | - | `{ x: 2586, z: 3089, radius: 11, level: 1 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2595, 3090) L1 | (2595, 3090) L1 | 1 | 5 | x 2590-2600, z 3085-3095 L1 | 60 ticks | - | `{ x: 2595, z: 3090, radius: 11, level: 1 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2593, 3090) L2 | (2593, 3090) L2 | 1 | 5 | x 2588-2598, z 3085-3095 L2 | 60 ticks | - | `{ x: 2593, z: 3090, radius: 11, level: 2 }` | no |
 
 ## Drops
 

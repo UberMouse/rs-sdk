@@ -3,79 +3,79 @@
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:entrana:0` | (2834, 3351) | Furnace 2 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:entrana:0` | (2834, 3351) | x 2833-2834, z 3350-3351 | `{ x: 2834, z: 3351, radius: 5 }` | Furnace 2 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:entrana:0` | (2822, 3351) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `range:entrana:1` | (2844, 3367) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `range:entrana:2` | (2856, 3334) | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:entrana:0` | (2822, 3351) | (2822, 3351) | `{ x: 2822, z: 3351, radius: 3 }` | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `range:entrana:1` | (2844, 3367) | (2844, 3367) | `{ x: 2844, z: 3367, radius: 3 }` | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `range:entrana:2` | (2856, 3334) | (2856, 3334) | `{ x: 2856, z: 3334, radius: 3 }` | Range 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Sand pits](../services/sand-pit.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `sand-pit:entrana:0` | (2816, 3341) | Sand pit 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `sand-pit:entrana:0` | (2816, 3341) | (2816, 3341) | `{ x: 2816, z: 3341, radius: 3 }` | Sand pit 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:entrana:0` | (2818, 3347) | Fountain 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:entrana:0` | (2818, 3347) | (2818, 3347) | `{ x: 2818, z: 3347, radius: 3 }` | Fountain 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:entrana:0` | (2853, 3348) | Altar 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:entrana:0` | (2853, 3348) | (2853, 3348) | `{ x: 2853, z: 3348, radius: 3 }` | Altar 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-ruins:entrana:0` | (2857, 3380) | law 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-ruins:entrana:0` | (2857, 3380) | (2857, 3380) | `{ x: 2857, z: 3380, radius: 3 }` | law 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:entrana:0` | (2842, 3372) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:1` | (2822, 3342) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:2` | (2851, 3332) | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:3` | (2860, 3347) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
-| `tree:entrana:4` | (2879, 3402) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:entrana:0` | (2842, 3372) | x 2816-2866, z 3338-3388 | `{ x: 2841, z: 3363, radius: 39 }` | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 16 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:1` | (2822, 3342) | x 2818-2824, z 3337-3349 | `{ x: 2821, z: 3343, radius: 10 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:2` | (2851, 3332) | (2851, 3332) | `{ x: 2851, z: 3332, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:3` | (2860, 3347) | x 2854-2864, z 3342-3352 | `{ x: 2859, z: 3347, radius: 11 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | no weapons/armour (Entrana rule) |
+| `tree:entrana:4` | (2879, 3402) | x 2874-2881, z 3397-3410 | `{ x: 2878, z: 3404, radius: 12 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:entrana:0` | (2844, 3358) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
-| `fishing-spot:entrana:1` | (2876, 3337) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:entrana:0` | (2844, 3358) | x 2840-2849, z 3356-3361 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
+| `fishing-spot:entrana:1` | (2876, 3337) | x 2875-2877, z 3331-3342 | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 4 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:entrana:0` | (2851, 3371) | Chicken 6 | no | no | - | no weapons/armour (Entrana rule) |
-| `npc:entrana:1` | (2847, 3386) | Entrana Fire Bird 1 | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:entrana:0` | (2851, 3371) | x 2846-2853, z 3368-3374 | x 2841-2858, z 3363-3379 | `{ x: 2850, z: 3371, radius: 16 }` | Chicken 6 | no | no | - | no weapons/armour (Entrana rule) |
+| `npc:entrana:1` | (2847, 3386) | (2847, 3386) | x 2832-2862, z 3371-3401 | `{ x: 2847, z: 3386, radius: 25 }` | Entrana Fire Bird 1 | no | no | - | no weapons/armour (Entrana rule) |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:entrana:0` | (2816, 3352) | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:1` | (2816, 3352) L1 | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:2` | (2829, 3330) | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:3` | (2829, 3330) L1 | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:4` | (2834, 3333) L1 | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:5` | (2834, 3334) | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:6` | (2835, 3328) L1 | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:7` | (2835, 3328) L2 | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:8` | (2835, 3332) L1 | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:9` | (2835, 3332) L2 | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:10` | (2857, 3346) | Ladder 1 | up (2856, 3346) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
-| `connector:entrana:11` | (2857, 3346) L1 | Ladder 1 | down (2856, 3346) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:entrana:0` | (2816, 3352) | (2816, 3352) | `{ x: 2816, z: 3352, radius: 3 }` | Ladder 1 | up (2817, 3352) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:1` | (2816, 3352) L1 | (2816, 3352) L1 | `{ x: 2816, z: 3352, radius: 3, level: 1 }` | Ladder 1 | down (2817, 3352) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:2` | (2829, 3330) | (2829, 3330) | `{ x: 2829, z: 3330, radius: 3 }` | Ship's ladder 1 | up (2830, 3330) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:3` | (2829, 3330) L1 | (2829, 3330) L1 | `{ x: 2829, z: 3330, radius: 3, level: 1 }` | Ship's ladder 1 | down (2830, 3330) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:4` | (2834, 3333) L1 | (2834, 3333) L1 | `{ x: 2834, z: 3333, radius: 3, level: 1 }` | Gangplank 1 | down (2834, 3335) by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:5` | (2834, 3334) | (2834, 3334) | `{ x: 2834, z: 3334, radius: 3 }` | Gangplank 1 | up (2834, 3332) L1 by Cross | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:6` | (2835, 3328) L1 | (2835, 3328) L1 | `{ x: 2835, z: 3328, radius: 3, level: 1 }` | Ship's ladder 1 | up (2836, 3328) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:7` | (2835, 3328) L2 | (2835, 3328) L2 | `{ x: 2835, z: 3328, radius: 3, level: 2 }` | Ship's ladder 1 | down (2834, 3328) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:8` | (2835, 3332) L1 | (2835, 3332) L1 | `{ x: 2835, z: 3332, radius: 3, level: 1 }` | Ship's ladder 1 | up (2836, 3332) L2 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:9` | (2835, 3332) L2 | (2835, 3332) L2 | `{ x: 2835, z: 3332, radius: 3, level: 2 }` | Ship's ladder 1 | down (2834, 3332) L1 by Climb-down | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:10` | (2857, 3346) | (2857, 3346) | `{ x: 2857, z: 3346, radius: 3 }` | Ladder 1 | up (2856, 3346) L1 by Climb-up | no | no | - | no weapons/armour (Entrana rule) |
+| `connector:entrana:11` | (2857, 3346) L1 | (2857, 3346) L1 | `{ x: 2857, z: 3346, radius: 3, level: 1 }` | Ladder 1 | down (2856, 3346) by Climb-down | no | no | - | no weapons/armour (Entrana rule) |

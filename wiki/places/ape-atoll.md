@@ -5,97 +5,97 @@ Marim and the Monkey Madness jungle (quests/quest_mm npcs). Reached by Monkey Ma
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:ape-atoll:0` | (2757, 2773) | Daga's Scimitar Smithy (mm_scimitar_shop) 1, Ifaba's General Store (mm_general_shop) 1, Ifaba's General Store (mm_magic_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `shop:ape-atoll:1` | (2769, 2789) | Solihib's Food Stall (mm_food_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `shop:ape-atoll:2` | (2781, 2793) | Hamab's Crafting Emporium (mm_crafting_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:ape-atoll:0` | (2757, 2773) | x 2754-2759, z 2770-2775 | x 2753-2760, z 2769-2776 | `{ x: 2757, z: 2773, radius: 9 }` | Daga's Scimitar Smithy (mm_scimitar_shop) 1, Ifaba's General Store (mm_general_shop) 1, Ifaba's General Store (mm_magic_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `shop:ape-atoll:1` | (2769, 2789) | (2769, 2789) | x 2768-2770, z 2788-2790 | `{ x: 2769, z: 2789, radius: 5 }` | Solihib's Food Stall (mm_food_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `shop:ape-atoll:2` | (2781, 2793) | (2781, 2793) | x 2780-2782, z 2792-2794 | `{ x: 2781, z: 2793, radius: 5 }` | Hamab's Crafting Emporium (mm_crafting_shop) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:ape-atoll:0` | (2797, 2794) | Gorilla Statue 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `altar:ape-atoll:1` | (2797, 2800) L1 | Gorilla Statue 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:ape-atoll:0` | (2797, 2794) | (2797, 2794) | `{ x: 2797, z: 2794, radius: 3 }` | Gorilla Statue 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `altar:ape-atoll:1` | (2797, 2800) L1 | (2797, 2800) L1 | `{ x: 2797, z: 2800, radius: 3, level: 1 }` | Gorilla Statue 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:ape-atoll:0` | (2696, 2741) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:1` | (2705, 2726) | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:2` | (2698, 2772) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:3` | (2707, 2759) | [normal](../resources/tree/normal.md) 3 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:4` | (2707, 2797) | [normal](../resources/tree/normal.md) 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:5` | (2722, 2708) | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:6` | (2720, 2801) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:7` | (2722, 2745) | [normal](../resources/tree/normal.md) 1 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:8` | (2730, 2721) | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:9` | (2742, 2759) | [normal](../resources/tree/normal.md) 6 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:10` | (2739, 2727) | [normal](../resources/tree/normal.md) 1 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:11` | (2739, 2783) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:12` | (2740, 2807) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:13` | (2758, 2716) | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:14` | (2754, 2701) | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:15` | (2759, 2793) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:16` | (2760, 2754) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:17` | (2761, 2729) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:18` | (2762, 2778) | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:19` | (2779, 2701) | [normal](../resources/tree/normal.md) 4 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:20` | (2791, 2762) | [normal](../resources/tree/normal.md) 16 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:21` | (2793, 2799) | [normal](../resources/tree/normal.md) 6 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `tree:ape-atoll:22` | (2798, 2697) | [normal](../resources/tree/normal.md) 4 | no | yes | - | Monkey Madness at stage 10 |
-| `tree:ape-atoll:23` | (2805, 2717) | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:ape-atoll:0` | (2696, 2741) | (2696, 2741) | `{ x: 2696, z: 2741, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:1` | (2705, 2726) | x 2698-2711, z 2720-2728 | `{ x: 2705, z: 2724, radius: 12 }` | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:2` | (2698, 2772) | (2698, 2772) | `{ x: 2698, z: 2772, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:3` | (2707, 2759) | x 2704-2712, z 2753-2763 | `{ x: 2708, z: 2758, radius: 10 }` | [normal](../resources/tree/normal.md) 3 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:4` | (2707, 2797) | x 2704-2709, z 2795-2798 | `{ x: 2707, z: 2797, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:5` | (2722, 2708) | x 2720-2724, z 2704-2711 | `{ x: 2722, z: 2708, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:6` | (2720, 2801) | (2720, 2801) | `{ x: 2720, z: 2801, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:7` | (2722, 2745) | (2722, 2745) | `{ x: 2722, z: 2745, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:8` | (2730, 2721) | x 2729-2730, z 2717-2724 | `{ x: 2730, z: 2721, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:9` | (2742, 2759) | x 2737-2747, z 2753-2763 | `{ x: 2742, z: 2758, radius: 11 }` | [normal](../resources/tree/normal.md) 6 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:10` | (2739, 2727) | (2739, 2727) | `{ x: 2739, z: 2727, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:11` | (2739, 2783) | (2739, 2783) | `{ x: 2739, z: 2783, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:12` | (2740, 2807) | (2740, 2807) | `{ x: 2740, z: 2807, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:13` | (2758, 2716) | x 2751-2763, z 2710-2720 | `{ x: 2757, z: 2715, radius: 11 }` | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:14` | (2754, 2701) | x 2752-2755, z 2700-2701 | `{ x: 2754, z: 2701, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:15` | (2759, 2793) | (2759, 2793) | `{ x: 2759, z: 2793, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:16` | (2760, 2754) | (2760, 2754) | `{ x: 2760, z: 2754, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:17` | (2761, 2729) | (2761, 2729) | `{ x: 2761, z: 2729, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:18` | (2762, 2778) | (2762, 2778) | `{ x: 2762, z: 2778, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:19` | (2779, 2701) | x 2772-2783, z 2695-2707 | `{ x: 2778, z: 2701, radius: 12 }` | [normal](../resources/tree/normal.md) 4 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:20` | (2791, 2762) | x 2772-2808, z 2749-2779 | `{ x: 2790, z: 2764, radius: 27 }` | [normal](../resources/tree/normal.md) 16 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:21` | (2793, 2799) | x 2785-2802, z 2790-2806 | `{ x: 2794, z: 2798, radius: 16 }` | [normal](../resources/tree/normal.md) 6 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `tree:ape-atoll:22` | (2798, 2697) | x 2792-2803, z 2692-2700 | `{ x: 2798, z: 2696, radius: 11 }` | [normal](../resources/tree/normal.md) 4 | no | yes | - | Monkey Madness at stage 10 |
+| `tree:ape-atoll:23` | (2805, 2717) | x 2796-2810, z 2709-2723 | `{ x: 2803, z: 2716, radius: 13 }` | [normal](../resources/tree/normal.md) 5 | no | yes | - | Monkey Madness at stage 10 |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:ape-atoll:0` | (2694, 2706) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - | Monkey Madness at stage 10 |
-| `fishing-spot:ape-atoll:1` | (2780, 2741) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:ape-atoll:0` | (2694, 2706) | (2694, 2706) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - | Monkey Madness at stage 10 |
+| `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2741) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ape-atoll:0` | (2702, 2780) | Jungle spider 2, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:1` | (2701, 2762) | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:2` | (2704, 2769) | Jungle spider 1, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:3` | (2715, 2782) | Jungle spider 1, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:4` | (2716, 2721) | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:5` | (2721, 2729) | Jungle spider 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:6` | (2724, 2789) | Jungle spider 1, Snake 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:7` | (2729, 2713) | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:8` | (2731, 2724) | Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:9` | (2734, 2792) L1 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:10` | (2739, 2722) | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:11` | (2742, 2707) | Jungle spider 2, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:12` | (2753, 2708) | Jungle spider 2, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:13` | (2749, 2768) L2 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:14` | (2752, 2762) | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:15` | (2752, 2798) L2 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:16` | (2753, 2799) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:17` | (2756, 2716) | Jungle spider 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:18` | (2757, 2788) | Padulah 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:19` | (2761, 2770) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:20` | (2761, 2803) | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:21` | (2762, 2749) | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:22` | (2771, 2707) | Jungle spider 3, Snake 2 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:23` | (2771, 2764) | Scorpion 2, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:24` | (2767, 2765) L1 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:25` | (2767, 2794) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:26` | (2771, 2737) | Scorpion 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:27` | (2769, 2798) L1 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:28` | (2769, 2806) | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:29` | (2775, 2777) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:30` | (2778, 2768) L1 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:31` | (2780, 2791) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:32` | (2781, 2743) | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:33` | (2786, 2714) | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
-| `npc:ape-atoll:34` | (2798, 2785) | Monkey Guard (mm_religious_guard) 6, Monkey Guard (mm_religious_trapdoor_guard) 3, Scorpion 3, Spider 3 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:35` | (2789, 2758) | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:36` | (2793, 2790) L1 | Monkey Guard (mm_religious_guard) 2, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:37` | (2796, 2780) L1 | Monkey Guard (mm_religious_guard) 1, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:38` | (2796, 2763) | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:39` | (2806, 2787) L1 | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
-| `npc:ape-atoll:40` | (2809, 2754) | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ape-atoll:0` | (2702, 2780) | x 2700-2705, z 2776-2785 | x 2695-2710, z 2771-2790 | `{ x: 2703, z: 2781, radius: 16 }` | Jungle spider 2, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:1` | (2701, 2762) | (2701, 2762) | x 2696-2706, z 2757-2767 | `{ x: 2701, z: 2762, radius: 11 }` | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:2` | (2704, 2769) | x 2703-2704, z 2769 | x 2698-2709, z 2764-2774 | `{ x: 2704, z: 2769, radius: 11 }` | Jungle spider 1, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:3` | (2715, 2782) | x 2714-2715, z 2781-2782 | x 2709-2720, z 2776-2787 | `{ x: 2715, z: 2782, radius: 12 }` | Jungle spider 1, Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:4` | (2716, 2721) | x 2716, z 2719-2722 | x 2711-2721, z 2714-2727 | `{ x: 2716, z: 2721, radius: 12 }` | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:5` | (2721, 2729) | (2721, 2729) | x 2716-2726, z 2724-2734 | `{ x: 2721, z: 2729, radius: 11 }` | Jungle spider 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:6` | (2724, 2789) | x 2722-2727, z 2787-2791 | x 2717-2732, z 2782-2796 | `{ x: 2725, z: 2789, radius: 14 }` | Jungle spider 1, Snake 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:7` | (2729, 2713) | x 2726-2732, z 2712-2714 | x 2721-2737, z 2707-2719 | `{ x: 2729, z: 2713, radius: 13 }` | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:8` | (2731, 2724) | (2731, 2724) | x 2726-2736, z 2719-2729 | `{ x: 2731, z: 2724, radius: 11 }` | Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:9` | (2734, 2792) L1 | (2734, 2792) L1 | x 2729-2739, z 2787-2797 L1 | `{ x: 2734, z: 2792, radius: 11, level: 1 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:10` | (2739, 2722) | x 2738-2740, z 2721-2722 | x 2733-2745, z 2716-2727 | `{ x: 2739, z: 2722, radius: 12 }` | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:11` | (2742, 2707) | x 2742, z 2704-2711 | x 2737-2747, z 2699-2716 | `{ x: 2742, z: 2708, radius: 14 }` | Jungle spider 2, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:12` | (2753, 2708) | x 2749-2755, z 2705-2710 | x 2744-2760, z 2700-2715 | `{ x: 2752, z: 2708, radius: 15 }` | Jungle spider 2, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:13` | (2749, 2768) L2 | (2749, 2768) L2 | x 2744-2754, z 2763-2773 L2 | `{ x: 2749, z: 2768, radius: 11, level: 2 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:14` | (2752, 2762) | (2752, 2762) | x 2747-2757, z 2757-2767 | `{ x: 2752, z: 2762, radius: 11 }` | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:15` | (2752, 2798) L2 | (2752, 2798) L2 | x 2747-2757, z 2793-2803 L2 | `{ x: 2752, z: 2798, radius: 11, level: 2 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:16` | (2753, 2799) | (2753, 2799) | x 2748-2758, z 2794-2804 | `{ x: 2753, z: 2799, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:17` | (2756, 2716) | (2756, 2716) | x 2751-2761, z 2711-2721 | `{ x: 2756, z: 2716, radius: 11 }` | Jungle spider 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:18` | (2757, 2788) | (2757, 2788) | x 2750-2764, z 2781-2795 | `{ x: 2757, z: 2788, radius: 13 }` | Padulah 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:19` | (2761, 2770) | (2761, 2770) | x 2756-2766, z 2765-2775 | `{ x: 2761, z: 2770, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:20` | (2761, 2803) | (2761, 2803) | x 2756-2766, z 2798-2808 | `{ x: 2761, z: 2803, radius: 11 }` | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:21` | (2762, 2749) | (2762, 2749) | x 2757-2767, z 2744-2754 | `{ x: 2762, z: 2749, radius: 11 }` | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:22` | (2771, 2707) | x 2766-2779, z 2702-2715 | x 2761-2784, z 2697-2720 | `{ x: 2773, z: 2709, radius: 20 }` | Jungle spider 3, Snake 2 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:23` | (2771, 2764) | x 2766-2776, z 2761-2766 | x 2761-2781, z 2756-2771 | `{ x: 2771, z: 2764, radius: 16 }` | Scorpion 2, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:24` | (2767, 2765) L1 | (2767, 2765) L1 | x 2762-2772, z 2760-2770 L1 | `{ x: 2767, z: 2765, radius: 11, level: 1 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:25` | (2767, 2794) | (2767, 2794) | x 2762-2772, z 2789-2799 | `{ x: 2767, z: 2794, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:26` | (2771, 2737) | x 2769-2772, z 2734-2740 | x 2764-2777, z 2729-2745 | `{ x: 2771, z: 2737, radius: 14 }` | Scorpion 2 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:27` | (2769, 2798) L1 | (2769, 2798) L1 | x 2764-2774, z 2793-2803 L1 | `{ x: 2769, z: 2798, radius: 11, level: 1 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:28` | (2769, 2806) | (2769, 2806) | x 2764-2774, z 2801-2811 | `{ x: 2769, z: 2806, radius: 11 }` | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:29` | (2775, 2777) | (2775, 2777) | x 2770-2780, z 2772-2782 | `{ x: 2775, z: 2777, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:30` | (2778, 2768) L1 | (2778, 2768) L1 | x 2773-2783, z 2763-2773 L1 | `{ x: 2778, z: 2768, radius: 11, level: 1 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:31` | (2780, 2791) | (2780, 2791) | x 2775-2785, z 2786-2796 | `{ x: 2780, z: 2791, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:32` | (2781, 2743) | (2781, 2743) | x 2776-2786, z 2738-2748 | `{ x: 2781, z: 2743, radius: 11 }` | Scorpion 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:33` | (2786, 2714) | x 2784-2788, z 2713-2714 | x 2779-2793, z 2708-2719 | `{ x: 2786, z: 2714, radius: 13 }` | Jungle spider 1, Snake 1 | no | yes | - | Monkey Madness at stage 10 |
+| `npc:ape-atoll:34` | (2798, 2785) | x 2788-2805, z 2775-2797 | x 2783-2810, z 2770-2802 | `{ x: 2797, z: 2786, radius: 25 }` | Monkey Guard (mm_religious_guard) 6, Monkey Guard (mm_religious_trapdoor_guard) 3, Scorpion 3, Spider 3 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:35` | (2789, 2758) | (2789, 2758) | x 2784-2794, z 2753-2763 | `{ x: 2789, z: 2758, radius: 11 }` | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:36` | (2793, 2790) L1 | x 2790-2797, z 2789-2791 L1 | x 2785-2802, z 2784-2796 L1 | `{ x: 2794, z: 2790, radius: 14, level: 1 }` | Monkey Guard (mm_religious_guard) 2, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:37` | (2796, 2780) L1 | x 2794-2797, z 2780 L1 | x 2789-2802, z 2775-2785 L1 | `{ x: 2796, z: 2780, radius: 12, level: 1 }` | Monkey Guard (mm_religious_guard) 1, Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:38` | (2796, 2763) | (2796, 2763) | x 2791-2801, z 2758-2768 | `{ x: 2796, z: 2763, radius: 11 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:39` | (2806, 2787) L1 | (2806, 2787) L1 | x 2801-2811, z 2782-2792 L1 | `{ x: 2806, z: 2787, radius: 11, level: 1 }` | Spider 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |
+| `npc:ape-atoll:40` | (2809, 2754) | (2809, 2754) | x 2804-2814, z 2749-2759 | `{ x: 2809, z: 2754, radius: 11 }` | Snake 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 |

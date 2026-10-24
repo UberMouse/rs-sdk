@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Underground Pass](../places/underground-pass.md) | (2383, 9630) | 4 | 6 | (2364, 9612)-(2418, 9649) | 600 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Underground Pass](../places/underground-pass.md) | (2383, 9630) | x 2370-2412, z 9618-9643 | 4 | 6 | x 2364-2418, z 9612-9649 | 600 ticks | - | `{ x: 2391, z: 9631, radius: 37 }` | no |
 
 ## Drops
 

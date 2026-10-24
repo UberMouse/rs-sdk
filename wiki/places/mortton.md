@@ -5,20 +5,20 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:mortton:0` | (3489, 3296) | Razmire Builders Merchants. (razmirebuildingstore) 1, Razmire General Store. (razmiregeneralstore) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:mortton:0` | (3489, 3296) | (3489, 3296) | x 3484-3494, z 3291-3301 | `{ x: 3489, z: 3296, radius: 11 }` | Razmire Builders Merchants. (razmirebuildingstore) 1, Razmire General Store. (razmiregeneralstore) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:mortton:0` | (3495, 3288) | Sink 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:mortton:0` | (3495, 3288) | (3495, 3288) | `{ x: 3495, z: 3288, radius: 3 }` | Sink 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:mortton:0` | (3486, 3284) | [normal](../resources/tree/normal.md) 46 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `tree:mortton:1` | (3505, 3265) | [normal](../resources/tree/normal.md) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `tree:mortton:2` | (3509, 3300) | [normal](../resources/tree/normal.md) 4 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:mortton:0` | (3486, 3284) | x 3470-3500, z 3264-3303 | `{ x: 3485, z: 3284, radius: 28 }` | [normal](../resources/tree/normal.md) 46 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:mortton:1` | (3505, 3265) | (3505, 3265) | `{ x: 3505, z: 3265, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:mortton:2` | (3509, 3300) | x 3507-3511, z 3297-3301 | `{ x: 3509, z: 3299, radius: 6 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |

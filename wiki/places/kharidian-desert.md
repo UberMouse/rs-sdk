@@ -3,48 +3,48 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:kharidian-desert:0` | (3321, 3137) | Fireplace 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:kharidian-desert:0` | (3321, 3137) | (3321, 3137) | `{ x: 3321, z: 3137, radius: 3 }` | Fireplace 1 | yes | yes | - | - |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-ruins:kharidian-desert:0` | (3312, 3254) | fire 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-ruins:kharidian-desert:0` | (3312, 3254) | (3312, 3254) | `{ x: 3312, z: 3254, radius: 3 }` | fire 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:kharidian-desert:0` | (3335, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:kharidian-desert:1` | (3373, 3330) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:kharidian-desert:0` | (3335, 3330) | (3335, 3330) | `{ x: 3335, z: 3330, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:kharidian-desert:1` | (3373, 3330) | (3373, 3330) | `{ x: 3373, z: 3330, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:kharidian-desert:0` | (3304, 3023) | [tin](../resources/rock/tin.md) 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:kharidian-desert:0` | (3304, 3023) | x 3303-3304, z 3021-3025 | `{ x: 3304, z: 3023, radius: 6 }` | [tin](../resources/rock/tin.md) 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:kharidian-desert:0` | (3270, 3029) | Mercenary (desertminingmercenary1) 4, Mercenary (desertminingmercenary2) 2, Mercenary Captain 1 | no | no | - | 1 Shantay pass (used up) |
-| `npc:kharidian-desert:1` | (3286, 3036) L1 | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:kharidian-desert:2` | (3291, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:kharidian-desert:3` | (3300, 3276) | Imp 1, Scorpion 1 | yes | no | - | - |
-| `npc:kharidian-desert:4` | (3303, 3035) | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:kharidian-desert:5` | (3319, 3250) | Rat 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:kharidian-desert:0` | (3270, 3029) | x 3265-3277, z 3026-3031 | x 3262-3280, z 3023-3034 | `{ x: 3271, z: 3029, radius: 14 }` | Mercenary (desertminingmercenary1) 4, Mercenary (desertminingmercenary2) 2, Mercenary Captain 1 | no | no | - | 1 Shantay pass (used up) |
+| `npc:kharidian-desert:1` | (3286, 3036) L1 | (3286, 3036) L1 | x 3283-3289, z 3033-3039 L1 | `{ x: 3286, z: 3036, radius: 8, level: 1 }` | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:kharidian-desert:2` | (3291, 3035) | (3291, 3035) | x 3288-3294, z 3032-3038 | `{ x: 3291, z: 3035, radius: 8 }` | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:kharidian-desert:3` | (3300, 3276) | x 3299-3301, z 3273-3278 | x 3274-3326, z 3248-3303 | `{ x: 3300, z: 3276, radius: 42 }` | Imp 1, Scorpion 1 | yes | no | - | - |
+| `npc:kharidian-desert:4` | (3303, 3035) | (3303, 3035) | x 3300-3306, z 3032-3038 | `{ x: 3303, z: 3035, radius: 8 }` | Mercenary (desertminingmercenary1) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:kharidian-desert:5` | (3319, 3250) | (3319, 3250) | x 3304-3334, z 3235-3265 | `{ x: 3319, z: 3250, radius: 25 }` | Rat 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:kharidian-desert:0` | (3188, 2987) | Ladder 1 | up (3188, 2986) L1 by Climb-up | no | no | - | unreached |
-| `connector:kharidian-desert:1` | (3188, 2987) L1 | Ladder 1 | down (3188, 2986) by Climb-down | no | no | - | unreached |
-| `connector:kharidian-desert:2` | (3290, 3036) | Ladder 1 | up (3289, 3036) L1 by Climb-up | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `connector:kharidian-desert:3` | (3290, 3036) L1 | Ladder 1 | down (3289, 3036) by Climb-down | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:kharidian-desert:0` | (3188, 2987) | (3188, 2987) | `{ x: 3188, z: 2987, radius: 3 }` | Ladder 1 | up (3188, 2986) L1 by Climb-up | no | no | - | unreached |
+| `connector:kharidian-desert:1` | (3188, 2987) L1 | (3188, 2987) L1 | `{ x: 3188, z: 2987, radius: 3, level: 1 }` | Ladder 1 | down (3188, 2986) by Climb-down | no | no | - | unreached |
+| `connector:kharidian-desert:2` | (3290, 3036) | (3290, 3036) | `{ x: 3290, z: 3036, radius: 3 }` | Ladder 1 | up (3289, 3036) L1 by Climb-up | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `connector:kharidian-desert:3` | (3290, 3036) L1 | (3290, 3036) L1 | `{ x: 3290, z: 3036, radius: 3, level: 1 }` | Ladder 1 | down (3289, 3036) by Climb-down | no | no | - | 1 Shantay pass (used up) + carry Metal key |
 
 ## Areas within
 

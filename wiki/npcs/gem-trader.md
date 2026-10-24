@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3288, 3212) | 1 | 2 | (3286, 3210)-(3290, 3214) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | (3288, 3212) | (3288, 3212) | 1 | 2 | x 3286-3290, z 3210-3214 | 100 ticks | - | `{ x: 3288, z: 3212, radius: 6 }` | yes |
 
 ## Interactions
 

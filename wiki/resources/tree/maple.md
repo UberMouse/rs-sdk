@@ -31,10 +31,10 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:55` | (2592, 3593) | (2592, 3595) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 125 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 79 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:76` | (2786, 3479) | (2786, 3479) | 2 | no | yes | - | - | Catherby bank (Catherby), 25 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 7 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
-| [Miscellania and Etceteria](../../places/miscellania.md) | `tree:miscellania:1` | (2547, 3870) | (2547, 3871) | 12 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 39 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:55` | (2592, 3593) | (2592, 3595) | (2592, 3593) | `{ x: 2592, z: 3593, radius: 3 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 125 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | x 2608-2763, z 3291-3702 | `{ x: 2686, z: 3497, radius: 224 }` | 79 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:76` | (2786, 3479) | (2786, 3479) | x 2749-2822, z 3456-3519 | `{ x: 2786, z: 3488, radius: 52 }` | 2 | no | yes | - | - | Catherby bank (Catherby), 25 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | x 2704-2741, z 3461-3512 | `{ x: 2723, z: 3487, radius: 36 }` | 7 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
+| [Miscellania and Etceteria](../../places/miscellania.md) | `tree:miscellania:1` | (2547, 3870) | (2547, 3871) | x 2530-2562, z 3859-3888 | `{ x: 2546, z: 3874, radius: 25 }` | 12 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 39 ticks |

@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2502, 3012) | 2 | 5 | (2496, 3006)-(2508, 3017) | 100 ticks | - | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2528, 3019) | 2 | 5 | (2521, 3013)-(2534, 3024) | 100 ticks | - | no |
-| [Feldip Hills](../places/feldip-hills.md) | (2550, 3030) | 2 | 2 | (2547, 3027)-(2553, 3033) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2506, 3062) | 2 | 5 | (2500, 3057)-(2512, 3067) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2502, 3012) | x 2501-2503, z 3011-3012 | 2 | 5 | x 2496-2508, z 3006-3017 | 100 ticks | - | `{ x: 2502, z: 3012, radius: 12 }` | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2528, 3019) | x 2526-2529, z 3018-3019 | 2 | 5 | x 2521-2534, z 3013-3024 | 100 ticks | - | `{ x: 2528, z: 3019, radius: 13 }` | no |
+| [Feldip Hills](../places/feldip-hills.md) | (2550, 3030) | x 2549-2551, z 3029-3031 | 2 | 2 | x 2547-2553, z 3027-3033 | 100 ticks | - | `{ x: 2550, z: 3030, radius: 8 }` | no |
+| [Kandarin](../places/kandarin.md) | (2506, 3062) | x 2505-2507, z 3062 | 2 | 5 | x 2500-2512, z 3057-3067 | 100 ticks | - | `{ x: 2506, z: 3062, radius: 11 }` | no |
 
 ## Drops
 

@@ -5,12 +5,12 @@ Trolls of quests/quest_troll and quests/quest_death; descriptive name.
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:troll-caves:0` | (2923, 10033) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:troll-caves:0` | (2923, 10033) | (2923, 10033) | `{ x: 2923, z: 10033, radius: 3 }` | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:troll-caves:0` | (2923, 10031) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:troll-caves:0` | (2923, 10031) | x 2921-2925, z 10027-10034 | x 2916-2930, z 10022-10039 | `{ x: 2923, z: 10031, radius: 15 }` | Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |

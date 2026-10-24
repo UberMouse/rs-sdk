@@ -3,30 +3,30 @@
 
 25 sites, 9 of them in F2P; 18 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 1 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Falador East bank (Falador)](../places/falador-east-bank.md) | `bank:falador-east-bank:0` | (3013, 3354) | (3013, 3355) | Bank booth 5, Banker 5 | yes | - |
-| [Falador West bank (Falador)](../places/falador-west-bank.md) | `bank:falador-west-bank:0` | (2947, 3367) | (2947, 3368) | Bank booth 5, Banker 5 | yes | - |
-| [Castle Wars bank chest (Castle Wars)](../places/castle-wars-bank.md) | `bank:castle-wars-bank:0` | (2444, 3083) | (2443, 3083) | Bank chest 1 | no | - |
-| [Catherby bank (Catherby)](../places/catherby-bank.md) | `bank:catherby-bank:0` | (2809, 3443) | (2809, 3441) | Bank booth 4, Banker 4 | no | - |
-| [Ardougne North bank (East Ardougne)](../places/ardougne-north-bank.md) | `bank:ardougne-north-bank:0` | (2617, 3331) | (2618, 3332) | Bank booth 3, Banker 3 | no | - |
-| [Ardougne South bank (East Ardougne)](../places/ardougne-south-bank.md) | `bank:ardougne-south-bank:0` | (2657, 3284) | (2655, 3283) | Bank booth 2, Banker 3 | no | - |
-| [Fishing Guild bank (Fishing Guild)](../places/fishing-guild-bank.md) | `bank:fishing-guild-bank:0` | (2585, 3420) | (2586, 3419) | Bank booth 4, Banker 4 | no | 68 Fishing |
-| [Legends' Guild bank (Legends' Guild)](../places/legends-guild-bank.md) | `bank:legends-guild-bank:0` | (2732, 3379) L2 | (2732, 3379) L2 | Banker 4 | no | Legends Quest at stage 50 |
-| [Seers' Village bank (Seers' Village)](../places/seers-village-bank.md) | `bank:seers-village-bank:0` | (2726, 3495) | (2727, 3493) | Bank booth 6, Banker 8 | no | - |
-| [Gnome Stronghold south bank (Tree Gnome Stronghold)](../places/gnome-stronghold-bank.md) | `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | (2445, 3425) L1 | Bank booth 4, Gnome banker 5 | no | - |
-| [Grand Tree bank (Tree Gnome Stronghold)](../places/grand-tree-bank.md) | `bank:grand-tree-bank:0` | (2445, 3484) L1 | (2448, 3482) L1 | Bank booth 6, Gnome banker 4 | no | - |
-| [Yanille bank (Yanille)](../places/yanille-bank.md) | `bank:yanille-bank:0` | (2615, 3092) | (2613, 3092) | Bank booth 3, Banker 3 | no | - |
-| [Shilo Village bank (Shilo Village)](../places/shilo-village-bank.md) | `bank:shilo-village-bank:0` | (2852, 2955) | (2852, 2955) | Banker 2 | no | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| [Al Kharid bank (Al Kharid)](../places/al-kharid-bank.md) | `bank:al-kharid-bank:0` | (3268, 3167) | (3269, 3167) | Bank booth 5, Banker 5 | yes | - |
-| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `bank:duel-arena-bank:0` | (3382, 3269) | (3381, 3268) | Closed chest 2, Fadli 1 | no | - |
-| [Shantay Pass bank chest (Shantay Pass)](../places/shantay-pass-bank-chest.md) | `bank:shantay-pass-bank-chest:0` | (3309, 3120) | (3308, 3120) | Shantay chest 1 | yes | - |
-| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | `bank:mage-arena-bank:0` | (2534, 4714) | (2534, 4714) | Gundai 1 | no | - |
-| [Miscellania bank (Miscellania and Etceteria)](../places/miscellania-bank.md) | `bank:miscellania-bank:0` | (2621, 3895) | (2622, 3895) | Banker 1 | no | The Fremennik Trials done |
-| [Draynor bank (Draynor Village)](../places/draynor-bank.md) | `bank:draynor-bank:0` | (3090, 3243) | (3092, 3243) | Bank booth 3, Banker 4 | yes | - |
-| [Edgeville bank (Edgeville)](../places/edgeville-bank.md) | `bank:edgeville-bank:0` | (3096, 3491) | (3094, 3491) | Bank booth 4, Banker 4 | yes | - |
-| [Varrock East bank (Varrock)](../places/varrock-east-bank.md) | `bank:varrock-east-bank:0` | (3254, 3418) | (3254, 3420) | Bank booth 4, Banker 5 | yes | - |
-| [Varrock West bank (Varrock)](../places/varrock-west-bank.md) | `bank:varrock-west-bank:0` | (3187, 3441) | (3185, 3440) | Bank booth 6, Banker 6 | yes | - |
-| [Canifis bank (Canifis)](../places/canifis-bank.md) | `bank:canifis-bank:0` | (3513, 3480) | (3512, 3480) | Bank booth 4, Banker 2 | no | Priest in Peril at stage 61 |
-| [Tutorial Island bank (Tutorial Island)](../places/tutorial-island-bank.md) | `bank:tutorial-island-bank:0` | (3121, 3125) | (3120, 3123) | Bank booth 2, Banker 2 | yes | unreached |
-| [Zanaris bank (Zanaris)](../places/zanaris-bank.md) | `bank:zanaris-bank:0` | (3153, 9578) | (3153, 9578) | Banker 4 | no | wear Dramen staff |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Counts | F2P | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| [Falador East bank (Falador)](../places/falador-east-bank.md) | `bank:falador-east-bank:0` | (3013, 3354) | (3013, 3355) | x 3011-3015, z 3353-3354 | - | `{ x: 3013, z: 3354, radius: 6 }` | Bank booth 5, Banker 5 | yes | - |
+| [Falador West bank (Falador)](../places/falador-west-bank.md) | `bank:falador-west-bank:0` | (2947, 3367) | (2947, 3368) | x 2945-2949, z 3366-3367 | - | `{ x: 2947, z: 3367, radius: 6 }` | Bank booth 5, Banker 5 | yes | - |
+| [Castle Wars bank chest (Castle Wars)](../places/castle-wars-bank.md) | `bank:castle-wars-bank:0` | (2444, 3083) | (2443, 3083) | (2444, 3083) | - | `{ x: 2444, z: 3083, radius: 3 }` | Bank chest 1 | no | - |
+| [Catherby bank (Catherby)](../places/catherby-bank.md) | `bank:catherby-bank:0` | (2809, 3443) | (2809, 3441) | x 2807-2811, z 3442-3444 | - | `{ x: 2809, z: 3443, radius: 6 }` | Bank booth 4, Banker 4 | no | - |
+| [Ardougne North bank (East Ardougne)](../places/ardougne-north-bank.md) | `bank:ardougne-north-bank:0` | (2617, 3331) | (2618, 3332) | x 2614-2619, z 3330-3331 | - | `{ x: 2617, z: 3331, radius: 7 }` | Bank booth 3, Banker 3 | no | - |
+| [Ardougne South bank (East Ardougne)](../places/ardougne-south-bank.md) | `bank:ardougne-south-bank:0` | (2657, 3284) | (2655, 3283) | x 2656-2657, z 3280-3286 | - | `{ x: 2657, z: 3283, radius: 7 }` | Bank booth 2, Banker 3 | no | - |
+| [Fishing Guild bank (Fishing Guild)](../places/fishing-guild-bank.md) | `bank:fishing-guild-bank:0` | (2585, 3420) | (2586, 3419) | x 2584-2585, z 3418-3422 | - | `{ x: 2585, z: 3420, radius: 6 }` | Bank booth 4, Banker 4 | no | 68 Fishing |
+| [Legends' Guild bank (Legends' Guild)](../places/legends-guild-bank.md) | `bank:legends-guild-bank:0` | (2732, 3379) L2 | (2732, 3379) L2 | x 2731-2733, z 3377-3381 L2 | x 2731-2733, z 3377-3381 L2 | `{ x: 2732, z: 3379, radius: 6, level: 2 }` | Banker 4 | no | Legends Quest at stage 50 |
+| [Seers' Village bank (Seers' Village)](../places/seers-village-bank.md) | `bank:seers-village-bank:0` | (2726, 3495) | (2727, 3493) | x 2721-2729, z 3494-3496 | - | `{ x: 2725, z: 3495, radius: 8 }` | Bank booth 6, Banker 8 | no | - |
+| [Gnome Stronghold south bank (Tree Gnome Stronghold)](../places/gnome-stronghold-bank.md) | `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | (2445, 3425) L1 | x 2443-2448, z 3423-3427 L1 | - | `{ x: 2446, z: 3425, radius: 7, level: 1 }` | Bank booth 4, Gnome banker 5 | no | - |
+| [Grand Tree bank (Tree Gnome Stronghold)](../places/grand-tree-bank.md) | `bank:grand-tree-bank:0` | (2445, 3484) L1 | (2448, 3482) L1 | x 2439-2450, z 3480-3489 L1 | - | `{ x: 2445, z: 3485, radius: 11, level: 1 }` | Bank booth 6, Gnome banker 4 | no | - |
+| [Yanille bank (Yanille)](../places/yanille-bank.md) | `bank:yanille-bank:0` | (2615, 3092) | (2613, 3092) | x 2614-2615, z 3091-3094 | - | `{ x: 2615, z: 3093, radius: 6 }` | Bank booth 3, Banker 3 | no | - |
+| [Shilo Village bank (Shilo Village)](../places/shilo-village-bank.md) | `bank:shilo-village-bank:0` | (2852, 2955) | (2852, 2955) | x 2851-2853, z 2954-2955 | x 2851-2853, z 2954-2955 | `{ x: 2852, z: 2955, radius: 5 }` | Banker 2 | no | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| [Al Kharid bank (Al Kharid)](../places/al-kharid-bank.md) | `bank:al-kharid-bank:0` | (3268, 3167) | (3269, 3167) | x 3267-3268, z 3164-3169 | - | `{ x: 3268, z: 3167, radius: 7 }` | Bank booth 5, Banker 5 | yes | - |
+| [Duel Arena bank (Duel Arena)](../places/duel-arena-bank.md) | `bank:duel-arena-bank:0` | (3382, 3269) | (3381, 3268) | x 3381-3383, z 3269-3270 | - | `{ x: 3382, z: 3270, radius: 5 }` | Closed chest 2, Fadli 1 | no | - |
+| [Shantay Pass bank chest (Shantay Pass)](../places/shantay-pass-bank-chest.md) | `bank:shantay-pass-bank-chest:0` | (3309, 3120) | (3308, 3120) | (3309, 3120) | - | `{ x: 3309, z: 3120, radius: 3 }` | Shantay chest 1 | yes | - |
+| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | `bank:mage-arena-bank:0` | (2534, 4714) | (2534, 4714) | (2534, 4714) | x 2529-2539, z 4709-4719 | `{ x: 2534, z: 4714, radius: 11 }` | Gundai 1 | no | - |
+| [Miscellania bank (Miscellania and Etceteria)](../places/miscellania-bank.md) | `bank:miscellania-bank:0` | (2621, 3895) | (2622, 3895) | (2621, 3895) | (2621, 3895) | `{ x: 2621, z: 3895, radius: 3 }` | Banker 1 | no | The Fremennik Trials done |
+| [Draynor bank (Draynor Village)](../places/draynor-bank.md) | `bank:draynor-bank:0` | (3090, 3243) | (3092, 3243) | x 3088-3091, z 3242-3245 | - | `{ x: 3090, z: 3244, radius: 6 }` | Bank booth 3, Banker 4 | yes | - |
+| [Edgeville bank (Edgeville)](../places/edgeville-bank.md) | `bank:edgeville-bank:0` | (3096, 3491) | (3094, 3491) | x 3095-3098, z 3489-3493 | - | `{ x: 3097, z: 3491, radius: 6 }` | Bank booth 4, Banker 4 | yes | - |
+| [Varrock East bank (Varrock)](../places/varrock-east-bank.md) | `bank:varrock-east-bank:0` | (3254, 3418) | (3254, 3420) | x 3252-3256, z 3417-3419 | - | `{ x: 3254, z: 3418, radius: 6 }` | Bank booth 4, Banker 5 | yes | - |
+| [Varrock West bank (Varrock)](../places/varrock-west-bank.md) | `bank:varrock-west-bank:0` | (3187, 3441) | (3185, 3440) | x 3186-3187, z 3436-3446 | - | `{ x: 3187, z: 3441, radius: 9 }` | Bank booth 6, Banker 6 | yes | - |
+| [Canifis bank (Canifis)](../places/canifis-bank.md) | `bank:canifis-bank:0` | (3513, 3480) | (3512, 3480) | x 3513-3514, z 3479-3482 | - | `{ x: 3514, z: 3481, radius: 6 }` | Bank booth 4, Banker 2 | no | Priest in Peril at stage 61 |
+| [Tutorial Island bank (Tutorial Island)](../places/tutorial-island-bank.md) | `bank:tutorial-island-bank:0` | (3121, 3125) | (3120, 3123) | x 3120-3122, z 3124-3125 | - | `{ x: 3121, z: 3125, radius: 5 }` | Bank booth 2, Banker 2 | yes | unreached |
+| [Zanaris bank (Zanaris)](../places/zanaris-bank.md) | `bank:zanaris-bank:0` | (3153, 9578) | (3153, 9578) | x 3150-3154, z 9577-9580 | x 3150-3154, z 9577-9580 | `{ x: 3152, z: 9579, radius: 6 }` | Banker 4 | no | wear Dramen staff |

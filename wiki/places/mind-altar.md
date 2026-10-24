@@ -5,6 +5,6 @@ Inside the mind ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:mind-altar:0` | (2785, 4840) | mind 1 | yes | no | - | carry Mind talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:mind-altar:0` | (2785, 4840) | (2785, 4840) | `{ x: 2785, z: 4840, radius: 3 }` | mind 1 | yes | no | - | carry Mind talisman |

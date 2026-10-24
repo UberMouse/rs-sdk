@@ -5,114 +5,114 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:lumbridge:0` | (3211, 3247) | Lumbridge General Store (generalshop1) 2 | yes | no | - | - |
-| `shop:lumbridge:1` | (3232, 3203) | Bob's Brilliant Axes. (axeshop) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:lumbridge:0` | (3211, 3247) | x 3209-3212, z 3247 | x 3204-3217, z 3242-3252 | `{ x: 3211, z: 3247, radius: 12 }` | Lumbridge General Store (generalshop1) 2 | yes | no | - | - |
+| `shop:lumbridge:1` | (3232, 3203) | (3232, 3203) | (3232, 3203) | `{ x: 3232, z: 3203, radius: 3 }` | Bob's Brilliant Axes. (axeshop) 1 | yes | no | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:lumbridge:0` | (3226, 3256) | Furnace 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:lumbridge:0` | (3226, 3256) | x 3225-3226, z 3255-3256 | `{ x: 3226, z: 3256, radius: 5 }` | Furnace 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:lumbridge:0` | (3212, 3215) | Cooking range 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:lumbridge:0` | (3212, 3215) | (3212, 3215) | `{ x: 3212, z: 3215, radius: 3 }` | Cooking range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:lumbridge:0` | (3205, 3220) | Fireplace 1 | yes | no | - | - |
-| `fire:lumbridge:1` | (3214, 3249) | Fireplace 1 | yes | no | - | - |
-| `fire:lumbridge:2` | (3232, 3238) | Cooking pot 1 | yes | no | - | - |
-| `fire:lumbridge:3` | (3245, 3246) | Fire 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:lumbridge:0` | (3205, 3220) | (3205, 3220) | `{ x: 3205, z: 3220, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:lumbridge:1` | (3214, 3249) | (3214, 3249) | `{ x: 3214, z: 3249, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:lumbridge:2` | (3232, 3238) | (3232, 3238) | `{ x: 3232, z: 3238, radius: 3 }` | Cooking pot 1 | yes | no | - | - |
+| `fire:lumbridge:3` | (3245, 3246) | (3245, 3246) | `{ x: 3245, z: 3246, radius: 3 }` | Fire 1 | yes | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | Spinning wheel 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | (3209, 3212) L1 | `{ x: 3209, z: 3212, radius: 3, level: 1 }` | Spinning wheel 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:lumbridge:0` | (3205, 3215) | Sink 1 | yes | no | - | - |
-| `water-source:lumbridge:1` | (3221, 3210) | Fountain 1 | yes | no | - | - |
-| `water-source:lumbridge:2` | (3221, 3226) | Fountain 1 | yes | no | - | - |
-| `water-source:lumbridge:3` | (3230, 3206) | Sink 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:lumbridge:0` | (3205, 3215) | (3205, 3215) | `{ x: 3205, z: 3215, radius: 3 }` | Sink 1 | yes | no | - | - |
+| `water-source:lumbridge:1` | (3221, 3210) | (3221, 3210) | `{ x: 3221, z: 3210, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:lumbridge:2` | (3221, 3226) | (3221, 3226) | `{ x: 3221, z: 3226, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:lumbridge:3` | (3230, 3206) | (3230, 3206) | `{ x: 3230, z: 3206, radius: 3 }` | Sink 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:lumbridge:0` | (3243, 3205) | Altar 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:lumbridge:0` | (3243, 3205) | (3243, 3205) | `{ x: 3243, z: 3205, radius: 3 }` | Altar 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:lumbridge:0` | (3185, 3252) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | no | - | - |
-| `tree:lumbridge:1` | (3243, 3244) | [normal](../resources/tree/normal.md) 34, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
-| `tree:lumbridge:2` | (3218, 3205) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:lumbridge:3` | (3219, 3260) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:lumbridge:4` | (3249, 3201) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:lumbridge:5` | (3258, 3221) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:lumbridge:0` | (3185, 3252) | x 3170-3203, z 3246-3259 | `{ x: 3187, z: 3253, radius: 22 }` | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 2 | yes | no | - | - |
+| `tree:lumbridge:1` | (3243, 3244) | x 3212-3262, z 3230-3259 | `{ x: 3237, z: 3245, radius: 33 }` | [normal](../resources/tree/normal.md) 34, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
+| `tree:lumbridge:2` | (3218, 3205) | (3218, 3205) | `{ x: 3218, z: 3205, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:lumbridge:3` | (3219, 3260) | (3219, 3260) | `{ x: 3219, z: 3260, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:lumbridge:4` | (3249, 3201) | (3249, 3201) | `{ x: 3249, z: 3201, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:lumbridge:5` | (3258, 3221) | x 3256-3260, z 3219-3223 | `{ x: 3258, z: 3221, radius: 6 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:lumbridge:0` | (3238, 3252) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:lumbridge:0` | (3238, 3252) | (3238, 3252) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 2 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:lumbridge:0` | (3206, 3219) L1 | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:1` | (3207, 3227) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:2` | (3219, 3219) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:3` | (3217, 3205) | [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:4` | (3225, 3239) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:5` | (3233, 3207) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:6` | (3235, 3219) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
-| `pickpocket:lumbridge:7` | (3244, 3211) | [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:lumbridge:0` | (3206, 3219) L1 | (3206, 3219) L1 | x 3201-3211, z 3214-3224 L1 | `{ x: 3206, z: 3219, radius: 11, level: 1 }` | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:1` | (3207, 3227) | (3207, 3227) | x 3202-3212, z 3222-3232 | `{ x: 3207, z: 3227, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:2` | (3219, 3219) | x 3216-3221, z 3219 | x 3211-3226, z 3214-3224 | `{ x: 3219, z: 3219, radius: 13 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:3` | (3217, 3205) | (3217, 3205) | x 3212-3222, z 3200-3210 | `{ x: 3217, z: 3205, radius: 11 }` | [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:4` | (3225, 3239) | x 3217-3231, z 3236-3240 | x 3212-3236, z 3231-3245 | `{ x: 3224, z: 3238, radius: 17 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:5` | (3233, 3207) | x 3231-3235, z 3206-3207 | x 3226-3240, z 3201-3212 | `{ x: 3233, z: 3207, radius: 13 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:6` | (3235, 3219) | (3235, 3219) | x 3230-3240, z 3214-3224 | `{ x: 3235, z: 3219, radius: 11 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:lumbridge:7` | (3244, 3211) | (3244, 3211) | x 3239-3249, z 3206-3216 | `{ x: 3244, z: 3211, radius: 11 }` | [Woman (woman3)](../resources/pickpocket/woman3.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:lumbridge:0` | (3170, 3248) | Giant spider 1 | yes | no | - | - |
-| `npc:lumbridge:1` | (3173, 3204) | Goblin (goblin_armed) 1 | yes | no | - | - |
-| `npc:lumbridge:2` | (3185, 3246) | Goblin (goblin) 3 | yes | no | - | - |
-| `npc:lumbridge:3` | (3194, 3204) | Rat 3 | yes | no | - | - |
-| `npc:lumbridge:4` | (3204, 3253) | Goblin (goblin) 2 | yes | no | - | - |
-| `npc:lumbridge:5` | (3206, 3205) | Rat 8 | yes | no | - | - |
-| `npc:lumbridge:6` | (3217, 3226) | Imp 1 | yes | no | - | - |
-| `npc:lumbridge:7` | (3222, 3215) | Rat 1 | yes | no | - | - |
-| `npc:lumbridge:8` | (3231, 3226) | Rat 2 | yes | no | - | - |
-| `npc:lumbridge:9` | (3235, 3259) | Duck (duck) 1 | yes | no | - | no stand |
-| `npc:lumbridge:10` | (3236, 3222) | Rat 1 | yes | no | - | - |
-| `npc:lumbridge:11` | (3250, 3239) | Cow 3, Duck (duck) 5, Duck (duck_female) 3, Giant spider 2, Goblin (goblin) 21 | yes | no | - | - |
-| `npc:lumbridge:12` | (3248, 3221) | Duck (duck) 2 | yes | no | - | no stand |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:lumbridge:0` | (3170, 3248) | (3170, 3248) | x 3160-3180, z 3238-3258 | `{ x: 3170, z: 3248, radius: 18 }` | Giant spider 1 | yes | no | - | - |
+| `npc:lumbridge:1` | (3173, 3204) | (3173, 3204) | x 3158-3188, z 3189-3219 | `{ x: 3173, z: 3204, radius: 25 }` | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:lumbridge:2` | (3185, 3246) | x 3183-3187, z 3246 | x 3168-3202, z 3231-3261 | `{ x: 3185, z: 3246, radius: 26 }` | Goblin (goblin) 3 | yes | no | - | - |
+| `npc:lumbridge:3` | (3194, 3204) | x 3191-3197, z 3204-3205 | x 3176-3212, z 3189-3220 | `{ x: 3194, z: 3205, radius: 28 }` | Rat 3 | yes | no | - | - |
+| `npc:lumbridge:4` | (3204, 3253) | x 3202-3206, z 3252-3253 | x 3187-3221, z 3237-3268 | `{ x: 3204, z: 3253, radius: 27 }` | Goblin (goblin) 2 | yes | no | - | - |
+| `npc:lumbridge:5` | (3206, 3205) | x 3205-3207, z 3202-3209 | x 3190-3222, z 3187-3224 | `{ x: 3206, z: 3206, radius: 28 }` | Rat 8 | yes | no | - | - |
+| `npc:lumbridge:6` | (3217, 3226) | (3217, 3226) | x 3192-3242, z 3201-3251 | `{ x: 3217, z: 3226, radius: 39 }` | Imp 1 | yes | no | - | - |
+| `npc:lumbridge:7` | (3222, 3215) | (3222, 3215) | x 3207-3237, z 3200-3230 | `{ x: 3222, z: 3215, radius: 25 }` | Rat 1 | yes | no | - | - |
+| `npc:lumbridge:8` | (3231, 3226) | x 3229-3232, z 3223-3229 | x 3214-3247, z 3208-3244 | `{ x: 3231, z: 3226, radius: 28 }` | Rat 2 | yes | no | - | - |
+| `npc:lumbridge:9` | (3235, 3259) | (3235, 3259) | x 3200-3270, z 3224-3294 | `{ x: 3235, z: 3259, radius: 53 }` | Duck (duck) 1 | yes | no | - | no stand |
+| `npc:lumbridge:10` | (3236, 3222) | (3236, 3222) | x 3221-3251, z 3207-3237 | `{ x: 3236, z: 3222, radius: 25 }` | Rat 1 | yes | no | - | - |
+| `npc:lumbridge:11` | (3250, 3239) | x 3238-3262, z 3212-3260 | x 3203-3297, z 3177-3295 | `{ x: 3250, z: 3236, radius: 79 }` | Cow 3, Duck (duck) 5, Duck (duck_female) 3, Giant spider 2, Goblin (goblin) 21 | yes | no | - | - |
+| `npc:lumbridge:12` | (3248, 3221) | x 3247-3248, z 3220-3221 | x 3212-3283, z 3185-3256 | `{ x: 3248, z: 3221, radius: 54 }` | Duck (duck) 2 | yes | no | - | no stand |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:lumbridge:0` | (3205, 3208) L2 | Staircase 1 | down (3205, 3209) L1 by Climb-down | yes | no | - | - |
-| `connector:lumbridge:1` | (3205, 3229) L2 | Staircase 1 | down (3205, 3228) L1 by Climb-down | yes | no | - | - |
-| `connector:lumbridge:2` | (3209, 3216) | Trapdoor 1 | down (3208, 9616) by Open, then Climb-down | yes | no | - | - |
-| `connector:lumbridge:3` | (3229, 3213) | Ladder 1 | up (3228, 3213) L1 by Climb-up | yes | no | - | - |
-| `connector:lumbridge:4` | (3229, 3213) L1 | Ladder 1 | down (3228, 3213) by Climb or Climb-down; up (3228, 3213) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:lumbridge:5` | (3229, 3213) L2 | Ladder 1 | down (3228, 3213) L1 by Climb-down | yes | no | - | - |
-| `connector:lumbridge:6` | (3229, 3224) | Ladder 1 | up (3228, 3224) L1 by Climb-up | yes | no | - | - |
-| `connector:lumbridge:7` | (3229, 3224) L1 | Ladder 1 | down (3228, 3224) by Climb or Climb-down; up (3228, 3224) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:lumbridge:8` | (3229, 3224) L2 | Ladder 1 | down (3228, 3224) L1 by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:lumbridge:0` | (3205, 3208) L2 | (3205, 3208) L2 | `{ x: 3205, z: 3208, radius: 3, level: 2 }` | Staircase 1 | down (3205, 3209) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:1` | (3205, 3229) L2 | (3205, 3229) L2 | `{ x: 3205, z: 3229, radius: 3, level: 2 }` | Staircase 1 | down (3205, 3228) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:2` | (3209, 3216) | (3209, 3216) | `{ x: 3209, z: 3216, radius: 3 }` | Trapdoor 1 | down (3208, 9616) by Open, then Climb-down | yes | no | - | - |
+| `connector:lumbridge:3` | (3229, 3213) | (3229, 3213) | `{ x: 3229, z: 3213, radius: 3 }` | Ladder 1 | up (3228, 3213) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge:4` | (3229, 3213) L1 | (3229, 3213) L1 | `{ x: 3229, z: 3213, radius: 3, level: 1 }` | Ladder 1 | down (3228, 3213) by Climb or Climb-down; up (3228, 3213) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:lumbridge:5` | (3229, 3213) L2 | (3229, 3213) L2 | `{ x: 3229, z: 3213, radius: 3, level: 2 }` | Ladder 1 | down (3228, 3213) L1 by Climb-down | yes | no | - | - |
+| `connector:lumbridge:6` | (3229, 3224) | (3229, 3224) | `{ x: 3229, z: 3224, radius: 3 }` | Ladder 1 | up (3228, 3224) L1 by Climb-up | yes | no | - | - |
+| `connector:lumbridge:7` | (3229, 3224) L1 | (3229, 3224) L1 | `{ x: 3229, z: 3224, radius: 3, level: 1 }` | Ladder 1 | down (3228, 3224) by Climb or Climb-down; up (3228, 3224) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:lumbridge:8` | (3229, 3224) L2 | (3229, 3224) L2 | `{ x: 3229, z: 3224, radius: 3, level: 2 }` | Ladder 1 | down (3228, 3224) L1 by Climb-down | yes | no | - | - |
 
 ## Areas within
 

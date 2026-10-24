@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2877, 3483) | 2 | 2 | (2874, 3481)-(2879, 3485) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2821, 3487) | 2 | 2 | (2818, 3485)-(2823, 3489) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2877, 3483) | x 2876-2877, z 3483 | 2 | 2 | x 2874-2879, z 3481-3485 | 100 ticks | - | `{ x: 2877, z: 3483, radius: 7 }` | no |
+| [Kandarin](../places/kandarin.md) | (2821, 3487) | x 2820-2821, z 3487 | 2 | 2 | x 2818-2823, z 3485-3489 | 100 ticks | - | `{ x: 2821, z: 3487, radius: 7 }` | no |
 
 ## Interactions
 

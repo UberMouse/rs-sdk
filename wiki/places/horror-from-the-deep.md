@@ -5,6 +5,6 @@ quests/quest_horror npcs; descriptive name, not settled from the data.
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:horror-from-the-deep:0` | (2463, 4544) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:horror-from-the-deep:0` | (2463, 4544) | x 2458-2467, z 4544-4545 | `{ x: 2463, z: 4545, radius: 9 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |

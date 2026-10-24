@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | 1 | 5 | (2801, 3180)-(2811, 3190) | 50 ticks | - | no |
-| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | 1 | 5 | (2806, 3193)-(2816, 3203) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | 1 | 5 | (3006, 3177)-(3024, 3199) | 50 ticks | - | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | 2 | 5 | (2981, 9577)-(2996, 9588) | 50 ticks | - | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | 7 | 5 | (2979, 9564)-(3005, 9589) | 50 ticks | - | yes |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | 1 | 5 | (2756, 3181)-(2768, 3196) | 50 ticks | - | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2795, 3185) | 6 | 5 | (2784, 3177)-(2804, 3193) | 50 ticks | - | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3162) | 9 | 5 | (2787, 3152)-(2807, 3173) | 50 ticks | - | no |
-| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | (3041, 3954) | 12 | 5 | (3034, 3945)-(3048, 3963) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2806, 3185) | (2806, 3185) | 1 | 5 | x 2801-2811, z 3180-3190 | 50 ticks | - | `{ x: 2806, z: 3185, radius: 11 }` | no |
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3198) | (2811, 3198) | 1 | 5 | x 2806-2816, z 3193-3203 | 50 ticks | - | `{ x: 2811, z: 3198, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (3014, 3191) | x 3011-3019, z 3182-3194 | 1 | 5 | x 3006-3024, z 3177-3199 | 50 ticks | - | `{ x: 3015, z: 3188, radius: 18 }` | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2989, 9583) | x 2986-2991, z 9582-9583 | 2 | 5 | x 2981-2996, z 9577-9588 | 50 ticks | - | `{ x: 2989, z: 9583, radius: 13 }` | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (2995, 9575) | x 2984-3000, z 9569-9584 | 7 | 5 | x 2979-3005, z 9564-9589 | 50 ticks | - | `{ x: 2992, z: 9577, radius: 22 }` | yes |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2763, 3186) | x 2761-2763, z 3186-3191 | 1 | 5 | x 2756-2768, z 3181-3196 | 50 ticks | - | `{ x: 2762, z: 3189, radius: 13 }` | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2795, 3185) | x 2789-2799, z 3182-3188 | 6 | 5 | x 2784-2804, z 3177-3193 | 50 ticks | - | `{ x: 2794, z: 3185, radius: 16 }` | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2796, 3162) | x 2792-2802, z 3157-3168 | 9 | 5 | x 2787-2807, z 3152-3173 | 50 ticks | - | `{ x: 2797, z: 3163, radius: 18 }` | no |
+| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | (3041, 3954) | x 3039-3043, z 3950-3958 | 12 | 5 | x 3034-3048, z 3945-3963 | 50 ticks | - | `{ x: 3041, z: 3954, radius: 15 }` | no |
 
 ## Drops
 

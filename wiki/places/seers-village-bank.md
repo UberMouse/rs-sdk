@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:seers-village-bank:0` | (2726, 3495) | Bank booth 6, Banker 8 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:seers-village-bank:0` | (2726, 3495) | x 2721-2729, z 3494-3496 | `{ x: 2725, z: 3495, radius: 8 }` | Bank booth 6, Banker 8 | no | no | - | - |

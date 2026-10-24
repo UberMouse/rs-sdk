@@ -11,21 +11,21 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2885, 3418) | 1 | 5 | (2880, 3413)-(2890, 3423) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2890, 3437) | 7 | 5 | (2878, 3426)-(2902, 3447) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2896, 3419) | 2 | 5 | (2888, 3414)-(2903, 3424) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2897, 3429) | 1 | 5 | (2892, 3424)-(2902, 3434) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2906, 3441) | 1 | 5 | (2901, 3436)-(2911, 3446) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2914, 3448) | 2 | 5 | (2908, 3441)-(2920, 3455) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2919, 3486) | 1 | 5 | (2914, 3481)-(2924, 3491) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2928, 3490) | 1 | 5 | (2923, 3485)-(2933, 3495) | 50 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2898, 3432) L1 | 1 | 5 | (2893, 3427)-(2903, 3437) | 50 ticks | - | no |
-| [Druids' Circle (Asgarnia)](../places/druids-circle.md) | (2928, 3481) | 3 | 5 | (2920, 3475)-(2936, 3489) | 50 ticks | - | no |
-| [Taverley (Asgarnia)](../places/taverley.md) | (2889, 3448) | 1 | 5 | (2884, 3443)-(2894, 3453) | 50 ticks | - | no |
-| [Taverley (Asgarnia)](../places/taverley.md) | (2901, 3449) | 2 | 5 | (2895, 3444)-(2907, 3454) | 50 ticks | - | no |
-| [Taverley (Asgarnia)](../places/taverley.md) | (2906, 3451) L1 | 1 | 5 | (2901, 3446)-(2911, 3456) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2885, 3418) | (2885, 3418) | 1 | 5 | x 2880-2890, z 3413-3423 | 50 ticks | - | `{ x: 2885, z: 3418, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2890, 3437) | x 2883-2897, z 3431-3442 | 7 | 5 | x 2878-2902, z 3426-3447 | 50 ticks | - | `{ x: 2890, z: 3437, radius: 20 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2896, 3419) | x 2893-2898, z 3419 | 2 | 5 | x 2888-2903, z 3414-3424 | 50 ticks | - | `{ x: 2896, z: 3419, radius: 13 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2897, 3429) | (2897, 3429) | 1 | 5 | x 2892-2902, z 3424-3434 | 50 ticks | - | `{ x: 2897, z: 3429, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3441) | (2906, 3441) | 1 | 5 | x 2901-2911, z 3436-3446 | 50 ticks | - | `{ x: 2906, z: 3441, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2914, 3448) | x 2913-2915, z 3446-3450 | 2 | 5 | x 2908-2920, z 3441-3455 | 50 ticks | - | `{ x: 2914, z: 3448, radius: 13 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2919, 3486) | (2919, 3486) | 1 | 5 | x 2914-2924, z 3481-3491 | 50 ticks | - | `{ x: 2919, z: 3486, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2928, 3490) | (2928, 3490) | 1 | 5 | x 2923-2933, z 3485-3495 | 50 ticks | - | `{ x: 2928, z: 3490, radius: 11 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2898, 3432) L1 | (2898, 3432) L1 | 1 | 5 | x 2893-2903, z 3427-3437 L1 | 50 ticks | - | `{ x: 2898, z: 3432, radius: 11, level: 1 }` | no |
+| [Druids' Circle (Asgarnia)](../places/druids-circle.md) | (2928, 3481) | x 2925-2931, z 3480-3484 | 3 | 5 | x 2920-2936, z 3475-3489 | 50 ticks | - | `{ x: 2928, z: 3482, radius: 14 }` | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2889, 3448) | (2889, 3448) | 1 | 5 | x 2884-2894, z 3443-3453 | 50 ticks | - | `{ x: 2889, z: 3448, radius: 11 }` | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2901, 3449) | x 2900-2902, z 3449 | 2 | 5 | x 2895-2907, z 3444-3454 | 50 ticks | - | `{ x: 2901, z: 3449, radius: 11 }` | no |
+| [Taverley (Asgarnia)](../places/taverley.md) | (2906, 3451) L1 | (2906, 3451) L1 | 1 | 5 | x 2901-2911, z 3446-3456 L1 | 50 ticks | - | `{ x: 2906, z: 3451, radius: 11, level: 1 }` | no |
 
 ## Drops
 

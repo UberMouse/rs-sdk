@@ -24,15 +24,15 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2548, 3565) | 4 | 10 | (2536, 3550)-(2564, 3580) | 50 ticks | - | no |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3417) | 6 | 10 | (3065, 3399)-(3096, 3439) | 50 ticks | - | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3440) | 5 | 10 | (3065, 3426)-(3096, 3455) | 50 ticks | - | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3432) | 1 | 10 | (3086, 3422)-(3106, 3442) | 50 ticks | - | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3428) L2 | 1 | 10 | (3086, 3418)-(3106, 3438) | 50 ticks | - | yes |
-| [Kandarin](../places/kandarin.md) | (2534, 3568) | 1 | 10 | (2524, 3558)-(2544, 3578) | 50 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2544, 3577) | 1 | 10 | (2534, 3567)-(2554, 3587) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2548, 3565) | x 2546-2554, z 3560-3570 | 4 | 10 | x 2536-2564, z 3550-3580 | 50 ticks | - | `{ x: 2550, z: 3565, radius: 24 }` | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3417) | x 3075-3086, z 3409-3429 | 6 | 10 | x 3065-3096, z 3399-3439 | 50 ticks | - | `{ x: 3081, z: 3419, radius: 29 }` | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3080, 3440) | x 3075-3086, z 3436-3445 | 5 | 10 | x 3065-3096, z 3426-3455 | 50 ticks | - | `{ x: 3081, z: 3441, radius: 25 }` | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3432) | (3096, 3432) | 1 | 10 | x 3086-3106, z 3422-3442 | 50 ticks | - | `{ x: 3096, z: 3432, radius: 18 }` | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3096, 3428) L2 | (3096, 3428) L2 | 1 | 10 | x 3086-3106, z 3418-3438 L2 | 50 ticks | - | `{ x: 3096, z: 3428, radius: 18, level: 2 }` | yes |
+| [Kandarin](../places/kandarin.md) | (2534, 3568) | (2534, 3568) | 1 | 10 | x 2524-2544, z 3558-3578 | 50 ticks | - | `{ x: 2534, z: 3568, radius: 18 }` | no |
+| [Kandarin](../places/kandarin.md) | (2544, 3577) | (2544, 3577) | 1 | 10 | x 2534-2554, z 3567-3587 | 50 ticks | - | `{ x: 2544, z: 3577, radius: 18 }` | no |
 
 ## Drops
 

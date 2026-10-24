@@ -15,6 +15,6 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `stall:east-ardougne:2` | (2667, 3303) | (2666, 3303) | 1 | no | no | - | - | Ardougne South bank (East Ardougne), 23 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `stall:east-ardougne:2` | (2667, 3303) | (2666, 3303) | (2667, 3303) | `{ x: 2667, z: 3303, radius: 3 }` | 1 | no | no | - | - | Ardougne South bank (East Ardougne), 23 ticks |

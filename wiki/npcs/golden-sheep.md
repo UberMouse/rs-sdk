@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Golden Apple Tree (Kandarin)](../places/golden-apple-tree.md) | (2765, 3608) | 4 | 5 | (2756, 3600)-(2774, 3617) | 100 ticks | - | no |
-| [Golden Apple Tree (Kandarin)](../places/golden-apple-tree.md) | (2765, 3609) | 3 | 5 | (2758, 3601)-(2773, 3615) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Golden Apple Tree (Kandarin)](../places/golden-apple-tree.md) | (2765, 3608) | x 2761-2769, z 3605-3612 | 4 | 5 | x 2756-2774, z 3600-3617 | 100 ticks | - | `{ x: 2765, z: 3609, radius: 16 }` | no |
+| [Golden Apple Tree (Kandarin)](../places/golden-apple-tree.md) | (2765, 3609) | x 2763-2768, z 3606-3610 | 3 | 5 | x 2758-2773, z 3601-3615 | 100 ticks | - | `{ x: 2766, z: 3608, radius: 14 }` | no |
 
 ## Drops
 

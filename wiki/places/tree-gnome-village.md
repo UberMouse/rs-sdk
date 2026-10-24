@@ -7,40 +7,40 @@ Entered through the loose railing (oploc1,treegnomelooserailing, areas/area_gnom
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:tree-gnome-village:0` | (2527, 3161) L1 | Bolkoy's Village Shop (gnomeshop) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:tree-gnome-village:0` | (2527, 3161) L1 | (2527, 3161) L1 | x 2522-2532, z 3156-3166 L1 | `{ x: 2527, z: 3161, radius: 11, level: 1 }` | Bolkoy's Village Shop (gnomeshop) 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:tree-gnome-village:0` | (2529, 3167) | [normal](../resources/tree/normal.md) 26 | no | no | - | - |
-| `tree:tree-gnome-village:1` | (2529, 3184) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:tree-gnome-village:0` | (2529, 3167) | x 2514-2547, z 3158-3174 | `{ x: 2531, z: 3166, radius: 22 }` | [normal](../resources/tree/normal.md) 26 | no | no | - | - |
+| `tree:tree-gnome-village:1` | (2529, 3184) | (2529, 3184) | `{ x: 2529, z: 3184, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:tree-gnome-village:0` | (2526, 3169) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 4 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:tree-gnome-village:0` | (2526, 3169) | x 2521-2536, z 3163-3172 | x 2516-2541, z 3158-3177 | `{ x: 2529, z: 3168, radius: 20 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 4 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:tree-gnome-village:0` | (2537, 3182) | Spider 5 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:tree-gnome-village:0` | (2537, 3182) | x 2535-2541, z 3180-3183 | x 2527-2549, z 3172-3191 | `{ x: 2538, z: 3182, radius: 18 }` | Spider 5 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:tree-gnome-village:0` | (2515, 3173) | Ladder 1 | up (2516, 3173) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-village:1` | (2515, 3173) L1 | Ladder 1 | down (2516, 3173) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-village:2` | (2516, 3165) | Ladder 1 | up (2516, 3166) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-village:3` | (2516, 3165) L1 | Ladder 1 | down (2516, 3166) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-village:4` | (2521, 3162) | Ladder 1 | up (2521, 3163) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-village:5` | (2521, 3162) L1 | Ladder 1 | down (2521, 3163) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-village:6` | (2525, 3162) | Ladder 1 | up (2526, 3162) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-village:7` | (2525, 3162) L1 | Ladder 1 | down (2526, 3162) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-village:8` | (2525, 3172) | Ladder 1 | up (2526, 3172) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-village:9` | (2525, 3172) L1 | Ladder 1 | down (2526, 3172) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:tree-gnome-village:0` | (2515, 3173) | (2515, 3173) | `{ x: 2515, z: 3173, radius: 3 }` | Ladder 1 | up (2516, 3173) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:1` | (2515, 3173) L1 | (2515, 3173) L1 | `{ x: 2515, z: 3173, radius: 3, level: 1 }` | Ladder 1 | down (2516, 3173) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:2` | (2516, 3165) | (2516, 3165) | `{ x: 2516, z: 3165, radius: 3 }` | Ladder 1 | up (2516, 3166) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:3` | (2516, 3165) L1 | (2516, 3165) L1 | `{ x: 2516, z: 3165, radius: 3, level: 1 }` | Ladder 1 | down (2516, 3166) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:4` | (2521, 3162) | (2521, 3162) | `{ x: 2521, z: 3162, radius: 3 }` | Ladder 1 | up (2521, 3163) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:5` | (2521, 3162) L1 | (2521, 3162) L1 | `{ x: 2521, z: 3162, radius: 3, level: 1 }` | Ladder 1 | down (2521, 3163) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:6` | (2525, 3162) | (2525, 3162) | `{ x: 2525, z: 3162, radius: 3 }` | Ladder 1 | up (2526, 3162) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:7` | (2525, 3162) L1 | (2525, 3162) L1 | `{ x: 2525, z: 3162, radius: 3, level: 1 }` | Ladder 1 | down (2526, 3162) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-village:8` | (2525, 3172) | (2525, 3172) | `{ x: 2525, z: 3172, radius: 3 }` | Ladder 1 | up (2526, 3172) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-village:9` | (2525, 3172) L1 | (2525, 3172) L1 | `{ x: 2525, z: 3172, radius: 3, level: 1 }` | Ladder 1 | down (2526, 3172) by Climb-down | no | no | - | - |

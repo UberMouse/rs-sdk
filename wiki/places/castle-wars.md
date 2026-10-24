@@ -5,32 +5,32 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:castle-wars:0` | (2431, 3077) | Tap 1 | no | yes | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:castle-wars:0` | (2431, 3077) | (2431, 3077) | `{ x: 2431, z: 3077, radius: 3 }` | Tap 1 | no | yes | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:castle-wars:0` | (2447, 3118) | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:castle-wars:0` | (2447, 3118) | x 2443-2449, z 3117-3120 | `{ x: 2446, z: 3119, radius: 7 }` | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:castle-wars:0` | (2400, 3108) | Trapdoor 1 | down (2400, 9507) by Open, then Climb-down | no | yes | - | unreached |
-| `connector:castle-wars:1` | (2417, 3074) | Staircase 1 | to (2416, 3074) by Climb; to (2417, 3077) by Climb | no | yes | - | unreached |
-| `connector:castle-wars:2` | (2419, 3078) | Staircase 1 | up (2420, 3080) L1 by Climb | no | yes | - | unreached |
-| `connector:castle-wars:3` | (2419, 3080) L1 | Staircase 1 | down (2419, 3077) by Climb | no | yes | - | unreached |
-| `connector:castle-wars:4` | (2421, 3073) | Ladder 1 | up (2421, 3074) L1 by Climb-up | no | yes | - | unreached |
-| `connector:castle-wars:5` | (2421, 3073) L1 | Ladder 1 | down (2421, 3074) by Climb-down | no | yes | - | unreached |
-| `connector:castle-wars:6` | (2425, 3074) L2 | Staircase 1 | up (2426, 3074) L3 by Climb | no | yes | - | unreached |
-| `connector:castle-wars:7` | (2425, 3074) L3 | Staircase 1 | down (2425, 3077) L2 by Climb | no | yes | - | unreached |
-| `connector:castle-wars:8` | (2428, 3081) L1 | Staircase 1 | up (2430, 3080) L2 by Climb | no | yes | - | unreached |
-| `connector:castle-wars:9` | (2429, 3074) L1 | Ladder 1 | up (2429, 3075) L2 by Climb-up | no | yes | - | unreached |
-| `connector:castle-wars:10` | (2430, 3081) L2 | Staircase 1 | down (2427, 3081) L1 by Climb | no | yes | - | unreached |
-| `connector:castle-wars:11` | (2430, 3082) | Ladder 1 | down (2430, 9481) by Climb-down | no | yes | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:castle-wars:0` | (2400, 3108) | (2400, 3108) | `{ x: 2400, z: 3108, radius: 3 }` | Trapdoor 1 | down (2400, 9507) by Open, then Climb-down | no | yes | - | unreached |
+| `connector:castle-wars:1` | (2417, 3074) | (2417, 3074) | `{ x: 2417, z: 3074, radius: 3 }` | Staircase 1 | to (2416, 3074) by Climb; to (2417, 3077) by Climb | no | yes | - | unreached |
+| `connector:castle-wars:2` | (2419, 3078) | (2419, 3078) | `{ x: 2419, z: 3078, radius: 3 }` | Staircase 1 | up (2420, 3080) L1 by Climb | no | yes | - | unreached |
+| `connector:castle-wars:3` | (2419, 3080) L1 | (2419, 3080) L1 | `{ x: 2419, z: 3080, radius: 3, level: 1 }` | Staircase 1 | down (2419, 3077) by Climb | no | yes | - | unreached |
+| `connector:castle-wars:4` | (2421, 3073) | (2421, 3073) | `{ x: 2421, z: 3073, radius: 3 }` | Ladder 1 | up (2421, 3074) L1 by Climb-up | no | yes | - | unreached |
+| `connector:castle-wars:5` | (2421, 3073) L1 | (2421, 3073) L1 | `{ x: 2421, z: 3073, radius: 3, level: 1 }` | Ladder 1 | down (2421, 3074) by Climb-down | no | yes | - | unreached |
+| `connector:castle-wars:6` | (2425, 3074) L2 | (2425, 3074) L2 | `{ x: 2425, z: 3074, radius: 3, level: 2 }` | Staircase 1 | up (2426, 3074) L3 by Climb | no | yes | - | unreached |
+| `connector:castle-wars:7` | (2425, 3074) L3 | (2425, 3074) L3 | `{ x: 2425, z: 3074, radius: 3, level: 3 }` | Staircase 1 | down (2425, 3077) L2 by Climb | no | yes | - | unreached |
+| `connector:castle-wars:8` | (2428, 3081) L1 | (2428, 3081) L1 | `{ x: 2428, z: 3081, radius: 3, level: 1 }` | Staircase 1 | up (2430, 3080) L2 by Climb | no | yes | - | unreached |
+| `connector:castle-wars:9` | (2429, 3074) L1 | (2429, 3074) L1 | `{ x: 2429, z: 3074, radius: 3, level: 1 }` | Ladder 1 | up (2429, 3075) L2 by Climb-up | no | yes | - | unreached |
+| `connector:castle-wars:10` | (2430, 3081) L2 | (2430, 3081) L2 | `{ x: 2430, z: 3081, radius: 3, level: 2 }` | Staircase 1 | down (2427, 3081) L1 by Climb | no | yes | - | unreached |
+| `connector:castle-wars:11` | (2430, 3082) | (2430, 3082) | `{ x: 2430, z: 3082, radius: 3 }` | Ladder 1 | down (2430, 9481) by Climb-down | no | yes | - | unreached |
 
 ## Areas within
 

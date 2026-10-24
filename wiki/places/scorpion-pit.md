@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:scorpion-pit:0` | (3233, 3943) | Scorpion 4 | no | yes | 54 | - |
-| `npc:scorpion-pit:1` | (3246, 3945) | Scorpion 1 | no | yes | 54 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:scorpion-pit:0` | (3233, 3943) | x 3225-3239, z 3940-3946 | x 3213-3251, z 3928-3958 | `{ x: 3232, z: 3943, radius: 28 }` | Scorpion 4 | no | yes | 54 | - |
+| `npc:scorpion-pit:1` | (3246, 3945) | (3246, 3945) | x 3234-3258, z 3933-3957 | `{ x: 3246, z: 3945, radius: 20 }` | Scorpion 1 | no | yes | 54 | - |

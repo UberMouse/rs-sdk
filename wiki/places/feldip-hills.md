@@ -3,65 +3,65 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:feldip-hills:0` | (2552, 3045) | Fire 1 | no | no | - | unreached |
-| `fire:feldip-hills:1` | (2573, 3032) | Fire 3 | no | no | - | - |
-| `fire:feldip-hills:2` | (2582, 2967) | Fire 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:feldip-hills:0` | (2552, 3045) | (2552, 3045) | `{ x: 2552, z: 3045, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:feldip-hills:1` | (2573, 3032) | x 2572-2574, z 3030-3033 | `{ x: 2573, z: 3032, radius: 6 }` | Fire 3 | no | no | - | - |
+| `fire:feldip-hills:2` | (2582, 2967) | (2582, 2967) | `{ x: 2582, z: 2967, radius: 3 }` | Fire 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:feldip-hills:0` | (2414, 3050) | [normal](../resources/tree/normal.md) 30, [oak](../resources/tree/oak.md) 16 | no | no | - | unreached |
-| `tree:feldip-hills:1` | (2467, 3059) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
-| `tree:feldip-hills:2` | (2475, 3048) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
-| `tree:feldip-hills:3` | (2480, 3026) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:feldip-hills:4` | (2483, 3039) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:feldip-hills:5` | (2492, 2980) | [normal](../resources/tree/normal.md) 37 | no | no | - | - |
-| `tree:feldip-hills:6` | (2490, 3056) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:feldip-hills:7` | (2512, 2990) | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
-| `tree:feldip-hills:8` | (2544, 2967) | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | no | no | - | - |
-| `tree:feldip-hills:9` | (2534, 2994) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
-| `tree:feldip-hills:10` | (2598, 2980) | [achey](../resources/tree/achey.md) 24, [normal](../resources/tree/normal.md) 116, [oak](../resources/tree/oak.md) 6 | no | no | - | - |
-| `tree:feldip-hills:11` | (2563, 2949) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
-| `tree:feldip-hills:12` | (2575, 3042) | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:feldip-hills:13` | (2606, 3057) | [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:feldip-hills:14` | (2638, 2998) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:feldip-hills:15` | (2649, 2955) | [willow](../resources/tree/willow.md) 4 | no | no | - | - |
-| `tree:feldip-hills:16` | (2649, 2997) | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:feldip-hills:0` | (2414, 3050) | x 2368-2459, z 3037-3062 | `{ x: 2414, z: 3050, radius: 51 }` | [normal](../resources/tree/normal.md) 30, [oak](../resources/tree/oak.md) 16 | no | no | - | unreached |
+| `tree:feldip-hills:1` | (2467, 3059) | (2467, 3059) | `{ x: 2467, z: 3059, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:feldip-hills:2` | (2475, 3048) | x 2470-2478, z 3041-3055 | `{ x: 2474, z: 3048, radius: 12 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:feldip-hills:3` | (2480, 3026) | (2480, 3026) | `{ x: 2480, z: 3026, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:feldip-hills:4` | (2483, 3039) | (2483, 3039) | `{ x: 2483, z: 3039, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:feldip-hills:5` | (2492, 2980) | x 2486-2497, z 2968-2995 | `{ x: 2492, z: 2982, radius: 19 }` | [normal](../resources/tree/normal.md) 37 | no | no | - | - |
+| `tree:feldip-hills:6` | (2490, 3056) | (2490, 3056) | `{ x: 2490, z: 3056, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:feldip-hills:7` | (2512, 2990) | x 2506-2519, z 2986-2993 | `{ x: 2513, z: 2990, radius: 12 }` | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
+| `tree:feldip-hills:8` | (2544, 2967) | x 2519-2571, z 2961-2976 | `{ x: 2545, z: 2969, radius: 31 }` | [normal](../resources/tree/normal.md) 25, [oak](../resources/tree/oak.md) 7 | no | no | - | - |
+| `tree:feldip-hills:9` | (2534, 2994) | x 2523-2541, z 2990-3000 | `{ x: 2532, z: 2995, radius: 14 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
+| `tree:feldip-hills:10` | (2598, 2980) | x 2548-2629, z 2948-3009 | `{ x: 2589, z: 2979, radius: 55 }` | [achey](../resources/tree/achey.md) 24, [normal](../resources/tree/normal.md) 116, [oak](../resources/tree/oak.md) 6 | no | no | - | - |
+| `tree:feldip-hills:11` | (2563, 2949) | x 2561-2567, z 2947-2953 | `{ x: 2564, z: 2950, radius: 8 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
+| `tree:feldip-hills:12` | (2575, 3042) | x 2562-2594, z 3015-3060 | `{ x: 2578, z: 3038, radius: 32 }` | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:feldip-hills:13` | (2606, 3057) | x 2604-2607, z 3054-3059 | `{ x: 2606, z: 3057, radius: 7 }` | [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:feldip-hills:14` | (2638, 2998) | x 2637-2638, z 2994-3001 | `{ x: 2638, z: 2998, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:feldip-hills:15` | (2649, 2955) | x 2647-2652, z 2952-2960 | `{ x: 2650, z: 2956, radius: 8 }` | [willow](../resources/tree/willow.md) 4 | no | no | - | - |
+| `tree:feldip-hills:16` | (2649, 2997) | (2649, 2997) | `{ x: 2649, z: 2997, radius: 3 }` | [willow](../resources/tree/willow.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:feldip-hills:0` | (2504, 2965) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:1` | (2504, 2984) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:2` | (2507, 3038) | Enclave guard 2, Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
-| `npc:feldip-hills:3` | (2513, 3024) | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) or carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) or the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 |
-| `npc:feldip-hills:4` | (2520, 2973) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:5` | (2526, 2986) | Ogre (ogre) 1, Rat 1 | no | no | - | - |
-| `npc:feldip-hills:6` | (2529, 3032) | Ogre (ogre) 1 | no | no | - | 20 coins + 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 + 25 Agility |
-| `npc:feldip-hills:7` | (2533, 2976) | Ogre (ogre) 2, Rat 1 | no | no | - | - |
-| `npc:feldip-hills:8` | (2539, 2990) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:9` | (2540, 3017) | Ogre (ogre) 2 | no | no | - | unreached |
-| `npc:feldip-hills:10` | (2542, 3031) | City guard 3 | no | no | - | 20 coins + 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 + 25 Agility |
-| `npc:feldip-hills:11` | (2547, 2990) | Rat 1 | no | no | - | - |
-| `npc:feldip-hills:12` | (2549, 2979) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:13` | (2551, 3045) | Ogre (ogre) 3 | no | no | - | unreached |
-| `npc:feldip-hills:14` | (2552, 2958) | Ogre (ogre) 2 | no | no | - | - |
-| `npc:feldip-hills:15` | (2561, 3020) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:16` | (2567, 3046) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:17` | (2571, 2990) | Ogre (ogre) 2 | no | no | - | - |
-| `npc:feldip-hills:18` | (2575, 3027) | Gorad 1, Ogre (ogre2) 4 | no | no | - | - |
-| `npc:feldip-hills:19` | (2584, 2967) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:20` | (2585, 2977) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:21` | (2592, 2965) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:22` | (2596, 3056) | Dwarf 1 | no | no | - | - |
-| `npc:feldip-hills:23` | (2605, 3058) | Dwarf 1, Shipyard worker 1 | no | no | - | - |
-| `npc:feldip-hills:24` | (2608, 2980) | Ogre (ogre) 1 | no | no | - | - |
-| `npc:feldip-hills:25` | (2612, 2989) | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - | - |
-| `npc:feldip-hills:26` | (2614, 2998) | Ogre (ogre) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:feldip-hills:0` | (2504, 2965) | (2504, 2965) | x 2501-2507, z 2962-2968 | `{ x: 2504, z: 2965, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:1` | (2504, 2984) | (2504, 2984) | x 2501-2507, z 2981-2987 | `{ x: 2504, z: 2984, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:2` | (2507, 3038) | x 2505-2510, z 3032-3044 | x 2502-2513, z 3029-3047 | `{ x: 2508, z: 3038, radius: 14 }` | Enclave guard 2, Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| `npc:feldip-hills:3` | (2513, 3024) | x 2512-2513, z 3022-3026 | x 2509-2516, z 3019-3029 | `{ x: 2513, z: 3024, radius: 10 }` | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) or carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) or the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 |
+| `npc:feldip-hills:4` | (2520, 2973) | (2520, 2973) | x 2517-2523, z 2970-2976 | `{ x: 2520, z: 2973, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:5` | (2526, 2986) | x 2525-2527, z 2986 | x 2510-2542, z 2971-3001 | `{ x: 2526, z: 2986, radius: 25 }` | Ogre (ogre) 1, Rat 1 | no | no | - | - |
+| `npc:feldip-hills:6` | (2529, 3032) | (2529, 3032) | x 2526-2532, z 3029-3035 | `{ x: 2529, z: 3032, radius: 8 }` | Ogre (ogre) 1 | no | no | - | 20 coins + 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 + 25 Agility |
+| `npc:feldip-hills:7` | (2533, 2976) | x 2531-2536, z 2975-2977 | x 2516-2551, z 2960-2992 | `{ x: 2534, z: 2976, radius: 28 }` | Ogre (ogre) 2, Rat 1 | no | no | - | - |
+| `npc:feldip-hills:8` | (2539, 2990) | (2539, 2990) | x 2536-2542, z 2987-2993 | `{ x: 2539, z: 2990, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:9` | (2540, 3017) | x 2539-2541, z 3016-3018 | x 2536-2544, z 3013-3021 | `{ x: 2540, z: 3017, radius: 9 }` | Ogre (ogre) 2 | no | no | - | unreached |
+| `npc:feldip-hills:10` | (2542, 3031) | x 2541-2543, z 3029-3034 | x 2536-2548, z 3024-3039 | `{ x: 2542, z: 3032, radius: 13 }` | City guard 3 | no | no | - | 20 coins + 1 Gold bar (used up) + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + carry Ogre relic + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + 25 Agility or 20 coins + the Gu'Tanoth market guard satisfied (bits of %itwatchtower_bits >= 2, quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:320) + Watch Tower at stage 4 + 25 Agility |
+| `npc:feldip-hills:11` | (2547, 2990) | (2547, 2990) | x 2532-2562, z 2975-3005 | `{ x: 2547, z: 2990, radius: 25 }` | Rat 1 | no | no | - | - |
+| `npc:feldip-hills:12` | (2549, 2979) | (2549, 2979) | x 2546-2552, z 2976-2982 | `{ x: 2549, z: 2979, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:13` | (2551, 3045) | x 2550-2553, z 3043-3047 | x 2547-2556, z 3040-3050 | `{ x: 2552, z: 3045, radius: 11 }` | Ogre (ogre) 3 | no | no | - | unreached |
+| `npc:feldip-hills:14` | (2552, 2958) | x 2551-2552, z 2955-2961 | x 2548-2555, z 2952-2964 | `{ x: 2552, z: 2958, radius: 11 }` | Ogre (ogre) 2 | no | no | - | - |
+| `npc:feldip-hills:15` | (2561, 3020) | (2561, 3020) | x 2558-2564, z 3017-3023 | `{ x: 2561, z: 3020, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:16` | (2567, 3046) | (2567, 3046) | x 2564-2570, z 3043-3049 | `{ x: 2567, z: 3046, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:17` | (2571, 2990) | x 2568-2574, z 2988-2991 | x 2565-2577, z 2985-2994 | `{ x: 2571, z: 2990, radius: 11 }` | Ogre (ogre) 2 | no | no | - | - |
+| `npc:feldip-hills:18` | (2575, 3027) | x 2571-2578, z 3021-3031 | x 2568-2581, z 3018-3034 | `{ x: 2575, z: 3026, radius: 14 }` | Gorad 1, Ogre (ogre2) 4 | no | no | - | - |
+| `npc:feldip-hills:19` | (2584, 2967) | (2584, 2967) | x 2581-2587, z 2964-2970 | `{ x: 2584, z: 2967, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:20` | (2585, 2977) | (2585, 2977) | x 2582-2588, z 2974-2980 | `{ x: 2585, z: 2977, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:21` | (2592, 2965) | (2592, 2965) | x 2589-2595, z 2962-2968 | `{ x: 2592, z: 2965, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:22` | (2596, 3056) | (2596, 3056) | x 2583-2609, z 3043-3069 | `{ x: 2596, z: 3056, radius: 22 }` | Dwarf 1 | no | no | - | - |
+| `npc:feldip-hills:23` | (2605, 3058) | x 2604-2605, z 3057-3058 | x 2591-2618, z 3044-3071 | `{ x: 2605, z: 3058, radius: 23 }` | Dwarf 1, Shipyard worker 1 | no | no | - | - |
+| `npc:feldip-hills:24` | (2608, 2980) | (2608, 2980) | x 2605-2611, z 2977-2983 | `{ x: 2608, z: 2980, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
+| `npc:feldip-hills:25` | (2612, 2989) | x 2609-2615, z 2987-2990 | x 2606-2618, z 2984-2993 | `{ x: 2612, z: 2989, radius: 11 }` | Ogre (ogre) 1, Ogre chieftain 1 | no | no | - | - |
+| `npc:feldip-hills:26` | (2614, 2998) | (2614, 2998) | x 2611-2617, z 2995-3001 | `{ x: 2614, z: 2998, radius: 8 }` | Ogre (ogre) 1 | no | no | - | - |
 
 ## Areas within
 

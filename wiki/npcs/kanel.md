@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Misthalin](../places/misthalin.md) | (3155, 3406) | 1 | 0 | (3155, 3406)-(3155, 3406) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Misthalin](../places/misthalin.md) | (3155, 3406) | (3155, 3406) | 1 | 0 | (3155, 3406) | 100 ticks | - | `{ x: 3155, z: 3406, radius: 3 }` | yes |
 
 ## Interactions
 

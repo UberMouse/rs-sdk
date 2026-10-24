@@ -3,26 +3,26 @@
 
 21 sites, 10 of them in F2P; 13 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 2 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:0` | (2918, 3573) | (2918, 3572) | Anvil 1 | no | - | Falador West bank (Falador), 111 ticks |
-| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:1` | (2950, 3452) | (2951, 3452) | Anvil 2 | yes | Doric's Quest done | Falador West bank (Falador), 45 ticks |
-| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:2` | (2999, 3144) | (2999, 3143) | Anvil 1 | yes | - | Draynor bank (Draynor Village), 96 ticks |
-| [Dwarven Mine](../places/dwarven-mine.md) | `anvil:dwarven-mine:0` | (3012, 9813) | (3012, 9813) | Anvil 2 | yes | - | Falador East bank (Falador), 77 ticks |
-| [Kandarin](../places/kandarin.md) | `anvil:kandarin:0` | (2499, 3332) | (2498, 3332) | Anvil 1 | no | Biohazard done | Ardougne North bank (East Ardougne), 86 ticks via Biohazard done |
-| [Hemenster (Kandarin)](../places/hemenster.md) | `anvil:hemenster:0` | (2637, 3418) | (2636, 3418) | Anvil 3 | no | - | Ardougne North bank (East Ardougne), 43 ticks |
-| [Port Khazard (Kandarin)](../places/port-khazard.md) | `anvil:port-khazard:0` | (2651, 3165) | (2651, 3164) | Anvil 3 | no | - | Yanille bank (Yanille), 59 ticks |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `anvil:rellekka:0` | (2620, 3663) | (2619, 3663) | Anvil 3 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 74 ticks via The Fremennik Trials done |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | `anvil:seers-village:0` | (2713, 3494) | (2712, 3494) | Anvil 3 | no | - | Seers' Village bank (Seers' Village), 15 ticks |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `anvil:west-ardougne:0` | (2501, 3330) | (2500, 3330) | Anvil 1 | no | Biohazard done | Ardougne North bank (East Ardougne), 85 ticks via Biohazard done |
-| [Yanille (Kandarin)](../places/yanille.md) | `anvil:yanille:0` | (2614, 3080) | (2613, 3080) | Anvil 3 | no | - | Yanille bank (Yanille), 8 ticks |
-| [Karamja](../places/karamja.md) | `anvil:karamja:0` | (2790, 3101) | (2789, 3101) | Anvil 1 | no | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 105 ticks via 30 coins |
-| [Miscellania and Etceteria](../places/miscellania.md) | `anvil:miscellania:0` | (2551, 3898) | (2551, 3897) | Anvil 1 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 50 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:0` | (3188, 3424) | (3187, 3424) | Anvil 3 | yes | - | Varrock West bank (Varrock), 8 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:1` | (3228, 3435) | (3228, 3435) | Anvil 2 | yes | - | Varrock East bank (Varrock), 17 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:2` | (3231, 3441) | (3231, 3440) | Anvil 2 | yes | - | Varrock East bank (Varrock), 16 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:3` | (3247, 3404) | (3247, 3404) | Anvil 2 | yes | - | Varrock East bank (Varrock), 18 ticks |
-| [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:0` | (3075, 9498) | (3075, 9498) | Anvil 2 | yes | unreached | - |
-| [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:1` | (3083, 9498) | (3083, 9498) | Anvil 2 | yes | unreached | - |
-| [Wilderness](../places/wilderness.md) | `anvil:wilderness:0` | (2991, 3689) | (2990, 3689) | Anvil 1 | yes | - | Edgeville bank (Edgeville), 99 ticks |
-| [Wilderness](../places/wilderness.md) | `anvil:wilderness:1` | (3062, 3952) | (3062, 3951) | Anvil 1 | no | - | Mage Arena bank (Mage Arena chamber), 28 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:0` | (2918, 3573) | (2918, 3572) | (2918, 3573) | `{ x: 2918, z: 3573, radius: 3 }` | Anvil 1 | no | - | Falador West bank (Falador), 111 ticks |
+| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:1` | (2950, 3452) | (2951, 3452) | x 2950, z 3451-3452 | `{ x: 2950, z: 3452, radius: 4 }` | Anvil 2 | yes | Doric's Quest done | Falador West bank (Falador), 45 ticks |
+| [Asgarnia](../places/asgarnia.md) | `anvil:asgarnia:2` | (2999, 3144) | (2999, 3143) | (2999, 3144) | `{ x: 2999, z: 3144, radius: 3 }` | Anvil 1 | yes | - | Draynor bank (Draynor Village), 96 ticks |
+| [Dwarven Mine](../places/dwarven-mine.md) | `anvil:dwarven-mine:0` | (3012, 9813) | (3012, 9813) | x 3012, z 9811-9814 | `{ x: 3012, z: 9813, radius: 5 }` | Anvil 2 | yes | - | Falador East bank (Falador), 77 ticks |
+| [Kandarin](../places/kandarin.md) | `anvil:kandarin:0` | (2499, 3332) | (2498, 3332) | (2499, 3332) | `{ x: 2499, z: 3332, radius: 3 }` | Anvil 1 | no | Biohazard done | Ardougne North bank (East Ardougne), 86 ticks via Biohazard done |
+| [Hemenster (Kandarin)](../places/hemenster.md) | `anvil:hemenster:0` | (2637, 3418) | (2636, 3418) | x 2635-2639, z 3416-3420 | `{ x: 2637, z: 3418, radius: 6 }` | Anvil 3 | no | - | Ardougne North bank (East Ardougne), 43 ticks |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `anvil:port-khazard:0` | (2651, 3165) | (2651, 3164) | x 2650-2652, z 3164-3166 | `{ x: 2651, z: 3165, radius: 5 }` | Anvil 3 | no | - | Yanille bank (Yanille), 59 ticks |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `anvil:rellekka:0` | (2620, 3663) | (2619, 3663) | x 2620, z 3661-3665 | `{ x: 2620, z: 3663, radius: 5 }` | Anvil 3 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 74 ticks via The Fremennik Trials done |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | `anvil:seers-village:0` | (2713, 3494) | (2712, 3494) | x 2712-2714, z 3492-3495 | `{ x: 2713, z: 3494, radius: 6 }` | Anvil 3 | no | - | Seers' Village bank (Seers' Village), 15 ticks |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `anvil:west-ardougne:0` | (2501, 3330) | (2500, 3330) | (2501, 3330) | `{ x: 2501, z: 3330, radius: 3 }` | Anvil 1 | no | Biohazard done | Ardougne North bank (East Ardougne), 85 ticks via Biohazard done |
+| [Yanille (Kandarin)](../places/yanille.md) | `anvil:yanille:0` | (2614, 3080) | (2613, 3080) | x 2613-2616, z 3078-3081 | `{ x: 2615, z: 3080, radius: 6 }` | Anvil 3 | no | - | Yanille bank (Yanille), 8 ticks |
+| [Karamja](../places/karamja.md) | `anvil:karamja:0` | (2790, 3101) | (2789, 3101) | (2790, 3101) | `{ x: 2790, z: 3101, radius: 3 }` | Anvil 1 | no | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 105 ticks via 30 coins |
+| [Miscellania and Etceteria](../places/miscellania.md) | `anvil:miscellania:0` | (2551, 3898) | (2551, 3897) | (2551, 3898) | `{ x: 2551, z: 3898, radius: 3 }` | Anvil 1 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 50 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:0` | (3188, 3424) | (3187, 3424) | x 3188, z 3421-3426 | `{ x: 3188, z: 3424, radius: 6 }` | Anvil 3 | yes | - | Varrock West bank (Varrock), 8 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:1` | (3228, 3435) | (3228, 3435) | x 3228, z 3434-3436 | `{ x: 3228, z: 3435, radius: 4 }` | Anvil 2 | yes | - | Varrock East bank (Varrock), 17 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:2` | (3231, 3441) | (3231, 3440) | x 3230-3231, z 3441 | `{ x: 3231, z: 3441, radius: 4 }` | Anvil 2 | yes | - | Varrock East bank (Varrock), 16 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `anvil:varrock:3` | (3247, 3404) | (3247, 3404) | x 3246-3248, z 3404 | `{ x: 3247, z: 3404, radius: 4 }` | Anvil 2 | yes | - | Varrock East bank (Varrock), 18 ticks |
+| [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:0` | (3075, 9498) | (3075, 9498) | x 3075, z 9497-9499 | `{ x: 3075, z: 9498, radius: 4 }` | Anvil 2 | yes | unreached | - |
+| [Tutorial Island caves](../places/tutorial-island-caves.md) | `anvil:tutorial-island-caves:1` | (3083, 9498) | (3083, 9498) | x 3083, z 9497-9499 | `{ x: 3083, z: 9498, radius: 4 }` | Anvil 2 | yes | unreached | - |
+| [Wilderness](../places/wilderness.md) | `anvil:wilderness:0` | (2991, 3689) | (2990, 3689) | (2991, 3689) | `{ x: 2991, z: 3689, radius: 3 }` | Anvil 1 | yes | - | Edgeville bank (Edgeville), 99 ticks |
+| [Wilderness](../places/wilderness.md) | `anvil:wilderness:1` | (3062, 3952) | (3062, 3951) | (3062, 3952) | `{ x: 3062, z: 3952, radius: 3 }` | Anvil 1 | no | - | Mage Arena bank (Mage Arena chamber), 28 ticks |

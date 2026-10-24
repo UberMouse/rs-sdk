@@ -23,10 +23,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Wilderness](../places/wilderness.md) | (3037, 3671) | 2 | 5 | (3031, 3665)-(3043, 3677) | 100 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3038, 3661) | 2 | 5 | (3032, 3655)-(3044, 3666) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Wilderness](../places/wilderness.md) | (3037, 3671) | x 3036-3038, z 3670-3672 | 2 | 5 | x 3031-3043, z 3665-3677 | 100 ticks | - | `{ x: 3037, z: 3671, radius: 12 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3038, 3661) | x 3037-3039, z 3660-3661 | 2 | 5 | x 3032-3044, z 3655-3666 | 100 ticks | - | `{ x: 3038, z: 3661, radius: 12 }` | yes |
 
 ## Drops
 

@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:coal-trucks:0` | (2590, 3498) | [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:coal-trucks:1` | (2592, 3483) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
-| `tree:coal-trucks:2` | (2606, 3497) | [normal](../resources/tree/normal.md) 2, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:coal-trucks:3` | (2606, 3482) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:coal-trucks:0` | (2590, 3498) | x 2588-2592, z 3496-3501 | `{ x: 2590, z: 3499, radius: 7 }` | [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:coal-trucks:1` | (2592, 3483) | x 2591-2594, z 3480-3487 | `{ x: 2593, z: 3484, radius: 8 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
+| `tree:coal-trucks:2` | (2606, 3497) | x 2603-2610, z 3493-3502 | `{ x: 2607, z: 3498, radius: 10 }` | [normal](../resources/tree/normal.md) 2, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:coal-trucks:3` | (2606, 3482) | x 2605-2608, z 3480-3484 | `{ x: 2607, z: 3482, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:coal-trucks:0` | (2588, 3482) | [coal](../resources/rock/coal.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:coal-trucks:0` | (2588, 3482) | x 2588, z 3481-3482 | `{ x: 2588, z: 3482, radius: 4 }` | [coal](../resources/rock/coal.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:coal-trucks:0` | (2592, 3482) | Giant bat 2 | no | no | - | - |
-| `npc:coal-trucks:1` | (2610, 3479) | Rat 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:coal-trucks:0` | (2592, 3482) | x 2591-2592, z 3479-3484 | x 2583-2600, z 3471-3492 | `{ x: 2592, z: 3482, radius: 18 }` | Giant bat 2 | no | no | - | - |
+| `npc:coal-trucks:1` | (2610, 3479) | (2610, 3479) | x 2595-2625, z 3464-3494 | `{ x: 2610, z: 3479, radius: 25 }` | Rat 1 | no | no | - | - |

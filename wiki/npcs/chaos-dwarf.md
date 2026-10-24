@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (3032, 10311) | 4 | 20 | (3009, 10286)-(3066, 10341) | 300 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2915, 9760) | 1 | 20 | (2895, 9740)-(2935, 9780) | 300 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9759) | 2 | 20 | (2902, 9737)-(2948, 9781) | 300 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9769) | 1 | 20 | (2905, 9749)-(2945, 9789) | 300 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9786) | 2 | 20 | (2906, 9764)-(2958, 9830) | 300 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (3021, 3761) | 4 | 20 | (2999, 3735)-(3045, 3786) | 300 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3233, 3783) | 1 | 20 | (3213, 3763)-(3253, 3803) | 300 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3241, 3796) | 1 | 20 | (3221, 3776)-(3261, 3816) | 300 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3253, 3782) | 1 | 20 | (3233, 3762)-(3273, 3802) | 300 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (3032, 10311) | x 3029-3046, z 10306-10321 | 4 | 20 | x 3009-3066, z 10286-10341 | 300 ticks | - | `{ x: 3038, z: 10314, radius: 44 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2915, 9760) | (2915, 9760) | 1 | 20 | x 2895-2935, z 9740-9780 | 300 ticks | - | `{ x: 2915, z: 9760, radius: 32 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9759) | x 2922-2928, z 9757-9761 | 2 | 20 | x 2902-2948, z 9737-9781 | 300 ticks | - | `{ x: 2925, z: 9759, radius: 35 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2925, 9769) | (2925, 9769) | 1 | 20 | x 2905-2945, z 9749-9789 | 300 ticks | - | `{ x: 2925, z: 9769, radius: 32 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2935, 9786) | x 2926-2938, z 9784-9810 | 2 | 20 | x 2906-2958, z 9764-9830 | 300 ticks | - | `{ x: 2932, z: 9797, radius: 46 }` | no |
+| [Wilderness](../places/wilderness.md) | (3021, 3761) | x 3019-3025, z 3755-3766 | 4 | 20 | x 2999-3045, z 3735-3786 | 300 ticks | - | `{ x: 3022, z: 3761, radius: 38 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3233, 3783) | (3233, 3783) | 1 | 20 | x 3213-3253, z 3763-3803 | 300 ticks | - | `{ x: 3233, z: 3783, radius: 32 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3241, 3796) | (3241, 3796) | 1 | 20 | x 3221-3261, z 3776-3816 | 300 ticks | - | `{ x: 3241, z: 3796, radius: 32 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3253, 3782) | (3253, 3782) | 1 | 20 | x 3233-3273, z 3762-3802 | 300 ticks | - | `{ x: 3253, z: 3782, radius: 32 }` | yes |
 
 ## Drops
 

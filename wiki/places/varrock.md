@@ -5,206 +5,206 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:varrock:0` | (3204, 3398) | Varrock Swordshop. (swordshop) 2 | yes | no | - | - |
-| `shop:varrock:1` | (3203, 3433) | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - | - |
-| `shop:varrock:2` | (3204, 3417) | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - | - |
-| `shop:varrock:3` | (3218, 3413) | Varrock General Store (generalshop2) 2 | yes | no | - | - |
-| `shop:varrock:4` | (3229, 3438) | Horvik's Armour Shop. (armourshop) 1 | yes | no | - | - |
-| `shop:varrock:5` | (3232, 3423) | Lowe's Archery Emporium (archeryshop) 1 | yes | no | - | - |
-| `shop:varrock:6` | (3253, 3402) | Aubury's Rune Shop. (runeshop) 1 | yes | no | - | - |
-| `shop:varrock:7` | (3271, 3411) | Ye Olde Tea Shoppe (teashop) 1 | yes | no | - | - |
-| `shop:varrock:8` | (3281, 3398) | Fancy Clothes Store (fancyclothesstore) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:varrock:0` | (3204, 3398) | x 3203-3205, z 3397-3399 | x 3198-3210, z 3392-3404 | `{ x: 3204, z: 3398, radius: 12 }` | Varrock Swordshop. (swordshop) 2 | yes | no | - | - |
+| `shop:varrock:1` | (3203, 3433) | (3203, 3433) | x 3198-3208, z 3428-3438 | `{ x: 3203, z: 3433, radius: 11 }` | Zaff's Superior Staffs! (memberstaffshop) 1 | yes | no | - | - |
+| `shop:varrock:2` | (3204, 3417) | (3204, 3417) | x 3199-3209, z 3412-3422 | `{ x: 3204, z: 3417, radius: 11 }` | Thessalia Fine Clothes. (clotheshop) 1 | yes | no | - | - |
+| `shop:varrock:3` | (3218, 3413) | x 3217-3218, z 3411-3415 | x 3212-3223, z 3406-3420 | `{ x: 3218, z: 3413, radius: 13 }` | Varrock General Store (generalshop2) 2 | yes | no | - | - |
+| `shop:varrock:4` | (3229, 3438) | (3229, 3438) | x 3224-3234, z 3433-3443 | `{ x: 3229, z: 3438, radius: 11 }` | Horvik's Armour Shop. (armourshop) 1 | yes | no | - | - |
+| `shop:varrock:5` | (3232, 3423) | (3232, 3423) | x 3227-3237, z 3418-3428 | `{ x: 3232, z: 3423, radius: 11 }` | Lowe's Archery Emporium (archeryshop) 1 | yes | no | - | - |
+| `shop:varrock:6` | (3253, 3402) | (3253, 3402) | x 3248-3258, z 3397-3407 | `{ x: 3253, z: 3402, radius: 11 }` | Aubury's Rune Shop. (runeshop) 1 | yes | no | - | - |
+| `shop:varrock:7` | (3271, 3411) | (3271, 3411) | x 3268-3274, z 3408-3414 | `{ x: 3271, z: 3411, radius: 8 }` | Ye Olde Tea Shoppe (teashop) 1 | yes | no | - | - |
+| `shop:varrock:8` | (3281, 3398) | (3281, 3398) | x 3276-3286, z 3393-3403 | `{ x: 3281, z: 3398, radius: 11 }` | Fancy Clothes Store (fancyclothesstore) 1 | yes | no | - | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:varrock:0` | (3188, 3424) | Anvil 3 | yes | no | - | - |
-| `anvil:varrock:1` | (3228, 3435) | Anvil 2 | yes | no | - | - |
-| `anvil:varrock:2` | (3231, 3441) | Anvil 2 | yes | no | - | - |
-| `anvil:varrock:3` | (3247, 3404) | Anvil 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:varrock:0` | (3188, 3424) | x 3188, z 3421-3426 | `{ x: 3188, z: 3424, radius: 6 }` | Anvil 3 | yes | no | - | - |
+| `anvil:varrock:1` | (3228, 3435) | x 3228, z 3434-3436 | `{ x: 3228, z: 3435, radius: 4 }` | Anvil 2 | yes | no | - | - |
+| `anvil:varrock:2` | (3231, 3441) | x 3230-3231, z 3441 | `{ x: 3231, z: 3441, radius: 4 }` | Anvil 2 | yes | no | - | - |
+| `anvil:varrock:3` | (3247, 3404) | x 3246-3248, z 3404 | `{ x: 3247, z: 3404, radius: 4 }` | Anvil 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:varrock:0` | (3202, 3401) L1 | Range 1 | yes | no | - | - |
-| `range:varrock:1` | (3219, 3388) | Range 1 | yes | no | - | - |
-| `range:varrock:2` | (3222, 3497) | Range 2 | yes | no | - | - |
-| `range:varrock:3` | (3229, 3401) | Range 1 | yes | no | - | - |
-| `range:varrock:4` | (3236, 3382) | Range 1 | yes | no | - | - |
-| `range:varrock:5` | (3237, 3403) | Range 1 | yes | no | - | - |
-| `range:varrock:6` | (3237, 3409) | Range 1 | yes | no | - | - |
-| `range:varrock:7` | (3286, 3488) | Range 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:varrock:0` | (3202, 3401) L1 | (3202, 3401) L1 | `{ x: 3202, z: 3401, radius: 3, level: 1 }` | Range 1 | yes | no | - | - |
+| `range:varrock:1` | (3219, 3388) | (3219, 3388) | `{ x: 3219, z: 3388, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:varrock:2` | (3222, 3497) | x 3221-3223, z 3497 | `{ x: 3222, z: 3497, radius: 4 }` | Range 2 | yes | no | - | - |
+| `range:varrock:3` | (3229, 3401) | (3229, 3401) | `{ x: 3229, z: 3401, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:varrock:4` | (3236, 3382) | (3236, 3382) | `{ x: 3236, z: 3382, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:varrock:5` | (3237, 3403) | (3237, 3403) | `{ x: 3237, z: 3403, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:varrock:6` | (3237, 3409) | (3237, 3409) | `{ x: 3237, z: 3409, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:varrock:7` | (3286, 3488) | x 3286, z 3486-3489 | `{ x: 3286, z: 3488, radius: 5 }` | Range 2 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:varrock:0` | (3219, 3403) | Fireplace 1 | yes | no | - | - |
-| `fire:varrock:1` | (3240, 3454) | Fireplace 1 | yes | no | - | - |
-| `fire:varrock:2` | (3243, 3394) | Cooking pot 1, Fireplace 1 | yes | no | - | - |
-| `fire:varrock:3` | (3271, 3380) | Fireplace 1 | yes | no | - | - |
-| `fire:varrock:4` | (3275, 3500) | Fireplace 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:varrock:0` | (3219, 3403) | (3219, 3403) | `{ x: 3219, z: 3403, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:1` | (3240, 3454) | (3240, 3454) | `{ x: 3240, z: 3454, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:2` | (3243, 3394) | x 3242-3244, z 3393-3394 | `{ x: 3243, z: 3394, radius: 5 }` | Cooking pot 1, Fireplace 1 | yes | no | - | - |
+| `fire:varrock:3` | (3271, 3380) | (3271, 3380) | `{ x: 3271, z: 3380, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:varrock:4` | (3275, 3500) | (3275, 3500) | `{ x: 3275, z: 3500, radius: 3 }` | Fireplace 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:varrock:0` | (3190, 3470) | Fountain 2 | yes | no | - | - |
-| `water-source:varrock:1` | (3206, 3463) | Fountain 1 | yes | no | - | - |
-| `water-source:varrock:2` | (3218, 3463) | Fountain 1 | yes | no | - | - |
-| `water-source:varrock:3` | (3238, 3434) | Fountain 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:varrock:0` | (3190, 3470) | x 3190, z 3468-3472 | `{ x: 3190, z: 3470, radius: 5 }` | Fountain 2 | yes | no | - | - |
+| `water-source:varrock:1` | (3206, 3463) | (3206, 3463) | `{ x: 3206, z: 3463, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:varrock:2` | (3218, 3463) | (3218, 3463) | `{ x: 3218, z: 3463, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:varrock:3` | (3238, 3434) | (3238, 3434) | `{ x: 3238, z: 3434, radius: 3 }` | Fountain 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:varrock:0` | (3253, 3486) | Altar 1 | yes | no | - | - |
-| `altar:varrock:1` | (3259, 3381) | Chaos altar 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:varrock:0` | (3253, 3486) | (3253, 3486) | `{ x: 3253, z: 3486, radius: 3 }` | Altar 1 | yes | no | - | - |
+| `altar:varrock:1` | (3259, 3381) | (3259, 3381) | `{ x: 3259, z: 3381, radius: 3 }` | Chaos altar 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:varrock:0` | (3182, 3484) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
-| `tree:varrock:1` | (3187, 3402) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:2` | (3201, 3410) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:varrock:3` | (3201, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:4` | (3212, 3448) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
-| `tree:varrock:5` | (3225, 3414) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
-| `tree:varrock:6` | (3225, 3378) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:varrock:7` | (3221, 3504) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:varrock:8` | (3223, 3434) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:varrock:9` | (3233, 3463) | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
-| `tree:varrock:10` | (3238, 3441) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
-| `tree:varrock:11` | (3240, 3501) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:varrock:12` | (3249, 3404) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:varrock:13` | (3247, 3378) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:14` | (3248, 3472) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:varrock:15` | (3249, 3505) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:16` | (3258, 3397) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:17` | (3278, 3482) | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 9, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
-| `tree:varrock:18` | (3259, 3440) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:19` | (3262, 3431) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:varrock:20` | (3279, 3434) | [normal](../resources/tree/normal.md) 24, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
-| `tree:varrock:21` | (3291, 3452) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
-| `tree:varrock:22` | (3291, 3380) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:varrock:0` | (3182, 3484) | x 3172-3208, z 3458-3504 | `{ x: 3190, z: 3481, radius: 33 }` | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 3, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
+| `tree:varrock:1` | (3187, 3402) | (3187, 3402) | `{ x: 3187, z: 3402, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:2` | (3201, 3410) | x 3200-3201, z 3409-3411 | `{ x: 3201, z: 3410, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:3` | (3201, 3440) | (3201, 3440) | `{ x: 3201, z: 3440, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:4` | (3212, 3448) | x 3210-3214, z 3441-3455 | `{ x: 3212, z: 3448, radius: 11 }` | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| `tree:varrock:5` | (3225, 3414) | x 3220-3233, z 3407-3423 | `{ x: 3227, z: 3415, radius: 14 }` | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| `tree:varrock:6` | (3225, 3378) | x 3221-3229, z 3378 | `{ x: 3225, z: 3378, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:7` | (3221, 3504) | (3221, 3504) | `{ x: 3221, z: 3504, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:varrock:8` | (3223, 3434) | (3223, 3434) | `{ x: 3223, z: 3434, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:varrock:9` | (3233, 3463) | x 3226-3242, z 3458-3467 | `{ x: 3234, z: 3463, radius: 13 }` | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
+| `tree:varrock:10` | (3238, 3441) | x 3236-3240, z 3439-3442 | `{ x: 3238, z: 3441, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| `tree:varrock:11` | (3240, 3501) | x 3236-3246, z 3496-3503 | `{ x: 3241, z: 3500, radius: 10 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:varrock:12` | (3249, 3404) | x 3245-3252, z 3400-3408 | `{ x: 3249, z: 3404, radius: 9 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:varrock:13` | (3247, 3378) | (3247, 3378) | `{ x: 3247, z: 3378, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:14` | (3248, 3472) | (3248, 3472) | `{ x: 3248, z: 3472, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:varrock:15` | (3249, 3505) | (3249, 3505) | `{ x: 3249, z: 3505, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:16` | (3258, 3397) | (3258, 3397) | `{ x: 3258, z: 3397, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:17` | (3278, 3482) | x 3258-3294, z 3463-3505 | `{ x: 3276, z: 3484, radius: 31 }` | [normal](../resources/tree/normal.md) 39, [oak](../resources/tree/oak.md) 9, [yew](../resources/tree/yew.md) 2 | yes | no | - | - |
+| `tree:varrock:18` | (3259, 3440) | (3259, 3440) | `{ x: 3259, z: 3440, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:19` | (3262, 3431) | (3262, 3431) | `{ x: 3262, z: 3431, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:varrock:20` | (3279, 3434) | x 3272-3288, z 3408-3454 | `{ x: 3280, z: 3431, radius: 28 }` | [normal](../resources/tree/normal.md) 24, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
+| `tree:varrock:21` | (3291, 3452) | x 3289-3295, z 3450-3453 | `{ x: 3292, z: 3452, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| `tree:varrock:22` | (3291, 3380) | (3291, 3380) | `{ x: 3291, z: 3380, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Stalls
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `stall:varrock:0` | (3269, 3410) | [Tea stall](../resources/stall/tea_stall.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `stall:varrock:0` | (3269, 3410) | (3269, 3410) | `{ x: 3269, z: 3410, radius: 3 }` | [Tea stall](../resources/stall/tea_stall.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:varrock:0` | (3174, 3427) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
-| `pickpocket:varrock:1` | (3175, 3403) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:2` | (3175, 3414) L1 | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:3` | (3180, 3401) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:4` | (3194, 3396) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:5` | (3203, 3497) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
-| `pickpocket:varrock:6` | (3204, 3496) | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:7` | (3209, 3379) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
-| `pickpocket:varrock:8` | (3212, 3463) | [Guard](../resources/pickpocket/guard1.md) 6 | yes | no | - | - |
-| `pickpocket:varrock:9` | (3223, 3400) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:10` | (3231, 3399) L1 | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:11` | (3234, 3385) L1 | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:12` | (3238, 3406) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:13` | (3243, 3501) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
-| `pickpocket:varrock:14` | (3245, 3395) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:15` | (3261, 3402) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
-| `pickpocket:varrock:16` | (3274, 3427) | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - | - |
-| `pickpocket:varrock:17` | (3280, 3500) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:varrock:0` | (3174, 3427) | x 3173-3175, z 3423-3429 | x 3171-3177, z 3421-3431 | `{ x: 3174, z: 3426, radius: 9 }` | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
+| `pickpocket:varrock:1` | (3175, 3403) L1 | (3175, 3403) L1 | x 3173-3177, z 3401-3405 L1 | `{ x: 3175, z: 3403, radius: 6, level: 1 }` | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:2` | (3175, 3414) L1 | (3175, 3414) L1 | x 3173-3177, z 3412-3416 L1 | `{ x: 3175, z: 3414, radius: 6, level: 1 }` | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:3` | (3180, 3401) | (3180, 3401) | x 3178-3182, z 3399-3403 | `{ x: 3180, z: 3401, radius: 6 }` | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:4` | (3194, 3396) | (3194, 3396) | x 3189-3199, z 3391-3401 | `{ x: 3194, z: 3396, radius: 11 }` | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:5` | (3203, 3497) L1 | x 3201-3205, z 3495-3498 L1 | x 3199-3207, z 3493-3500 L1 | `{ x: 3203, z: 3497, radius: 9, level: 1 }` | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
+| `pickpocket:varrock:6` | (3204, 3496) | (3204, 3496) | x 3202-3206, z 3494-3498 | `{ x: 3204, z: 3496, radius: 6 }` | [Guard](../resources/pickpocket/guard1.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:7` | (3209, 3379) | x 3205-3211, z 3378-3381 | x 3203-3213, z 3376-3383 | `{ x: 3208, z: 3380, radius: 10 }` | [Guard](../resources/pickpocket/guard1.md) 3 | yes | no | - | - |
+| `pickpocket:varrock:8` | (3212, 3463) | x 3206-3217, z 3461-3465 | x 3204-3219, z 3459-3467 | `{ x: 3212, z: 3463, radius: 12 }` | [Guard](../resources/pickpocket/guard1.md) 6 | yes | no | - | - |
+| `pickpocket:varrock:9` | (3223, 3400) | x 3223, z 3398-3401 | x 3218-3228, z 3393-3406 | `{ x: 3223, z: 3400, radius: 12 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:10` | (3231, 3399) L1 | (3231, 3399) L1 | x 3226-3236, z 3394-3404 L1 | `{ x: 3231, z: 3399, radius: 11, level: 1 }` | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:11` | (3234, 3385) L1 | (3234, 3385) L1 | x 3229-3239, z 3380-3390 L1 | `{ x: 3234, z: 3385, radius: 11, level: 1 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:12` | (3238, 3406) | x 3237-3238, z 3406 | x 3232-3243, z 3401-3411 | `{ x: 3238, z: 3406, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:13` | (3243, 3501) | x 3240-3246, z 3500-3501 | x 3238-3248, z 3498-3503 | `{ x: 3243, z: 3501, radius: 9 }` | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
+| `pickpocket:varrock:14` | (3245, 3395) | (3245, 3395) | x 3240-3250, z 3390-3400 | `{ x: 3245, z: 3395, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:15` | (3261, 3402) | (3261, 3402) | x 3256-3266, z 3397-3407 | `{ x: 3261, z: 3402, radius: 11 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+| `pickpocket:varrock:16` | (3274, 3427) | x 3271-3275, z 3422-3430 | x 3269-3277, z 3420-3432 | `{ x: 3273, z: 3426, radius: 11 }` | [Guard](../resources/pickpocket/guard1.md) 4 | yes | no | - | - |
+| `pickpocket:varrock:17` | (3280, 3500) | x 3278-3283, z 3496-3502 | x 3273-3288, z 3491-3507 | `{ x: 3281, z: 3499, radius: 15 }` | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 1, [Woman (woman2)](../resources/pickpocket/woman2.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:varrock:0` | (3176, 3478) | Lucien 1, Rat 3 | yes | no | - | - |
-| `npc:varrock:1` | (3177, 3405) | Imp 1 | yes | no | - | - |
-| `npc:varrock:2` | (3213, 3502) | Imp 1 | yes | no | - | - |
-| `npc:varrock:3` | (3225, 3395) | Barbarian woman 1 | yes | no | - | - |
-| `npc:varrock:4` | (3235, 3401) | Tramp 1 | yes | no | - | - |
-| `npc:varrock:5` | (3242, 3392) | Imp 1, Mugger 1, Rat 1, Spider 1 | yes | no | - | - |
-| `npc:varrock:6` | (3246, 3384) L1 | Weaponsmaster 1 | yes | no | - | carry Key |
-| `npc:varrock:7` | (3246, 3458) | Imp 1 | yes | no | - | - |
-| `npc:varrock:8` | (3277, 3505) | Black Knight 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:varrock:0` | (3176, 3478) | x 3173-3179, z 3476-3480 | x 3158-3194, z 3461-3495 | `{ x: 3176, z: 3478, radius: 28 }` | Lucien 1, Rat 3 | yes | no | - | - |
+| `npc:varrock:1` | (3177, 3405) | (3177, 3405) | x 3152-3202, z 3380-3430 | `{ x: 3177, z: 3405, radius: 39 }` | Imp 1 | yes | no | - | - |
+| `npc:varrock:2` | (3213, 3502) | (3213, 3502) | x 3188-3238, z 3477-3527 | `{ x: 3213, z: 3502, radius: 39 }` | Imp 1 | yes | no | - | - |
+| `npc:varrock:3` | (3225, 3395) | (3225, 3395) | x 3215-3235, z 3385-3405 | `{ x: 3225, z: 3395, radius: 18 }` | Barbarian woman 1 | yes | no | - | - |
+| `npc:varrock:4` | (3235, 3401) | (3235, 3401) | x 3215-3255, z 3381-3421 | `{ x: 3235, z: 3401, radius: 32 }` | Tramp 1 | yes | no | - | - |
+| `npc:varrock:5` | (3242, 3392) | x 3238-3249, z 3390-3393 | x 3213-3274, z 3365-3418 | `{ x: 3244, z: 3392, radius: 45 }` | Imp 1, Mugger 1, Rat 1, Spider 1 | yes | no | - | - |
+| `npc:varrock:6` | (3246, 3384) L1 | (3246, 3384) L1 | x 3241-3251, z 3379-3389 L1 | `{ x: 3246, z: 3384, radius: 11, level: 1 }` | Weaponsmaster 1 | yes | no | - | carry Key |
+| `npc:varrock:7` | (3246, 3458) | (3246, 3458) | x 3221-3271, z 3433-3483 | `{ x: 3246, z: 3458, radius: 39 }` | Imp 1 | yes | no | - | - |
+| `npc:varrock:8` | (3277, 3505) | (3277, 3505) | x 3267-3287, z 3495-3515 | `{ x: 3277, z: 3505, radius: 18 }` | Black Knight 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:varrock:0` | (3175, 3420) | Staircase 1 | up (3175, 3419) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:1` | (3175, 3420) L1 | Staircase 1 | down (3175, 3423) by Climb-down | yes | no | - | - |
-| `connector:varrock:2` | (3177, 3401) | Staircase 1 | up (3176, 3401) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:3` | (3177, 3401) L1 | Staircase 1 | down (3180, 3401) by Climb-down | yes | no | - | - |
-| `connector:varrock:4` | (3183, 3447) | Ladder 1 | up (3183, 3446) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:5` | (3183, 3447) L1 | Ladder 1 | down (3183, 3446) by Climb-down | yes | no | - | - |
-| `connector:varrock:6` | (3187, 3414) L1 | Ladder 1 | down (3186, 3414) by Climb-down | yes | no | - | unreached |
-| `connector:varrock:7` | (3187, 3433) | Staircase 1 | down (3190, 9833) by Climb-down | yes | no | - | - |
-| `connector:varrock:8` | (3188, 3389) | Staircase 1 | up (3188, 3392) L1 by Climb-up | yes | no | - | Shield of Arrav at stage 3 |
-| `connector:varrock:9` | (3188, 3390) L1 | Staircase 1 | down (3188, 3388) by Climb-down | yes | no | - | Shield of Arrav at stage 3 |
-| `connector:varrock:10` | (3202, 3416) | Ladder 1 | up (3202, 3417) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:11` | (3202, 3416) L1 | Ladder 1 | down (3202, 3417) by Climb-down | yes | no | - | - |
-| `connector:varrock:12` | (3202, 3434) | Ladder 1 | up (3201, 3434) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:13` | (3202, 3434) L1 | Ladder 1 | down (3201, 3434) by Climb-down | yes | no | - | - |
-| `connector:varrock:14` | (3202, 3497) | Staircase 1 | up (3203, 3496) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:15` | (3202, 3497) L1 | Staircase 1 | down (3203, 3496) by Climb or Climb-down; up (3204, 3497) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:varrock:16` | (3203, 3389) | Ladder 1 | up (3203, 3388) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:17` | (3203, 3389) L1 | Ladder 1 | down (3203, 3388) by Climb-down | yes | no | - | - |
-| `connector:varrock:18` | (3203, 3497) L2 | Staircase 1 | down (3203, 3496) L1 by Climb-down | yes | no | - | - |
-| `connector:varrock:19` | (3205, 3395) | Ladder 1 | up (3204, 3395) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:20` | (3205, 3395) L1 | Ladder 1 | down (3204, 3395) by Climb-down | yes | no | - | - |
-| `connector:varrock:21` | (3205, 3497) L2 | Ladder 1 | up (3204, 3497) L3 by Climb-up | yes | no | - | - |
-| `connector:varrock:22` | (3205, 3497) L3 | Ladder 1 | down (3204, 3497) L2 by Climb-down | yes | no | - | - |
-| `connector:varrock:23` | (3214, 3410) | Ladder 1 | up (3214, 3411) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:24` | (3214, 3410) L1 | Ladder 1 | down (3214, 3411) by Climb-down | yes | no | - | - |
-| `connector:varrock:25` | (3218, 3496) | Staircase 1 | up (3220, 3496) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:26` | (3219, 3496) L1 | Staircase 1 | down (3220, 3496) by Climb-down | yes | no | - | - |
-| `connector:varrock:27` | (3224, 3388) | Ladder 1 | up (3223, 3388) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:28` | (3224, 3388) L1 | Ladder 1 | down (3223, 3388) by Climb-down | yes | no | - | - |
-| `connector:varrock:29` | (3225, 3472) L1 | Ladder 1 | up (3224, 3472) L2 by Climb-up | yes | no | - | - |
-| `connector:varrock:30` | (3225, 3472) L2 | Ladder 1 | down (3224, 3472) L1 by Climb-down | yes | no | - | - |
-| `connector:varrock:31` | (3227, 3393) | Staircase 1 | up (3230, 3393) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:32` | (3228, 3393) L1 | Staircase 1 | down (3226, 3393) by Climb-down | yes | no | - | - |
-| `connector:varrock:33` | (3230, 3383) | Staircase 1 | up (3230, 3382) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:34` | (3230, 3383) L1 | Staircase 1 | down (3230, 3386) by Climb-down | yes | no | - | - |
-| `connector:varrock:35` | (3230, 3504) | Ladder 1 | down (3229, 9904) by Climb-down | yes | no | - | - |
-| `connector:varrock:36` | (3231, 3401) | Ladder 1 | down (3230, 9801) by Climb-down | yes | no | - | - |
-| `connector:varrock:37` | (3233, 3424) | Ladder 1 | up (3232, 3424) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:38` | (3233, 3424) L1 | Ladder 1 | down (3232, 3424) by Climb-down | yes | no | - | - |
-| `connector:varrock:39` | (3237, 3447) | Staircase 1 | up (3239, 3447) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:40` | (3237, 3458) | Manhole 1 | down (3236, 9858) by Open, then Climb down | yes | no | - | - |
-| `connector:varrock:41` | (3238, 3447) L1 | Staircase 1 | down (3239, 3447) by Climb-down | yes | no | - | - |
-| `connector:varrock:42` | (3239, 3489) | Staircase 1 | up (3242, 3489) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:43` | (3240, 3489) L1 | Staircase 1 | down (3238, 3489) by Climb-down | yes | no | - | - |
-| `connector:varrock:44` | (3242, 3505) L2 | Trapdoor 1 | down (3241, 9905) L2 by Open, then Climb-down | yes | no | - | unreached |
-| `connector:varrock:45` | (3244, 3383) | Ladder 1 | down (3244, 9782) by Climb-down | yes | no | - | - |
-| `connector:varrock:46` | (3247, 3409) | Ladder 1 | up (3246, 3409) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:47` | (3247, 3409) L1 | Ladder 1 | down (3246, 3409) by Climb-down | yes | no | - | - |
-| `connector:varrock:48` | (3252, 3384) | Ladder 1 | up (3251, 3384) L1 by Climb-up | yes | no | - | carry Key |
-| `connector:varrock:49` | (3252, 3384) L1 | Ladder 1 | down (3251, 3384) by Climb-down | yes | no | - | carry Key |
-| `connector:varrock:50` | (3255, 3421) | Staircase 1 | up (3255, 3420) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:51` | (3255, 3421) L1 | Staircase 1 | down (3254, 3421) by Climb-down | yes | no | - | - |
-| `connector:varrock:52` | (3258, 3487) | Staircase 1 | up (3258, 3486) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:53` | (3258, 3487) L1 | Staircase 1 | down (3258, 3486) by Climb or Climb-down; up (3258, 3486) L2 by Climb or Climb-up | yes | no | - | - |
-| `connector:varrock:54` | (3258, 3487) L2 | Staircase 1 | down (3258, 3486) L1 by Climb or Climb-down; up (3258, 3486) L3 by Climb or Climb-up | yes | no | - | - |
-| `connector:varrock:55` | (3258, 3487) L3 | Staircase 1 | down (3258, 3486) L2 by Climb-down | yes | no | - | - |
-| `connector:varrock:56` | (3259, 3446) | Staircase 1 | up (3259, 3449) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:57` | (3259, 3447) L1 | Staircase 1 | down (3259, 3445) by Climb-down | yes | no | - | - |
-| `connector:varrock:58` | (3262, 3403) | Ladder 1 | up (3261, 3403) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:59` | (3262, 3403) L1 | Ladder 1 | down (3261, 3403) by Climb-down | yes | no | - | - |
-| `connector:varrock:60` | (3278, 3434) L2 | Trapdoor 1 | down (3277, 9834) L2 by Open, then Climb-down | yes | no | - | unreached |
-| `connector:varrock:61` | (3283, 3398) | Ladder 1 | up (3282, 3398) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:62` | (3283, 3398) L1 | Ladder 1 | down (3282, 3398) by Climb-down | yes | no | - | - |
-| `connector:varrock:63` | (3285, 3493) | Staircase 1 | up (3285, 3492) L1 by Climb-up | yes | no | - | - |
-| `connector:varrock:64` | (3285, 3493) L1 | Staircase 1 | down (3285, 3496) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:varrock:0` | (3175, 3420) | (3175, 3420) | `{ x: 3175, z: 3420, radius: 3 }` | Staircase 1 | up (3175, 3419) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:1` | (3175, 3420) L1 | (3175, 3420) L1 | `{ x: 3175, z: 3420, radius: 3, level: 1 }` | Staircase 1 | down (3175, 3423) by Climb-down | yes | no | - | - |
+| `connector:varrock:2` | (3177, 3401) | (3177, 3401) | `{ x: 3177, z: 3401, radius: 3 }` | Staircase 1 | up (3176, 3401) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:3` | (3177, 3401) L1 | (3177, 3401) L1 | `{ x: 3177, z: 3401, radius: 3, level: 1 }` | Staircase 1 | down (3180, 3401) by Climb-down | yes | no | - | - |
+| `connector:varrock:4` | (3183, 3447) | (3183, 3447) | `{ x: 3183, z: 3447, radius: 3 }` | Ladder 1 | up (3183, 3446) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:5` | (3183, 3447) L1 | (3183, 3447) L1 | `{ x: 3183, z: 3447, radius: 3, level: 1 }` | Ladder 1 | down (3183, 3446) by Climb-down | yes | no | - | - |
+| `connector:varrock:6` | (3187, 3414) L1 | (3187, 3414) L1 | `{ x: 3187, z: 3414, radius: 3, level: 1 }` | Ladder 1 | down (3186, 3414) by Climb-down | yes | no | - | unreached |
+| `connector:varrock:7` | (3187, 3433) | (3187, 3433) | `{ x: 3187, z: 3433, radius: 3 }` | Staircase 1 | down (3190, 9833) by Climb-down | yes | no | - | - |
+| `connector:varrock:8` | (3188, 3389) | (3188, 3389) | `{ x: 3188, z: 3389, radius: 3 }` | Staircase 1 | up (3188, 3392) L1 by Climb-up | yes | no | - | Shield of Arrav at stage 3 |
+| `connector:varrock:9` | (3188, 3390) L1 | (3188, 3390) L1 | `{ x: 3188, z: 3390, radius: 3, level: 1 }` | Staircase 1 | down (3188, 3388) by Climb-down | yes | no | - | Shield of Arrav at stage 3 |
+| `connector:varrock:10` | (3202, 3416) | (3202, 3416) | `{ x: 3202, z: 3416, radius: 3 }` | Ladder 1 | up (3202, 3417) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:11` | (3202, 3416) L1 | (3202, 3416) L1 | `{ x: 3202, z: 3416, radius: 3, level: 1 }` | Ladder 1 | down (3202, 3417) by Climb-down | yes | no | - | - |
+| `connector:varrock:12` | (3202, 3434) | (3202, 3434) | `{ x: 3202, z: 3434, radius: 3 }` | Ladder 1 | up (3201, 3434) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:13` | (3202, 3434) L1 | (3202, 3434) L1 | `{ x: 3202, z: 3434, radius: 3, level: 1 }` | Ladder 1 | down (3201, 3434) by Climb-down | yes | no | - | - |
+| `connector:varrock:14` | (3202, 3497) | (3202, 3497) | `{ x: 3202, z: 3497, radius: 3 }` | Staircase 1 | up (3203, 3496) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:15` | (3202, 3497) L1 | (3202, 3497) L1 | `{ x: 3202, z: 3497, radius: 3, level: 1 }` | Staircase 1 | down (3203, 3496) by Climb or Climb-down; up (3204, 3497) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:16` | (3203, 3389) | (3203, 3389) | `{ x: 3203, z: 3389, radius: 3 }` | Ladder 1 | up (3203, 3388) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:17` | (3203, 3389) L1 | (3203, 3389) L1 | `{ x: 3203, z: 3389, radius: 3, level: 1 }` | Ladder 1 | down (3203, 3388) by Climb-down | yes | no | - | - |
+| `connector:varrock:18` | (3203, 3497) L2 | (3203, 3497) L2 | `{ x: 3203, z: 3497, radius: 3, level: 2 }` | Staircase 1 | down (3203, 3496) L1 by Climb-down | yes | no | - | - |
+| `connector:varrock:19` | (3205, 3395) | (3205, 3395) | `{ x: 3205, z: 3395, radius: 3 }` | Ladder 1 | up (3204, 3395) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:20` | (3205, 3395) L1 | (3205, 3395) L1 | `{ x: 3205, z: 3395, radius: 3, level: 1 }` | Ladder 1 | down (3204, 3395) by Climb-down | yes | no | - | - |
+| `connector:varrock:21` | (3205, 3497) L2 | (3205, 3497) L2 | `{ x: 3205, z: 3497, radius: 3, level: 2 }` | Ladder 1 | up (3204, 3497) L3 by Climb-up | yes | no | - | - |
+| `connector:varrock:22` | (3205, 3497) L3 | (3205, 3497) L3 | `{ x: 3205, z: 3497, radius: 3, level: 3 }` | Ladder 1 | down (3204, 3497) L2 by Climb-down | yes | no | - | - |
+| `connector:varrock:23` | (3214, 3410) | (3214, 3410) | `{ x: 3214, z: 3410, radius: 3 }` | Ladder 1 | up (3214, 3411) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:24` | (3214, 3410) L1 | (3214, 3410) L1 | `{ x: 3214, z: 3410, radius: 3, level: 1 }` | Ladder 1 | down (3214, 3411) by Climb-down | yes | no | - | - |
+| `connector:varrock:25` | (3218, 3496) | (3218, 3496) | `{ x: 3218, z: 3496, radius: 3 }` | Staircase 1 | up (3220, 3496) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:26` | (3219, 3496) L1 | (3219, 3496) L1 | `{ x: 3219, z: 3496, radius: 3, level: 1 }` | Staircase 1 | down (3220, 3496) by Climb-down | yes | no | - | - |
+| `connector:varrock:27` | (3224, 3388) | (3224, 3388) | `{ x: 3224, z: 3388, radius: 3 }` | Ladder 1 | up (3223, 3388) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:28` | (3224, 3388) L1 | (3224, 3388) L1 | `{ x: 3224, z: 3388, radius: 3, level: 1 }` | Ladder 1 | down (3223, 3388) by Climb-down | yes | no | - | - |
+| `connector:varrock:29` | (3225, 3472) L1 | (3225, 3472) L1 | `{ x: 3225, z: 3472, radius: 3, level: 1 }` | Ladder 1 | up (3224, 3472) L2 by Climb-up | yes | no | - | - |
+| `connector:varrock:30` | (3225, 3472) L2 | (3225, 3472) L2 | `{ x: 3225, z: 3472, radius: 3, level: 2 }` | Ladder 1 | down (3224, 3472) L1 by Climb-down | yes | no | - | - |
+| `connector:varrock:31` | (3227, 3393) | (3227, 3393) | `{ x: 3227, z: 3393, radius: 3 }` | Staircase 1 | up (3230, 3393) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:32` | (3228, 3393) L1 | (3228, 3393) L1 | `{ x: 3228, z: 3393, radius: 3, level: 1 }` | Staircase 1 | down (3226, 3393) by Climb-down | yes | no | - | - |
+| `connector:varrock:33` | (3230, 3383) | (3230, 3383) | `{ x: 3230, z: 3383, radius: 3 }` | Staircase 1 | up (3230, 3382) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:34` | (3230, 3383) L1 | (3230, 3383) L1 | `{ x: 3230, z: 3383, radius: 3, level: 1 }` | Staircase 1 | down (3230, 3386) by Climb-down | yes | no | - | - |
+| `connector:varrock:35` | (3230, 3504) | (3230, 3504) | `{ x: 3230, z: 3504, radius: 3 }` | Ladder 1 | down (3229, 9904) by Climb-down | yes | no | - | - |
+| `connector:varrock:36` | (3231, 3401) | (3231, 3401) | `{ x: 3231, z: 3401, radius: 3 }` | Ladder 1 | down (3230, 9801) by Climb-down | yes | no | - | - |
+| `connector:varrock:37` | (3233, 3424) | (3233, 3424) | `{ x: 3233, z: 3424, radius: 3 }` | Ladder 1 | up (3232, 3424) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:38` | (3233, 3424) L1 | (3233, 3424) L1 | `{ x: 3233, z: 3424, radius: 3, level: 1 }` | Ladder 1 | down (3232, 3424) by Climb-down | yes | no | - | - |
+| `connector:varrock:39` | (3237, 3447) | (3237, 3447) | `{ x: 3237, z: 3447, radius: 3 }` | Staircase 1 | up (3239, 3447) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:40` | (3237, 3458) | (3237, 3458) | `{ x: 3237, z: 3458, radius: 3 }` | Manhole 1 | down (3236, 9858) by Open, then Climb down | yes | no | - | - |
+| `connector:varrock:41` | (3238, 3447) L1 | (3238, 3447) L1 | `{ x: 3238, z: 3447, radius: 3, level: 1 }` | Staircase 1 | down (3239, 3447) by Climb-down | yes | no | - | - |
+| `connector:varrock:42` | (3239, 3489) | (3239, 3489) | `{ x: 3239, z: 3489, radius: 3 }` | Staircase 1 | up (3242, 3489) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:43` | (3240, 3489) L1 | (3240, 3489) L1 | `{ x: 3240, z: 3489, radius: 3, level: 1 }` | Staircase 1 | down (3238, 3489) by Climb-down | yes | no | - | - |
+| `connector:varrock:44` | (3242, 3505) L2 | (3242, 3505) L2 | `{ x: 3242, z: 3505, radius: 3, level: 2 }` | Trapdoor 1 | down (3241, 9905) L2 by Open, then Climb-down | yes | no | - | unreached |
+| `connector:varrock:45` | (3244, 3383) | (3244, 3383) | `{ x: 3244, z: 3383, radius: 3 }` | Ladder 1 | down (3244, 9782) by Climb-down | yes | no | - | - |
+| `connector:varrock:46` | (3247, 3409) | (3247, 3409) | `{ x: 3247, z: 3409, radius: 3 }` | Ladder 1 | up (3246, 3409) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:47` | (3247, 3409) L1 | (3247, 3409) L1 | `{ x: 3247, z: 3409, radius: 3, level: 1 }` | Ladder 1 | down (3246, 3409) by Climb-down | yes | no | - | - |
+| `connector:varrock:48` | (3252, 3384) | (3252, 3384) | `{ x: 3252, z: 3384, radius: 3 }` | Ladder 1 | up (3251, 3384) L1 by Climb-up | yes | no | - | carry Key |
+| `connector:varrock:49` | (3252, 3384) L1 | (3252, 3384) L1 | `{ x: 3252, z: 3384, radius: 3, level: 1 }` | Ladder 1 | down (3251, 3384) by Climb-down | yes | no | - | carry Key |
+| `connector:varrock:50` | (3255, 3421) | (3255, 3421) | `{ x: 3255, z: 3421, radius: 3 }` | Staircase 1 | up (3255, 3420) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:51` | (3255, 3421) L1 | (3255, 3421) L1 | `{ x: 3255, z: 3421, radius: 3, level: 1 }` | Staircase 1 | down (3254, 3421) by Climb-down | yes | no | - | - |
+| `connector:varrock:52` | (3258, 3487) | (3258, 3487) | `{ x: 3258, z: 3487, radius: 3 }` | Staircase 1 | up (3258, 3486) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:53` | (3258, 3487) L1 | (3258, 3487) L1 | `{ x: 3258, z: 3487, radius: 3, level: 1 }` | Staircase 1 | down (3258, 3486) by Climb or Climb-down; up (3258, 3486) L2 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:54` | (3258, 3487) L2 | (3258, 3487) L2 | `{ x: 3258, z: 3487, radius: 3, level: 2 }` | Staircase 1 | down (3258, 3486) L1 by Climb or Climb-down; up (3258, 3486) L3 by Climb or Climb-up | yes | no | - | - |
+| `connector:varrock:55` | (3258, 3487) L3 | (3258, 3487) L3 | `{ x: 3258, z: 3487, radius: 3, level: 3 }` | Staircase 1 | down (3258, 3486) L2 by Climb-down | yes | no | - | - |
+| `connector:varrock:56` | (3259, 3446) | (3259, 3446) | `{ x: 3259, z: 3446, radius: 3 }` | Staircase 1 | up (3259, 3449) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:57` | (3259, 3447) L1 | (3259, 3447) L1 | `{ x: 3259, z: 3447, radius: 3, level: 1 }` | Staircase 1 | down (3259, 3445) by Climb-down | yes | no | - | - |
+| `connector:varrock:58` | (3262, 3403) | (3262, 3403) | `{ x: 3262, z: 3403, radius: 3 }` | Ladder 1 | up (3261, 3403) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:59` | (3262, 3403) L1 | (3262, 3403) L1 | `{ x: 3262, z: 3403, radius: 3, level: 1 }` | Ladder 1 | down (3261, 3403) by Climb-down | yes | no | - | - |
+| `connector:varrock:60` | (3278, 3434) L2 | (3278, 3434) L2 | `{ x: 3278, z: 3434, radius: 3, level: 2 }` | Trapdoor 1 | down (3277, 9834) L2 by Open, then Climb-down | yes | no | - | unreached |
+| `connector:varrock:61` | (3283, 3398) | (3283, 3398) | `{ x: 3283, z: 3398, radius: 3 }` | Ladder 1 | up (3282, 3398) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:62` | (3283, 3398) L1 | (3283, 3398) L1 | `{ x: 3283, z: 3398, radius: 3, level: 1 }` | Ladder 1 | down (3282, 3398) by Climb-down | yes | no | - | - |
+| `connector:varrock:63` | (3285, 3493) | (3285, 3493) | `{ x: 3285, z: 3493, radius: 3 }` | Staircase 1 | up (3285, 3492) L1 by Climb-up | yes | no | - | - |
+| `connector:varrock:64` | (3285, 3493) L1 | (3285, 3493) L1 | `{ x: 3285, z: 3493, radius: 3, level: 1 }` | Staircase 1 | down (3285, 3496) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

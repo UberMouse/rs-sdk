@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:troll-stronghold:0` | (2843, 3675) | Mountain Troll (death_troll_melee2) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `npc:troll-stronghold:1` | (2844, 3683) | Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:troll-stronghold:0` | (2843, 3675) | (2843, 3675) | x 2838-2848, z 3670-3680 | `{ x: 2843, z: 3675, radius: 11 }` | Mountain Troll (death_troll_melee2) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:troll-stronghold:1` | (2844, 3683) | x 2843-2845, z 3682-3684 | x 2838-2850, z 3677-3689 | `{ x: 2844, z: 3683, radius: 12 }` | Mountain Troll (death_troll_melee6) 1, Mountain Troll (death_troll_melee7) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |

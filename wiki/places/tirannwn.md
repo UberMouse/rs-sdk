@@ -5,109 +5,109 @@ The world index's walk from the Lumbridge spawn reaches Isafdar through Regicide
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:tirannwn:0` | (2194, 3140) | Quartermaster's Stores (regicide_general_shop) 1, Quartermaster's Stores (regicide_general_shop_2) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:tirannwn:0` | (2194, 3140) | (2194, 3140) | x 2189-2199, z 3135-3145 | `{ x: 2194, z: 3140, radius: 11 }` | Quartermaster's Stores (regicide_general_shop) 1, Quartermaster's Stores (regicide_general_shop_2) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:tirannwn:0` | (2368, 3130) | Tap 1 | no | yes | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:tirannwn:0` | (2368, 3130) | (2368, 3130) | `{ x: 2368, z: 3130, radius: 3 }` | Tap 1 | no | yes | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:tirannwn:0` | (2197, 3175) | [normal](../resources/tree/normal.md) 282, [yew](../resources/tree/yew.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `tree:tirannwn:1` | (2166, 3091) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:2` | (2176, 3276) | [normal](../resources/tree/normal.md) 19 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `tree:tirannwn:3` | (2208, 3285) | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
-| `tree:tirannwn:4` | (2229, 3257) | [normal](../resources/tree/normal.md) 40 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `tree:tirannwn:5` | (2226, 3284) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:6` | (2238, 3283) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:7` | (2285, 3206) | [magic](../resources/tree/magic.md) 3, [normal](../resources/tree/normal.md) 302 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `tree:tirannwn:8` | (2247, 3281) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:9` | (2266, 3284) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:10` | (2269, 3371) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:11` | (2281, 3337) | [normal](../resources/tree/normal.md) 13 | no | no | - | unreached |
-| `tree:tirannwn:12` | (2282, 3372) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:13` | (2280, 3288) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:14` | (2285, 3302) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
-| `tree:tirannwn:15` | (2299, 3367) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:16` | (2304, 3346) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:17` | (2327, 3421) | [normal](../resources/tree/normal.md) 164 | no | no | - | unreached |
-| `tree:tirannwn:18` | (2309, 3500) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
-| `tree:tirannwn:19` | (2337, 3135) | [normal](../resources/tree/normal.md) 55 | no | no | - | unreached |
-| `tree:tirannwn:20` | (2328, 3265) | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
-| `tree:tirannwn:21` | (2341, 3093) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:22` | (2344, 3271) | [normal](../resources/tree/normal.md) 1 | no | no | - | Regicide at stage 13 |
-| `tree:tirannwn:23` | (2347, 3486) | [normal](../resources/tree/normal.md) 5 | no | no | - | unreached |
-| `tree:tirannwn:24` | (2349, 3368) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:25` | (2350, 3468) | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
-| `tree:tirannwn:26` | (2349, 3072) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:27` | (2358, 3104) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
-| `tree:tirannwn:28` | (2363, 3409) | [magic](../resources/tree/magic.md) 1, [normal](../resources/tree/normal.md) 41, [oak](../resources/tree/oak.md) 10 | no | no | - | - |
-| `tree:tirannwn:29` | (2367, 3199) | [normal](../resources/tree/normal.md) 9 | no | no | - | unreached |
-| `tree:tirannwn:30` | (2361, 3074) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:31` | (2370, 3176) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:tirannwn:32` | (2369, 3164) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:33` | (2371, 3221) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
-| `tree:tirannwn:34` | (2370, 3246) | [normal](../resources/tree/normal.md) 7 | no | no | - | unreached |
-| `tree:tirannwn:35` | (2371, 3322) | [normal](../resources/tree/normal.md) 11 | no | no | - | Regicide at stage 13 |
-| `tree:tirannwn:36` | (2370, 3469) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:37` | (2370, 3070) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:tirannwn:38` | (2372, 3277) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:tirannwn:0` | (2197, 3175) | x 2154-2241, z 3103-3251 | `{ x: 2198, z: 3177, radius: 90 }` | [normal](../resources/tree/normal.md) 282, [yew](../resources/tree/yew.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `tree:tirannwn:1` | (2166, 3091) | (2166, 3091) | `{ x: 2166, z: 3091, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:2` | (2176, 3276) | x 2167-2188, z 3264-3291 | `{ x: 2178, z: 3278, radius: 21 }` | [normal](../resources/tree/normal.md) 19 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `tree:tirannwn:3` | (2208, 3285) | x 2201-2214, z 3283-3289 | `{ x: 2208, z: 3286, radius: 11 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
+| `tree:tirannwn:4` | (2229, 3257) | x 2214-2245, z 3242-3269 | `{ x: 2230, z: 3256, radius: 25 }` | [normal](../resources/tree/normal.md) 40 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `tree:tirannwn:5` | (2226, 3284) | x 2224-2228, z 3284 | `{ x: 2226, z: 3284, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:6` | (2238, 3283) | (2238, 3283) | `{ x: 2238, z: 3283, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:7` | (2285, 3206) | x 2242-2319, z 3131-3284 | `{ x: 2281, z: 3208, radius: 90 }` | [magic](../resources/tree/magic.md) 3, [normal](../resources/tree/normal.md) 302 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `tree:tirannwn:8` | (2247, 3281) | (2247, 3281) | `{ x: 2247, z: 3281, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:9` | (2266, 3284) | x 2262-2270, z 3281-3286 | `{ x: 2266, z: 3284, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:10` | (2269, 3371) | (2269, 3371) | `{ x: 2269, z: 3371, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:11` | (2281, 3337) | x 2273-2287, z 3315-3362 | `{ x: 2280, z: 3339, radius: 28 }` | [normal](../resources/tree/normal.md) 13 | no | no | - | unreached |
+| `tree:tirannwn:12` | (2282, 3372) | x 2279-2284, z 3369-3374 | `{ x: 2282, z: 3372, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:13` | (2280, 3288) | (2280, 3288) | `{ x: 2280, z: 3288, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:14` | (2285, 3302) | x 2283-2287, z 3298-3306 | `{ x: 2285, z: 3302, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:tirannwn:15` | (2299, 3367) | x 2298-2300, z 3366-3368 | `{ x: 2299, z: 3367, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:16` | (2304, 3346) | x 2303-2305, z 3342-3349 | `{ x: 2304, z: 3346, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:17` | (2327, 3421) | x 2304-2347, z 3344-3498 | `{ x: 2326, z: 3421, radius: 84 }` | [normal](../resources/tree/normal.md) 164 | no | no | - | unreached |
+| `tree:tirannwn:18` | (2309, 3500) | x 2307-2310, z 3497-3503 | `{ x: 2309, z: 3500, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:tirannwn:19` | (2337, 3135) | x 2311-2361, z 3103-3159 | `{ x: 2336, z: 3131, radius: 41 }` | [normal](../resources/tree/normal.md) 55 | no | no | - | unreached |
+| `tree:tirannwn:20` | (2328, 3265) | x 2327-2329, z 3264-3266 | `{ x: 2328, z: 3265, radius: 5 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
+| `tree:tirannwn:21` | (2341, 3093) | x 2337-2344, z 3092-3094 | `{ x: 2341, z: 3093, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:22` | (2344, 3271) | (2344, 3271) | `{ x: 2344, z: 3271, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Regicide at stage 13 |
+| `tree:tirannwn:23` | (2347, 3486) | x 2344-2351, z 3484-3488 | `{ x: 2348, z: 3486, radius: 8 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | unreached |
+| `tree:tirannwn:24` | (2349, 3368) | x 2347-2351, z 3364-3371 | `{ x: 2349, z: 3368, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:25` | (2350, 3468) | x 2348-2351, z 3466-3470 | `{ x: 2350, z: 3468, radius: 6 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
+| `tree:tirannwn:26` | (2349, 3072) | (2349, 3072) | `{ x: 2349, z: 3072, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:27` | (2358, 3104) | x 2354-2362, z 3093-3115 | `{ x: 2358, z: 3104, radius: 15 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
+| `tree:tirannwn:28` | (2363, 3409) | x 2355-2372, z 3375-3453 | `{ x: 2364, z: 3414, radius: 44 }` | [magic](../resources/tree/magic.md) 1, [normal](../resources/tree/normal.md) 41, [oak](../resources/tree/oak.md) 10 | no | no | - | - |
+| `tree:tirannwn:29` | (2367, 3199) | x 2359-2371, z 3194-3208 | `{ x: 2365, z: 3201, radius: 13 }` | [normal](../resources/tree/normal.md) 9 | no | no | - | unreached |
+| `tree:tirannwn:30` | (2361, 3074) | (2361, 3074) | `{ x: 2361, z: 3074, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:31` | (2370, 3176) | x 2368-2371, z 3174-3178 | `{ x: 2370, z: 3176, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:tirannwn:32` | (2369, 3164) | (2369, 3164) | `{ x: 2369, z: 3164, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:33` | (2371, 3221) | x 2369-2372, z 3218-3223 | `{ x: 2371, z: 3221, radius: 7 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
+| `tree:tirannwn:34` | (2370, 3246) | x 2369-2372, z 3239-3254 | `{ x: 2371, z: 3247, radius: 12 }` | [normal](../resources/tree/normal.md) 7 | no | no | - | unreached |
+| `tree:tirannwn:35` | (2371, 3322) | x 2369-2372, z 3312-3335 | `{ x: 2371, z: 3324, radius: 16 }` | [normal](../resources/tree/normal.md) 11 | no | no | - | Regicide at stage 13 |
+| `tree:tirannwn:36` | (2370, 3469) | x 2369-2370, z 3462-3475 | `{ x: 2370, z: 3469, radius: 11 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:37` | (2370, 3070) | (2370, 3070) | `{ x: 2370, z: 3070, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:tirannwn:38` | (2372, 3277) | x 2371-2372, z 3276-3278 | `{ x: 2372, z: 3277, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:tirannwn:0` | (2279, 3158) | [adamantite](../resources/rock/adamantite.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `rock:tirannwn:1` | (2325, 3268) | [limestone](../resources/rock/limestone.md) 14 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:tirannwn:0` | (2279, 3158) | x 2278-2280, z 3156-3161 | `{ x: 2279, z: 3159, radius: 7 }` | [adamantite](../resources/rock/adamantite.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `rock:tirannwn:1` | (2325, 3268) | x 2317-2330, z 3265-3271 | `{ x: 2324, z: 3268, radius: 11 }` | [limestone](../resources/rock/limestone.md) 14 | no | no | - | unreached |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:tirannwn:0` | (2165, 3273) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:1` | (2216, 3240) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fishing-spot:tirannwn:2` | (2272, 3249) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:tirannwn:0` | (2165, 3273) | x 2165, z 3266-3286 | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:1` | (2216, 3240) | x 2210-2225, z 3232-3248 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 4 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fishing-spot:tirannwn:2` | (2272, 3249) | x 2264-2282, z 3240-3258 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 5 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:tirannwn:0` | (2185, 3279) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:1` | (2189, 3223) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:2` | (2188, 3171) | Tyras guard (regicide_tyras_camp_guard) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:3` | (2188, 3242) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:4` | (2192, 3150) | Tyras guard (regicide_tyras_guard) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:5` | (2207, 3196) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:6` | (2209, 3256) | Elf warrior 2 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:7` | (2210, 3239) | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:8` | (2230, 3238) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 4 | no | no | - | unreached |
-| `npc:tirannwn:9` | (2243, 3161) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:10` | (2265, 3141) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:11` | (2273, 3182) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:12` | (2277, 3161) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:13` | (2279, 3219) | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:14` | (2296, 3176) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `npc:tirannwn:15` | (2296, 3250) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 |
-| `npc:tirannwn:16` | (2371, 3377) | Giant spider 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:tirannwn:0` | (2185, 3279) | x 2182-2188, z 3276-3281 | x 2177-2193, z 3271-3286 | `{ x: 2185, z: 3279, radius: 15 }` | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:1` | (2189, 3223) | x 2187-2190, z 3220-3225 | x 2182-2195, z 3215-3230 | `{ x: 2189, z: 3223, radius: 14 }` | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 2, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:2` | (2188, 3171) | (2188, 3171) | (2188, 3171) | `{ x: 2188, z: 3171, radius: 3 }` | Tyras guard (regicide_tyras_camp_guard) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:3` | (2188, 3242) | (2188, 3242) | x 2180-2196, z 3234-3250 | `{ x: 2188, z: 3242, radius: 15 }` | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:4` | (2192, 3150) | (2192, 3150) | x 2187-2197, z 3145-3155 | `{ x: 2192, z: 3150, radius: 11 }` | Tyras guard (regicide_tyras_guard) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:5` | (2207, 3196) | x 2206-2208, z 3195-3198 | x 2201-2213, z 3190-3203 | `{ x: 2207, z: 3197, radius: 13 }` | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:6` | (2209, 3256) | x 2208-2210, z 3254-3257 | x 2200-2218, z 3246-3265 | `{ x: 2209, z: 3256, radius: 17 }` | Elf warrior 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:7` | (2210, 3239) | (2210, 3239) | x 2202-2218, z 3231-3247 | `{ x: 2210, z: 3239, radius: 15 }` | Elf warrior 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:8` | (2230, 3238) | x 2228-2234, z 3237-3239 | x 2223-2239, z 3232-3244 | `{ x: 2231, z: 3238, radius: 13 }` | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 4 | no | no | - | unreached |
+| `npc:tirannwn:9` | (2243, 3161) | (2243, 3161) | x 2238-2248, z 3156-3166 | `{ x: 2243, z: 3161, radius: 11 }` | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:10` | (2265, 3141) | x 2264-2265, z 3140-3141 | x 2259-2270, z 3135-3146 | `{ x: 2265, z: 3141, radius: 12 }` | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:11` | (2273, 3182) | (2273, 3182) | x 2268-2278, z 3177-3187 | `{ x: 2273, z: 3182, radius: 11 }` | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:12` | (2277, 3161) | x 2274-2279, z 3158-3164 | x 2269-2284, z 3153-3169 | `{ x: 2277, z: 3161, radius: 15 }` | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:13` | (2279, 3219) | (2279, 3219) | x 2274-2284, z 3214-3224 | `{ x: 2279, z: 3219, radius: 11 }` | Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:14` | (2296, 3176) | x 2293-2297, z 3175-3177 | x 2288-2302, z 3170-3182 | `{ x: 2295, z: 3176, radius: 13 }` | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `npc:tirannwn:15` | (2296, 3250) | x 2295-2296, z 3249-3250 | x 2290-2301, z 3244-3255 | `{ x: 2296, z: 3250, radius: 12 }` | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 1 | no | no | - | Regicide at stage 13 |
+| `npc:tirannwn:16` | (2371, 3377) | x 2369-2372, z 3374-3379 | x 2359-2382, z 3364-3389 | `{ x: 2371, z: 3377, radius: 21 }` | Giant spider 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:tirannwn:0` | (2273, 3275) | Ladder 1 | up (2272, 3275) L1 by Climb-up | no | no | - | unreached |
-| `connector:tirannwn:1` | (2273, 3275) L1 | Ladder 1 | down (2272, 3275) by Climb-down | no | no | - | unreached |
-| `connector:tirannwn:2` | (2294, 3299) | Ladder 1 | up (2294, 3298) L1 by Climb-up | no | no | - | unreached |
-| `connector:tirannwn:3` | (2294, 3299) L1 | Ladder 1 | down (2294, 3298) by Climb-down | no | no | - | unreached |
-| `connector:tirannwn:4` | (2369, 3125) | Ladder 1 | down (2369, 9526) by Climb-down | no | yes | - | unreached |
-| `connector:tirannwn:5` | (2369, 3126) L1 | Staircase 1 | up (2369, 3127) L2 by Climb | no | yes | - | unreached |
-| `connector:tirannwn:6` | (2369, 3126) L2 | Staircase 1 | down (2372, 3126) L1 by Climb | no | yes | - | unreached |
-| `connector:tirannwn:7` | (2370, 3133) L1 | Ladder 1 | up (2370, 3132) L2 by Climb-up | no | yes | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:tirannwn:0` | (2273, 3275) | (2273, 3275) | `{ x: 2273, z: 3275, radius: 3 }` | Ladder 1 | up (2272, 3275) L1 by Climb-up | no | no | - | unreached |
+| `connector:tirannwn:1` | (2273, 3275) L1 | (2273, 3275) L1 | `{ x: 2273, z: 3275, radius: 3, level: 1 }` | Ladder 1 | down (2272, 3275) by Climb-down | no | no | - | unreached |
+| `connector:tirannwn:2` | (2294, 3299) | (2294, 3299) | `{ x: 2294, z: 3299, radius: 3 }` | Ladder 1 | up (2294, 3298) L1 by Climb-up | no | no | - | unreached |
+| `connector:tirannwn:3` | (2294, 3299) L1 | (2294, 3299) L1 | `{ x: 2294, z: 3299, radius: 3, level: 1 }` | Ladder 1 | down (2294, 3298) by Climb-down | no | no | - | unreached |
+| `connector:tirannwn:4` | (2369, 3125) | (2369, 3125) | `{ x: 2369, z: 3125, radius: 3 }` | Ladder 1 | down (2369, 9526) by Climb-down | no | yes | - | unreached |
+| `connector:tirannwn:5` | (2369, 3126) L1 | (2369, 3126) L1 | `{ x: 2369, z: 3126, radius: 3, level: 1 }` | Staircase 1 | up (2369, 3127) L2 by Climb | no | yes | - | unreached |
+| `connector:tirannwn:6` | (2369, 3126) L2 | (2369, 3126) L2 | `{ x: 2369, z: 3126, radius: 3, level: 2 }` | Staircase 1 | down (2372, 3126) L1 by Climb | no | yes | - | unreached |
+| `connector:tirannwn:7` | (2370, 3133) L1 | (2370, 3133) L1 | `{ x: 2370, z: 3133, radius: 3, level: 1 }` | Ladder 1 | up (2370, 3132) L2 by Climb-up | no | yes | - | unreached |
 
 ## Areas within
 

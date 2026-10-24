@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Catherby (Kandarin)](../places/catherby.md) | (2822, 3442) | 1 | 5 | (2817, 3437)-(2827, 3447) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Catherby (Kandarin)](../places/catherby.md) | (2822, 3442) | (2822, 3442) | 1 | 5 | x 2817-2827, z 3437-3447 | 100 ticks | - | `{ x: 2822, z: 3442, radius: 11 }` | no |
 
 ## Interactions
 

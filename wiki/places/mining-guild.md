@@ -7,15 +7,15 @@ Mining 60 for its ladder and its door at (3046, 9756) (areas/area_falador/script
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:mining-guild:0` | (3042, 9739) | [coal](../resources/rock/coal.md) 37, [mithril](../resources/rock/mithril.md) 5 | yes | no | - | 60 Mining |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:mining-guild:0` | (3042, 9739) | x 3028-3054, z 9732-9754 | `{ x: 3041, z: 9743, radius: 21 }` | [coal](../resources/rock/coal.md) 37, [mithril](../resources/rock/mithril.md) 5 | yes | no | - | 60 Mining |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:mining-guild:0` | (3018, 9739) | Ladder 1 | up (3017, 3339) by Climb-up | yes | no | - | 60 Mining |
-| `connector:mining-guild:1` | (3019, 9738) | Ladder 1 | up (3018, 3338) by Climb-up | yes | no | - | 60 Mining |
-| `connector:mining-guild:2` | (3019, 9740) | Ladder 1 | up (3018, 3340) by Climb-up | yes | no | - | 60 Mining |
-| `connector:mining-guild:3` | (3020, 9739) | Ladder 1 | up (3019, 3339) by Climb-up | yes | no | - | 60 Mining |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:mining-guild:0` | (3018, 9739) | (3018, 9739) | `{ x: 3018, z: 9739, radius: 3 }` | Ladder 1 | up (3017, 3339) by Climb-up | yes | no | - | 60 Mining |
+| `connector:mining-guild:1` | (3019, 9738) | (3019, 9738) | `{ x: 3019, z: 9738, radius: 3 }` | Ladder 1 | up (3018, 3338) by Climb-up | yes | no | - | 60 Mining |
+| `connector:mining-guild:2` | (3019, 9740) | (3019, 9740) | `{ x: 3019, z: 9740, radius: 3 }` | Ladder 1 | up (3018, 3340) by Climb-up | yes | no | - | 60 Mining |
+| `connector:mining-guild:3` | (3020, 9739) | (3020, 9739) | `{ x: 3020, z: 9739, radius: 3 }` | Ladder 1 | up (3019, 3339) by Climb-up | yes | no | - | 60 Mining |

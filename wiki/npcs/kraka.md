@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2875, 3598) | 1 | 0 | (2854, 3584)-(2876, 3600) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | (2875, 3598) | x 2854-2876, z 3584-3600 | 1 | 0 | x 2854-2876, z 3584-3600 | 100 ticks | - | `{ x: 2865, z: 3592, radius: 17 }` | no |
 
 ## Drops
 

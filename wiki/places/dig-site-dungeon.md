@@ -5,16 +5,16 @@ The Dig Site quest (quests/quest_itexam).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:dig-site-dungeon:0` | (3367, 9751) | [silver](../resources/rock/silver.md) 3 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
-| `rock:dig-site-dungeon:1` | (3367, 9815) | [silver](../resources/rock/silver.md) 3 | no | no | - | unreached |
-| `rock:dig-site-dungeon:2` | (3385, 9752) | [silver](../resources/rock/silver.md) 2 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
-| `rock:dig-site-dungeon:3` | (3385, 9816) | [silver](../resources/rock/silver.md) 2 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:dig-site-dungeon:0` | (3367, 9751) | x 3366-3369, z 9749-9752 | `{ x: 3368, z: 9751, radius: 6 }` | [silver](../resources/rock/silver.md) 3 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `rock:dig-site-dungeon:1` | (3367, 9815) | x 3366-3369, z 9813-9816 | `{ x: 3368, z: 9815, radius: 6 }` | [silver](../resources/rock/silver.md) 3 | no | no | - | unreached |
+| `rock:dig-site-dungeon:2` | (3385, 9752) | x 3385, z 9750-9753 | `{ x: 3385, z: 9752, radius: 5 }` | [silver](../resources/rock/silver.md) 2 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `rock:dig-site-dungeon:3` | (3385, 9816) | x 3385, z 9814-9817 | `{ x: 3385, z: 9816, radius: 5 }` | [silver](../resources/rock/silver.md) 2 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:dig-site-dungeon:0` | (3378, 9751) | Skeleton 10 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
-| `npc:dig-site-dungeon:1` | (3378, 9815) | Skeleton 10 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:dig-site-dungeon:0` | (3378, 9751) | x 3369-3384, z 9744-9758 | x 3361-3392, z 9736-9766 | `{ x: 3377, z: 9751, radius: 25 }` | Skeleton 10 | no | no | - | Digsite Quest at stage 6 + 10 Agility |
+| `npc:dig-site-dungeon:1` | (3378, 9815) | x 3369-3384, z 9808-9822 | x 3361-3392, z 9800-9830 | `{ x: 3377, z: 9815, radius: 25 }` | Skeleton 10 | no | no | - | unreached |

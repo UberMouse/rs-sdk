@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2902, 3565) L1 | 1 | 5 | (2897, 3560)-(2907, 3570) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2902, 3565) L1 | (2902, 3565) L1 | 1 | 5 | x 2897-2907, z 3560-3570 L1 | 100 ticks | - | `{ x: 2902, z: 3565, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

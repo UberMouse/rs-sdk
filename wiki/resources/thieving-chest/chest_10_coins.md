@@ -15,10 +15,10 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | 1 | no | no | - | 13 Thieving | Ardougne North bank (East Ardougne), 26 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:4` | (2673, 3307) | (2674, 3307) | 1 | no | no | - | 1 Thieving | Ardougne South bank (East Ardougne), 28 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3654) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 128 ticks |
-| [Wilderness](../../places/wilderness.md) | `thieving-chest:wilderness:0` | (3190, 3962) | (3189, 3961) | 3 | no | no | 56 | carry Lockpick + 23 Thieving | Mage Arena bank (Mage Arena chamber), 63 ticks |
-| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | 2 | no | no | 55 | carry Lockpick + 39 Thieving | Mage Arena bank (Mage Arena chamber), 42 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:2` | (2613, 3314) L1 | (2612, 3315) L1 | x 2612-2614, z 3314 L1 | `{ x: 2613, z: 3314, radius: 4, level: 1 }` | 1 | no | no | - | 13 Thieving | Ardougne North bank (East Ardougne), 26 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `thieving-chest:east-ardougne:4` | (2673, 3307) | (2674, 3307) | (2673, 3307) | `{ x: 2673, z: 3307, radius: 3 }` | 1 | no | no | - | 1 Thieving | Ardougne South bank (East Ardougne), 28 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3654) | (2630, 3655) | `{ x: 2630, z: 3655, radius: 3 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 128 ticks |
+| [Wilderness](../../places/wilderness.md) | `thieving-chest:wilderness:0` | (3190, 3962) | (3189, 3961) | x 3188-3193, z 3962 | `{ x: 3191, z: 3962, radius: 6 }` | 3 | no | no | 56 | carry Lockpick + 23 Thieving | Mage Arena bank (Mage Arena chamber), 63 ticks |
+| [Pirates' Hideout (Wilderness)](../../places/pirates-hideout.md) | `thieving-chest:pirates-hideout:0` | (3043, 3952) | (3043, 3951) | x 3040-3044, z 3949-3957 | `{ x: 3042, z: 3953, radius: 8 }` | 2 | no | no | 55 | carry Lockpick + 39 Thieving | Mage Arena bank (Mage Arena chamber), 42 ticks |

@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | 1 | 5 | (2666, 3235)-(2676, 3245) | 500 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Necromancer (Kandarin)](../places/necromancer.md) | (2671, 3240) | (2671, 3240) | 1 | 5 | x 2666-2676, z 3235-3245 | 500 ticks | - | `{ x: 2671, z: 3240, radius: 11 }` | no |
 
 ## Drops
 

@@ -23,16 +23,16 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2890, 9767) | 3 | no | no | - | carry Dusty key | Falador West bank (Falador), 223 ticks via carry Dusty key |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2890, 9767) | x 2889-2891, z 9766 | [Movement](#movement) | 3 | no | no | - | carry Dusty key | Falador West bank (Falador), 223 ticks via carry Dusty key |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:taverley-dungeon:0` | (2889, 9765) | 8 | 7 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:taverley-dungeon:0` | `{ x: 2889, z: 9765, radius: 9 }` | 7 |
 
 `fishing-spot:taverley-dungeon:0` tiles: (2884, 9765), (2887, 9766), (2888, 9766), (2889, 9766), (2890, 9766), (2891, 9766), (2894, 9764)

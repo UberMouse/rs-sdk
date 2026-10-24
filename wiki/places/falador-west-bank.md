@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:falador-west-bank:0` | (2947, 3367) | Bank booth 5, Banker 5 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:falador-west-bank:0` | (2947, 3367) | x 2945-2949, z 3366-3367 | `{ x: 2947, z: 3367, radius: 6 }` | Bank booth 5, Banker 5 | yes | yes | - | - |

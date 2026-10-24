@@ -5,6 +5,6 @@ Inside the body ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:body-altar:0` | (2524, 4831) | body 1 | yes | no | - | carry Body talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:body-altar:0` | (2524, 4831) | (2524, 4831) | `{ x: 2524, z: 4831, radius: 3 }` | body 1 | yes | no | - | carry Body talisman |

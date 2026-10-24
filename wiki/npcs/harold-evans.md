@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (3504, 9837) L3 | 1 | 0 | (3504, 9837)-(3504, 9837) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (3504, 9837) L3 | (3504, 9837) L3 | 1 | 0 | (3504, 9837) L3 | 100 ticks | - | `{ x: 3504, z: 9837, radius: 3, level: 3 }` | no |
 
 ## Interactions
 

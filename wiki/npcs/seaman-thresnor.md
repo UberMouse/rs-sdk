@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3026, 3217) | 1 | 5 | (3021, 3212)-(3031, 3222) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3026, 3217) | (3026, 3217) | 1 | 5 | x 3021-3031, z 3212-3222 | 100 ticks | - | `{ x: 3026, z: 3217, radius: 11 }` | yes |
 
 ## Interactions
 

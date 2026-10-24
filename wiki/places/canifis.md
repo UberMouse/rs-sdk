@@ -5,40 +5,40 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:canifis:0` | (3475, 3497) | General Store (werewolfgeneralstore) 1 | no | no | - | Priest in Peril at stage 61 |
-| `shop:canifis:1` | (3499, 3506) | Barkers' Habidashery (werewolfstore2) 1 | no | no | - | Priest in Peril at stage 61 |
-| `shop:canifis:2` | (3507, 3496) | Rufus' Meat Emporium (werewolfstore1) 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:canifis:0` | (3475, 3497) | (3475, 3497) | x 3472-3478, z 3494-3500 | `{ x: 3475, z: 3497, radius: 8 }` | General Store (werewolfgeneralstore) 1 | no | no | - | Priest in Peril at stage 61 |
+| `shop:canifis:1` | (3499, 3506) | (3499, 3506) | x 3497-3501, z 3504-3508 | `{ x: 3499, z: 3506, radius: 6 }` | Barkers' Habidashery (werewolfstore2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `shop:canifis:2` | (3507, 3496) | (3507, 3496) | x 3505-3509, z 3494-3498 | `{ x: 3507, z: 3496, radius: 6 }` | Rufus' Meat Emporium (werewolfstore1) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## [Tanners](../services/tanner.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tanner:canifis:0` | (3490, 3503) | Sbott 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `tanner:canifis:0` | (3490, 3503) | (3490, 3503) | x 3488-3492, z 3501-3505 | `{ x: 3490, z: 3503, radius: 6 }` | Sbott 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:canifis:0` | (3474, 3474) | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:1` | (3483, 3493) | Man (canafis_man1) 1, Man (canafis_man2) 1, Man (canafis_man3) 1, Woman (canafis_woman2) 1, Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:2` | (3479, 3498) L1 | Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:3` | (3483, 3478) | Man (canafis_man1) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:4` | (3490, 3472) L1 | Woman (canafis_woman2) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:5` | (3493, 3474) | Man (canafis_man2) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:6` | (3501, 3492) | Man (canafis_man1) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:7` | (3499, 3473) L1 | Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:canifis:8` | (3511, 3482) | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:canifis:0` | (3474, 3474) | (3474, 3474) | x 3469-3479, z 3469-3479 | `{ x: 3474, z: 3474, radius: 11 }` | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:1` | (3483, 3493) | x 3479-3489, z 3489-3498 | x 3474-3494, z 3484-3503 | `{ x: 3484, z: 3494, radius: 18 }` | Man (canafis_man1) 1, Man (canafis_man2) 1, Man (canafis_man3) 1, Woman (canafis_woman2) 1, Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:2` | (3479, 3498) L1 | (3479, 3498) L1 | x 3474-3484, z 3493-3503 L1 | `{ x: 3479, z: 3498, radius: 11, level: 1 }` | Woman (canafis_woman3) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:3` | (3483, 3478) | (3483, 3478) | x 3478-3488, z 3473-3483 | `{ x: 3483, z: 3478, radius: 11 }` | Man (canafis_man1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:4` | (3490, 3472) L1 | (3490, 3472) L1 | x 3485-3495, z 3467-3477 L1 | `{ x: 3490, z: 3472, radius: 11, level: 1 }` | Woman (canafis_woman2) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:5` | (3493, 3474) | x 3490-3497, z 3473-3476 | x 3485-3502, z 3468-3481 | `{ x: 3494, z: 3475, radius: 15 }` | Man (canafis_man2) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:6` | (3501, 3492) | x 3497-3505, z 3487-3497 | x 3492-3510, z 3482-3502 | `{ x: 3501, z: 3492, radius: 17 }` | Man (canafis_man1) 2, Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:7` | (3499, 3473) L1 | x 3498-3499, z 3472-3474 L1 | x 3493-3504, z 3467-3479 L1 | `{ x: 3499, z: 3473, radius: 12, level: 1 }` | Man (canafis_man3) 1, Woman (canafis_woman1) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:canifis:8` | (3511, 3482) | (3511, 3482) | x 3506-3516, z 3477-3487 | `{ x: 3511, z: 3482, radius: 11 }` | Man (canafis_man2) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:canifis:0` | (3478, 3500) | Ladder 1 | up (3477, 3500) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
-| `connector:canifis:1` | (3478, 3500) L1 | Ladder 1 | down (3477, 3500) by Climb-down | no | no | - | Priest in Peril at stage 61 |
-| `connector:canifis:2` | (3501, 3475) | Staircase 1 | up (3500, 3476) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
-| `connector:canifis:3` | (3501, 3476) L1 | Staircase 1 | down (3501, 3477) by Climb-down | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:canifis:0` | (3478, 3500) | (3478, 3500) | `{ x: 3478, z: 3500, radius: 3 }` | Ladder 1 | up (3477, 3500) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:1` | (3478, 3500) L1 | (3478, 3500) L1 | `{ x: 3478, z: 3500, radius: 3, level: 1 }` | Ladder 1 | down (3477, 3500) by Climb-down | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:2` | (3501, 3475) | (3501, 3475) | `{ x: 3501, z: 3475, radius: 3 }` | Staircase 1 | up (3500, 3476) L1 by Climb-up | no | no | - | Priest in Peril at stage 61 |
+| `connector:canifis:3` | (3501, 3476) L1 | (3501, 3476) L1 | `{ x: 3501, z: 3476, radius: 3, level: 1 }` | Staircase 1 | down (3501, 3477) by Climb-down | no | no | - | Priest in Peril at stage 61 |
 
 ## Areas within
 

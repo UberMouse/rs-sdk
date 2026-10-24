@@ -5,14 +5,14 @@ Below the volcano; lesser demons and deadly red spiders. Descriptive name, not s
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | [gold](../resources/rock/gold.md) 4 | yes | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:karamja-volcano-dungeon:0` | (2861, 9578) | x 2859-2863, z 9576-9580 | `{ x: 2861, z: 9578, radius: 6 }` | [gold](../resources/rock/gold.md) 4 | yes | no | - | 30 coins or The Grand Tree done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | Giant bat 1, Lesser demon 6 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | Deadly red spider 5, Skeleton 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | Giant bat 2, Skeleton 4 | yes | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:karamja-volcano-dungeon:0` | (2837, 9560) | x 2831-2843, z 9552-9568 | x 2823-2851, z 9544-9576 | `{ x: 2837, z: 9560, radius: 25 }` | Giant bat 1, Lesser demon 6 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja-volcano-dungeon:1` | (2839, 9581) | x 2834-2848, z 9576-9584 | x 2824-2858, z 9566-9594 | `{ x: 2841, z: 9580, radius: 26 }` | Deadly red spider 5, Skeleton 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja-volcano-dungeon:2` | (2859, 9572) | x 2853-2864, z 9568-9577 | x 2845-2872, z 9560-9585 | `{ x: 2859, z: 9573, radius: 23 }` | Giant bat 2, Skeleton 4 | yes | no | - | 30 coins or The Grand Tree done |

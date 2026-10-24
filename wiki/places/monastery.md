@@ -5,20 +5,20 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:monastery:0` | (3048, 3486) | Fountain 1 | yes | no | - | - |
-| `water-source:monastery:1` | (3054, 3486) | Fountain 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:monastery:0` | (3048, 3486) | (3048, 3486) | `{ x: 3048, z: 3486, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:monastery:1` | (3054, 3486) | (3054, 3486) | `{ x: 3054, z: 3486, radius: 3 }` | Fountain 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:monastery:0` | (3051, 3469) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:monastery:0` | (3051, 3469) | x 3042-3059, z 3465-3474 | `{ x: 3051, z: 3470, radius: 14 }` | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:monastery:0` | (3046, 3483) L1 | Ladder 1 | down (3045, 3483) by Climb-down | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
-| `connector:monastery:1` | (3057, 3483) L1 | Ladder 1 | down (3056, 3483) by Climb-down | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:monastery:0` | (3046, 3483) L1 | (3046, 3483) L1 | `{ x: 3046, z: 3483, radius: 3, level: 1 }` | Ladder 1 | down (3045, 3483) by Climb-down | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
+| `connector:monastery:1` | (3057, 3483) L1 | (3057, 3483) L1 | `{ x: 3057, z: 3483, radius: 3, level: 1 }` | Ladder 1 | down (3056, 3483) by Climb-down | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2776, 3186) | 1 | 1 | (2775, 3185)-(2777, 3187) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2776, 3186) | (2776, 3186) | 1 | 1 | x 2775-2777, z 3185-3187 | 100 ticks | - | `{ x: 2776, z: 3186, radius: 5 }` | no |
 
 ## Interactions
 

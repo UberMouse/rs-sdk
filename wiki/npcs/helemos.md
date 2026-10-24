@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | (2894, 3510) L1 | 1 | 5 | (2889, 3505)-(2899, 3515) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Heroes' Guild (Asgarnia)](../places/heros-guild.md) | (2894, 3510) L1 | (2894, 3510) L1 | 1 | 5 | x 2889-2899, z 3505-3515 L1 | 100 ticks | - | `{ x: 2894, z: 3510, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

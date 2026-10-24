@@ -5,20 +5,20 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:ruins-2:0` | (3168, 3734) | Sink 1 | yes | no | 27 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:ruins-2:0` | (3168, 3734) | (3168, 3734) | `{ x: 3168, z: 3734, radius: 3 }` | Sink 1 | yes | no | 27 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:ruins-2:0` | (3166, 3746) | [normal](../resources/tree/normal.md) 1 | yes | no | 29 | - |
-| `tree:ruins-2:1` | (3169, 3723) | [normal](../resources/tree/normal.md) 1 | yes | no | 26 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:ruins-2:0` | (3166, 3746) | (3166, 3746) | `{ x: 3166, z: 3746, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 29 | - |
+| `tree:ruins-2:1` | (3169, 3723) | (3169, 3723) | `{ x: 3169, z: 3723, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 26 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ruins-2:0` | (3157, 3740) | Deadly red spider 1 | yes | no | 28 | - |
-| `npc:ruins-2:1` | (3169, 3736) | Deadly red spider 4 | yes | no | 28 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ruins-2:0` | (3157, 3740) | (3157, 3740) | x 3147-3167, z 3730-3750 | `{ x: 3157, z: 3740, radius: 18 }` | Deadly red spider 1 | yes | no | 28 | - |
+| `npc:ruins-2:1` | (3169, 3736) | x 3164-3174, z 3733-3739 | x 3154-3184, z 3723-3749 | `{ x: 3169, z: 3736, radius: 23 }` | Deadly red spider 4 | yes | no | 28 | - |

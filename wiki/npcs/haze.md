@@ -23,11 +23,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Haunted Mine](../places/haunted-mine.md) | (2789, 4569) | 2 | 8 | (2778, 4559)-(2800, 4579) | 100 ticks | - | no |
-| [Haunted Mine](../places/haunted-mine.md) | (2791, 4560) | 1 | 8 | (2783, 4552)-(2799, 4568) | 100 ticks | - | no |
-| [Haunted Mine](../places/haunted-mine.md) | (2802, 4594) | 6 | 8 | (2788, 4579)-(2816, 4609) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Haunted Mine](../places/haunted-mine.md) | (2789, 4569) | x 2786-2792, z 4567-4571 | 2 | 8 | x 2778-2800, z 4559-4579 | 100 ticks | - | `{ x: 2789, z: 4569, radius: 18 }` | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2791, 4560) | (2791, 4560) | 1 | 8 | x 2783-2799, z 4552-4568 | 100 ticks | - | `{ x: 2791, z: 4560, radius: 15 }` | no |
+| [Haunted Mine](../places/haunted-mine.md) | (2802, 4594) | x 2796-2808, z 4587-4601 | 6 | 8 | x 2788-2816, z 4579-4609 | 100 ticks | - | `{ x: 2802, z: 4594, radius: 24 }` | no |
 
 ## Drops
 

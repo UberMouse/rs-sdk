@@ -19,29 +19,29 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Ardougne Sewers](../../places/ardougne-sewers.md) | `rock:ardougne-sewers:0` | (2671, 9681) | (2672, 9681) | 5 | no | no | - | 31 Thieving | Ardougne South bank (East Ardougne), 58 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:0` | (2906, 3359) | (2906, 3359) | 3 | no | no | - | - | Falador East bank (Falador), 81 ticks |
-| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | 6 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:1` | (3032, 9825) | (3032, 9825) | 2 | yes | no | - | - | Falador East bank (Falador), 68 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | 5 | yes | no | - | - | Falador East bank (Falador), 43 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:4` | (3053, 9819) | (3053, 9819) | 2 | yes | no | - | - | Falador East bank (Falador), 57 ticks |
-| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | 3 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
-| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | 7 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
-| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | 1 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
-| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:2` | (2749, 4437) | (2750, 4437) | 9 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | none |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:3` | (2588, 3233) | (2590, 3231) | 7 | no | no | - | - | Ardougne South bank (East Ardougne), 41 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:4` | (2604, 3235) | (2604, 3235) | 6 | no | no | - | - | Ardougne South bank (East Ardougne), 35 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 9 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:8` | (2703, 3331) | (2704, 3331) | 11 | no | no | - | - | Ardougne South bank (East Ardougne), 44 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:9` | (2725, 3693) | (2725, 3693) | 9 | no | no | - | - | Seers' Village bank (Seers' Village), 135 ticks |
-| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 98 ticks via The Grand Tree done |
-| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 7 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
-| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | 2 | yes | no | - | - | Al Kharid bank (Al Kharid), 63 ticks |
-| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
-| [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | 4 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
-| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |
-| [Wilderness](../../places/wilderness.md) | `rock:wilderness:1` | (3057, 3945) | (3057, 3945) | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 30 ticks |
-| [Wilderness](../../places/wilderness.md) | `rock:wilderness:3` | (3087, 3762) | (3087, 3763) | 16 | yes | no | 32 | - | Edgeville bank (Edgeville), 136 ticks |
-| [Wilderness](../../places/wilderness.md) | `rock:wilderness:4` | (3104, 3567) | (3103, 3567) | 2 | yes | no | 7 | - | Edgeville bank (Edgeville), 39 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Ardougne Sewers](../../places/ardougne-sewers.md) | `rock:ardougne-sewers:0` | (2671, 9681) | (2672, 9681) | x 2667-2676, z 9677-9685 | `{ x: 2672, z: 9681, radius: 10 }` | 5 | no | no | - | 31 Thieving | Ardougne South bank (East Ardougne), 58 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:0` | (2906, 3359) | (2906, 3359) | x 2903-2910, z 3353-3366 | `{ x: 2907, z: 3360, radius: 12 }` | 3 | no | no | - | - | Falador East bank (Falador), 81 ticks |
+| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | x 2968-2987, z 3233-3248 | `{ x: 2978, z: 3241, radius: 16 }` | 6 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:1` | (3032, 9825) | (3032, 9825) | x 3030-3033, z 9822-9828 | `{ x: 3032, z: 9825, radius: 7 }` | 2 | yes | no | - | - | Falador East bank (Falador), 68 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | x 3035-3056, z 9760-9784 | `{ x: 3046, z: 9772, radius: 20 }` | 5 | yes | no | - | - | Falador East bank (Falador), 43 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:4` | (3053, 9819) | (3053, 9819) | x 3052-3054, z 9811-9828 | `{ x: 3053, z: 9820, radius: 13 }` | 2 | yes | no | - | - | Falador East bank (Falador), 57 ticks |
+| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | x 3134-3143, z 9868-9880 | `{ x: 3139, z: 9874, radius: 11 }` | 3 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
+| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | x 2435-2453, z 9898-9915 | `{ x: 2444, z: 9907, radius: 16 }` | 7 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
+| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | x 2482-2494, z 9907-9917 | `{ x: 2488, z: 9912, radius: 11 }` | 1 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
+| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:2` | (2749, 4437) | (2750, 4437) | x 2747-2750, z 4433-4441 | `{ x: 2749, z: 4437, radius: 8 }` | 9 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | none |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:3` | (2588, 3233) | (2590, 3231) | x 2581-2592, z 3229-3238 | `{ x: 2587, z: 3234, radius: 11 }` | 7 | no | no | - | - | Ardougne South bank (East Ardougne), 41 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:4` | (2604, 3235) | (2604, 3235) | x 2602-2605, z 3233-3237 | `{ x: 2604, z: 3235, radius: 6 }` | 6 | no | no | - | - | Ardougne South bank (East Ardougne), 35 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | x 2625-2638, z 3131-3151 | `{ x: 2632, z: 3141, radius: 16 }` | 9 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:8` | (2703, 3331) | (2704, 3331) | x 2689-2715, z 3328-3336 | `{ x: 2702, z: 3332, radius: 17 }` | 11 | no | no | - | - | Ardougne South bank (East Ardougne), 44 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:9` | (2725, 3693) | (2725, 3693) | x 2722-2728, z 3687-3696 | `{ x: 2725, z: 3692, radius: 9 }` | 9 | no | no | - | - | Seers' Village bank (Seers' Village), 135 ticks |
+| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | x 2846-2851, z 3030-3037 | `{ x: 2849, z: 3034, radius: 8 }` | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 98 ticks via The Grand Tree done |
+| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | x 3293-3305, z 3299-3318 | `{ x: 3299, z: 3309, radius: 15 }` | 7 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
+| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:1` | (3298, 3286) | (3295, 3287) | x 3294-3303, z 3284-3288 | `{ x: 3299, z: 3286, radius: 9 }` | 2 | yes | no | - | - | Al Kharid bank (Al Kharid), 63 ticks |
+| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | x 3284-3302, z 3015-3025 | `{ x: 3293, z: 3020, radius: 14 }` | 3 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
+| [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | x 3282-3290, z 3361-3370 | `{ x: 3286, z: 3366, radius: 10 }` | 4 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
+| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | x 3172-3183, z 3365-3377 | `{ x: 3178, z: 3371, radius: 12 }` | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |
+| [Wilderness](../../places/wilderness.md) | `rock:wilderness:1` | (3057, 3945) | (3057, 3945) | x 3055-3059, z 3941-3950 | `{ x: 3057, z: 3946, radius: 9 }` | 1 | no | no | 54 | - | Mage Arena bank (Mage Arena chamber), 30 ticks |
+| [Wilderness](../../places/wilderness.md) | `rock:wilderness:3` | (3087, 3762) | (3087, 3763) | x 3075-3102, z 3748-3774 | `{ x: 3089, z: 3761, radius: 23 }` | 16 | yes | no | 32 | - | Edgeville bank (Edgeville), 136 ticks |
+| [Wilderness](../../places/wilderness.md) | `rock:wilderness:4` | (3104, 3567) | (3103, 3567) | x 3103-3105, z 3565-3570 | `{ x: 3104, z: 3568, radius: 7 }` | 2 | yes | no | 7 | - | Edgeville bank (Edgeville), 39 ticks |

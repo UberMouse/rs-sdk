@@ -3,6 +3,8 @@ import type { World } from '../types';
 import {
     areaCell,
     areasOf,
+    boxCells,
+    boxHeaders,
     byAreaThenId,
     coord,
     count,
@@ -15,6 +17,7 @@ import {
     reachSummary,
     SERVICE_KINDS,
     servicePath,
+    showsRoam,
     table,
     yesNo,
     type Page,
@@ -35,6 +38,7 @@ export function renderServices(world: World, data: PageData): Page[] {
         const f2p = sites.filter(s => s.f2p).length;
         // Processor kinds carry their nearest bank (distance.ts SINKS); the rest have no such column.
         const banked = sites.some(s => s.nearest);
+        const roam = showsRoam(sites);
         out.push([
             path,
             [
@@ -49,6 +53,7 @@ export function renderServices(world: World, data: PageData): Page[] {
                         'Site',
                         'Centre',
                         'Stand',
+                        ...boxHeaders(roam),
                         'Counts',
                         'F2P',
                         'Requires',
@@ -59,6 +64,7 @@ export function renderServices(world: World, data: PageData): Page[] {
                         `\`${s.id}\``,
                         coord(s.centre),
                         s.stand ? coord(s.stand) : '-',
+                        ...boxCells(s, roam),
                         held[i]!.map(p => `${label(kind, p)} ${p.n}`).join(', '),
                         yesNo(s.f2p),
                         requires(s),

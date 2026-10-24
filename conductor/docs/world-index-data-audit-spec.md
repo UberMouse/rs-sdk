@@ -181,7 +181,9 @@ trigger names an inv.
 Every Sites table gets a `Box` column: the site's `bbox` as `x x1-x2, z z1-z2` (one tile: the coord), and, for a
 site with a `roam` (Task 2), a `Roam` column in the same form, where the kind's pages hold npc-sourced sites
 (pickpocket, npc, a bank's bankers if shown). Also an `Area to copy` cell or line that turns the box into a plan
-`area`: the box's centre and the Chebyshev radius that covers it plus the margin (use `roam` where there is one).
+`area`: the box's centre and the radius that covers it plus the margin (use `roam` where there is one). The radius
+is straight-line, not Chebyshev: a plan's area holds what is within its radius of the centre in a straight line
+(`conductor/lib/area.ts` `inArea`), so a Chebyshev radius misses a box's corners; `coverOf` is straight-line too.
 Use main's `COVER_MARGIN` and `coverOf` (`W/sources/fishing-movement.ts`; move them to a shared module if they
 outgrow fishing) rather than a second constant or formula; a fishing site's area to copy is its movement cover,
 which main's Movement section already prints, so its row points there rather than repeating it.

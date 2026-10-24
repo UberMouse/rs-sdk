@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2707, 9483) | 4 | 6 | (2694, 9473)-(2721, 9495) | 60 ticks | - | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3088, 9959) | 3 | 6 | (3078, 9951)-(3098, 9967) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2857, 9779) | 2 | 6 | (2848, 9770)-(2866, 9787) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2863, 9769) | 1 | 6 | (2857, 9763)-(2869, 9775) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2869, 9776) | 1 | 6 | (2863, 9770)-(2875, 9782) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2707, 9483) | x 2700-2715, z 9479-9489 | 4 | 6 | x 2694-2721, z 9473-9495 | 60 ticks | - | `{ x: 2708, z: 9484, radius: 21 }` | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3088, 9959) | x 3084-3092, z 9957-9961 | 3 | 6 | x 3078-3098, z 9951-9967 | 60 ticks | - | `{ x: 3088, z: 9959, radius: 16 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2857, 9779) | x 2854-2860, z 9776-9781 | 2 | 6 | x 2848-2866, z 9770-9787 | 60 ticks | - | `{ x: 2857, z: 9779, radius: 16 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2863, 9769) | (2863, 9769) | 1 | 6 | x 2857-2869, z 9763-9775 | 60 ticks | - | `{ x: 2863, z: 9769, radius: 12 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2869, 9776) | (2869, 9776) | 1 | 6 | x 2863-2875, z 9770-9782 | 60 ticks | - | `{ x: 2869, z: 9776, radius: 12 }` | no |
 
 ## Drops
 

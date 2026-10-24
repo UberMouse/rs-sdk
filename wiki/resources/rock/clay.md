@@ -19,14 +19,14 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:1` | (2941, 3283) | (2941, 3283) | 6 | yes | no | - | wear Brown apron + 40 Crafting | Falador East bank (Falador), 66 ticks |
-| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | 2 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:0` | (3027, 9804) | (3027, 9803) | 3 | yes | no | - | - | Falador East bank (Falador), 78 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:4` | (3053, 9819) | (3053, 9819) | 2 | yes | no | - | - | Falador East bank (Falador), 57 ticks |
-| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | 5 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
-| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 4 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `rock:rellekka:0` | (2683, 3706) | (2684, 3706) | 4 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 95 ticks via The Fremennik Trials done |
-| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:1` | (2941, 3283) | (2941, 3283) | x 2937-2943, z 3276-3291 | `{ x: 2940, z: 3284, radius: 12 }` | 6 | yes | no | - | wear Brown apron + 40 Crafting | Falador East bank (Falador), 66 ticks |
+| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | x 2968-2987, z 3233-3248 | `{ x: 2978, z: 3241, radius: 16 }` | 2 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:0` | (3027, 9804) | (3027, 9803) | x 3021-3030, z 9798-9810 | `{ x: 3026, z: 9804, radius: 11 }` | 3 | yes | no | - | - | Falador East bank (Falador), 78 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:4` | (3053, 9819) | (3053, 9819) | x 3052-3054, z 9811-9828 | `{ x: 3053, z: 9820, radius: 13 }` | 2 | yes | no | - | - | Falador East bank (Falador), 57 ticks |
+| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | x 2435-2453, z 9898-9915 | `{ x: 2444, z: 9907, radius: 16 }` | 5 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
+| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:2` | (2489, 9913) | (2489, 9913) | x 2482-2494, z 9907-9917 | `{ x: 2488, z: 9912, radius: 11 }` | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 35 ticks via The Grand Tree done |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | x 2625-2638, z 3131-3151 | `{ x: 2632, z: 3141, radius: 16 }` | 4 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `rock:rellekka:0` | (2683, 3706) | (2684, 3706) | x 2680-2686, z 3702-3709 | `{ x: 2683, z: 3706, radius: 8 }` | 4 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 95 ticks via The Fremennik Trials done |
+| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | x 3172-3183, z 3365-3377 | `{ x: 3178, z: 3371, radius: 12 }` | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |

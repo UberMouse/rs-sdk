@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Karamja](../places/karamja.md) | (2906, 3095) | 1 | 32 | (2874, 3063)-(2938, 3127) | 50 ticks | - | no |
-| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2524, 4567) | 1 | 0 | (2524, 4567)-(2524, 4567) | 100 ticks | - | no |
-| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2540, 4566) | 1 | 0 | (2540, 4566)-(2540, 4566) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Karamja](../places/karamja.md) | (2906, 3095) | (2906, 3095) | 1 | 32 | x 2874-2938, z 3063-3127 | 50 ticks | - | `{ x: 2906, z: 3095, radius: 49 }` | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2524, 4567) | (2524, 4567) | 1 | 0 | (2524, 4567) | 100 ticks | - | `{ x: 2524, z: 4567, radius: 3 }` | no |
+| [Tai Bwo Wannai Trio area](../places/tai-bwo-wannai-trio-area.md) | (2540, 4566) | (2540, 4566) | 1 | 0 | (2540, 4566) | 100 ticks | - | `{ x: 2540, z: 4566, radius: 3 }` | no |
 
 ## Drops
 

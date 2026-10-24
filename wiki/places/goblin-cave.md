@@ -5,20 +5,20 @@ Goblins; descriptive name, not settled from the data.
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:goblin-cave:0` | (2581, 9843) | Fire 1 | no | no | - | unreached |
-| `fire:goblin-cave:1` | (2582, 9850) | Fire 1 | no | no | - | unreached |
-| `fire:goblin-cave:2` | (2590, 9829) | Fire 1 | no | no | - | unreached |
-| `fire:goblin-cave:3` | (2595, 9824) | Fire 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:goblin-cave:0` | (2581, 9843) | (2581, 9843) | `{ x: 2581, z: 9843, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:goblin-cave:1` | (2582, 9850) | (2582, 9850) | `{ x: 2582, z: 9850, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:goblin-cave:2` | (2590, 9829) | (2590, 9829) | `{ x: 2590, z: 9829, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:goblin-cave:3` | (2595, 9824) | (2595, 9824) | `{ x: 2595, z: 9824, radius: 3 }` | Fire 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:goblin-cave:0` | (2565, 9836) | Goblin (goblin) 2 | no | no | - | unreached |
-| `npc:goblin-cave:1` | (2569, 9847) | Goblin (goblin) 1, Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - | unreached |
-| `npc:goblin-cave:2` | (2585, 9804) | Rat 11 | no | no | - | unreached |
-| `npc:goblin-cave:3` | (2588, 9831) | Giant bat 2, Goblin (goblin) 5, Goblin (goblin_armed) 6, Goblin (goblin_helmet) 6, Rat 2 | no | no | - | unreached |
-| `npc:goblin-cave:4` | (2600, 9811) | Rat 2 | no | no | - | unreached |
-| `npc:goblin-cave:5` | (2611, 9814) | Giant bat 4, Rat 4 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:goblin-cave:0` | (2565, 9836) | x 2564-2565, z 9835-9836 | x 2549-2580, z 9820-9851 | `{ x: 2565, z: 9836, radius: 26 }` | Goblin (goblin) 2 | no | no | - | unreached |
+| `npc:goblin-cave:1` | (2569, 9847) | x 2566-2570, z 9844-9850 | x 2551-2585, z 9829-9865 | `{ x: 2568, z: 9847, radius: 28 }` | Goblin (goblin) 1, Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - | unreached |
+| `npc:goblin-cave:2` | (2585, 9804) | x 2573-2599, z 9801-9806 | x 2558-2614, z 9786-9821 | `{ x: 2586, z: 9804, radius: 37 }` | Rat 11 | no | no | - | unreached |
+| `npc:goblin-cave:3` | (2588, 9831) | x 2579-2599, z 9819-9850 | x 2564-2614, z 9804-9865 | `{ x: 2589, z: 9835, radius: 43 }` | Giant bat 2, Goblin (goblin) 5, Goblin (goblin_armed) 6, Goblin (goblin_helmet) 6, Rat 2 | no | no | - | unreached |
+| `npc:goblin-cave:4` | (2600, 9811) | x 2599-2601, z 9810-9812 | x 2584-2616, z 9795-9827 | `{ x: 2600, z: 9811, radius: 26 }` | Rat 2 | no | no | - | unreached |
+| `npc:goblin-cave:5` | (2611, 9814) | x 2606-2613, z 9805-9825 | x 2591-2628, z 9790-9840 | `{ x: 2610, z: 9815, radius: 35 }` | Giant bat 4, Rat 4 | no | no | - | unreached |

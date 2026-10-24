@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 38 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:8` | (2659, 3308) | (2659, 3308) | 4 | no | no | - | - | Ardougne South bank (East Ardougne), 22 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | x 2571-2587, z 3286-3308 | x 2556-2602, z 3271-3323 | `{ x: 2579, z: 3297, radius: 38 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 38 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:8` | (2659, 3308) | (2659, 3308) | x 2647-2671, z 3298-3318 | x 2632-2686, z 3283-3333 | `{ x: 2659, z: 3308, radius: 40 }` | 4 | no | no | - | - | Ardougne South bank (East Ardougne), 22 ticks |

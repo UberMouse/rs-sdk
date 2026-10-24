@@ -5,16 +5,16 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:ruins:0` | (2957, 3693) | [normal](../resources/tree/normal.md) 2 | yes | no | 23 | - |
-| `tree:ruins:1` | (2977, 3708) | [normal](../resources/tree/normal.md) 1 | yes | no | 24 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:ruins:0` | (2957, 3693) | x 2955-2959, z 3690-3696 | `{ x: 2957, z: 3693, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 23 | - |
+| `tree:ruins:1` | (2977, 3708) | (2977, 3708) | `{ x: 2977, z: 3708, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 24 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ruins:0` | (2957, 3704) | Rat 5 | yes | no | 24 | - |
-| `npc:ruins:1` | (2970, 3689) | Rat 4 | yes | no | 22 | - |
-| `npc:ruins:2` | (2974, 3705) | Rat 1 | yes | no | 24 | - |
-| `npc:ruins:3` | (2976, 3697) | Rat 1 | yes | no | 23 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ruins:0` | (2957, 3704) | x 2954-2960, z 3702-3707 | x 2939-2975, z 3687-3722 | `{ x: 2957, z: 3705, radius: 29 }` | Rat 5 | yes | no | 24 | - |
+| `npc:ruins:1` | (2970, 3689) | x 2966-2973, z 3686-3691 | x 2951-2988, z 3671-3706 | `{ x: 2970, z: 3689, radius: 30 }` | Rat 4 | yes | no | 22 | - |
+| `npc:ruins:2` | (2974, 3705) | (2974, 3705) | x 2959-2989, z 3690-3720 | `{ x: 2974, z: 3705, radius: 25 }` | Rat 1 | yes | no | 24 | - |
+| `npc:ruins:3` | (2976, 3697) | (2976, 3697) | x 2961-2991, z 3682-3712 | `{ x: 2976, z: 3697, radius: 25 }` | Rat 1 | yes | no | 23 | - |

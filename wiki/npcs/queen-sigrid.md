@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Miscellania and Etceteria](../places/miscellania.md) | (2612, 3877) L1 | 1 | 5 | (2607, 3872)-(2617, 3882) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2612, 3877) L1 | (2612, 3877) L1 | 1 | 5 | x 2607-2617, z 3872-3882 L1 | 100 ticks | - | `{ x: 2612, z: 3877, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

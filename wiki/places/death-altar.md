@@ -5,23 +5,23 @@ Inside the death ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:death-altar:0` | (2204, 4835) | death 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:death-altar:0` | (2204, 4835) | (2204, 4835) | `{ x: 2204, z: 4835, radius: 3 }` | death 1 | no | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:death-altar:0` | (2207, 4837) | [burnt](../resources/tree/burnt.md) 40 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:death-altar:0` | (2207, 4837) | x 2193-2218, z 4825-4848 | `{ x: 2206, z: 4837, radius: 21 }` | [burnt](../resources/tree/burnt.md) 40 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:death-altar:0` | (2193, 4850) | Ghost 4 | no | no | - | unreached |
-| `npc:death-altar:1` | (2194, 4823) | Ghost 3 | no | no | - | unreached |
-| `npc:death-altar:2` | (2211, 4826) | Ghost 3 | no | no | - | unreached |
-| `npc:death-altar:3` | (2218, 4818) | Ghost 1 | no | no | - | unreached |
-| `npc:death-altar:4` | (2222, 4847) | Ghost 5 | no | no | - | unreached |
-| `npc:death-altar:5` | (2227, 4819) | Ghost 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:death-altar:0` | (2193, 4850) | x 2188-2197, z 4845-4855 | x 2180-2205, z 4837-4863 | `{ x: 2193, z: 4850, radius: 22 }` | Ghost 4 | no | no | - | unreached |
+| `npc:death-altar:1` | (2194, 4823) | x 2190-2198, z 4820-4825 | x 2182-2206, z 4812-4833 | `{ x: 2194, z: 4823, radius: 20 }` | Ghost 3 | no | no | - | unreached |
+| `npc:death-altar:2` | (2211, 4826) | x 2206-2216, z 4824-4829 | x 2198-2224, z 4816-4837 | `{ x: 2211, z: 4827, radius: 21 }` | Ghost 3 | no | no | - | unreached |
+| `npc:death-altar:3` | (2218, 4818) | (2218, 4818) | x 2210-2226, z 4810-4826 | `{ x: 2218, z: 4818, radius: 15 }` | Ghost 1 | no | no | - | unreached |
+| `npc:death-altar:4` | (2222, 4847) | x 2218-2226, z 4837-4855 | x 2210-2234, z 4829-4863 | `{ x: 2222, z: 4846, radius: 24 }` | Ghost 5 | no | no | - | unreached |
+| `npc:death-altar:5` | (2227, 4819) | (2227, 4819) | x 2219-2235, z 4811-4827 | `{ x: 2227, z: 4819, radius: 15 }` | Ghost 1 | no | no | - | unreached |

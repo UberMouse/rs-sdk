@@ -3,273 +3,273 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:asgarnia:0` | (2885, 3449) | Gaius' Two Handed Shop. (2handedshop) 1 | no | no | - | - |
-| `shop:asgarnia:1` | (2899, 3427) | Jatix's Herblore Shop. (herbloreshop) 1 | no | no | - | - |
-| `shop:asgarnia:2` | (2928, 3546) | Burthorpe Supplies (death_generalshop) 1 | no | no | - | - |
-| `shop:asgarnia:3` | (3011, 3453) | Multi cannon parts for sale: (mcannonshop) 1 | yes | no | - | Dwarf Cannon at stage 9 |
-| `shop:asgarnia:4` | (3012, 3259) | Betty's Magic Emporium. (magicshop) 1 | yes | no | - | - |
-| `shop:asgarnia:5` | (3013, 3225) | Gerrant's Fishy Business. (fishingshop) 1 | yes | no | - | - |
-| `shop:asgarnia:6` | (3013, 3248) | Grum's Gold Exchange. (goldshop) 1 | yes | no | - | - |
-| `shop:asgarnia:7` | (3014, 3204) | Food Store (wydinstore) 1 | yes | no | - | - |
-| `shop:asgarnia:8` | (3028, 3250) | Brian's Battleaxe Bazaar. (battleaxeshop) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:asgarnia:0` | (2885, 3449) | (2885, 3449) | x 2880-2890, z 3444-3454 | `{ x: 2885, z: 3449, radius: 11 }` | Gaius' Two Handed Shop. (2handedshop) 1 | no | no | - | - |
+| `shop:asgarnia:1` | (2899, 3427) | (2899, 3427) | x 2894-2904, z 3422-3432 | `{ x: 2899, z: 3427, radius: 11 }` | Jatix's Herblore Shop. (herbloreshop) 1 | no | no | - | - |
+| `shop:asgarnia:2` | (2928, 3546) | (2928, 3546) | x 2923-2933, z 3541-3551 | `{ x: 2928, z: 3546, radius: 11 }` | Burthorpe Supplies (death_generalshop) 1 | no | no | - | - |
+| `shop:asgarnia:3` | (3011, 3453) | (3011, 3453) | x 3006-3016, z 3448-3458 | `{ x: 3011, z: 3453, radius: 11 }` | Multi cannon parts for sale: (mcannonshop) 1 | yes | no | - | Dwarf Cannon at stage 9 |
+| `shop:asgarnia:4` | (3012, 3259) | (3012, 3259) | x 3011-3013, z 3258-3260 | `{ x: 3012, z: 3259, radius: 5 }` | Betty's Magic Emporium. (magicshop) 1 | yes | no | - | - |
+| `shop:asgarnia:5` | (3013, 3225) | (3013, 3225) | x 3008-3018, z 3220-3230 | `{ x: 3013, z: 3225, radius: 11 }` | Gerrant's Fishy Business. (fishingshop) 1 | yes | no | - | - |
+| `shop:asgarnia:6` | (3013, 3248) | (3013, 3248) | x 3008-3018, z 3243-3253 | `{ x: 3013, z: 3248, radius: 11 }` | Grum's Gold Exchange. (goldshop) 1 | yes | no | - | - |
+| `shop:asgarnia:7` | (3014, 3204) | (3014, 3204) | x 3009-3019, z 3199-3209 | `{ x: 3014, z: 3204, radius: 11 }` | Food Store (wydinstore) 1 | yes | no | - | - |
+| `shop:asgarnia:8` | (3028, 3250) | (3028, 3250) | x 3023-3033, z 3245-3255 | `{ x: 3028, z: 3250, radius: 11 }` | Brian's Battleaxe Bazaar. (battleaxeshop) 1 | yes | no | - | - |
 
 ## [Tanners](../services/tanner.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tanner:asgarnia:0` | (2934, 3284) L1 | Tanner 1 | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `tanner:asgarnia:0` | (2934, 3284) L1 | (2934, 3284) L1 | x 2929-2939, z 3279-3289 L1 | `{ x: 2934, z: 3284, radius: 11, level: 1 }` | Tanner 1 | yes | no | - | wear Brown apron + 40 Crafting |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:asgarnia:0` | (2918, 3573) | Anvil 1 | no | no | - | - |
-| `anvil:asgarnia:1` | (2950, 3452) | Anvil 2 | yes | yes | - | Doric's Quest done |
-| `anvil:asgarnia:2` | (2999, 3144) | Anvil 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:asgarnia:0` | (2918, 3573) | (2918, 3573) | `{ x: 2918, z: 3573, radius: 3 }` | Anvil 1 | no | no | - | - |
+| `anvil:asgarnia:1` | (2950, 3452) | x 2950, z 3451-3452 | `{ x: 2950, z: 3452, radius: 4 }` | Anvil 2 | yes | yes | - | Doric's Quest done |
+| `anvil:asgarnia:2` | (2999, 3144) | (2999, 3144) | `{ x: 2999, z: 3144, radius: 3 }` | Anvil 1 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:asgarnia:0` | (2917, 3318) | Range 1 | yes | no | - | - |
-| `range:asgarnia:1` | (3019, 3237) | Range 1 | yes | no | - | - |
-| `range:asgarnia:2` | (3036, 3342) | Range 1 | yes | no | - | - |
-| `range:asgarnia:3` | (3039, 3367) | Range 1 | yes | no | - | - |
-| `range:asgarnia:4` | (3046, 3375) | Range 1 | yes | no | - | - |
-| `range:asgarnia:5` | (3052, 3356) | Range 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:asgarnia:0` | (2917, 3318) | (2917, 3318) | `{ x: 2917, z: 3318, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:asgarnia:1` | (3019, 3237) | (3019, 3237) | `{ x: 3019, z: 3237, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:asgarnia:2` | (3036, 3342) | (3036, 3342) | `{ x: 3036, z: 3342, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:asgarnia:3` | (3039, 3367) | (3039, 3367) | `{ x: 3039, z: 3367, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:asgarnia:4` | (3046, 3375) | (3046, 3375) | `{ x: 3046, z: 3375, radius: 3 }` | Range 1 | yes | no | - | - |
+| `range:asgarnia:5` | (3052, 3356) | (3052, 3356) | `{ x: 3052, z: 3356, radius: 3 }` | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:asgarnia:0` | (2848, 3677) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `fire:asgarnia:1` | (2851, 3684) | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `fire:asgarnia:2` | (2919, 3557) | Fireplace 1 | no | no | - | - |
-| `fire:asgarnia:3` | (2923, 3573) | Fireplace 1 | no | no | - | - |
-| `fire:asgarnia:4` | (2926, 3545) L1 | Fireplace 1 | no | no | - | - |
-| `fire:asgarnia:5` | (2931, 3207) | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:6` | (3024, 3245) | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:7` | (3026, 3259) | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:8` | (3026, 3262) L1 | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:9` | (3030, 3514) | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:10` | (3034, 3297) | Fireplace 1 | yes | no | - | - |
-| `fire:asgarnia:11` | (3054, 3379) | Fireplace 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:asgarnia:0` | (2848, 3677) | (2848, 3677) | `{ x: 2848, z: 3677, radius: 3 }` | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `fire:asgarnia:1` | (2851, 3684) | (2851, 3684) | `{ x: 2851, z: 3684, radius: 3 }` | Fire 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `fire:asgarnia:2` | (2919, 3557) | (2919, 3557) | `{ x: 2919, z: 3557, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:asgarnia:3` | (2923, 3573) | (2923, 3573) | `{ x: 2923, z: 3573, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:asgarnia:4` | (2926, 3545) L1 | (2926, 3545) L1 | `{ x: 2926, z: 3545, radius: 3, level: 1 }` | Fireplace 1 | no | no | - | - |
+| `fire:asgarnia:5` | (2931, 3207) | (2931, 3207) | `{ x: 2931, z: 3207, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:6` | (3024, 3245) | (3024, 3245) | `{ x: 3024, z: 3245, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:7` | (3026, 3259) | (3026, 3259) | `{ x: 3026, z: 3259, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:8` | (3026, 3262) L1 | (3026, 3262) L1 | `{ x: 3026, z: 3262, radius: 3, level: 1 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:9` | (3030, 3514) | (3030, 3514) | `{ x: 3030, z: 3514, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:10` | (3034, 3297) | (3034, 3297) | `{ x: 3034, z: 3297, radius: 3 }` | Fireplace 1 | yes | no | - | - |
+| `fire:asgarnia:11` | (3054, 3379) | (3054, 3379) | `{ x: 3054, z: 3379, radius: 3 }` | Fireplace 1 | yes | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:asgarnia:0` | (2935, 3288) L1 | Spinning wheel 2 | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:asgarnia:0` | (2935, 3288) L1 | x 2934-2936, z 3287-3288 L1 | `{ x: 2935, z: 3288, radius: 5, level: 1 }` | Spinning wheel 2 | yes | no | - | wear Brown apron + 40 Crafting |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-wheel:asgarnia:0` | (2937, 3290) | Potter's Wheel 4 | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-wheel:asgarnia:0` | (2937, 3290) | x 2935-2938, z 3289-3291 | `{ x: 2937, z: 3290, radius: 6 }` | Potter's Wheel 4 | yes | no | - | wear Brown apron + 40 Crafting |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:asgarnia:0` | (2891, 3438) | Fountain 1 | no | no | - | - |
-| `water-source:asgarnia:1` | (2891, 3443) | Fountain 1 | no | no | - | - |
-| `water-source:asgarnia:2` | (2922, 3560) | Sink 1 | no | no | - | - |
-| `water-source:asgarnia:3` | (2929, 3567) | Sink 1 | no | no | - | - |
-| `water-source:asgarnia:4` | (2933, 3279) | Sink 1 | yes | no | - | wear Brown apron + 40 Crafting |
-| `water-source:asgarnia:5` | (3021, 3287) | Sink 1 | yes | no | - | - |
-| `water-source:asgarnia:6` | (3026, 3262) | Sink 1 | yes | no | - | - |
-| `water-source:asgarnia:7` | (3038, 3353) | Fountain 1 | yes | no | - | - |
-| `water-source:asgarnia:8` | (3048, 3494) | Fountain 1 | yes | no | - | - |
-| `water-source:asgarnia:9` | (3051, 3347) | Sink 1 | yes | no | - | - |
-| `water-source:asgarnia:10` | (3054, 3494) | Fountain 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:asgarnia:0` | (2891, 3438) | (2891, 3438) | `{ x: 2891, z: 3438, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:asgarnia:1` | (2891, 3443) | (2891, 3443) | `{ x: 2891, z: 3443, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:asgarnia:2` | (2922, 3560) | (2922, 3560) | `{ x: 2922, z: 3560, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:asgarnia:3` | (2929, 3567) | (2929, 3567) | `{ x: 2929, z: 3567, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:asgarnia:4` | (2933, 3279) | (2933, 3279) | `{ x: 2933, z: 3279, radius: 3 }` | Sink 1 | yes | no | - | wear Brown apron + 40 Crafting |
+| `water-source:asgarnia:5` | (3021, 3287) | (3021, 3287) | `{ x: 3021, z: 3287, radius: 3 }` | Sink 1 | yes | no | - | - |
+| `water-source:asgarnia:6` | (3026, 3262) | (3026, 3262) | `{ x: 3026, z: 3262, radius: 3 }` | Sink 1 | yes | no | - | - |
+| `water-source:asgarnia:7` | (3038, 3353) | (3038, 3353) | `{ x: 3038, z: 3353, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:asgarnia:8` | (3048, 3494) | (3048, 3494) | `{ x: 3048, z: 3494, radius: 3 }` | Fountain 1 | yes | no | - | - |
+| `water-source:asgarnia:9` | (3051, 3347) | (3051, 3347) | `{ x: 3051, z: 3347, radius: 3 }` | Sink 1 | yes | no | - | - |
+| `water-source:asgarnia:10` | (3054, 3494) | (3054, 3494) | `{ x: 3054, z: 3494, radius: 3 }` | Fountain 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:asgarnia:0` | (2932, 3513) | Chaos altar 1 | yes | yes | - | - |
-| `altar:asgarnia:1` | (2991, 3177) | Altar 1 | yes | no | - | - |
-| `altar:asgarnia:2` | (3051, 3498) L1 | Altar 1 | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:asgarnia:0` | (2932, 3513) | (2932, 3513) | `{ x: 2932, z: 3513, radius: 3 }` | Chaos altar 1 | yes | yes | - | - |
+| `altar:asgarnia:1` | (2991, 3177) | (2991, 3177) | `{ x: 2991, z: 3177, radius: 3 }` | Altar 1 | yes | no | - | - |
+| `altar:asgarnia:2` | (3051, 3498) L1 | (3051, 3498) L1 | `{ x: 3051, z: 3498, radius: 3, level: 1 }` | Altar 1 | yes | no | - | joined the monks' order (%prayer_guild = 1, set by Abbot Langley at areas/monastery/scripts/prayer_guild.rs2:32) + 31 Prayer |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-ruins:asgarnia:0` | (2981, 3513) | mind 1 | yes | no | - | - |
-| `rc-ruins:asgarnia:1` | (2984, 3291) | air 1 | yes | no | - | - |
-| `rc-ruins:asgarnia:2` | (3052, 3444) | body 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-ruins:asgarnia:0` | (2981, 3513) | (2981, 3513) | `{ x: 2981, z: 3513, radius: 3 }` | mind 1 | yes | no | - | - |
+| `rc-ruins:asgarnia:1` | (2984, 3291) | (2984, 3291) | `{ x: 2984, z: 3291, radius: 3 }` | air 1 | yes | no | - | - |
+| `rc-ruins:asgarnia:2` | (3052, 3444) | (3052, 3444) | `{ x: 3052, z: 3444, radius: 3 }` | body 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:asgarnia:0` | (2824, 3476) | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
-| `tree:asgarnia:1` | (2831, 3525) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
-| `tree:asgarnia:2` | (2854, 3533) | [normal](../resources/tree/normal.md) 39 | no | yes | - | - |
-| `tree:asgarnia:3` | (2855, 3461) | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
-| `tree:asgarnia:4` | (2874, 3421) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:asgarnia:5` | (2978, 3473) | [normal](../resources/tree/normal.md) 213, [oak](../resources/tree/oak.md) 7 | yes | yes | - | - |
-| `tree:asgarnia:6` | (2878, 3490) | [normal](../resources/tree/normal.md) 7 | no | yes | - | - |
-| `tree:asgarnia:7` | (2880, 3444) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:asgarnia:8` | (2905, 3372) | [normal](../resources/tree/normal.md) 76, [oak](../resources/tree/oak.md) 6, [willow](../resources/tree/willow.md) 19 | no | no | - | - |
-| `tree:asgarnia:9` | (2887, 3515) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:asgarnia:10` | (2988, 3275) | [normal](../resources/tree/normal.md) 176, [oak](../resources/tree/oak.md) 34, [willow](../resources/tree/willow.md) 14, [yew](../resources/tree/yew.md) 1 | yes | yes | - | - |
-| `tree:asgarnia:11` | (2912, 3576) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:asgarnia:12` | (2917, 3248) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:13` | (2922, 3406) | [willow](../resources/tree/willow.md) 13 | no | no | - | - |
-| `tree:asgarnia:14` | (2948, 3423) | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
-| `tree:asgarnia:15` | (2931, 3227) | [normal](../resources/tree/normal.md) 14, [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 4 | yes | no | - | - |
-| `tree:asgarnia:16` | (2926, 3566) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:asgarnia:17` | (2925, 3540) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:asgarnia:18` | (2931, 3552) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:asgarnia:19` | (2937, 3201) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:20` | (2939, 3568) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
-| `tree:asgarnia:21` | (2953, 3446) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
-| `tree:asgarnia:22` | (2996, 3191) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - | - |
-| `tree:asgarnia:23` | (3013, 3410) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
-| `tree:asgarnia:24` | (3023, 3172) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - | - |
-| `tree:asgarnia:25` | (3019, 3194) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:26` | (3048, 3321) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:asgarnia:27` | (3028, 3370) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:28` | (3035, 3507) | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
-| `tree:asgarnia:29` | (3051, 3396) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:30` | (3056, 3369) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:31` | (3055, 3386) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:asgarnia:32` | (3064, 3341) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
-| `tree:asgarnia:33` | (3064, 3351) | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:asgarnia:0` | (2824, 3476) | (2824, 3476) | `{ x: 2824, z: 3476, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
+| `tree:asgarnia:1` | (2831, 3525) | x 2827-2834, z 3521-3528 | `{ x: 2831, z: 3525, radius: 9 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
+| `tree:asgarnia:2` | (2854, 3533) | x 2828-2876, z 3513-3553 | `{ x: 2852, z: 3533, radius: 35 }` | [normal](../resources/tree/normal.md) 39 | no | yes | - | - |
+| `tree:asgarnia:3` | (2855, 3461) | x 2851-2858, z 3459-3462 | `{ x: 2855, z: 3461, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | yes | - | - |
+| `tree:asgarnia:4` | (2874, 3421) | x 2869-2880, z 3415-3427 | `{ x: 2875, z: 3421, radius: 12 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:asgarnia:5` | (2978, 3473) | x 2870-3062, z 3419-3524 | `{ x: 2966, z: 3472, radius: 113 }` | [normal](../resources/tree/normal.md) 213, [oak](../resources/tree/oak.md) 7 | yes | yes | - | - |
+| `tree:asgarnia:6` | (2878, 3490) | x 2873-2883, z 3485-3500 | `{ x: 2878, z: 3493, radius: 13 }` | [normal](../resources/tree/normal.md) 7 | no | yes | - | - |
+| `tree:asgarnia:7` | (2880, 3444) | (2880, 3444) | `{ x: 2880, z: 3444, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:asgarnia:8` | (2905, 3372) | x 2882-2933, z 3328-3411 | `{ x: 2908, z: 3370, radius: 53 }` | [normal](../resources/tree/normal.md) 76, [oak](../resources/tree/oak.md) 6, [willow](../resources/tree/willow.md) 19 | no | no | - | - |
+| `tree:asgarnia:9` | (2887, 3515) | x 2885-2890, z 3514-3517 | `{ x: 2888, z: 3516, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:asgarnia:10` | (2988, 3275) | x 2911-3063, z 3225-3317 | `{ x: 2987, z: 3271, radius: 92 }` | [normal](../resources/tree/normal.md) 176, [oak](../resources/tree/oak.md) 34, [willow](../resources/tree/willow.md) 14, [yew](../resources/tree/yew.md) 1 | yes | yes | - | - |
+| `tree:asgarnia:11` | (2912, 3576) | x 2911-2913, z 3575-3576 | `{ x: 2912, z: 3576, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:asgarnia:12` | (2917, 3248) | (2917, 3248) | `{ x: 2917, z: 3248, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:13` | (2922, 3406) | x 2918-2929, z 3399-3419 | `{ x: 2924, z: 3409, radius: 15 }` | [willow](../resources/tree/willow.md) 13 | no | no | - | - |
+| `tree:asgarnia:14` | (2948, 3423) | x 2918-2975, z 3399-3446 | `{ x: 2947, z: 3423, radius: 41 }` | [normal](../resources/tree/normal.md) 37, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
+| `tree:asgarnia:15` | (2931, 3227) | x 2922-2944, z 3219-3234 | `{ x: 2933, z: 3227, radius: 17 }` | [normal](../resources/tree/normal.md) 14, [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 4 | yes | no | - | - |
+| `tree:asgarnia:16` | (2926, 3566) | x 2924-2930, z 3562-3569 | `{ x: 2927, z: 3566, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:asgarnia:17` | (2925, 3540) | (2925, 3540) | `{ x: 2925, z: 3540, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:asgarnia:18` | (2931, 3552) | x 2929-2932, z 3551-3552 | `{ x: 2931, z: 3552, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:asgarnia:19` | (2937, 3201) | (2937, 3201) | `{ x: 2937, z: 3201, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:20` | (2939, 3568) | (2939, 3568) | `{ x: 2939, z: 3568, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
+| `tree:asgarnia:21` | (2953, 3446) | (2953, 3446) | `{ x: 2953, z: 3446, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:asgarnia:22` | (2996, 3191) | x 2985-3019, z 3162-3221 | `{ x: 3002, z: 3192, radius: 38 }` | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 13 | yes | no | - | - |
+| `tree:asgarnia:23` | (3013, 3410) | x 2990-3035, z 3396-3423 | `{ x: 3013, z: 3410, radius: 30 }` | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
+| `tree:asgarnia:24` | (3023, 3172) | x 3013-3031, z 3165-3185 | `{ x: 3022, z: 3175, radius: 17 }` | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2, [willow](../resources/tree/willow.md) 3 | yes | no | - | - |
+| `tree:asgarnia:25` | (3019, 3194) | (3019, 3194) | `{ x: 3019, z: 3194, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:26` | (3048, 3321) | x 3026-3064, z 3298-3355 | `{ x: 3045, z: 3327, radius: 38 }` | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 11, [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:asgarnia:27` | (3028, 3370) | (3028, 3370) | `{ x: 3028, z: 3370, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:28` | (3035, 3507) | x 3033-3035, z 3499-3513 | `{ x: 3034, z: 3506, radius: 11 }` | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
+| `tree:asgarnia:29` | (3051, 3396) | x 3038-3061, z 3392-3398 | `{ x: 3050, z: 3395, radius: 16 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:30` | (3056, 3369) | x 3051-3062, z 3366-3372 | `{ x: 3057, z: 3369, radius: 10 }` | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:31` | (3055, 3386) | (3055, 3386) | `{ x: 3055, z: 3386, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:asgarnia:32` | (3064, 3341) | (3064, 3341) | `{ x: 3064, z: 3341, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| `tree:asgarnia:33` | (3064, 3351) | (3064, 3351) | `{ x: 3064, z: 3351, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:asgarnia:0` | (2906, 3359) | [coal](../resources/rock/coal.md) 2, [copper](../resources/rock/copper.md) 2, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 6 | no | no | - | - |
-| `rock:asgarnia:1` | (2941, 3283) | [clay](../resources/rock/clay.md) 6, [gold](../resources/rock/gold.md) 7, [silver](../resources/rock/silver.md) 6 | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:asgarnia:0` | (2906, 3359) | x 2903-2910, z 3353-3366 | `{ x: 2907, z: 3360, radius: 12 }` | [coal](../resources/rock/coal.md) 2, [copper](../resources/rock/copper.md) 2, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 6 | no | no | - | - |
+| `rock:asgarnia:1` | (2941, 3283) | x 2937-2943, z 3276-3291 | `{ x: 2940, z: 3284, radius: 12 }` | [clay](../resources/rock/clay.md) 6, [gold](../resources/rock/gold.md) 7, [silver](../resources/rock/silver.md) 6 | yes | no | - | wear Brown apron + 40 Crafting |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:asgarnia:0` | (2991, 3167) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:asgarnia:0` | (2991, 3167) | x 2986-2996, z 3158-3176 | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:asgarnia:0` | (2955, 3451) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
-| `pickpocket:asgarnia:1` | (2966, 3397) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - | - |
-| `pickpocket:asgarnia:2` | (2987, 3426) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
-| `pickpocket:asgarnia:3` | (3006, 3458) | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
-| `pickpocket:asgarnia:4` | (3014, 3237) | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
-| `pickpocket:asgarnia:5` | (3035, 3296) | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:asgarnia:0` | (2955, 3451) | (2955, 3451) | x 2950-2960, z 3446-3456 | `{ x: 2955, z: 3451, radius: 11 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
+| `pickpocket:asgarnia:1` | (2966, 3397) | x 2964-2968, z 3396-3398 | x 2962-2970, z 3394-3400 | `{ x: 2966, z: 3397, radius: 8 }` | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - | - |
+| `pickpocket:asgarnia:2` | (2987, 3426) | (2987, 3426) | x 2982-2992, z 3421-3431 | `{ x: 2987, z: 3426, radius: 11 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
+| `pickpocket:asgarnia:3` | (3006, 3458) | (3006, 3458) | x 3001-3011, z 3453-3463 | `{ x: 3006, z: 3458, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| `pickpocket:asgarnia:4` | (3014, 3237) | x 3011-3017, z 3236-3238 | x 3006-3022, z 3231-3243 | `{ x: 3014, z: 3237, radius: 13 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:asgarnia:5` | (3035, 3296) | (3035, 3296) | x 3021-3049, z 3282-3310 | `{ x: 3035, z: 3296, radius: 23 }` | [Farmer](../resources/pickpocket/farmer1.md) 1 | yes | no | - | - |
 
 ## Flax
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `flax:asgarnia:0` | (2888, 3424) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
-| `flax:asgarnia:1` | (2890, 3438) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `flax:asgarnia:0` | (2888, 3424) | x 2887-2888, z 3423-3424 | `{ x: 2888, z: 3424, radius: 5 }` | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+| `flax:asgarnia:1` | (2890, 3438) | (2890, 3438) | `{ x: 2890, z: 3438, radius: 3 }` | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:asgarnia:0` | (2824, 3510) | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:asgarnia:1` | (2851, 3678) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `npc:asgarnia:2` | (2851, 3598) | Thrower Troll (death_troll_thrower5) 1 | no | no | - | - |
-| `npc:asgarnia:3` | (2852, 3591) | Mountain Troll (death_troll_melee1) 1 | no | no | - | - |
-| `npc:asgarnia:4` | (2855, 3303) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:asgarnia:5` | (2894, 3698) | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - | Troll Stronghold at stage 20 + 15 Agility |
-| `npc:asgarnia:6` | (2902, 3604) | Troll Spectator (troll_spectator7) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
-| `npc:asgarnia:7` | (2907, 3642) | Mountain Troll (death_troll_melee4) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `npc:asgarnia:8` | (2906, 3623) | Troll Spectator (troll_spectator1) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
-| `npc:asgarnia:9` | (2909, 3294) | Hobgoblin 1 | yes | no | - | - |
-| `npc:asgarnia:10` | (2911, 3612) | Dad 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
-| `npc:asgarnia:11` | (2916, 3523) | Ceolburg 1 | no | no | - | - |
-| `npc:asgarnia:12` | (2921, 3611) | Troll Spectator (troll_spectator2) 1, Troll Spectator (troll_spectator3) 1, Troll Spectator (troll_spectator4) 1, Troll Spectator (troll_spectator5) 1, Troll Spectator (troll_spectator6) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
-| `npc:asgarnia:13` | (2917, 3633) | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
-| `npc:asgarnia:14` | (2919, 3550) | Breoca 1 | no | no | - | - |
-| `npc:asgarnia:15` | (2921, 3514) | White Knight 1 | no | no | - | - |
-| `npc:asgarnia:16` | (2927, 3559) | Ocga 1 | no | no | - | - |
-| `npc:asgarnia:17` | (2933, 3272) | Cow 3 | yes | no | - | - |
-| `npc:asgarnia:18` | (2930, 3566) | Hild 1 | no | no | - | - |
-| `npc:asgarnia:19` | (2954, 3483) | Goblin (goblin_greenarmour) 2, Goblin (goblin_redarmour) 3 | yes | no | - | - |
-| `npc:asgarnia:20` | (2963, 3514) | Goblin (goblin_greenarmour) 1 | yes | no | - | - |
-| `npc:asgarnia:21` | (3000, 3207) | Goblin (goblin) 12 | yes | no | - | - |
-| `npc:asgarnia:22` | (2998, 3445) | Dwarf (dwarf_normal) 1 | yes | yes | - | - |
-| `npc:asgarnia:23` | (2999, 3453) | Dwarf (dwarf_normal) 1 | yes | yes | - | - |
-| `npc:asgarnia:24` | (3007, 3273) | Highwayman 1 | yes | no | - | - |
-| `npc:asgarnia:25` | (3009, 3280) | Highwayman 1 | yes | no | - | - |
-| `npc:asgarnia:26` | (3014, 3458) | Dwarf (mcannonguard) 3 | yes | no | - | - |
-| `npc:asgarnia:27` | (3015, 3187) | Black Knight 1, Mugger 1, Pirate 1, Rat 5 | yes | no | - | - |
-| `npc:asgarnia:28` | (3017, 3290) | Chicken 6, Rat 2 | yes | no | - | - |
-| `npc:asgarnia:29` | (3032, 3306) | Cow 7 | yes | no | - | - |
-| `npc:asgarnia:30` | (3027, 3457) | Dwarf (mcannonguard) 1 | yes | no | - | - |
-| `npc:asgarnia:31` | (3029, 3445) | Dwarf (dwarf_normal) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:asgarnia:0` | (2824, 3510) | (2824, 3510) | x 2821-2827, z 3507-3513 | `{ x: 2824, z: 3510, radius: 8 }` | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:asgarnia:1` | (2851, 3678) | x 2847-2856, z 3673-3683 | x 2842-2861, z 3668-3688 | `{ x: 2852, z: 3678, radius: 18 }` | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1, Mountain Troll (death_troll_melee3) 1, Mountain Troll (death_troll_melee4) 1, Mountain Troll (death_troll_melee5) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:asgarnia:2` | (2851, 3598) | (2851, 3598) | (2851, 3598) | `{ x: 2851, z: 3598, radius: 3 }` | Thrower Troll (death_troll_thrower5) 1 | no | no | - | - |
+| `npc:asgarnia:3` | (2852, 3591) | (2852, 3591) | x 2847-2857, z 3586-3596 | `{ x: 2852, z: 3591, radius: 11 }` | Mountain Troll (death_troll_melee1) 1 | no | no | - | - |
+| `npc:asgarnia:4` | (2855, 3303) | (2855, 3303) | x 2847-2863, z 3295-3311 | `{ x: 2855, z: 3303, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:asgarnia:5` | (2894, 3698) | x 2886-2902, z 3696-3700 | x 2886-2902, z 3696-3700 | `{ x: 2894, z: 3698, radius: 12 }` | Thrower Troll (troll_thrower1) 1, Thrower Troll (troll_thrower2) 1, Thrower Troll (troll_thrower3) 1, Thrower Troll (troll_thrower4) 1, Thrower Troll (troll_thrower5) 1 | no | yes | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:asgarnia:6` | (2902, 3604) | (2902, 3604) | (2902, 3604) | `{ x: 2902, z: 3604, radius: 3 }` | Troll Spectator (troll_spectator7) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
+| `npc:asgarnia:7` | (2907, 3642) | x 2904-2909, z 3641-3642 | x 2899-2914, z 3636-3647 | `{ x: 2907, z: 3642, radius: 13 }` | Mountain Troll (death_troll_melee4) 1, Mountain Troll (troll_melee1) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:asgarnia:8` | (2906, 3623) | (2906, 3623) | (2906, 3623) | `{ x: 2906, z: 3623, radius: 3 }` | Troll Spectator (troll_spectator1) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
+| `npc:asgarnia:9` | (2909, 3294) | (2909, 3294) | x 2906-2912, z 3291-3297 | `{ x: 2909, z: 3294, radius: 8 }` | Hobgoblin 1 | yes | no | - | - |
+| `npc:asgarnia:10` | (2911, 3612) | (2911, 3612) | x 2904-2918, z 3605-3619 | `{ x: 2911, z: 3612, radius: 13 }` | Dad 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
+| `npc:asgarnia:11` | (2916, 3523) | (2916, 3523) | x 2911-2921, z 3518-3528 | `{ x: 2916, z: 3523, radius: 11 }` | Ceolburg 1 | no | no | - | - |
+| `npc:asgarnia:12` | (2921, 3611) | x 2916-2923, z 3601-3622 | x 2916-2923, z 3601-3622 | `{ x: 2920, z: 3612, radius: 15 }` | Troll Spectator (troll_spectator2) 1, Troll Spectator (troll_spectator3) 1, Troll Spectator (troll_spectator4) 1, Troll Spectator (troll_spectator5) 1, Troll Spectator (troll_spectator6) 1 | no | no | - | Troll Stronghold at stage 10 + 15 Agility |
+| `npc:asgarnia:13` | (2917, 3633) | x 2916-2917, z 3631-3634 | x 2911-2922, z 3626-3639 | `{ x: 2917, z: 3633, radius: 13 }` | Mountain Troll (death_troll_melee1) 1, Mountain Troll (death_troll_melee2) 1 | no | no | - | Troll Stronghold at stage 20 + 15 Agility |
+| `npc:asgarnia:14` | (2919, 3550) | (2919, 3550) | x 2918-2920, z 3549-3551 | `{ x: 2919, z: 3550, radius: 5 }` | Breoca 1 | no | no | - | - |
+| `npc:asgarnia:15` | (2921, 3514) | (2921, 3514) | x 2916-2926, z 3509-3519 | `{ x: 2921, z: 3514, radius: 11 }` | White Knight 1 | no | no | - | - |
+| `npc:asgarnia:16` | (2927, 3559) | (2927, 3559) | x 2922-2932, z 3554-3564 | `{ x: 2927, z: 3559, radius: 11 }` | Ocga 1 | no | no | - | - |
+| `npc:asgarnia:17` | (2933, 3272) | x 2930-2936, z 3269-3274 | x 2925-2941, z 3264-3279 | `{ x: 2933, z: 3272, radius: 15 }` | Cow 3 | yes | no | - | - |
+| `npc:asgarnia:18` | (2930, 3566) | (2930, 3566) | x 2925-2935, z 3561-3571 | `{ x: 2930, z: 3566, radius: 11 }` | Hild 1 | no | no | - | - |
+| `npc:asgarnia:19` | (2954, 3483) | x 2951-2957, z 3481-3487 | x 2936-2972, z 3466-3502 | `{ x: 2954, z: 3484, radius: 29 }` | Goblin (goblin_greenarmour) 2, Goblin (goblin_redarmour) 3 | yes | no | - | - |
+| `npc:asgarnia:20` | (2963, 3514) | (2963, 3514) | x 2948-2978, z 3499-3529 | `{ x: 2963, z: 3514, radius: 25 }` | Goblin (goblin_greenarmour) 1 | yes | no | - | - |
+| `npc:asgarnia:21` | (3000, 3207) | x 2995-3004, z 3201-3216 | x 2980-3019, z 3186-3231 | `{ x: 3000, z: 3209, radius: 34 }` | Goblin (goblin) 12 | yes | no | - | - |
+| `npc:asgarnia:22` | (2998, 3445) | (2998, 3445) | x 2985-3011, z 3432-3458 | `{ x: 2998, z: 3445, radius: 22 }` | Dwarf (dwarf_normal) 1 | yes | yes | - | - |
+| `npc:asgarnia:23` | (2999, 3453) | (2999, 3453) | x 2986-3012, z 3440-3466 | `{ x: 2999, z: 3453, radius: 22 }` | Dwarf (dwarf_normal) 1 | yes | yes | - | - |
+| `npc:asgarnia:24` | (3007, 3273) | (3007, 3273) | x 2999-3015, z 3265-3281 | `{ x: 3007, z: 3273, radius: 15 }` | Highwayman 1 | yes | no | - | - |
+| `npc:asgarnia:25` | (3009, 3280) | (3009, 3280) | x 3001-3017, z 3272-3288 | `{ x: 3009, z: 3280, radius: 15 }` | Highwayman 1 | yes | no | - | - |
+| `npc:asgarnia:26` | (3014, 3458) | x 3009-3018, z 3456-3459 | x 3004-3023, z 3451-3464 | `{ x: 3014, z: 3458, radius: 16 }` | Dwarf (mcannonguard) 3 | yes | no | - | - |
+| `npc:asgarnia:27` | (3015, 3187) | x 3011-3019, z 3182-3194 | x 2996-3034, z 3167-3209 | `{ x: 3015, z: 3188, radius: 32 }` | Black Knight 1, Mugger 1, Pirate 1, Rat 5 | yes | no | - | - |
+| `npc:asgarnia:28` | (3017, 3290) | x 3015-3019, z 3283-3296 | x 3000-3034, z 3268-3311 | `{ x: 3017, z: 3290, radius: 31 }` | Chicken 6, Rat 2 | yes | no | - | - |
+| `npc:asgarnia:29` | (3032, 3306) | x 3027-3040, z 3300-3312 | x 3022-3045, z 3295-3317 | `{ x: 3034, z: 3306, radius: 20 }` | Cow 7 | yes | no | - | - |
+| `npc:asgarnia:30` | (3027, 3457) | (3027, 3457) | x 3022-3032, z 3452-3462 | `{ x: 3027, z: 3457, radius: 11 }` | Dwarf (mcannonguard) 1 | yes | no | - | - |
+| `npc:asgarnia:31` | (3029, 3445) | (3029, 3445) | x 3016-3042, z 3432-3458 | `{ x: 3029, z: 3445, radius: 22 }` | Dwarf (dwarf_normal) 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:asgarnia:0` | (2823, 3513) | Ladder 1 | down (2824, 9913) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:1` | (2824, 3507) | Ladder 1 | down (2825, 9907) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:2` | (2845, 3516) | Ladder 1 | down (2846, 9916) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:3` | (2848, 3519) | Ladder 1 | down (2849, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:4` | (2851, 3234) L1 | Ship's ladder 1 | up (2852, 3234) L2 by Climb-up | yes | no | - | unreached |
-| `connector:asgarnia:5` | (2851, 3234) L2 | Ship's ladder 1 | down (2850, 3234) L1 by Climb-down | yes | no | - | unreached |
-| `connector:asgarnia:6` | (2851, 3236) L1 | Ship's ladder 1 | up (2852, 3236) L2 by Climb-up | yes | no | - | unreached |
-| `connector:asgarnia:7` | (2851, 3236) L2 | Ship's ladder 1 | down (2850, 3236) L1 by Climb-down | yes | no | - | unreached |
-| `connector:asgarnia:8` | (2857, 3517) | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:9` | (2859, 3519) | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:10` | (2884, 3397) | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
-| `connector:asgarnia:11` | (2895, 3513) | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:12` | (2895, 3516) L1 | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:13` | (2895, 3516) L2 | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:14` | (2896, 3513) L1 | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:15` | (2898, 3428) | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:16` | (2898, 3428) L1 | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
-| `connector:asgarnia:17` | (2906, 3470) L1 | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
-| `connector:asgarnia:18` | (2907, 3476) | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
-| `connector:asgarnia:19` | (2915, 3323) | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:20` | (2915, 3323) L1 | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:21` | (2915, 3441) | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:22` | (2915, 3441) L1 | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
-| `connector:asgarnia:23` | (2915, 3450) | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:24` | (2915, 3450) L1 | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
-| `connector:asgarnia:25` | (2929, 3544) | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:26` | (2929, 3544) L1 | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
-| `connector:asgarnia:27` | (3008, 3150) | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
-| `connector:asgarnia:28` | (3011, 3235) | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:29` | (3011, 3235) L1 | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:30` | (3013, 3203) | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:31` | (3013, 3203) L1 | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:32` | (3013, 3244) L1 | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:33` | (3023, 3261) | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:34` | (3024, 3261) L1 | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:35` | (3026, 3248) | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:36` | (3026, 3248) L1 | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:37` | (3027, 3353) | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:38` | (3027, 3353) L1 | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:39` | (3034, 3363) | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:40` | (3035, 3344) | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:41` | (3035, 3344) L1 | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:42` | (3035, 3363) L1 | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:43` | (3042, 3379) L1 | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:44` | (3042, 3379) L2 | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:45` | (3044, 3381) | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:46` | (3044, 3382) L1 | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:47` | (3045, 3363) | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:48` | (3045, 3364) L1 | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:49` | (3048, 3352) | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:50` | (3049, 3353) L1 | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:51` | (3050, 3355) L1 | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:52` | (3050, 3355) L2 | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:53` | (3059, 3354) | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:54` | (3059, 3354) L1 | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:55` | (3059, 3357) | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:56` | (3059, 3357) L1 | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:57` | (3059, 3376) | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:asgarnia:0` | (2823, 3513) | (2823, 3513) | `{ x: 2823, z: 3513, radius: 3 }` | Ladder 1 | down (2824, 9913) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:1` | (2824, 3507) | (2824, 3507) | `{ x: 2824, z: 3507, radius: 3 }` | Ladder 1 | down (2825, 9907) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:2` | (2845, 3516) | (2845, 3516) | `{ x: 2845, z: 3516, radius: 3 }` | Ladder 1 | down (2846, 9916) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:3` | (2848, 3519) | (2848, 3519) | `{ x: 2848, z: 3519, radius: 3 }` | Ladder 1 | down (2849, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:4` | (2851, 3234) L1 | (2851, 3234) L1 | `{ x: 2851, z: 3234, radius: 3, level: 1 }` | Ship's ladder 1 | up (2852, 3234) L2 by Climb-up | yes | no | - | unreached |
+| `connector:asgarnia:5` | (2851, 3234) L2 | (2851, 3234) L2 | `{ x: 2851, z: 3234, radius: 3, level: 2 }` | Ship's ladder 1 | down (2850, 3234) L1 by Climb-down | yes | no | - | unreached |
+| `connector:asgarnia:6` | (2851, 3236) L1 | (2851, 3236) L1 | `{ x: 2851, z: 3236, radius: 3, level: 1 }` | Ship's ladder 1 | up (2852, 3236) L2 by Climb-up | yes | no | - | unreached |
+| `connector:asgarnia:7` | (2851, 3236) L2 | (2851, 3236) L2 | `{ x: 2851, z: 3236, radius: 3, level: 2 }` | Ship's ladder 1 | down (2850, 3236) L1 by Climb-down | yes | no | - | unreached |
+| `connector:asgarnia:8` | (2857, 3517) | (2857, 3517) | `{ x: 2857, z: 3517, radius: 3 }` | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:9` | (2859, 3519) | (2859, 3519) | `{ x: 2859, z: 3519, radius: 3 }` | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:10` | (2884, 3397) | (2884, 3397) | `{ x: 2884, z: 3397, radius: 3 }` | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
+| `connector:asgarnia:11` | (2895, 3513) | (2895, 3513) | `{ x: 2895, z: 3513, radius: 3 }` | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:12` | (2895, 3516) L1 | (2895, 3516) L1 | `{ x: 2895, z: 3516, radius: 3, level: 1 }` | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:13` | (2895, 3516) L2 | (2895, 3516) L2 | `{ x: 2895, z: 3516, radius: 3, level: 2 }` | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:14` | (2896, 3513) L1 | (2896, 3513) L1 | `{ x: 2896, z: 3513, radius: 3, level: 1 }` | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:15` | (2898, 3428) | (2898, 3428) | `{ x: 2898, z: 3428, radius: 3 }` | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:16` | (2898, 3428) L1 | (2898, 3428) L1 | `{ x: 2898, z: 3428, radius: 3, level: 1 }` | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
+| `connector:asgarnia:17` | (2906, 3470) L1 | (2906, 3470) L1 | `{ x: 2906, z: 3470, radius: 3, level: 1 }` | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
+| `connector:asgarnia:18` | (2907, 3476) | (2907, 3476) | `{ x: 2907, z: 3476, radius: 3 }` | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
+| `connector:asgarnia:19` | (2915, 3323) | (2915, 3323) | `{ x: 2915, z: 3323, radius: 3 }` | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:20` | (2915, 3323) L1 | (2915, 3323) L1 | `{ x: 2915, z: 3323, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:21` | (2915, 3441) | (2915, 3441) | `{ x: 2915, z: 3441, radius: 3 }` | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:22` | (2915, 3441) L1 | (2915, 3441) L1 | `{ x: 2915, z: 3441, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
+| `connector:asgarnia:23` | (2915, 3450) | (2915, 3450) | `{ x: 2915, z: 3450, radius: 3 }` | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:24` | (2915, 3450) L1 | (2915, 3450) L1 | `{ x: 2915, z: 3450, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
+| `connector:asgarnia:25` | (2929, 3544) | (2929, 3544) | `{ x: 2929, z: 3544, radius: 3 }` | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:26` | (2929, 3544) L1 | (2929, 3544) L1 | `{ x: 2929, z: 3544, radius: 3, level: 1 }` | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
+| `connector:asgarnia:27` | (3008, 3150) | (3008, 3150) | `{ x: 3008, z: 3150, radius: 3 }` | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
+| `connector:asgarnia:28` | (3011, 3235) | (3011, 3235) | `{ x: 3011, z: 3235, radius: 3 }` | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:29` | (3011, 3235) L1 | (3011, 3235) L1 | `{ x: 3011, z: 3235, radius: 3, level: 1 }` | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:30` | (3013, 3203) | (3013, 3203) | `{ x: 3013, z: 3203, radius: 3 }` | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:31` | (3013, 3203) L1 | (3013, 3203) L1 | `{ x: 3013, z: 3203, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:32` | (3013, 3244) L1 | (3013, 3244) L1 | `{ x: 3013, z: 3244, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:33` | (3023, 3261) | (3023, 3261) | `{ x: 3023, z: 3261, radius: 3 }` | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:34` | (3024, 3261) L1 | (3024, 3261) L1 | `{ x: 3024, z: 3261, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:35` | (3026, 3248) | (3026, 3248) | `{ x: 3026, z: 3248, radius: 3 }` | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:36` | (3026, 3248) L1 | (3026, 3248) L1 | `{ x: 3026, z: 3248, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:37` | (3027, 3353) | (3027, 3353) | `{ x: 3027, z: 3353, radius: 3 }` | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:38` | (3027, 3353) L1 | (3027, 3353) L1 | `{ x: 3027, z: 3353, radius: 3, level: 1 }` | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:39` | (3034, 3363) | (3034, 3363) | `{ x: 3034, z: 3363, radius: 3 }` | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:40` | (3035, 3344) | (3035, 3344) | `{ x: 3035, z: 3344, radius: 3 }` | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:41` | (3035, 3344) L1 | (3035, 3344) L1 | `{ x: 3035, z: 3344, radius: 3, level: 1 }` | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:42` | (3035, 3363) L1 | (3035, 3363) L1 | `{ x: 3035, z: 3363, radius: 3, level: 1 }` | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:43` | (3042, 3379) L1 | (3042, 3379) L1 | `{ x: 3042, z: 3379, radius: 3, level: 1 }` | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:44` | (3042, 3379) L2 | (3042, 3379) L2 | `{ x: 3042, z: 3379, radius: 3, level: 2 }` | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:45` | (3044, 3381) | (3044, 3381) | `{ x: 3044, z: 3381, radius: 3 }` | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:46` | (3044, 3382) L1 | (3044, 3382) L1 | `{ x: 3044, z: 3382, radius: 3, level: 1 }` | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:47` | (3045, 3363) | (3045, 3363) | `{ x: 3045, z: 3363, radius: 3 }` | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:48` | (3045, 3364) L1 | (3045, 3364) L1 | `{ x: 3045, z: 3364, radius: 3, level: 1 }` | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:49` | (3048, 3352) | (3048, 3352) | `{ x: 3048, z: 3352, radius: 3 }` | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:50` | (3049, 3353) L1 | (3049, 3353) L1 | `{ x: 3049, z: 3353, radius: 3, level: 1 }` | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:51` | (3050, 3355) L1 | (3050, 3355) L1 | `{ x: 3050, z: 3355, radius: 3, level: 1 }` | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:52` | (3050, 3355) L2 | (3050, 3355) L2 | `{ x: 3050, z: 3355, radius: 3, level: 2 }` | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:53` | (3059, 3354) | (3059, 3354) | `{ x: 3059, z: 3354, radius: 3 }` | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:54` | (3059, 3354) L1 | (3059, 3354) L1 | `{ x: 3059, z: 3354, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:55` | (3059, 3357) | (3059, 3357) | `{ x: 3059, z: 3357, radius: 3 }` | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:56` | (3059, 3357) L1 | (3059, 3357) L1 | `{ x: 3059, z: 3357, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:57` | (3059, 3376) | (3059, 3376) | `{ x: 3059, z: 3376, radius: 3 }` | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

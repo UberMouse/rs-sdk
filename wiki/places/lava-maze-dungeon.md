@@ -5,18 +5,18 @@ Ladder in the Lava Maze at (3017, 3849) (ladders+stairs/scripts/ladders.rs2:109,
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:lava-maze-dungeon:0` | (3046, 10265) | [runite](../resources/rock/runite.md) 1 | no | no | 44 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:lava-maze-dungeon:0` | (3046, 10265) | (3046, 10265) | `{ x: 3046, z: 10265, radius: 3 }` | [runite](../resources/rock/runite.md) 1 | no | no | 44 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:lava-maze-dungeon:0` | (3028, 10250) | Greater demon 1 | no | no | 42 | - |
-| `npc:lava-maze-dungeon:1` | (3030, 10259) | Greater demon 1 | no | no | 43 | - |
-| `npc:lava-maze-dungeon:2` | (3035, 10245) | Greater demon 1 | no | no | 41 | - |
-| `npc:lava-maze-dungeon:3` | (3046, 10265) | Black dragon 2, Poison spider 2 | no | no | 44 | - |
-| `npc:lava-maze-dungeon:4` | (3044, 10252) | Poison spider 1 | no | no | 42 | - |
-| `npc:lava-maze-dungeon:5` | (3053, 10255) | Poison spider 2 | no | no | 43 | - |
-| `npc:lava-maze-dungeon:6` | (3068, 10256) | Poison spider 5 | no | no | 43 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:lava-maze-dungeon:0` | (3028, 10250) | (3028, 10250) | x 3022-3034, z 10244-10256 | `{ x: 3028, z: 10250, radius: 12 }` | Greater demon 1 | no | no | 42 | - |
+| `npc:lava-maze-dungeon:1` | (3030, 10259) | (3030, 10259) | x 3024-3036, z 10253-10265 | `{ x: 3030, z: 10259, radius: 12 }` | Greater demon 1 | no | no | 43 | - |
+| `npc:lava-maze-dungeon:2` | (3035, 10245) | (3035, 10245) | x 3029-3041, z 10239-10251 | `{ x: 3035, z: 10245, radius: 12 }` | Greater demon 1 | no | no | 41 | - |
+| `npc:lava-maze-dungeon:3` | (3046, 10265) | x 3037-3054, z 10262-10269 | x 3027-3064, z 10252-10279 | `{ x: 3046, z: 10266, radius: 27 }` | Black dragon 2, Poison spider 2 | no | no | 44 | - |
+| `npc:lava-maze-dungeon:4` | (3044, 10252) | (3044, 10252) | x 3034-3054, z 10242-10262 | `{ x: 3044, z: 10252, radius: 18 }` | Poison spider 1 | no | no | 42 | - |
+| `npc:lava-maze-dungeon:5` | (3053, 10255) | x 3051-3055, z 10253-10257 | x 3041-3065, z 10243-10267 | `{ x: 3053, z: 10255, radius: 20 }` | Poison spider 2 | no | no | 43 | - |
+| `npc:lava-maze-dungeon:6` | (3068, 10256) | x 3067-3069, z 10253-10259 | x 3057-3079, z 10243-10269 | `{ x: 3068, z: 10256, radius: 21 }` | Poison spider 5 | no | no | 43 | - |

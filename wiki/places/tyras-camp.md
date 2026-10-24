@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:tyras-camp:0` | (2172, 3141) | [normal](../resources/tree/normal.md) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:tyras-camp:0` | (2172, 3141) | x 2169-2175, z 3136-3148 | `{ x: 2172, z: 3142, radius: 10 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:tyras-camp:0` | (2186, 3152) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:tyras-camp:0` | (2186, 3152) | x 2182-2189, z 3147-3155 | x 2177-2194, z 3142-3160 | `{ x: 2186, z: 3151, radius: 16 }` | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | Regicide at stage 13 + 56 Agility |

@@ -5,24 +5,24 @@ Lumdo and Waydar (quests/quest_mm npcs).
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:crash-island:0` | (2894, 2714) | [normal](../resources/tree/normal.md) 2 | no | no | - | Monkey Madness at stage 10 |
-| `tree:crash-island:1` | (2903, 2701) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:crash-island:2` | (2903, 2732) | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
-| `tree:crash-island:3` | (2921, 2730) | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
-| `tree:crash-island:4` | (2925, 2704) | [normal](../resources/tree/normal.md) 2 | no | no | - | Monkey Madness at stage 10 |
-| `tree:crash-island:5` | (2924, 2715) | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
-| `tree:crash-island:6` | (2933, 2715) | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:crash-island:0` | (2894, 2714) | x 2893-2894, z 2711-2716 | `{ x: 2894, z: 2714, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | Monkey Madness at stage 10 |
+| `tree:crash-island:1` | (2903, 2701) | (2903, 2701) | `{ x: 2903, z: 2701, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:crash-island:2` | (2903, 2732) | (2903, 2732) | `{ x: 2903, z: 2732, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
+| `tree:crash-island:3` | (2921, 2730) | (2921, 2730) | `{ x: 2921, z: 2730, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
+| `tree:crash-island:4` | (2925, 2704) | x 2924-2926, z 2703-2705 | `{ x: 2925, z: 2704, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | Monkey Madness at stage 10 |
+| `tree:crash-island:5` | (2924, 2715) | (2924, 2715) | `{ x: 2924, z: 2715, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
+| `tree:crash-island:6` | (2933, 2715) | (2933, 2715) | `{ x: 2933, z: 2715, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Monkey Madness at stage 10 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:crash-island:0` | (2894, 2715) | Scorpion 1 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:1` | (2899, 2734) | Scorpion 1 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:2` | (2902, 2724) | Scorpion 2 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:3` | (2911, 2718) | Snake 1 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:4` | (2913, 2726) | Snake 1 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:5` | (2924, 2716) | Snake 2 | no | no | - | Monkey Madness at stage 10 |
-| `npc:crash-island:6` | (2921, 2727) | Snake 1 | no | no | - | Monkey Madness at stage 10 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:crash-island:0` | (2894, 2715) | (2894, 2715) | x 2889-2899, z 2710-2720 | `{ x: 2894, z: 2715, radius: 11 }` | Scorpion 1 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:1` | (2899, 2734) | (2899, 2734) | x 2894-2904, z 2729-2739 | `{ x: 2899, z: 2734, radius: 11 }` | Scorpion 1 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:2` | (2902, 2724) | x 2901-2902, z 2721-2727 | x 2896-2907, z 2716-2732 | `{ x: 2902, z: 2724, radius: 13 }` | Scorpion 2 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:3` | (2911, 2718) | (2911, 2718) | x 2906-2916, z 2713-2723 | `{ x: 2911, z: 2718, radius: 11 }` | Snake 1 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:4` | (2913, 2726) | (2913, 2726) | x 2908-2918, z 2721-2731 | `{ x: 2913, z: 2726, radius: 11 }` | Snake 1 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:5` | (2924, 2716) | x 2921-2927, z 2713-2719 | x 2916-2932, z 2708-2724 | `{ x: 2924, z: 2716, radius: 15 }` | Snake 2 | no | no | - | Monkey Madness at stage 10 |
+| `npc:crash-island:6` | (2921, 2727) | (2921, 2727) | x 2916-2926, z 2722-2732 | `{ x: 2921, z: 2727, radius: 11 }` | Snake 1 | no | no | - | Monkey Madness at stage 10 |

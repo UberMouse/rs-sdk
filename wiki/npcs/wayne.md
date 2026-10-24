@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Falador (Asgarnia)](../places/falador.md) | (2973, 3312) | 1 | 5 | (2968, 3307)-(2978, 3317) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Falador (Asgarnia)](../places/falador.md) | (2973, 3312) | (2973, 3312) | 1 | 5 | x 2968-2978, z 3307-3317 | 100 ticks | - | `{ x: 2973, z: 3312, radius: 11 }` | yes |
 
 ## Interactions
 

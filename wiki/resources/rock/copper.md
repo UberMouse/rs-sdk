@@ -19,22 +19,22 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:0` | (2906, 3359) | (2906, 3359) | 2 | no | no | - | - | Falador East bank (Falador), 81 ticks |
-| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | 5 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
-| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:0` | (3288, 9439) | (3287, 9438) | 4 | no | no | - | unreached | - |
-| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:1` | (3309, 9466) | (3311, 9467) | 6 | no | no | - | unreached | - |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:0` | (3027, 9804) | (3027, 9803) | 4 | yes | no | - | - | Falador East bank (Falador), 78 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:1` | (3032, 9825) | (3032, 9825) | 3 | yes | no | - | - | Falador East bank (Falador), 68 ticks |
-| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | 4 | yes | no | - | - | Falador East bank (Falador), 43 ticks |
-| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
-| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:0` | (2720, 4490) | (2720, 4490) | 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 228 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |
-| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:8` | (2809, 4576) | (2810, 4573) | 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 209 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:0` | (2472, 3256) | (2472, 3255) | 3 | no | no | - | - | Castle Wars bank chest (Castle Wars), 96 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | 2 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
-| [Kandarin](../../places/kandarin.md) | `rock:kandarin:7` | (2640, 3152) | (2640, 3152) | 2 | no | no | - | - | Yanille bank (Yanille), 55 ticks |
-| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 3 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
-| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | 4 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
-| [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | 9 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
-| [Morytania cave](../../places/morytania-cave.md) | `rock:morytania-cave:0` | (3419, 9644) | (3419, 9645) | 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 182 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:0` | (2906, 3359) | (2906, 3359) | x 2903-2910, z 3353-3366 | `{ x: 2907, z: 3360, radius: 12 }` | 2 | no | no | - | - | Falador East bank (Falador), 81 ticks |
+| [Rimmington mine (Rimmington)](../../places/rimmington-mine.md) | `rock:rimmington-mine:0` | (2978, 3240) | (2977, 3244) | x 2968-2987, z 3233-3248 | `{ x: 2978, z: 3241, radius: 16 }` | 5 | yes | no | - | - | Falador East bank (Falador), 61 ticks |
+| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:0` | (3288, 9439) | (3287, 9438) | x 3284-3306, z 9424-9453 | `{ x: 3295, z: 9439, radius: 22 }` | 4 | no | no | - | unreached | - |
+| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:1` | (3309, 9466) | (3311, 9467) | x 3288-3324, z 9462-9469 | `{ x: 3306, z: 9466, radius: 22 }` | 6 | no | no | - | unreached | - |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:0` | (3027, 9804) | (3027, 9803) | x 3021-3030, z 9798-9810 | `{ x: 3026, z: 9804, radius: 11 }` | 4 | yes | no | - | - | Falador East bank (Falador), 78 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:1` | (3032, 9825) | (3032, 9825) | x 3030-3033, z 9822-9828 | `{ x: 3032, z: 9825, radius: 7 }` | 3 | yes | no | - | - | Falador East bank (Falador), 68 ticks |
+| [Dwarven Mine](../../places/dwarven-mine.md) | `rock:dwarven-mine:2` | (3044, 9773) | (3042, 9773) | x 3035-3056, z 9760-9784 | `{ x: 3046, z: 9772, radius: 20 }` | 4 | yes | no | - | - | Falador East bank (Falador), 43 ticks |
+| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | x 3134-3143, z 9868-9880 | `{ x: 3139, z: 9874, radius: 11 }` | 2 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
+| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:0` | (2720, 4490) | (2720, 4490) | x 2711-2725, z 4485-4493 | `{ x: 2718, z: 4489, radius: 12 }` | 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 228 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |
+| [Haunted Mine](../../places/haunted-mine.md) | `rock:haunted-mine:8` | (2809, 4576) | (2810, 4573) | x 2805-2813, z 4573-4580 | `{ x: 2809, z: 4577, radius: 9 }` | 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 209 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:0` | (2472, 3256) | (2472, 3255) | x 2470-2475, z 3255-3256 | `{ x: 2473, z: 3256, radius: 7 }` | 3 | no | no | - | - | Castle Wars bank chest (Castle Wars), 96 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:6` | (2630, 3143) | (2630, 3142) | x 2625-2638, z 3131-3151 | `{ x: 2632, z: 3141, radius: 16 }` | 2 | no | no | - | - | Yanille bank (Yanille), 26 ticks |
+| [Kandarin](../../places/kandarin.md) | `rock:kandarin:7` | (2640, 3152) | (2640, 3152) | x 2640-2641, z 3151-3153 | `{ x: 2641, z: 3152, radius: 5 }` | 2 | no | no | - | - | Yanille bank (Yanille), 55 ticks |
+| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | x 3293-3305, z 3299-3318 | `{ x: 3299, z: 3309, radius: 15 }` | 3 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
+| [Desert Mining Camp (Kharidian Desert)](../../places/desert-mining-camp.md) | `rock:desert-mining-camp:0` | (3294, 3017) | (3294, 3017) | x 3284-3302, z 3015-3025 | `{ x: 3293, z: 3020, radius: 14 }` | 4 | no | no | - | 1 Shantay pass (used up) + carry Metal key | Shantay Pass bank chest (Shantay Pass), 60 ticks via carry Metal key |
+| [Varrock East mine (Misthalin)](../../places/varrock-east-mine.md) | `rock:varrock-east-mine:0` | (3286, 3365) | (3286, 3365) | x 3282-3290, z 3361-3370 | `{ x: 3286, z: 3366, radius: 10 }` | 9 | yes | no | - | - | Varrock East bank (Varrock), 46 ticks |
+| [Morytania cave](../../places/morytania-cave.md) | `rock:morytania-cave:0` | (3419, 9644) | (3419, 9645) | x 3416-3421, z 9642-9647 | `{ x: 3419, z: 9645, radius: 8 }` | 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 182 ticks via carry Crystal-mine key + Nature Spirit at stage 1 |

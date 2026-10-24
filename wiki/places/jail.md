@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:jail:0` | (3124, 3246) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:jail:0` | (3124, 3246) | x 3114-3136, z 3232-3255 | `{ x: 3125, z: 3244, radius: 20 }` | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 6 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:jail:0` | (3120, 3238) | Jail guard 1 | yes | yes | - | - |
-| `npc:jail:1` | (3124, 3249) | Jail guard 2 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:jail:0` | (3120, 3238) | (3120, 3238) | x 3115-3125, z 3233-3243 | `{ x: 3120, z: 3238, radius: 11 }` | Jail guard 1 | yes | yes | - | - |
+| `npc:jail:1` | (3124, 3249) | x 3121-3127, z 3248-3249 | x 3116-3132, z 3243-3254 | `{ x: 3124, z: 3249, radius: 13 }` | Jail guard 2 | yes | yes | - | - |

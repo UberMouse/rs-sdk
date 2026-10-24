@@ -5,25 +5,25 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:white-knights-castle:0` | (2959, 3338) | White Knight 2 | yes | yes | - | - |
-| `npc:white-knights-castle:1` | (2957, 3341) L2 | White Knight 1 | yes | yes | - | - |
-| `npc:white-knights-castle:2` | (2963, 3338) L1 | White Knight 3 | yes | yes | - | - |
-| `npc:white-knights-castle:3` | (2962, 3339) L3 | White Knight 2 | yes | yes | - | - |
-| `npc:white-knights-castle:4` | (2961, 3351) L1 | White Knight 1 | yes | yes | - | - |
-| `npc:white-knights-castle:5` | (2964, 3352) L2 | White Knight 1 | yes | yes | - | - |
-| `npc:white-knights-castle:6` | (2969, 3346) | Chicken 1, White Knight 1 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:white-knights-castle:0` | (2959, 3338) | x 2956-2962, z 3337-3338 | x 2951-2967, z 3332-3343 | `{ x: 2959, z: 3338, radius: 13 }` | White Knight 2 | yes | yes | - | - |
+| `npc:white-knights-castle:1` | (2957, 3341) L2 | (2957, 3341) L2 | x 2952-2962, z 3336-3346 L2 | `{ x: 2957, z: 3341, radius: 11, level: 2 }` | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:2` | (2963, 3338) L1 | x 2958-2969, z 3336-3341 L1 | x 2953-2974, z 3331-3346 L1 | `{ x: 2964, z: 3339, radius: 17, level: 1 }` | White Knight 3 | yes | yes | - | - |
+| `npc:white-knights-castle:3` | (2962, 3339) L3 | x 2960-2963, z 3338-3340 L3 | x 2955-2968, z 3333-3345 L3 | `{ x: 2962, z: 3339, radius: 13, level: 3 }` | White Knight 2 | yes | yes | - | - |
+| `npc:white-knights-castle:4` | (2961, 3351) L1 | (2961, 3351) L1 | x 2956-2966, z 3346-3356 L1 | `{ x: 2961, z: 3351, radius: 11, level: 1 }` | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:5` | (2964, 3352) L2 | (2964, 3352) L2 | x 2959-2969, z 3347-3357 L2 | `{ x: 2964, z: 3352, radius: 11, level: 2 }` | White Knight 1 | yes | yes | - | - |
+| `npc:white-knights-castle:6` | (2969, 3346) | x 2966-2972, z 3345-3346 | x 2961-2977, z 3340-3351 | `{ x: 2969, z: 3346, radius: 13 }` | Chicken 1, White Knight 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:white-knights-castle:0` | (2954, 3338) | Staircase 1 | up (2956, 3338) L1 by Climb-up | yes | yes | - | - |
-| `connector:white-knights-castle:1` | (2955, 3338) L1 | Staircase 1 | down (2955, 3337) by Climb-down | yes | yes | - | - |
-| `connector:white-knights-castle:2` | (2957, 3338) L2 | Staircase 1 | up (2956, 3339) L3 by Climb-up | yes | yes | - | - |
-| `connector:white-knights-castle:3` | (2957, 3339) L3 | Staircase 1 | down (2957, 3340) L2 by Climb-down | yes | yes | - | - |
-| `connector:white-knights-castle:4` | (2960, 3338) L1 | Staircase 1 | up (2959, 3339) L2 by Climb-up | yes | yes | - | - |
-| `connector:white-knights-castle:5` | (2960, 3339) L2 | Staircase 1 | down (2960, 3340) L1 by Climb-down | yes | yes | - | - |
-| `connector:white-knights-castle:6` | (2968, 3347) L1 | Staircase 1 | down (2971, 3347) by Climb-down | yes | yes | - | - |
-| `connector:white-knights-castle:7` | (2970, 3347) | Staircase 1 | up (2968, 3348) L1 by Climb-up | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:white-knights-castle:0` | (2954, 3338) | (2954, 3338) | `{ x: 2954, z: 3338, radius: 3 }` | Staircase 1 | up (2956, 3338) L1 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:1` | (2955, 3338) L1 | (2955, 3338) L1 | `{ x: 2955, z: 3338, radius: 3, level: 1 }` | Staircase 1 | down (2955, 3337) by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:2` | (2957, 3338) L2 | (2957, 3338) L2 | `{ x: 2957, z: 3338, radius: 3, level: 2 }` | Staircase 1 | up (2956, 3339) L3 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:3` | (2957, 3339) L3 | (2957, 3339) L3 | `{ x: 2957, z: 3339, radius: 3, level: 3 }` | Staircase 1 | down (2957, 3340) L2 by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:4` | (2960, 3338) L1 | (2960, 3338) L1 | `{ x: 2960, z: 3338, radius: 3, level: 1 }` | Staircase 1 | up (2959, 3339) L2 by Climb-up | yes | yes | - | - |
+| `connector:white-knights-castle:5` | (2960, 3339) L2 | (2960, 3339) L2 | `{ x: 2960, z: 3339, radius: 3, level: 2 }` | Staircase 1 | down (2960, 3340) L1 by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:6` | (2968, 3347) L1 | (2968, 3347) L1 | `{ x: 2968, z: 3347, radius: 3, level: 1 }` | Staircase 1 | down (2971, 3347) by Climb-down | yes | yes | - | - |
+| `connector:white-knights-castle:7` | (2970, 3347) | (2970, 3347) | `{ x: 2970, z: 3347, radius: 3 }` | Staircase 1 | up (2968, 3348) L1 by Climb-up | yes | yes | - | - |

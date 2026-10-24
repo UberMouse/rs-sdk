@@ -5,33 +5,33 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:legends-guild:0` | (2725, 3378) L1 | Legends Guild General Store. (generallegends) 1 | no | no | - | Legends Quest at stage 50 |
-| `shop:legends-guild:1` | (2725, 3381) L2 | Legends Guild Shop of Useful Items. (legendsguildshop) 1 | no | no | - | Legends Quest at stage 50 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:legends-guild:0` | (2725, 3378) L1 | (2725, 3378) L1 | x 2722-2728, z 3375-3381 L1 | `{ x: 2725, z: 3378, radius: 8, level: 1 }` | Legends Guild General Store. (generallegends) 1 | no | no | - | Legends Quest at stage 50 |
+| `shop:legends-guild:1` | (2725, 3381) L2 | (2725, 3381) L2 | x 2722-2728, z 3378-3384 L2 | `{ x: 2725, z: 3381, radius: 8, level: 2 }` | Legends Guild Shop of Useful Items. (legendsguildshop) 1 | no | no | - | Legends Quest at stage 50 |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:legends-guild:0` | (2732, 3369) | Fountain 1 | no | no | - | Legends Quest at stage 1 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:legends-guild:0` | (2732, 3369) | (2732, 3369) | `{ x: 2732, z: 3369, radius: 3 }` | Fountain 1 | no | no | - | Legends Quest at stage 1 |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:legends-guild:0` | (2742, 3375) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:legends-guild:0` | (2742, 3375) | x 2732-2746, z 3365-3384 | `{ x: 2739, z: 3375, radius: 16 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 4 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:legends-guild:0` | (2725, 3375) L1 | Ladder 1 | up (2724, 3375) L2 by Climb-up | no | no | - | Legends Quest at stage 50 |
-| `connector:legends-guild:1` | (2725, 3375) L2 | Ladder 1 | down (2724, 3375) L1 by Climb-down | no | no | - | Legends Quest at stage 50 |
-| `connector:legends-guild:2` | (2732, 3375) L1 | Ladder 1 | up (2731, 3375) L2 by Climb-up | no | no | - | Legends Quest at stage 50 |
-| `connector:legends-guild:3` | (2732, 3375) L2 | Ladder 1 | down (2731, 3375) L1 by Climb-down | no | no | - | Legends Quest at stage 50 |
-| `connector:legends-guild:4` | (2732, 3377) | Staircase 1 | up (2732, 3380) L1 by Climb-up | no | no | - | Legends Quest at stage 50 |
-| `connector:legends-guild:5` | (2732, 3378) L1 | Staircase 1 | down (2732, 3376) by Climb-down | no | no | - | Legends Quest at stage 50 |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:legends-guild:0` | (2725, 3375) L1 | (2725, 3375) L1 | `{ x: 2725, z: 3375, radius: 3, level: 1 }` | Ladder 1 | up (2724, 3375) L2 by Climb-up | no | no | - | Legends Quest at stage 50 |
+| `connector:legends-guild:1` | (2725, 3375) L2 | (2725, 3375) L2 | `{ x: 2725, z: 3375, radius: 3, level: 2 }` | Ladder 1 | down (2724, 3375) L1 by Climb-down | no | no | - | Legends Quest at stage 50 |
+| `connector:legends-guild:2` | (2732, 3375) L1 | (2732, 3375) L1 | `{ x: 2732, z: 3375, radius: 3, level: 1 }` | Ladder 1 | up (2731, 3375) L2 by Climb-up | no | no | - | Legends Quest at stage 50 |
+| `connector:legends-guild:3` | (2732, 3375) L2 | (2732, 3375) L2 | `{ x: 2732, z: 3375, radius: 3, level: 2 }` | Ladder 1 | down (2731, 3375) L1 by Climb-down | no | no | - | Legends Quest at stage 50 |
+| `connector:legends-guild:4` | (2732, 3377) | (2732, 3377) | `{ x: 2732, z: 3377, radius: 3 }` | Staircase 1 | up (2732, 3380) L1 by Climb-up | no | no | - | Legends Quest at stage 50 |
+| `connector:legends-guild:5` | (2732, 3378) L1 | (2732, 3378) L1 | `{ x: 2732, z: 3378, radius: 3, level: 1 }` | Staircase 1 | down (2732, 3376) by Climb-down | no | no | - | Legends Quest at stage 50 |
 
 ## Areas within
 

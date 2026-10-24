@@ -5,20 +5,20 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:lava-maze:0` | (3073, 3848) | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 8 | yes | no | 43 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:lava-maze:0` | (3073, 3848) | x 3072-3078, z 3843-3858 | `{ x: 3075, z: 3851, radius: 12 }` | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 8 | yes | no | 43 | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:lava-maze:0` | (3071, 3839) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:lava-maze:0` | (3071, 3839) | x 3070-3071, z 3839 | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md#movement) | [Fishing spot (loc_2630)](../resources/fishing-spot/loc_2630.md) 2 | yes | no | 40 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:lava-maze:0` | (3070, 3836) | King Scorpion 1 | yes | no | 40 | - |
-| `npc:lava-maze:1` | (3075, 3848) | King Scorpion 1 | yes | no | 42 | - |
-| `npc:lava-maze:2` | (3090, 3841) | King Scorpion 1 | yes | no | 41 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:lava-maze:0` | (3070, 3836) | (3070, 3836) | x 3062-3078, z 3828-3844 | `{ x: 3070, z: 3836, radius: 15 }` | King Scorpion 1 | yes | no | 40 | - |
+| `npc:lava-maze:1` | (3075, 3848) | (3075, 3848) | x 3067-3083, z 3840-3856 | `{ x: 3075, z: 3848, radius: 15 }` | King Scorpion 1 | yes | no | 42 | - |
+| `npc:lava-maze:2` | (3090, 3841) | (3090, 3841) | x 3082-3098, z 3833-3849 | `{ x: 3090, z: 3841, radius: 15 }` | King Scorpion 1 | yes | no | 41 | - |

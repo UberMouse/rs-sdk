@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3087, 9937) | 1 | 6 | (3081, 9931)-(3093, 9943) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3087, 9937) | (3087, 9937) | 1 | 6 | x 3081-3093, z 9931-9943 | 60 ticks | - | `{ x: 3087, z: 9937, radius: 12 }` | no |
 
 ## Drops
 

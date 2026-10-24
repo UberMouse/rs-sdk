@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2354, 9907) | 31 | 10 | (2319, 9863)-(2374, 9928) | 600 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2399, 9682) | 4 | 10 | (2377, 9670)-(2412, 9695) | 600 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2435, 9723) | 8 | 10 | (2412, 9708)-(2448, 9735) | 600 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2436, 9690) | 9 | 10 | (2423, 9676)-(2451, 9709) | 600 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2354, 9907) | x 2329-2364, z 9873-9918 | 31 | 10 | x 2319-2374, z 9863-9928 | 600 ticks | - | `{ x: 2347, z: 9896, radius: 47 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2399, 9682) | x 2387-2402, z 9680-9685 | 4 | 10 | x 2377-2412, z 9670-9695 | 600 ticks | - | `{ x: 2395, z: 9683, radius: 26 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2435, 9723) | x 2422-2438, z 9718-9725 | 8 | 10 | x 2412-2448, z 9708-9735 | 600 ticks | - | `{ x: 2430, z: 9722, radius: 26 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2436, 9690) | x 2433-2441, z 9686-9699 | 9 | 10 | x 2423-2451, z 9676-9709 | 600 ticks | - | `{ x: 2437, z: 9693, radius: 26 }` | no |
 
 ## Drops
 

@@ -25,25 +25,25 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:3` | (2899, 3119) | (2899, 3118) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 100 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:4` | (2912, 3119) | (2912, 3118) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 100 ticks via The Grand Tree done |
-| [Brimhaven (Karamja)](../../places/brimhaven.md) | `fishing-spot:brimhaven:0` | (2768, 3165) | (2767, 3165) | 1 | no | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 73 ticks via 30 coins |
-| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | (2515, 4590) | 1 | no | no | - | unreached | - |
-| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | (2528, 4590) | 1 | no | no | - | unreached | - |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:3` | (2899, 3119) | (2899, 3118) | (2899, 3119) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 100 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:4` | (2912, 3119) | (2912, 3118) | (2912, 3119) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 100 ticks via The Grand Tree done |
+| [Brimhaven (Karamja)](../../places/brimhaven.md) | `fishing-spot:brimhaven:0` | (2768, 3165) | (2767, 3165) | (2768, 3165) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 73 ticks via 30 coins |
+| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | (2515, 4590) | (2515, 4591) | [Movement](#movement) | 1 | no | no | - | unreached | - |
+| [Tai Bwo Wannai Trio area](../../places/tai-bwo-wannai-trio-area.md) | `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | (2528, 4590) | (2528, 4591) | [Movement](#movement) | 1 | no | no | - | unreached | - |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:karamja:3` | (2899, 3119) | 3 | 1 |
-| `fishing-spot:karamja:4` | (2912, 3119) | 3 | 1 |
-| `fishing-spot:brimhaven:0` | (2768, 3165) | 3 | 1 |
-| `fishing-spot:tai-bwo-wannai-trio-area:0` | (2515, 4591) | 3 | 1 |
-| `fishing-spot:tai-bwo-wannai-trio-area:1` | (2528, 4591) | 3 | 1 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:karamja:3` | `{ x: 2899, z: 3119, radius: 3 }` | 1 |
+| `fishing-spot:karamja:4` | `{ x: 2912, z: 3119, radius: 3 }` | 1 |
+| `fishing-spot:brimhaven:0` | `{ x: 2768, z: 3165, radius: 3 }` | 1 |
+| `fishing-spot:tai-bwo-wannai-trio-area:0` | `{ x: 2515, z: 4591, radius: 3 }` | 1 |
+| `fishing-spot:tai-bwo-wannai-trio-area:1` | `{ x: 2528, z: 4591, radius: 3 }` | 1 |
 
 `fishing-spot:karamja:3` tiles: (2899, 3119)
 

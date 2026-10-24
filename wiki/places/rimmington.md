@@ -5,57 +5,57 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:rimmington:0` | (2946, 3205) | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - | - |
-| `shop:rimmington:1` | (2948, 3216) | Rimmington General Store (generalshop6) 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:rimmington:0` | (2946, 3205) | (2946, 3205) | x 2941-2951, z 3200-3210 | `{ x: 2946, z: 3205, radius: 11 }` | Rommiks Crafty Supplies. (craftingshop) 1 | yes | no | - | - |
+| `shop:rimmington:1` | (2948, 3216) | x 2947-2948, z 3216 | x 2947-2948, z 3216 | `{ x: 2948, z: 3216, radius: 4 }` | Rimmington General Store (generalshop6) 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:rimmington:0` | (2970, 3209) | Range 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:rimmington:0` | (2970, 3209) | (2970, 3209) | `{ x: 2970, z: 3209, radius: 3 }` | Range 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:rimmington:0` | (2967, 3203) | Fireplace 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:rimmington:0` | (2967, 3203) | (2967, 3203) | `{ x: 2967, z: 3203, radius: 3 }` | Fireplace 1 | yes | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:rimmington:0` | (2966, 3209) | Sink 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:rimmington:0` | (2966, 3209) | (2966, 3209) | `{ x: 2966, z: 3209, radius: 3 }` | Sink 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:rimmington:0` | (2955, 3233) | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 4 | yes | no | - | - |
-| `tree:rimmington:1` | (2975, 3200) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 9 | yes | no | - | - |
-| `tree:rimmington:2` | (2978, 3221) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:rimmington:0` | (2955, 3233) | x 2945-2966, z 3223-3248 | `{ x: 2956, z: 3236, radius: 21 }` | [normal](../resources/tree/normal.md) 28, [oak](../resources/tree/oak.md) 4 | yes | no | - | - |
+| `tree:rimmington:1` | (2975, 3200) | x 2954-2990, z 3191-3216 | `{ x: 2972, z: 3204, radius: 26 }` | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 9 | yes | no | - | - |
+| `tree:rimmington:2` | (2978, 3221) | x 2976-2979, z 3220-3222 | `{ x: 2978, z: 3221, radius: 6 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:rimmington:0` | (2967, 3212) L1 | [Man](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:rimmington:0` | (2967, 3212) L1 | x 2967, z 3210-3213 L1 | x 2962-2972, z 3205-3218 L1 | `{ x: 2967, z: 3212, radius: 12, level: 1 }` | [Man](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:rimmington:0` | (2957, 3203) | Rat 4 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:rimmington:0` | (2957, 3203) | x 2953-2960, z 3202-3205 | x 2938-2975, z 3187-3220 | `{ x: 2957, z: 3204, radius: 29 }` | Rat 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:rimmington:0` | (2948, 3213) | Ladder 1 | up (2947, 3213) L1 by Climb-up | yes | no | - | - |
-| `connector:rimmington:1` | (2948, 3213) L1 | Ladder 1 | down (2947, 3213) by Climb-down | yes | no | - | - |
-| `connector:rimmington:2` | (2965, 3215) | Staircase 1 | up (2968, 3215) L1 by Climb-up | yes | no | - | - |
-| `connector:rimmington:3` | (2966, 3215) L1 | Staircase 1 | down (2964, 3215) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:rimmington:0` | (2948, 3213) | (2948, 3213) | `{ x: 2948, z: 3213, radius: 3 }` | Ladder 1 | up (2947, 3213) L1 by Climb-up | yes | no | - | - |
+| `connector:rimmington:1` | (2948, 3213) L1 | (2948, 3213) L1 | `{ x: 2948, z: 3213, radius: 3, level: 1 }` | Ladder 1 | down (2947, 3213) by Climb-down | yes | no | - | - |
+| `connector:rimmington:2` | (2965, 3215) | (2965, 3215) | `{ x: 2965, z: 3215, radius: 3 }` | Staircase 1 | up (2968, 3215) L1 by Climb-up | yes | no | - | - |
+| `connector:rimmington:3` | (2966, 3215) L1 | (2966, 3215) L1 | `{ x: 2966, z: 3215, radius: 3, level: 1 }` | Staircase 1 | down (2964, 3215) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

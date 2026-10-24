@@ -7,6 +7,6 @@ Called "SE Varrock mine" in learnings/mining.md and wiki/skills/mining.md.
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:varrock-east-mine:0` | (3286, 3365) | [copper](../resources/rock/copper.md) 9, [iron](../resources/rock/iron.md) 4, [tin](../resources/rock/tin.md) 6 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:varrock-east-mine:0` | (3286, 3365) | x 3282-3290, z 3361-3370 | `{ x: 3286, z: 3366, radius: 10 }` | [copper](../resources/rock/copper.md) 9, [iron](../resources/rock/iron.md) 4, [tin](../resources/rock/tin.md) 6 | yes | no | - | - |

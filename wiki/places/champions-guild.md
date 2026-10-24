@@ -5,22 +5,22 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:champions-guild:0` | (3191, 3351) L1 | Scavvo's Rune Store. (runiteshop) 1 | yes | no | - | 32 quest points |
-| `shop:champions-guild:1` | (3193, 3361) L1 | Valaine's Shop of Champions. (championshop) 1 | yes | no | - | 32 quest points |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:champions-guild:0` | (3191, 3351) L1 | (3191, 3351) L1 | x 3186-3196, z 3346-3356 L1 | `{ x: 3191, z: 3351, radius: 11, level: 1 }` | Scavvo's Rune Store. (runiteshop) 1 | yes | no | - | 32 quest points |
+| `shop:champions-guild:1` | (3193, 3361) L1 | (3193, 3361) L1 | x 3188-3198, z 3356-3366 L1 | `{ x: 3193, z: 3361, radius: 11, level: 1 }` | Valaine's Shop of Champions. (championshop) 1 | yes | no | - | 32 quest points |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:champions-guild:0` | (3197, 3346) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:champions-guild:1` | (3204, 3361) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:champions-guild:0` | (3197, 3346) | (3197, 3346) | `{ x: 3197, z: 3346, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:champions-guild:1` | (3204, 3361) | x 3197-3212, z 3356-3364 | `{ x: 3205, z: 3360, radius: 12 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:champions-guild:0` | (3193, 3343) | Duck 2 | yes | no | - | no stand |
-| `npc:champions-guild:1` | (3197, 3353) | Chicken 5 | yes | no | - | - |
-| `npc:champions-guild:2` | (3205, 3355) | Imp 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:champions-guild:0` | (3193, 3343) | x 3191-3194, z 3342-3343 | x 3156-3229, z 3307-3378 | `{ x: 3193, z: 3343, radius: 55 }` | Duck 2 | yes | no | - | no stand |
+| `npc:champions-guild:1` | (3197, 3353) | x 3196-3198, z 3352-3355 | x 3191-3203, z 3347-3360 | `{ x: 3197, z: 3354, radius: 13 }` | Chicken 5 | yes | no | - | - |
+| `npc:champions-guild:2` | (3205, 3355) | (3205, 3355) | x 3180-3230, z 3330-3380 | `{ x: 3205, z: 3355, radius: 39 }` | Imp 1 | yes | no | - | - |

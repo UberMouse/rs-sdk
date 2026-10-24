@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Canifis (Morytania)](../places/canifis.md) | (3493, 3471) | 1 | 3 | (3490, 3468)-(3496, 3474) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Canifis (Morytania)](../places/canifis.md) | (3493, 3471) | (3493, 3471) | 1 | 3 | x 3490-3496, z 3468-3474 | 100 ticks | - | `{ x: 3493, z: 3471, radius: 8 }` | no |
 
 ## Interactions
 

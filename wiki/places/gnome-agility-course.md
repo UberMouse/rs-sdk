@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:gnome-agility-course:0` | (2490, 3414) | [magic](../resources/tree/magic.md) 1 | no | no | - | - |
-| `tree:gnome-agility-course:1` | (2492, 3423) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:gnome-agility-course:0` | (2490, 3414) | (2490, 3414) | `{ x: 2490, z: 3414, radius: 3 }` | [magic](../resources/tree/magic.md) 1 | no | no | - | - |
+| `tree:gnome-agility-course:1` | (2492, 3423) | (2492, 3423) | `{ x: 2492, z: 3423, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
 
 ## Agility courses
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `agility-course:gnome-agility-course:0` | (2481, 3429) | [gnome](../resources/agility-course/gnome.md) 16 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `agility-course:gnome-agility-course:0` | (2481, 3429) | x 2471-2487, z 3418-3435 every level | `{ x: 2479, z: 3427, radius: 16 }` | [gnome](../resources/agility-course/gnome.md) 16 | no | no | - | - |

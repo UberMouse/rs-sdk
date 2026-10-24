@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:taverley:0` | (2889, 3465) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:taverley:1` | (2910, 3465) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:taverley:0` | (2889, 3465) | x 2889, z 3463-3467 | `{ x: 2889, z: 3465, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| `tree:taverley:1` | (2910, 3465) | (2910, 3465) | `{ x: 2910, z: 3465, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:taverley:0` | (2906, 3469) | Staircase 1 | up (2906, 3472) L1 by Walk-up | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:taverley:0` | (2906, 3469) | (2906, 3469) | `{ x: 2906, z: 3469, radius: 3 }` | Staircase 1 | up (2906, 3472) L1 by Walk-up | no | no | - | unreached |

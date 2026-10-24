@@ -5,19 +5,19 @@
 
 ## [Pottery ovens](../services/pottery-oven.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-oven:crafting-guild:0` | (2929, 3292) | Pottery Oven 1 | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-oven:crafting-guild:0` | (2929, 3292) | (2929, 3292) | `{ x: 2929, z: 3292, radius: 3 }` | Pottery Oven 1 | yes | no | - | wear Brown apron + 40 Crafting |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:crafting-guild:0` | (2922, 3283) | Cow 7 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:crafting-guild:0` | (2922, 3283) | x 2917-2926, z 3271-3289 | x 2912-2931, z 3266-3294 | `{ x: 2922, z: 3280, radius: 21 }` | Cow 7 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:crafting-guild:0` | (2931, 3282) | Staircase 1 | up (2933, 3282) L1 by Climb-up | yes | no | - | wear Brown apron + 40 Crafting |
-| `connector:crafting-guild:1` | (2932, 3282) L1 | Staircase 1 | down (2932, 3281) by Climb-down | yes | no | - | wear Brown apron + 40 Crafting |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:crafting-guild:0` | (2931, 3282) | (2931, 3282) | `{ x: 2931, z: 3282, radius: 3 }` | Staircase 1 | up (2933, 3282) L1 by Climb-up | yes | no | - | wear Brown apron + 40 Crafting |
+| `connector:crafting-guild:1` | (2932, 3282) L1 | (2932, 3282) L1 | `{ x: 2932, z: 3282, radius: 3, level: 1 }` | Staircase 1 | down (2932, 3281) by Climb-down | yes | no | - | wear Brown apron + 40 Crafting |

@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2937, 3290) | 1 | 5 | (2932, 3285)-(2942, 3295) | 100 ticks | - | yes |
-| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2931, 3280) | 1 | 5 | (2926, 3275)-(2936, 3285) | 100 ticks | - | yes |
-| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2932, 3287) | 1 | 5 | (2927, 3282)-(2937, 3292) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2937, 3290) | (2937, 3290) | 1 | 5 | x 2932-2942, z 3285-3295 | 100 ticks | - | `{ x: 2937, z: 3290, radius: 11 }` | yes |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2931, 3280) | (2931, 3280) | 1 | 5 | x 2926-2936, z 3275-3285 | 100 ticks | - | `{ x: 2931, z: 3280, radius: 11 }` | yes |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | (2932, 3287) | (2932, 3287) | 1 | 5 | x 2927-2937, z 3282-3292 | 100 ticks | - | `{ x: 2932, z: 3287, radius: 11 }` | yes |
 
 ## Interactions
 

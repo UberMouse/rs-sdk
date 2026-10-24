@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3287, 3022) | 1 | 3 | (3284, 3019)-(3290, 3025) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | (3287, 3022) | (3287, 3022) | 1 | 3 | x 3284-3290, z 3019-3025 | 100 ticks | - | `{ x: 3287, z: 3022, radius: 8 }` | no |
 
 ## Interactions
 

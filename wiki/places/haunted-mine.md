@@ -5,24 +5,24 @@ Haunted Mine quest (quests/quest_hauntedmine).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:haunted-mine:0` | (2720, 4490) | [copper](../resources/rock/copper.md) 7, [tin](../resources/rock/tin.md) 10 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:1` | (2724, 4435) | [coal](../resources/rock/coal.md) 8 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:2` | (2749, 4437) | [iron](../resources/rock/iron.md) 9 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:3` | (2764, 4439) | [coal](../resources/rock/coal.md) 4 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:4` | (2778, 4594) | [adamantite](../resources/rock/adamantite.md) 5, [coal](../resources/rock/coal.md) 8, [mithril](../resources/rock/mithril.md) 5 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:5` | (2774, 4421) | [adamantite](../resources/rock/adamantite.md) 13 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:6` | (2788, 4437) | [coal](../resources/rock/coal.md) 6 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:7` | (2803, 4444) | [mithril](../resources/rock/mithril.md) 8 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
-| `rock:haunted-mine:8` | (2809, 4576) | [copper](../resources/rock/copper.md) 3, [tin](../resources/rock/tin.md) 8 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:haunted-mine:0` | (2720, 4490) | x 2711-2725, z 4485-4493 | `{ x: 2718, z: 4489, radius: 12 }` | [copper](../resources/rock/copper.md) 7, [tin](../resources/rock/tin.md) 10 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:1` | (2724, 4435) | x 2717-2729, z 4434-4435 | `{ x: 2723, z: 4435, radius: 10 }` | [coal](../resources/rock/coal.md) 8 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:2` | (2749, 4437) | x 2747-2750, z 4433-4441 | `{ x: 2749, z: 4437, radius: 8 }` | [iron](../resources/rock/iron.md) 9 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:3` | (2764, 4439) | x 2763-2764, z 4437-4440 | `{ x: 2764, z: 4439, radius: 6 }` | [coal](../resources/rock/coal.md) 4 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:4` | (2778, 4594) | x 2768-2787, z 4590-4598 | `{ x: 2778, z: 4594, radius: 14 }` | [adamantite](../resources/rock/adamantite.md) 5, [coal](../resources/rock/coal.md) 8, [mithril](../resources/rock/mithril.md) 5 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:5` | (2774, 4421) | x 2771-2776, z 4418-4426 | `{ x: 2774, z: 4422, radius: 8 }` | [adamantite](../resources/rock/adamantite.md) 13 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:6` | (2788, 4437) | x 2783-2793, z 4436-4437 | `{ x: 2788, z: 4437, radius: 9 }` | [coal](../resources/rock/coal.md) 6 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:7` | (2803, 4444) | x 2798-2806, z 4438-4449 | `{ x: 2802, z: 4444, radius: 11 }` | [mithril](../resources/rock/mithril.md) 8 | no | yes | - | carry Glowing fungus + carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 or carry Crystal-mine key + Nature Spirit at stage 1 + Haunted Mine at stage 8 + Priest in Peril at stage 61 |
+| `rock:haunted-mine:8` | (2809, 4576) | x 2805-2813, z 4573-4580 | `{ x: 2809, z: 4577, radius: 9 }` | [copper](../resources/rock/copper.md) 3, [tin](../resources/rock/tin.md) 8 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:haunted-mine:0` | (2777, 4580) | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:haunted-mine:1` | (2782, 4593) | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:haunted-mine:2` | (2786, 4579) | Rat 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:haunted-mine:3` | (2802, 4599) | Rat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:haunted-mine:4` | (2812, 4577) | Rat 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:haunted-mine:0` | (2777, 4580) | x 2776-2777, z 4577-4582 | x 2761-2792, z 4562-4597 | `{ x: 2777, z: 4580, radius: 28 }` | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:1` | (2782, 4593) | x 2780-2783, z 4592-4593 | x 2765-2798, z 4577-4608 | `{ x: 2782, z: 4593, radius: 27 }` | Rat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:2` | (2786, 4579) | x 2785-2787, z 4578-4580 | x 2770-2802, z 4563-4595 | `{ x: 2786, z: 4579, radius: 26 }` | Rat 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:3` | (2802, 4599) | (2802, 4599) | x 2787-2817, z 4584-4614 | `{ x: 2802, z: 4599, radius: 25 }` | Rat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:haunted-mine:4` | (2812, 4577) | (2812, 4577) | x 2797-2827, z 4562-4592 | `{ x: 2812, z: 4577, radius: 25 }` | Rat 1 | no | no | - | unreached |

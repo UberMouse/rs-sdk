@@ -5,6 +5,6 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:fishing-platform:0` | (2784, 3286) L1 | Ladder 1 | down (2783, 3286) by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:fishing-platform:0` | (2784, 3286) L1 | (2784, 3286) L1 | `{ x: 2784, z: 3286, radius: 3, level: 1 }` | Ladder 1 | down (2783, 3286) by Climb-down | no | no | - | unreached |

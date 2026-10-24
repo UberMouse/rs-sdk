@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2892, 9680) | 1 | 0 | (2892, 9675)-(2897, 9680) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2892, 9680) | x 2892-2897, z 9675-9680 | 1 | 0 | x 2892-2897, z 9675-9680 | 100 ticks | - | `{ x: 2895, z: 9678, radius: 8 }` | no |
 
 ## Drops
 

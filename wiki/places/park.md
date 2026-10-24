@@ -5,7 +5,7 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:park:0` | (2996, 3390) | [normal](../resources/tree/normal.md) 2 | yes | yes | - | - |
-| `tree:park:1` | (2997, 3368) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:park:0` | (2996, 3390) | x 2994-2998, z 3390 | `{ x: 2996, z: 3390, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | yes | - | - |
+| `tree:park:1` | (2997, 3368) | (2997, 3368) | `{ x: 2997, z: 3368, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |

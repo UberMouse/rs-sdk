@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3109, 3237) | 1 | 5 | (3104, 3232)-(3114, 3242) | 60 ticks | - | yes |
-| [Draynor jail (Draynor Village)](../places/jail.md) | (3120, 3238) | 1 | 5 | (3115, 3233)-(3125, 3243) | 60 ticks | - | yes |
-| [Draynor jail (Draynor Village)](../places/jail.md) | (3124, 3249) | 2 | 5 | (3116, 3243)-(3132, 3254) | 60 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3109, 3237) | (3109, 3237) | 1 | 5 | x 3104-3114, z 3232-3242 | 60 ticks | - | `{ x: 3109, z: 3237, radius: 11 }` | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3120, 3238) | (3120, 3238) | 1 | 5 | x 3115-3125, z 3233-3243 | 60 ticks | - | `{ x: 3120, z: 3238, radius: 11 }` | yes |
+| [Draynor jail (Draynor Village)](../places/jail.md) | (3124, 3249) | x 3121-3127, z 3248-3249 | 2 | 5 | x 3116-3132, z 3243-3254 | 60 ticks | - | `{ x: 3124, z: 3249, radius: 13 }` | yes |
 
 ## Drops
 

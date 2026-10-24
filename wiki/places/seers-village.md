@@ -5,71 +5,71 @@
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:seers-village:0` | (2713, 3494) | Anvil 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:seers-village:0` | (2713, 3494) | x 2712-2714, z 3492-3495 | `{ x: 2713, z: 3494, radius: 6 }` | Anvil 3 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:seers-village:0` | (2715, 3476) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:seers-village:0` | (2715, 3476) | (2715, 3476) | `{ x: 2715, z: 3476, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:seers-village:0` | (2694, 3498) | Fireplace 1 | no | no | - | - |
-| `fire:seers-village:1` | (2695, 3466) | Fireplace 1 | no | no | - | - |
-| `fire:seers-village:2` | (2711, 3476) | Fireplace 1 | no | no | - | - |
-| `fire:seers-village:3` | (2737, 3460) | Fireplace 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:seers-village:0` | (2694, 3498) | (2694, 3498) | `{ x: 2694, z: 3498, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:seers-village:1` | (2695, 3466) | (2695, 3466) | `{ x: 2695, z: 3466, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:seers-village:2` | (2711, 3476) | (2711, 3476) | `{ x: 2711, z: 3476, radius: 3 }` | Fireplace 1 | no | no | - | - |
+| `fire:seers-village:3` | (2737, 3460) | (2737, 3460) | `{ x: 2737, z: 3460, radius: 3 }` | Fireplace 1 | no | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:seers-village:0` | (2711, 3471) L1 | Spinning wheel 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:seers-village:0` | (2711, 3471) L1 | (2711, 3471) L1 | `{ x: 2711, z: 3471, radius: 3, level: 1 }` | Spinning wheel 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:seers-village:0` | (2699, 3472) | Sink 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:seers-village:0` | (2699, 3472) | (2699, 3472) | `{ x: 2699, z: 3472, radius: 3 }` | Sink 1 | no | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:seers-village:0` | (2694, 3462) | Altar 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:seers-village:0` | (2694, 3462) | (2694, 3462) | `{ x: 2694, z: 3462, radius: 3 }` | Altar 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:seers-village:0` | (2695, 3478) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 4 | no | no | - | - |
-| `tree:seers-village:1` | (2723, 3487) | [maple](../resources/tree/maple.md) 7, [normal](../resources/tree/normal.md) 32, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 5, [yew](../resources/tree/yew.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:seers-village:0` | (2695, 3478) | x 2691-2702, z 3471-3486 | `{ x: 2697, z: 3479, radius: 13 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 4 | no | no | - | - |
+| `tree:seers-village:1` | (2723, 3487) | x 2704-2741, z 3461-3512 | `{ x: 2723, z: 3487, radius: 36 }` | [maple](../resources/tree/maple.md) 7, [normal](../resources/tree/normal.md) 32, [oak](../resources/tree/oak.md) 5, [willow](../resources/tree/willow.md) 5, [yew](../resources/tree/yew.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:seers-village:0` | (2695, 3494) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 3, [Woman (woman2)](../resources/pickpocket/woman2.md) 2 | no | no | - | - |
-| `pickpocket:seers-village:1` | (2713, 3480) | [Man (man)](../resources/pickpocket/man.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:seers-village:0` | (2695, 3494) | x 2690-2699, z 3489-3497 | x 2685-2704, z 3484-3502 | `{ x: 2695, z: 3493, radius: 17 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman (woman)](../resources/pickpocket/woman.md) 3, [Woman (woman2)](../resources/pickpocket/woman2.md) 2 | no | no | - | - |
+| `pickpocket:seers-village:1` | (2713, 3480) | (2713, 3480) | x 2708-2718, z 3475-3485 | `{ x: 2713, z: 3480, radius: 11 }` | [Man (man)](../resources/pickpocket/man.md) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:seers-village:0` | (2698, 3496) | Staircase 1 | up (2698, 3495) L1 by Climb-up | no | no | - | - |
-| `connector:seers-village:1` | (2698, 3496) L1 | Staircase 1 | down (2697, 3496) by Climb-down | no | no | - | - |
-| `connector:seers-village:2` | (2699, 3476) | Ladder 1 | up (2699, 3475) L1 by Climb-up | no | no | - | - |
-| `connector:seers-village:3` | (2699, 3476) L1 | Ladder 1 | down (2699, 3475) by Climb-down | no | no | - | - |
-| `connector:seers-village:4` | (2715, 3470) | Ladder 1 | up (2714, 3470) L1 by Climb-up | no | no | - | - |
-| `connector:seers-village:5` | (2715, 3470) L1 | Ladder 1 | down (2714, 3470) by Climb-down | no | no | - | - |
-| `connector:seers-village:6` | (2728, 3460) | Staircase 1 | up (2729, 3462) L1 by Climb-up | no | no | - | - |
-| `connector:seers-village:7` | (2728, 3491) | Ladder 1 | up (2727, 3491) L1 by Climb-up | no | no | - | - |
-| `connector:seers-village:8` | (2728, 3491) L1 | Ladder 1 | down (2727, 3491) by Climb-down | no | no | - | - |
-| `connector:seers-village:9` | (2729, 3461) L1 | Staircase 1 | down (2730, 3461) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:seers-village:0` | (2698, 3496) | (2698, 3496) | `{ x: 2698, z: 3496, radius: 3 }` | Staircase 1 | up (2698, 3495) L1 by Climb-up | no | no | - | - |
+| `connector:seers-village:1` | (2698, 3496) L1 | (2698, 3496) L1 | `{ x: 2698, z: 3496, radius: 3, level: 1 }` | Staircase 1 | down (2697, 3496) by Climb-down | no | no | - | - |
+| `connector:seers-village:2` | (2699, 3476) | (2699, 3476) | `{ x: 2699, z: 3476, radius: 3 }` | Ladder 1 | up (2699, 3475) L1 by Climb-up | no | no | - | - |
+| `connector:seers-village:3` | (2699, 3476) L1 | (2699, 3476) L1 | `{ x: 2699, z: 3476, radius: 3, level: 1 }` | Ladder 1 | down (2699, 3475) by Climb-down | no | no | - | - |
+| `connector:seers-village:4` | (2715, 3470) | (2715, 3470) | `{ x: 2715, z: 3470, radius: 3 }` | Ladder 1 | up (2714, 3470) L1 by Climb-up | no | no | - | - |
+| `connector:seers-village:5` | (2715, 3470) L1 | (2715, 3470) L1 | `{ x: 2715, z: 3470, radius: 3, level: 1 }` | Ladder 1 | down (2714, 3470) by Climb-down | no | no | - | - |
+| `connector:seers-village:6` | (2728, 3460) | (2728, 3460) | `{ x: 2728, z: 3460, radius: 3 }` | Staircase 1 | up (2729, 3462) L1 by Climb-up | no | no | - | - |
+| `connector:seers-village:7` | (2728, 3491) | (2728, 3491) | `{ x: 2728, z: 3491, radius: 3 }` | Ladder 1 | up (2727, 3491) L1 by Climb-up | no | no | - | - |
+| `connector:seers-village:8` | (2728, 3491) L1 | (2728, 3491) L1 | `{ x: 2728, z: 3491, radius: 3, level: 1 }` | Ladder 1 | down (2727, 3491) by Climb-down | no | no | - | - |
+| `connector:seers-village:9` | (2729, 3461) L1 | (2729, 3461) L1 | `{ x: 2729, z: 3461, radius: 3, level: 1 }` | Staircase 1 | down (2730, 3461) by Climb-down | no | no | - | - |
 
 ## Areas within
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3191, 3362) | 1 | 5 | (3186, 3357)-(3196, 3367) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Champions' Guild (Misthalin)](../places/champions-guild.md) | (3191, 3362) | (3191, 3362) | 1 | 5 | x 3186-3196, z 3357-3367 | 100 ticks | - | `{ x: 3191, z: 3362, radius: 11 }` | yes |
 
 ## Interactions
 

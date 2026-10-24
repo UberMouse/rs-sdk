@@ -19,6 +19,6 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:0` | (3288, 9439) | (3287, 9438) | 63 | no | no | - | unreached | - |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Desert Mining Camp mine](../../places/desert-mining-camp-mine.md) | `rock:desert-mining-camp-mine:0` | (3288, 9439) | (3287, 9438) | x 3284-3306, z 9424-9453 | `{ x: 3295, z: 9439, radius: 22 }` | 63 | no | no | - | unreached | - |

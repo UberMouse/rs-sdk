@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3303, 3118) | 1 | 0 | (3303, 3118)-(3303, 3118) | 100 ticks | - | yes |
-| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3125) | 3 | 3 | (3296, 3120)-(3310, 3132) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3303, 3118) | (3303, 3118) | 1 | 0 | (3303, 3118) | 100 ticks | - | `{ x: 3303, z: 3118, radius: 3 }` | yes |
+| [Shantay Pass (Kharidian Desert)](../places/shantay-pass.md) | (3304, 3125) | x 3299-3307, z 3123-3129 | 3 | 3 | x 3296-3310, z 3120-3132 | 100 ticks | - | `{ x: 3303, z: 3126, radius: 13 }` | yes |
 
 ## Drops
 

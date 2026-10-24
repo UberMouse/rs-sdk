@@ -5,10 +5,10 @@ Below the Mage Arena; areas/area_mage_arena/scripts/chamber.rs2 places the god c
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:mage-arena-chamber:0` | (2508, 4696) | Mage Arena Staffs. (magearena_staffshop) 1 | no | yes | - | Mage Arena miniquest done (%magearena >= ^mage_arena_complete, areas/area_mage_arena/scripts/mage_arena.rs2:85) |
-| `shop:mage-arena-chamber:1` | (2534, 4719) | Lundail's Arena-side Rune Shop. (magearena_runeshop) 1 | no | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:mage-arena-chamber:0` | (2508, 4696) | (2508, 4696) | x 2503-2513, z 4691-4701 | `{ x: 2508, z: 4696, radius: 11 }` | Mage Arena Staffs. (magearena_staffshop) 1 | no | yes | - | Mage Arena miniquest done (%magearena >= ^mage_arena_complete, areas/area_mage_arena/scripts/mage_arena.rs2:85) |
+| `shop:mage-arena-chamber:1` | (2534, 4719) | (2534, 4719) | x 2529-2539, z 4714-4724 | `{ x: 2534, z: 4719, radius: 11 }` | Lundail's Arena-side Rune Shop. (magearena_runeshop) 1 | no | yes | - | - |
 
 ## Areas within
 

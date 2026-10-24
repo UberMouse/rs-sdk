@@ -22,6 +22,6 @@ Base XP is the script's stat_advance tenths over 10; the server multiplies it by
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Wilderness agility course (Wilderness)](../../places/wilderness-agility-course.md) | `agility-course:wilderness-agility-course:0` | (3000, 3944) | (3003, 3938) | 8 | no | no | 56 | 52 Agility | Mage Arena bank (Mage Arena chamber), 75 ticks via 52 Agility |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Wilderness agility course (Wilderness)](../../places/wilderness-agility-course.md) | `agility-course:wilderness-agility-course:0` | (3000, 3944) | (3003, 3938) | x 2993-3005, z 3936-3960 | `{ x: 2999, z: 3948, radius: 17 }` | 8 | no | no | 56 | 52 Agility | Mage Arena bank (Mage Arena chamber), 75 ticks via 52 Agility |

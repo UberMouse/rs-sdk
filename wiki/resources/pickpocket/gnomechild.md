@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2422, 3441) L1 | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 20 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | 1 | no | no | - | - | Grand Tree bank (Tree Gnome Stronghold), 26 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | (2422, 3441) L1 | x 2408-2424, z 3425-3447 L1 | x 2403-2429, z 3420-3452 L1 | `{ x: 2416, z: 3436, radius: 24, level: 1 }` | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 20 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | (2482, 3496) L1 | x 2474-2490, z 3482-3508 L1 | x 2469-2495, z 3477-3513 L1 | `{ x: 2482, z: 3495, radius: 26, level: 1 }` | 1 | no | no | - | - | Grand Tree bank (Tree Gnome Stronghold), 26 ticks |

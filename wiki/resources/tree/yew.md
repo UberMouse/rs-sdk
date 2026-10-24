@@ -31,32 +31,32 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | 1 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:15` | (2931, 3227) | (2931, 3228) | 4 | yes | no | - | - | Falador East bank (Falador), 73 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:26` | (3048, 3321) | (3048, 3321) | 1 | yes | no | - | - | Falador East bank (Falador), 41 ticks |
-| [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | 2 | yes | yes | - | - | Falador East bank (Falador), 26 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 4 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
-| [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | 4 | no | no | - | - | Catherby bank (Catherby), 22 ticks |
-| [Flax (Kandarin)](../../places/flax.md) | `tree:flax:0` | (2754, 3433) | (2753, 3433) | 1 | no | no | - | - | Catherby bank (Catherby), 31 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | 7 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:6` | (2486, 3490) | (2485, 3490) | 1 | no | no | - | - | Grand Tree bank (Tree Gnome Stronghold), 27 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | 3 | yes | no | - | - | Draynor bank (Draynor Village), 33 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | 2 | yes | no | - | - | Varrock East bank (Varrock), 76 ticks |
-| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:1` | (3085, 3468) | (3085, 3471) | 1 | yes | no | - | - | Edgeville bank (Edgeville), 15 ticks |
-| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:2` | (3085, 3480) | (3085, 3479) | 1 | yes | no | - | - | Edgeville bank (Edgeville), 16 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `tree:lumbridge:4` | (3249, 3201) | (3248, 3201) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 91 ticks |
-| [Lumbridge trees (Lumbridge)](../../places/lumbridge-trees.md) | `tree:lumbridge-trees:0` | (3184, 3228) | (3183, 3228) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 48 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:0` | (3182, 3484) | (3182, 3483) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 53 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:7` | (3221, 3504) | (3220, 3504) | 1 | yes | no | - | - | Varrock East bank (Varrock), 54 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:14` | (3248, 3472) | (3247, 3472) | 1 | yes | no | - | - | Varrock East bank (Varrock), 27 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:17` | (3278, 3482) | (3278, 3482) | 2 | yes | no | - | - | Varrock East bank (Varrock), 40 ticks |
-| [Regicide camp](../../places/regicide-camp.md) | `tree:regicide-camp:0` | (2341, 4575) | (2339, 4573) | 4 | no | no | - | unreached | - |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2197, 3174) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 332 ticks via Regicide at stage 8 + 56 Agility |
-| [Zanaris](../../places/zanaris.md) | `tree:zanaris:6` | (3193, 9584) | (3193, 9585) | 1 | no | no | - | wear Dramen staff | Zanaris bank (Zanaris), 20 ticks |
-| [Zanaris](../../places/zanaris.md) | `tree:zanaris:9` | (3233, 9546) | (3232, 9546) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 47 ticks via 1 Diamond (used up) |
-| [Zanaris](../../places/zanaris.md) | `tree:zanaris:10` | (3238, 9570) | (3238, 9570) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 51 ticks via 1 Diamond (used up) |
-| [Zanaris](../../places/zanaris.md) | `tree:zanaris:14` | (3257, 9543) | (3257, 9543) | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 54 ticks via 1 Diamond (used up) |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | x 2911-3063, z 3225-3317 | `{ x: 2987, z: 3271, radius: 92 }` | 1 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:15` | (2931, 3227) | (2931, 3228) | x 2922-2944, z 3219-3234 | `{ x: 2933, z: 3227, radius: 17 }` | 4 | yes | no | - | - | Falador East bank (Falador), 73 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:26` | (3048, 3321) | (3048, 3321) | x 3026-3064, z 3298-3355 | `{ x: 3045, z: 3327, radius: 38 }` | 1 | yes | no | - | - | Falador East bank (Falador), 41 ticks |
+| [Falador (Asgarnia)](../../places/falador.md) | `tree:falador:6` | (3010, 3313) | (3009, 3314) | x 2992-3024, z 3305-3329 | `{ x: 3008, z: 3317, radius: 23 }` | 2 | yes | yes | - | - | Falador East bank (Falador), 26 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | x 2608-2763, z 3291-3702 | `{ x: 2686, z: 3497, radius: 224 }` | 4 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | x 2755-2771, z 3426-3430 | `{ x: 2763, z: 3428, radius: 12 }` | 3 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
+| [Beehives (Kandarin)](../../places/beehives.md) | `tree:beehives:0` | (2769, 3443) | (2770, 3444) | x 2757-2778, z 3431-3453 | `{ x: 2768, z: 3442, radius: 19 }` | 4 | no | no | - | - | Catherby bank (Catherby), 22 ticks |
+| [Flax (Kandarin)](../../places/flax.md) | `tree:flax:0` | (2754, 3433) | (2753, 3433) | (2754, 3433) | `{ x: 2754, z: 3433, radius: 3 }` | 1 | no | no | - | - | Catherby bank (Catherby), 31 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | x 2704-2741, z 3461-3512 | `{ x: 2723, z: 3487, radius: 36 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | x 2378-2499, z 3380-3498 | `{ x: 2439, z: 3439, radius: 88 }` | 7 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:6` | (2486, 3490) | (2485, 3490) | x 2469-2500, z 3469-3512 | `{ x: 2485, z: 3491, radius: 31 }` | 1 | no | no | - | - | Grand Tree bank (Tree Gnome Stronghold), 27 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | x 3123-3181, z 3200-3284 | `{ x: 3152, z: 3242, radius: 55 }` | 3 | yes | no | - | - | Draynor bank (Draynor Village), 33 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | x 3193-3375, z 3331-3495 | `{ x: 3284, z: 3413, radius: 126 }` | 2 | yes | no | - | - | Varrock East bank (Varrock), 76 ticks |
+| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:1` | (3085, 3468) | (3085, 3471) | (3085, 3468) | `{ x: 3085, z: 3468, radius: 3 }` | 1 | yes | no | - | - | Edgeville bank (Edgeville), 15 ticks |
+| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:2` | (3085, 3480) | (3085, 3479) | (3085, 3480) | `{ x: 3085, z: 3480, radius: 3 }` | 1 | yes | no | - | - | Edgeville bank (Edgeville), 16 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `tree:lumbridge:4` | (3249, 3201) | (3248, 3201) | (3249, 3201) | `{ x: 3249, z: 3201, radius: 3 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 91 ticks |
+| [Lumbridge trees (Lumbridge)](../../places/lumbridge-trees.md) | `tree:lumbridge-trees:0` | (3184, 3228) | (3183, 3228) | x 3168-3203, z 3208-3244 | `{ x: 3186, z: 3226, radius: 29 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 48 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:0` | (3182, 3484) | (3182, 3483) | x 3172-3208, z 3458-3504 | `{ x: 3190, z: 3481, radius: 33 }` | 2 | yes | no | - | - | Edgeville bank (Edgeville), 53 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:7` | (3221, 3504) | (3220, 3504) | (3221, 3504) | `{ x: 3221, z: 3504, radius: 3 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 54 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:14` | (3248, 3472) | (3247, 3472) | (3248, 3472) | `{ x: 3248, z: 3472, radius: 3 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 27 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `tree:varrock:17` | (3278, 3482) | (3278, 3482) | x 3258-3294, z 3463-3505 | `{ x: 3276, z: 3484, radius: 31 }` | 2 | yes | no | - | - | Varrock East bank (Varrock), 40 ticks |
+| [Regicide camp](../../places/regicide-camp.md) | `tree:regicide-camp:0` | (2341, 4575) | (2339, 4573) | x 2304-2366, z 4544-4606 | `{ x: 2335, z: 4575, radius: 47 }` | 4 | no | no | - | unreached | - |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:0` | (2197, 3175) | (2197, 3174) | x 2154-2241, z 3103-3251 | `{ x: 2198, z: 3177, radius: 90 }` | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 332 ticks via Regicide at stage 8 + 56 Agility |
+| [Zanaris](../../places/zanaris.md) | `tree:zanaris:6` | (3193, 9584) | (3193, 9585) | x 3177-3215, z 9571-9595 | `{ x: 3196, z: 9583, radius: 26 }` | 1 | no | no | - | wear Dramen staff | Zanaris bank (Zanaris), 20 ticks |
+| [Zanaris](../../places/zanaris.md) | `tree:zanaris:9` | (3233, 9546) | (3232, 9546) | (3233, 9546) | `{ x: 3233, z: 9546, radius: 3 }` | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 47 ticks via 1 Diamond (used up) |
+| [Zanaris](../../places/zanaris.md) | `tree:zanaris:10` | (3238, 9570) | (3238, 9570) | x 3238-3239, z 9565-9575 | `{ x: 3239, z: 9570, radius: 9 }` | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 51 ticks via 1 Diamond (used up) |
+| [Zanaris](../../places/zanaris.md) | `tree:zanaris:14` | (3257, 9543) | (3257, 9543) | x 3254-3259, z 9541-9544 | `{ x: 3257, z: 9543, radius: 7 }` | 1 | no | no | - | 1 Diamond (used up) + wear Dramen staff | Zanaris bank (Zanaris), 54 ticks via 1 Diamond (used up) |

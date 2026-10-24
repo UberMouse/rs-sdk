@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | 1 | no | no | - | - | Catherby bank (Catherby), 8 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | 2 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | 1 | yes | no | - | - | Varrock West bank (Varrock), 31 ticks |
-| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Catherby (Kandarin)](../../places/catherby.md) | `pickpocket:catherby:1` | (2817, 3443) | (2817, 3443) | x 2816-2817, z 3442-3443 | x 2811-2822, z 3437-3448 | `{ x: 2817, z: 3443, radius: 12 }` | 1 | no | no | - | - | Catherby bank (Catherby), 8 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `pickpocket:seers-village:0` | (2695, 3494) | (2695, 3493) | x 2690-2699, z 3489-3497 | x 2685-2704, z 3484-3502 | `{ x: 2695, z: 3493, radius: 17 }` | 2 | no | no | - | - | Seers' Village bank (Seers' Village), 21 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:9` | (3223, 3400) | (3223, 3400) | x 3223, z 3398-3401 | x 3218-3228, z 3393-3406 | `{ x: 3223, z: 3400, radius: 12 }` | 1 | yes | no | - | - | Varrock West bank (Varrock), 31 ticks |
+| [Varrock (Misthalin)](../../places/varrock.md) | `pickpocket:varrock:17` | (3280, 3500) | (3280, 3500) | x 3278-3283, z 3496-3502 | x 3273-3288, z 3491-3507 | `{ x: 3281, z: 3499, radius: 15 }` | 1 | yes | no | - | - | Varrock East bank (Varrock), 63 ticks |

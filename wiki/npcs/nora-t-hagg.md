@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Taverley (Asgarnia)](../places/taverley.md) | (2904, 3463) | 1 | 26 | (2878, 3437)-(2930, 3489) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Taverley (Asgarnia)](../places/taverley.md) | (2904, 3463) | (2904, 3463) | 1 | 26 | x 2878-2930, z 3437-3489 | 100 ticks | - | `{ x: 2904, z: 3463, radius: 40 }` | no |
 
 ## Drops
 

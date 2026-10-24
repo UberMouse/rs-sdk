@@ -5,6 +5,6 @@ Inside the earth ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:earth-altar:0` | (2657, 4840) | earth 1 | yes | no | - | carry Earth talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:earth-altar:0` | (2657, 4840) | (2657, 4840) | `{ x: 2657, z: 4840, radius: 3 }` | earth 1 | yes | no | - | carry Earth talisman |

@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:observatory:0` | (2436, 3148) | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:observatory:0` | (2436, 3148) | x 2428-2451, z 3139-3161 | `{ x: 2440, z: 3150, radius: 20 }` | [normal](../resources/tree/normal.md) 20, [oak](../resources/tree/oak.md) 4 | no | no | - | - |

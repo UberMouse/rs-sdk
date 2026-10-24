@@ -5,17 +5,17 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:graveyard-of-shadows:0` | (3155, 3661) | [normal](../resources/tree/normal.md) 1 | yes | no | 18 | - |
-| `tree:graveyard-of-shadows:1` | (3155, 3681) | [normal](../resources/tree/normal.md) 1 | yes | no | 21 | - |
-| `tree:graveyard-of-shadows:2` | (3172, 3662) | [normal](../resources/tree/normal.md) 4 | yes | no | 18 | - |
-| `tree:graveyard-of-shadows:3` | (3168, 3676) | [normal](../resources/tree/normal.md) 1 | yes | no | 20 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:graveyard-of-shadows:0` | (3155, 3661) | (3155, 3661) | `{ x: 3155, z: 3661, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 18 | - |
+| `tree:graveyard-of-shadows:1` | (3155, 3681) | (3155, 3681) | `{ x: 3155, z: 3681, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 21 | - |
+| `tree:graveyard-of-shadows:2` | (3172, 3662) | x 3167-3177, z 3661-3663 | `{ x: 3172, z: 3662, radius: 9 }` | [normal](../resources/tree/normal.md) 4 | yes | no | 18 | - |
+| `tree:graveyard-of-shadows:3` | (3168, 3676) | (3168, 3676) | `{ x: 3168, z: 3676, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 20 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:graveyard-of-shadows:0` | (3165, 3667) | Zombie 2 | yes | no | 19 | - |
-| `npc:graveyard-of-shadows:1` | (3171, 3675) | Zombie 1 | yes | no | 20 | - |
-| `npc:graveyard-of-shadows:2` | (3176, 3682) | Zombie 1 | yes | no | 21 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:graveyard-of-shadows:0` | (3165, 3667) | x 3162-3168, z 3665-3668 | x 3153-3177, z 3656-3677 | `{ x: 3165, z: 3667, radius: 20 }` | Zombie 2 | yes | no | 19 | - |
+| `npc:graveyard-of-shadows:1` | (3171, 3675) | (3171, 3675) | x 3162-3180, z 3666-3684 | `{ x: 3171, z: 3675, radius: 16 }` | Zombie 1 | yes | no | 20 | - |
+| `npc:graveyard-of-shadows:2` | (3176, 3682) | (3176, 3682) | x 3167-3185, z 3673-3691 | `{ x: 3176, z: 3682, radius: 16 }` | Zombie 1 | yes | no | 21 | - |

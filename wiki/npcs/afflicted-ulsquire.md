@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Mort'ton (Morytania)](../places/mortton.md) | (3496, 3289) | 1 | 5 | (3491, 3284)-(3501, 3294) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Mort'ton (Morytania)](../places/mortton.md) | (3496, 3289) | (3496, 3289) | 1 | 5 | x 3491-3501, z 3284-3294 | 100 ticks | - | `{ x: 3496, z: 3289, radius: 11 }` | no |
 
 ## Interactions
 

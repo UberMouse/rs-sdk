@@ -5,12 +5,12 @@ Inside the fire ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:fire-altar:0` | (2584, 4837) | fire 1 | yes | no | - | carry Fire talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:fire-altar:0` | (2584, 4837) | (2584, 4837) | `{ x: 2584, z: 4837, radius: 3 }` | fire 1 | yes | no | - | carry Fire talisman |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:fire-altar:0` | (2589, 4835) | [normal](../resources/tree/normal.md) 193 | yes | no | - | carry Fire talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:fire-altar:0` | (2589, 4835) | x 2560-2618, z 4808-4862 | `{ x: 2589, z: 4835, radius: 43 }` | [normal](../resources/tree/normal.md) 193 | yes | no | - | carry Fire talisman |

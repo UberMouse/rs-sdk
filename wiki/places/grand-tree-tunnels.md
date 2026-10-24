@@ -5,28 +5,28 @@ Ladder up into the Grand Tree at (2463, 3497).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:grand-tree-tunnels:0` | (2443, 9907) | [clay](../resources/rock/clay.md) 5, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 4 | no | no | - | The Grand Tree done |
-| `rock:grand-tree-tunnels:1` | (2472, 9905) | [coal](../resources/rock/coal.md) 1 | no | no | - | The Grand Tree done |
-| `rock:grand-tree-tunnels:2` | (2489, 9913) | [adamantite](../resources/rock/adamantite.md) 3, [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 10, [gold](../resources/rock/gold.md) 4, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2 | no | no | - | The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:grand-tree-tunnels:0` | (2443, 9907) | x 2435-2453, z 9898-9915 | `{ x: 2444, z: 9907, radius: 16 }` | [clay](../resources/rock/clay.md) 5, [iron](../resources/rock/iron.md) 7, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 4 | no | no | - | The Grand Tree done |
+| `rock:grand-tree-tunnels:1` | (2472, 9905) | (2472, 9905) | `{ x: 2472, z: 9905, radius: 3 }` | [coal](../resources/rock/coal.md) 1 | no | no | - | The Grand Tree done |
+| `rock:grand-tree-tunnels:2` | (2489, 9913) | x 2482-2494, z 9907-9917 | `{ x: 2488, z: 9912, radius: 11 }` | [adamantite](../resources/rock/adamantite.md) 3, [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 10, [gold](../resources/rock/gold.md) 4, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2 | no | no | - | The Grand Tree done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:grand-tree-tunnels:0` | (2445, 9888) | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `npc:grand-tree-tunnels:1` | (2443, 9862) | Giant bat 1 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `npc:grand-tree-tunnels:2` | (2457, 9860) | Giant bat 2, Rat 2 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `npc:grand-tree-tunnels:3` | (2455, 9878) | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `npc:grand-tree-tunnels:4` | (2467, 9892) | Gnome guard 3, Rat 3 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `npc:grand-tree-tunnels:5` | (2479, 9864) | Giant bat 1, Rat 6 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:grand-tree-tunnels:0` | (2445, 9888) | x 2438-2453, z 9882-9891 | x 2423-2468, z 9867-9906 | `{ x: 2446, z: 9887, radius: 34 }` | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:1` | (2443, 9862) | (2443, 9862) | x 2435-2451, z 9854-9870 | `{ x: 2443, z: 9862, radius: 15 }` | Giant bat 1 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:2` | (2457, 9860) | x 2451-2460, z 9858-9863 | x 2436-2475, z 9843-9878 | `{ x: 2456, z: 9861, radius: 30 }` | Giant bat 2, Rat 2 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:3` | (2455, 9878) | x 2451-2458, z 9872-9883 | x 2436-2473, z 9857-9898 | `{ x: 2455, z: 9878, radius: 32 }` | Rat 5 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:4` | (2467, 9892) | x 2461-2476, z 9887-9899 | x 2446-2491, z 9872-9914 | `{ x: 2469, z: 9893, radius: 35 }` | Gnome guard 3, Rat 3 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `npc:grand-tree-tunnels:5` | (2479, 9864) | x 2467-2489, z 9860-9869 | x 2452-2504, z 9845-9884 | `{ x: 2478, z: 9865, radius: 36 }` | Giant bat 1, Rat 6 | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:grand-tree-tunnels:0` | (2463, 9897) | Ladder 1 | up (2464, 3497) by Climb-up | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
-| `connector:grand-tree-tunnels:1` | (2492, 9864) L1 | Ladder 1 | down (2491, 9864) by Climb or Climb-down; up (2491, 9864) L2 by Climb or Climb-up | no | no | - | unreached |
-| `connector:grand-tree-tunnels:2` | (2492, 9864) L2 | Ladder 1 | down (2491, 9864) L1 by Climb or Climb-down; up (2491, 9864) L3 by Climb or Climb-up | no | no | - | unreached |
-| `connector:grand-tree-tunnels:3` | (2492, 9864) L3 | Ladder 1 | down (2491, 9864) L2 by Climb or Climb-down; up (2491, 9864) L4 by Climb or Climb-up | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:grand-tree-tunnels:0` | (2463, 9897) | (2463, 9897) | `{ x: 2463, z: 9897, radius: 3 }` | Ladder 1 | up (2464, 3497) by Climb-up | no | no | - | The Grand Tree done or The Grand Tree at stage 130 + 25 Agility |
+| `connector:grand-tree-tunnels:1` | (2492, 9864) L1 | (2492, 9864) L1 | `{ x: 2492, z: 9864, radius: 3, level: 1 }` | Ladder 1 | down (2491, 9864) by Climb or Climb-down; up (2491, 9864) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:grand-tree-tunnels:2` | (2492, 9864) L2 | (2492, 9864) L2 | `{ x: 2492, z: 9864, radius: 3, level: 2 }` | Ladder 1 | down (2491, 9864) L1 by Climb or Climb-down; up (2491, 9864) L3 by Climb or Climb-up | no | no | - | unreached |
+| `connector:grand-tree-tunnels:3` | (2492, 9864) L3 | (2492, 9864) L3 | `{ x: 2492, z: 9864, radius: 3, level: 3 }` | Ladder 1 | down (2491, 9864) L2 by Climb or Climb-down; up (2491, 9864) L4 by Climb or Climb-up | no | no | - | unreached |

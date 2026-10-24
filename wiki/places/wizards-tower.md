@@ -5,23 +5,23 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:wizards-tower:0` | (3104, 3150) | [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:wizards-tower:0` | (3104, 3150) | (3104, 3150) | `{ x: 3104, z: 3150, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:wizards-tower:0` | (3110, 3157) L1 | Wizard 2 | yes | yes | - | - |
-| `npc:wizards-tower:1` | (3109, 3158) | Wizard 2 | yes | yes | - | - |
-| `npc:wizards-tower:2` | (3110, 3157) L2 | Lesser demon 1 | yes | yes | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:wizards-tower:0` | (3110, 3157) L1 | x 3107-3112, z 3157 L1 | x 3102-3117, z 3152-3162 L1 | `{ x: 3110, z: 3157, radius: 13, level: 1 }` | Wizard 2 | yes | yes | - | - |
+| `npc:wizards-tower:1` | (3109, 3158) | x 3107-3110, z 3158 | x 3102-3115, z 3153-3163 | `{ x: 3109, z: 3158, radius: 12 }` | Wizard 2 | yes | yes | - | - |
+| `npc:wizards-tower:2` | (3110, 3157) L2 | (3110, 3157) L2 | x 3104-3116, z 3151-3163 L2 | `{ x: 3110, z: 3157, radius: 12, level: 2 }` | Lesser demon 1 | yes | yes | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:wizards-tower:0` | (3103, 3159) | Staircase 1 | up (3105, 3160) L1 by Climb-up | yes | yes | - | - |
-| `connector:wizards-tower:1` | (3103, 3159) L1 | Staircase 1 | down (3105, 3160) by Climb or Climb-down; up (3104, 3161) L2 by Climb or Climb-up | yes | yes | - | - |
-| `connector:wizards-tower:2` | (3104, 3160) L2 | Staircase 1 | down (3105, 3160) L1 by Climb-down | yes | yes | - | - |
-| `connector:wizards-tower:3` | (3104, 3162) | Ladder 1 | down (3104, 9576) by Climb-down | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:wizards-tower:0` | (3103, 3159) | (3103, 3159) | `{ x: 3103, z: 3159, radius: 3 }` | Staircase 1 | up (3105, 3160) L1 by Climb-up | yes | yes | - | - |
+| `connector:wizards-tower:1` | (3103, 3159) L1 | (3103, 3159) L1 | `{ x: 3103, z: 3159, radius: 3, level: 1 }` | Staircase 1 | down (3105, 3160) by Climb or Climb-down; up (3104, 3161) L2 by Climb or Climb-up | yes | yes | - | - |
+| `connector:wizards-tower:2` | (3104, 3160) L2 | (3104, 3160) L2 | `{ x: 3104, z: 3160, radius: 3, level: 2 }` | Staircase 1 | down (3105, 3160) L1 by Climb-down | yes | yes | - | - |
+| `connector:wizards-tower:3` | (3104, 3162) | (3104, 3162) | `{ x: 3104, z: 3162, radius: 3 }` | Ladder 1 | down (3104, 9576) by Climb-down | yes | yes | - | - |

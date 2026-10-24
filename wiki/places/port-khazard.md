@@ -5,55 +5,55 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:port-khazard:0` | (2641, 3171) | Khazard General Store (khazardshop) 1 | no | no | - | - |
-| `shop:port-khazard:1` | (2655, 3152) | Khazard General Store (khazardshop) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:port-khazard:0` | (2641, 3171) | (2641, 3171) | x 2636-2646, z 3166-3176 | `{ x: 2641, z: 3171, radius: 11 }` | Khazard General Store (khazardshop) 1 | no | no | - | - |
+| `shop:port-khazard:1` | (2655, 3152) | (2655, 3152) | x 2650-2660, z 3147-3157 | `{ x: 2655, z: 3152, radius: 11 }` | Khazard General Store (khazardshop) 1 | no | no | - | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:port-khazard:0` | (2651, 3165) | Anvil 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:port-khazard:0` | (2651, 3165) | x 2650-2652, z 3164-3166 | `{ x: 2651, z: 3165, radius: 5 }` | Anvil 3 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:port-khazard:0` | (2632, 3163) | Range 1 | no | no | - | - |
-| `range:port-khazard:1` | (2636, 3170) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:port-khazard:0` | (2632, 3163) | (2632, 3163) | `{ x: 2632, z: 3163, radius: 3 }` | Range 1 | no | no | - | - |
+| `range:port-khazard:1` | (2636, 3170) | (2636, 3170) | `{ x: 2636, z: 3170, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:port-khazard:0` | (2633, 3176) | Cooking pot 1 | no | no | - | - |
-| `fire:port-khazard:1` | (2662, 3155) | Fire 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:port-khazard:0` | (2633, 3176) | (2633, 3176) | `{ x: 2633, z: 3176, radius: 3 }` | Cooking pot 1 | no | no | - | - |
+| `fire:port-khazard:1` | (2662, 3155) | (2662, 3155) | `{ x: 2662, z: 3155, radius: 3 }` | Fire 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:port-khazard:0` | (2638, 3206) | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
-| `tree:port-khazard:1` | (2647, 3159) | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:port-khazard:0` | (2638, 3206) | x 2635-2640, z 3201-3209 | `{ x: 2638, z: 3205, radius: 8 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | - |
+| `tree:port-khazard:1` | (2647, 3159) | x 2645-2649, z 3155-3162 | `{ x: 2647, z: 3159, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:port-khazard:0` | (2654, 3169) | [mithril](../resources/rock/mithril.md) 1, [tin](../resources/rock/tin.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:port-khazard:0` | (2654, 3169) | x 2652-2656, z 3168-3170 | `{ x: 2654, z: 3169, radius: 6 }` | [mithril](../resources/rock/mithril.md) 1, [tin](../resources/rock/tin.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:port-khazard:0` | (2639, 3206) | Imp 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:port-khazard:0` | (2639, 3206) | (2639, 3206) | x 2614-2664, z 3181-3231 | `{ x: 2639, z: 3206, radius: 39 }` | Imp 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:port-khazard:0` | (2650, 3165) | Ladder 1 | up (2651, 3165) L1 by Climb-up | no | no | - | - |
-| `connector:port-khazard:1` | (2650, 3165) L1 | Ladder 1 | down (2651, 3165) by Climb-down | no | no | - | - |
-| `connector:port-khazard:2` | (2657, 3151) | Ladder 1 | up (2658, 3151) L1 by Climb-up | no | no | - | - |
-| `connector:port-khazard:3` | (2657, 3151) L1 | Ladder 1 | down (2658, 3151) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:port-khazard:0` | (2650, 3165) | (2650, 3165) | `{ x: 2650, z: 3165, radius: 3 }` | Ladder 1 | up (2651, 3165) L1 by Climb-up | no | no | - | - |
+| `connector:port-khazard:1` | (2650, 3165) L1 | (2650, 3165) L1 | `{ x: 2650, z: 3165, radius: 3, level: 1 }` | Ladder 1 | down (2651, 3165) by Climb-down | no | no | - | - |
+| `connector:port-khazard:2` | (2657, 3151) | (2657, 3151) | `{ x: 2657, z: 3151, radius: 3 }` | Ladder 1 | up (2658, 3151) L1 by Climb-up | no | no | - | - |
+| `connector:port-khazard:3` | (2657, 3151) L1 | (2657, 3151) L1 | `{ x: 2657, z: 3151, radius: 3, level: 1 }` | Ladder 1 | down (2658, 3151) by Climb-down | no | no | - | - |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3366) L2 | 1 | 1 | (3109, 3365)-(3111, 3367) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | (3110, 3366) L2 | (3110, 3366) L2 | 1 | 1 | x 3109-3111, z 3365-3367 L2 | 100 ticks | - | `{ x: 3110, z: 3366, radius: 5, level: 2 }` | yes |
 
 ## Drops
 

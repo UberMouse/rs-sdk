@@ -5,55 +5,55 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:fishing-guild:0` | (2596, 3400) | Fishing Guild Shop. (fishingguild) 1 | no | no | - | 68 Fishing |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:fishing-guild:0` | (2596, 3400) | (2596, 3400) | x 2591-2601, z 3395-3405 | `{ x: 2596, z: 3400, radius: 11 }` | Fishing Guild Shop. (fishingguild) 1 | no | no | - | 68 Fishing |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:fishing-guild:0` | (2616, 3396) | Range 1 | no | no | - | 68 Fishing |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:fishing-guild:0` | (2616, 3396) | (2616, 3396) | `{ x: 2616, z: 3396, radius: 3 }` | Range 1 | no | no | - | 68 Fishing |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:fishing-guild:0` | (2583, 3401) | [normal](../resources/tree/normal.md) 11 | no | no | - | - |
-| `tree:fishing-guild:1` | (2579, 3426) | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
-| `tree:fishing-guild:2` | (2618, 3399) | [normal](../resources/tree/normal.md) 2 | no | no | - | 68 Fishing |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:fishing-guild:0` | (2583, 3401) | x 2578-2589, z 3393-3412 | `{ x: 2584, z: 3403, radius: 15 }` | [normal](../resources/tree/normal.md) 11 | no | no | - | - |
+| `tree:fishing-guild:1` | (2579, 3426) | x 2578-2580, z 3422-3429 | `{ x: 2579, z: 3426, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | - |
+| `tree:fishing-guild:2` | (2618, 3399) | x 2616-2619, z 3398-3399 | `{ x: 2618, z: 3399, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | 68 Fishing |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:fishing-guild:0` | (2605, 3418) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 6, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 11 | no | no | - | 68 Fishing |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:fishing-guild:0` | (2605, 3418) | x 2599-2612, z 3410-3426 | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement), [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 6, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 11 | no | no | - | 68 Fishing |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:fishing-guild:0` | (2603, 3421) | [Man](../resources/pickpocket/man.md) 1 | no | no | - | 68 Fishing |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:fishing-guild:0` | (2603, 3421) | (2603, 3421) | x 2598-2608, z 3416-3426 | `{ x: 2603, z: 3421, radius: 11 }` | [Man](../resources/pickpocket/man.md) 1 | no | no | - | 68 Fishing |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:fishing-guild:0` | (2580, 3398) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:fishing-guild:1` | (2582, 3413) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:fishing-guild:2` | (2585, 3427) | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:fishing-guild:3` | (2592, 3416) | Rat 1 | no | no | - | 68 Fishing |
-| `npc:fishing-guild:4` | (2604, 3430) | Duck (duck_female) 1 | no | no | - | no stand |
-| `npc:fishing-guild:5` | (2616, 3423) | Duck (duck) 4, Duck (duck_female) 7 | no | no | - | no stand |
-| `npc:fishing-guild:6` | (2619, 3407) | Duck (duck) 4, Duck (duck_female) 4 | no | no | - | 68 Fishing |
-| `npc:fishing-guild:7` | (2620, 3394) | Goblin (goblin) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:fishing-guild:0` | (2580, 3398) | x 2578-2581, z 3395-3400 | x 2563-2596, z 3380-3415 | `{ x: 2580, z: 3398, radius: 28 }` | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:1` | (2582, 3413) | x 2579-2584, z 3412-3413 | x 2564-2599, z 3397-3428 | `{ x: 2582, z: 3413, radius: 28 }` | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:2` | (2585, 3427) | x 2584-2586, z 3425-3428 | x 2569-2601, z 3410-3443 | `{ x: 2585, z: 3427, radius: 27 }` | Goblin (goblin) 1, Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:fishing-guild:3` | (2592, 3416) | (2592, 3416) | x 2577-2607, z 3401-3431 | `{ x: 2592, z: 3416, radius: 25 }` | Rat 1 | no | no | - | 68 Fishing |
+| `npc:fishing-guild:4` | (2604, 3430) | (2604, 3430) | x 2569-2639, z 3395-3465 | `{ x: 2604, z: 3430, radius: 53 }` | Duck (duck_female) 1 | no | no | - | no stand |
+| `npc:fishing-guild:5` | (2616, 3423) | x 2613-2619, z 3420-3425 | x 2578-2654, z 3385-3460 | `{ x: 2616, z: 3423, radius: 57 }` | Duck (duck) 4, Duck (duck_female) 7 | no | no | - | no stand |
+| `npc:fishing-guild:6` | (2619, 3407) | x 2617-2620, z 3403-3410 | x 2582-2655, z 3368-3445 | `{ x: 2619, z: 3407, radius: 57 }` | Duck (duck) 4, Duck (duck_female) 4 | no | no | - | 68 Fishing |
+| `npc:fishing-guild:7` | (2620, 3394) | (2620, 3394) | x 2605-2635, z 3379-3409 | `{ x: 2620, z: 3394, radius: 25 }` | Goblin (goblin) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:fishing-guild:0` | (2615, 3394) | Ladder 1 | up (2614, 3394) L1 by Climb-up | no | no | - | 68 Fishing |
-| `connector:fishing-guild:1` | (2615, 3394) L1 | Ladder 1 | down (2614, 3394) by Climb-down | no | no | - | 68 Fishing |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:fishing-guild:0` | (2615, 3394) | (2615, 3394) | `{ x: 2615, z: 3394, radius: 3 }` | Ladder 1 | up (2614, 3394) L1 by Climb-up | no | no | - | 68 Fishing |
+| `connector:fishing-guild:1` | (2615, 3394) L1 | (2615, 3394) L1 | `{ x: 2615, z: 3394, radius: 3, level: 1 }` | Ladder 1 | down (2614, 3394) by Climb-down | no | no | - | 68 Fishing |
 
 ## Areas within
 

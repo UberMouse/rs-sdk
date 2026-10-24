@@ -5,13 +5,13 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:bedabin-camp:0` | (3169, 3037) | Bedabin Village Bartering (bedabincampshop) 8 | no | no | - | 1 Shantay pass (used up) |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:bedabin-camp:0` | (3169, 3037) | x 3159-3176, z 3030-3043 | x 3156-3179, z 3027-3046 | `{ x: 3168, z: 3037, radius: 19 }` | Bedabin Village Bartering (bedabincampshop) 8 | no | no | - | 1 Shantay pass (used up) |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:bedabin-camp:0` | (3162, 3032) | Bedabin Nomad Fighter 3 | no | no | - | 1 Shantay pass (used up) |
-| `npc:bedabin-camp:1` | (3178, 3032) | Bedabin Nomad Fighter 3 | no | no | - | 1 Shantay pass (used up) |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:bedabin-camp:0` | (3162, 3032) | x 3160-3164, z 3031-3033 | x 3140-3184, z 3011-3053 | `{ x: 3162, z: 3032, radius: 34 }` | Bedabin Nomad Fighter 3 | no | no | - | 1 Shantay pass (used up) |
+| `npc:bedabin-camp:1` | (3178, 3032) | x 3177-3180, z 3030-3033 | x 3157-3200, z 3010-3053 | `{ x: 3179, z: 3032, radius: 35 }` | Bedabin Nomad Fighter 3 | no | no | - | 1 Shantay pass (used up) |

@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:bone-yard:0` | (3243, 3743) | Skeleton 2 | yes | yes | 29 | - |
-| `npc:bone-yard:1` | (3252, 3737) | Skeleton 1 | yes | yes | 28 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:bone-yard:0` | (3243, 3743) | x 3240-3246, z 3741-3745 | x 3231-3255, z 3732-3754 | `{ x: 3243, z: 3743, radius: 20 }` | Skeleton 2 | yes | yes | 29 | - |
+| `npc:bone-yard:1` | (3252, 3737) | (3252, 3737) | x 3243-3261, z 3728-3746 | `{ x: 3252, z: 3737, radius: 16 }` | Skeleton 1 | yes | yes | 28 | - |

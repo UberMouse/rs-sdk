@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | (2534, 4714) | 1 | 5 | (2529, 4709)-(2539, 4719) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Mage Arena bank (Mage Arena chamber)](../places/mage-arena-bank.md) | (2534, 4714) | (2534, 4714) | 1 | 5 | x 2529-2539, z 4709-4719 | 100 ticks | - | `{ x: 2534, z: 4714, radius: 11 }` | no |
 
 ## Interactions
 

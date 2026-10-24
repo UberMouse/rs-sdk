@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Karamja](../places/karamja.md) | (2883, 2951) | 1 | 3 | (2880, 2948)-(2886, 2954) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Karamja](../places/karamja.md) | (2883, 2951) | (2883, 2951) | 1 | 3 | x 2880-2886, z 2948-2954 | 100 ticks | - | `{ x: 2883, z: 2951, radius: 8 }` | no |
 
 ## Interactions
 

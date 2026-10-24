@@ -24,56 +24,56 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3011, 3236) | 1 | 5 | (3006, 3231)-(3022, 3243) | 50 ticks | - | yes |
-| [Canifis (Morytania)](../places/canifis.md) | (3484, 3492) | 2 | 5 | (3474, 3484)-(3494, 3503) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Canifis (Morytania)](../places/canifis.md) | (3497, 3474) | 1 | 5 | (3485, 3468)-(3502, 3481) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Canifis (Morytania)](../places/canifis.md) | (3505, 3491) | 1 | 5 | (3492, 3482)-(3510, 3502) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Canifis (Morytania)](../places/canifis.md) | (3479, 3498) L1 | 1 | 5 | (3474, 3493)-(3484, 3503) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Canifis (Morytania)](../places/canifis.md) | (3490, 3472) L1 | 1 | 5 | (3485, 3467)-(3495, 3477) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Canifis (Morytania)](../places/canifis.md) | (3499, 3474) L1 | 1 | 5 | (3493, 3467)-(3504, 3479) | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | no |
-| [Catherby (Kandarin)](../places/catherby.md) | (2817, 3443) | 1 | 5 | (2811, 3437)-(2822, 3448) | 50 ticks | - | no |
-| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3097, 3269) L1 | 1 | 5 | (3092, 3264)-(3102, 3274) | 50 ticks | - | yes |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2612, 3316) | 1 | 5 | (2607, 3311)-(2619, 3323) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3322) L1 | 1 | 5 | (2568, 3317)-(2578, 3327) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2621, 3293) L1 | 1 | 5 | (2616, 3288)-(2626, 3298) | 50 ticks | - | no |
-| [Falador (Asgarnia)](../places/falador.md) | (2970, 3389) | 1 | 5 | (2957, 3368)-(2975, 3394) | 50 ticks | - | yes |
-| [Kandarin](../places/kandarin.md) | (2463, 3317) | 1 | 5 | (2458, 3312)-(2468, 3322) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2468, 3290) | 1 | 5 | (2463, 3285)-(2473, 3295) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2475, 3325) | 1 | 5 | (2470, 3320)-(2480, 3330) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2479, 3303) | 9 | 5 | (2449, 3276)-(2497, 3331) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2479, 3311) | 1 | 5 | (2474, 3306)-(2484, 3316) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2482, 3286) | 1 | 5 | (2477, 3281)-(2487, 3291) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2482, 3296) | 1 | 5 | (2477, 3291)-(2487, 3301) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2485, 3315) | 1 | 5 | (2480, 3310)-(2490, 3320) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2489, 3295) | 1 | 5 | (2484, 3290)-(2494, 3300) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2519, 3277) | 1 | 5 | (2514, 3272)-(2524, 3282) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2523, 3276) | 1 | 5 | (2518, 3271)-(2528, 3281) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2524, 3269) | 3 | 5 | (2514, 3262)-(2533, 3276) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2543, 3278) | 2 | 5 | (2535, 3272)-(2551, 3284) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2548, 3309) | 1 | 5 | (2543, 3304)-(2553, 3314) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2553, 3275) | 1 | 5 | (2548, 3270)-(2558, 3280) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2554, 3307) | 1 | 5 | (2549, 3302)-(2559, 3312) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2554, 3314) | 1 | 5 | (2545, 3309)-(2560, 3337) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2647, 3357) | 1 | 5 | (2640, 3346)-(2657, 3372) | 50 ticks | - | no |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3205) | 1 | 5 | (3212, 3200)-(3222, 3210) | 50 ticks | - | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3231, 3240) | 1 | 5 | (3212, 3231)-(3236, 3245) | 50 ticks | - | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3235, 3206) | 1 | 5 | (3226, 3201)-(3240, 3212) | 50 ticks | - | yes |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3211) | 1 | 5 | (3239, 3206)-(3249, 3216) | 50 ticks | - | yes |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | (2967, 3213) L1 | 1 | 5 | (2962, 3205)-(2972, 3218) | 50 ticks | - | yes |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | (2695, 3495) | 5 | 5 | (2685, 3484)-(2704, 3502) | 50 ticks | - | no |
-| [Underground Pass entrance (Kandarin)](../places/underground-pass-entrance.md) | (2453, 3307) | 1 | 5 | (2448, 3302)-(2458, 3312) | 100 ticks | - | no |
-| [Varrock (Misthalin)](../places/varrock.md) | (3223, 3401) | 1 | 5 | (3218, 3393)-(3228, 3406) | 50 ticks | - | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3279, 3499) | 2 | 5 | (3273, 3491)-(3288, 3507) | 50 ticks | - | yes |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3320) | 4 | 5 | (2495, 3309)-(2526, 3336) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3315) | 1 | 5 | (2508, 3310)-(2518, 3320) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2525, 3309) | 1 | 5 | (2520, 3304)-(2530, 3314) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2526, 3304) | 2 | 5 | (2519, 3298)-(2533, 3310) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2527, 3307) | 3 | 5 | (2513, 3287)-(2537, 3314) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2537, 3324) | 1 | 5 | (2532, 3319)-(2542, 3329) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2542, 3304) | 1 | 5 | (2537, 3299)-(2547, 3309) | 100 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2566, 3084) | 1 | 5 | (2561, 3076)-(2573, 3089) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3011, 3236) | x 3011-3017, z 3236-3238 | 1 | 5 | x 3006-3022, z 3231-3243 | 50 ticks | - | `{ x: 3014, z: 3237, radius: 13 }` | yes |
+| [Canifis (Morytania)](../places/canifis.md) | (3484, 3492) | x 3479-3489, z 3489-3498 | 2 | 5 | x 3474-3494, z 3484-3503 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3484, z: 3494, radius: 18 }` | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3497, 3474) | x 3490-3497, z 3473-3476 | 1 | 5 | x 3485-3502, z 3468-3481 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3494, z: 3475, radius: 15 }` | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3505, 3491) | x 3497-3505, z 3487-3497 | 1 | 5 | x 3492-3510, z 3482-3502 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3501, z: 3492, radius: 17 }` | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3479, 3498) L1 | (3479, 3498) L1 | 1 | 5 | x 3474-3484, z 3493-3503 L1 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3479, z: 3498, radius: 11, level: 1 }` | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3490, 3472) L1 | (3490, 3472) L1 | 1 | 5 | x 3485-3495, z 3467-3477 L1 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3490, z: 3472, radius: 11, level: 1 }` | no |
+| [Canifis (Morytania)](../places/canifis.md) | (3499, 3474) L1 | x 3498-3499, z 3472-3474 L1 | 1 | 5 | x 3493-3504, z 3467-3479 L1 | 50 ticks | changes-type (areas/area_canifis/scripts/canafis_citizen.rs2:22) | `{ x: 3499, z: 3473, radius: 12, level: 1 }` | no |
+| [Catherby (Kandarin)](../places/catherby.md) | (2817, 3443) | x 2816-2817, z 3442-3443 | 1 | 5 | x 2811-2822, z 3437-3448 | 50 ticks | - | `{ x: 2817, z: 3443, radius: 12 }` | no |
+| [Draynor Village (Misthalin)](../places/draynor-village.md) | (3097, 3269) L1 | (3097, 3269) L1 | 1 | 5 | x 3092-3102, z 3264-3274 L1 | 50 ticks | - | `{ x: 3097, z: 3269, radius: 11, level: 1 }` | yes |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2612, 3316) | x 2612-2614, z 3316-3318 | 1 | 5 | x 2607-2619, z 3311-3323 | 50 ticks | - | `{ x: 2613, z: 3317, radius: 12 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3322) L1 | (2573, 3322) L1 | 1 | 5 | x 2568-2578, z 3317-3327 L1 | 50 ticks | - | `{ x: 2573, z: 3322, radius: 11, level: 1 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2621, 3293) L1 | (2621, 3293) L1 | 1 | 5 | x 2616-2626, z 3288-3298 L1 | 50 ticks | - | `{ x: 2621, z: 3293, radius: 11, level: 1 }` | no |
+| [Falador (Asgarnia)](../places/falador.md) | (2970, 3389) | x 2962-2970, z 3373-3389 | 1 | 5 | x 2957-2975, z 3368-3394 | 50 ticks | - | `{ x: 2966, z: 3381, radius: 19 }` | yes |
+| [Kandarin](../places/kandarin.md) | (2463, 3317) | (2463, 3317) | 1 | 5 | x 2458-2468, z 3312-3322 | 100 ticks | - | `{ x: 2463, z: 3317, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2468, 3290) | (2468, 3290) | 1 | 5 | x 2463-2473, z 3285-3295 | 100 ticks | - | `{ x: 2468, z: 3290, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2475, 3325) | (2475, 3325) | 1 | 5 | x 2470-2480, z 3320-3330 | 100 ticks | - | `{ x: 2475, z: 3325, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2479, 3303) | x 2454-2492, z 3281-3326 | 9 | 5 | x 2449-2497, z 3276-3331 | 100 ticks | - | `{ x: 2473, z: 3304, radius: 40 }` | no |
+| [Kandarin](../places/kandarin.md) | (2479, 3311) | (2479, 3311) | 1 | 5 | x 2474-2484, z 3306-3316 | 100 ticks | - | `{ x: 2479, z: 3311, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2482, 3286) | (2482, 3286) | 1 | 5 | x 2477-2487, z 3281-3291 | 100 ticks | - | `{ x: 2482, z: 3286, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2482, 3296) | (2482, 3296) | 1 | 5 | x 2477-2487, z 3291-3301 | 100 ticks | - | `{ x: 2482, z: 3296, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2485, 3315) | (2485, 3315) | 1 | 5 | x 2480-2490, z 3310-3320 | 100 ticks | - | `{ x: 2485, z: 3315, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2489, 3295) | (2489, 3295) | 1 | 5 | x 2484-2494, z 3290-3300 | 100 ticks | - | `{ x: 2489, z: 3295, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2519, 3277) | (2519, 3277) | 1 | 5 | x 2514-2524, z 3272-3282 | 100 ticks | - | `{ x: 2519, z: 3277, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2523, 3276) | (2523, 3276) | 1 | 5 | x 2518-2528, z 3271-3281 | 100 ticks | - | `{ x: 2523, z: 3276, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2524, 3269) | x 2519-2528, z 3267-3271 | 3 | 5 | x 2514-2533, z 3262-3276 | 100 ticks | - | `{ x: 2524, z: 3269, radius: 16 }` | no |
+| [Kandarin](../places/kandarin.md) | (2543, 3278) | x 2540-2546, z 3277-3279 | 2 | 5 | x 2535-2551, z 3272-3284 | 100 ticks | - | `{ x: 2543, z: 3278, radius: 13 }` | no |
+| [Kandarin](../places/kandarin.md) | (2548, 3309) | (2548, 3309) | 1 | 5 | x 2543-2553, z 3304-3314 | 100 ticks | - | `{ x: 2548, z: 3309, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2553, 3275) | (2553, 3275) | 1 | 5 | x 2548-2558, z 3270-3280 | 100 ticks | - | `{ x: 2553, z: 3275, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3307) | (2554, 3307) | 1 | 5 | x 2549-2559, z 3302-3312 | 100 ticks | - | `{ x: 2554, z: 3307, radius: 11 }` | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3314) | x 2550-2555, z 3314-3332 | 1 | 5 | x 2545-2560, z 3309-3337 | 100 ticks | - | `{ x: 2553, z: 3323, radius: 20 }` | no |
+| [Kandarin](../places/kandarin.md) | (2647, 3357) | x 2645-2652, z 3351-3367 | 1 | 5 | x 2640-2657, z 3346-3372 | 50 ticks | - | `{ x: 2649, z: 3359, radius: 19 }` | no |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3217, 3205) | (3217, 3205) | 1 | 5 | x 3212-3222, z 3200-3210 | 50 ticks | - | `{ x: 3217, z: 3205, radius: 11 }` | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3231, 3240) | x 3217-3231, z 3236-3240 | 1 | 5 | x 3212-3236, z 3231-3245 | 50 ticks | - | `{ x: 3224, z: 3238, radius: 17 }` | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3235, 3206) | x 3231-3235, z 3206-3207 | 1 | 5 | x 3226-3240, z 3201-3212 | 50 ticks | - | `{ x: 3233, z: 3207, radius: 13 }` | yes |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3211) | (3244, 3211) | 1 | 5 | x 3239-3249, z 3206-3216 | 50 ticks | - | `{ x: 3244, z: 3211, radius: 11 }` | yes |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | (2967, 3213) L1 | x 2967, z 3210-3213 L1 | 1 | 5 | x 2962-2972, z 3205-3218 L1 | 50 ticks | - | `{ x: 2967, z: 3212, radius: 12, level: 1 }` | yes |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | (2695, 3495) | x 2690-2699, z 3489-3497 | 5 | 5 | x 2685-2704, z 3484-3502 | 50 ticks | - | `{ x: 2695, z: 3493, radius: 17 }` | no |
+| [Underground Pass entrance (Kandarin)](../places/underground-pass-entrance.md) | (2453, 3307) | (2453, 3307) | 1 | 5 | x 2448-2458, z 3302-3312 | 100 ticks | - | `{ x: 2453, z: 3307, radius: 11 }` | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3223, 3401) | x 3223, z 3398-3401 | 1 | 5 | x 3218-3228, z 3393-3406 | 50 ticks | - | `{ x: 3223, z: 3400, radius: 12 }` | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3279, 3499) | x 3278-3283, z 3496-3502 | 2 | 5 | x 3273-3288, z 3491-3507 | 50 ticks | - | `{ x: 3281, z: 3499, radius: 15 }` | yes |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2509, 3320) | x 2500-2521, z 3314-3331 | 4 | 5 | x 2495-2526, z 3309-3336 | 100 ticks | - | `{ x: 2511, z: 3323, radius: 25 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2513, 3315) | (2513, 3315) | 1 | 5 | x 2508-2518, z 3310-3320 | 100 ticks | - | `{ x: 2513, z: 3315, radius: 11 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2525, 3309) | (2525, 3309) | 1 | 5 | x 2520-2530, z 3304-3314 | 100 ticks | - | `{ x: 2525, z: 3309, radius: 11 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2526, 3304) | x 2524-2528, z 3303-3305 | 2 | 5 | x 2519-2533, z 3298-3310 | 100 ticks | - | `{ x: 2526, z: 3304, radius: 13 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2527, 3307) | x 2518-2532, z 3292-3309 | 3 | 5 | x 2513-2537, z 3287-3314 | 100 ticks | - | `{ x: 2525, z: 3301, radius: 22 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2537, 3324) | (2537, 3324) | 1 | 5 | x 2532-2542, z 3319-3329 | 100 ticks | - | `{ x: 2537, z: 3324, radius: 11 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2542, 3304) | (2542, 3304) | 1 | 5 | x 2537-2547, z 3299-3309 | 100 ticks | - | `{ x: 2542, z: 3304, radius: 11 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2566, 3084) | x 2566-2568, z 3081-3084 | 1 | 5 | x 2561-2573, z 3076-3089 | 50 ticks | - | `{ x: 2567, z: 3083, radius: 13 }` | no |
 
 ## Drops
 

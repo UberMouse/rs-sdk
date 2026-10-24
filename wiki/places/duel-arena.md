@@ -5,15 +5,15 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:duel-arena:0` | (3381, 3267) | Shop of Distaste (duel_rottenfruitshop) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `shop:duel-arena:0` | (3381, 3267) | (3381, 3267) | `{ x: 3381, z: 3267, radius: 3 }` | Shop of Distaste (duel_rottenfruitshop) 1 | no | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:duel-arena:0` | (3376, 3285) | Altar 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:duel-arena:0` | (3376, 3285) | (3376, 3285) | `{ x: 3376, z: 3285, radius: 3 }` | Altar 1 | no | no | - | - |
 
 ## Areas within
 

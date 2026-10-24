@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2611, 3393) | 1 | 3 | (2608, 3390)-(2614, 3396) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | (2611, 3393) | (2611, 3393) | 1 | 3 | x 2608-2614, z 3390-3396 | 100 ticks | - | `{ x: 2611, z: 3393, radius: 8 }` | no |
 
 ## Interactions
 

@@ -19,6 +19,6 @@ Base XP is the script's stat_advance tenths over 10; the server multiplies it by
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Barbarian Outpost agility course (Kandarin)](../../places/barbarian-agility-course.md) | `agility-course:barbarian-agility-course:0` | (2545, 3549) | (2550, 3554) | 5 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility | Ardougne North bank (East Ardougne), 140 ticks via Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Barbarian Outpost agility course (Kandarin)](../../places/barbarian-agility-course.md) | `agility-course:barbarian-agility-course:0` | (2545, 3549) | (2550, 3554) | x 2535-2551, z 3545-3553 every level | `{ x: 2543, z: 3549, radius: 12 }` | 5 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility | Ardougne North bank (East Ardougne), 140 ticks via Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |

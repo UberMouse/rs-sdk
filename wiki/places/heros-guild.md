@@ -5,28 +5,28 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:heros-guild:0` | (2894, 3510) L1 | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | no | - | Hero's Quest done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:heros-guild:0` | (2894, 3510) L1 | (2894, 3510) L1 | x 2889-2899, z 3505-3515 L1 | `{ x: 2894, z: 3510, radius: 11, level: 1 }` | Happy Heroes' Hemporium. (dragonaxeshop) 1 | no | no | - | Hero's Quest done |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:heros-guild:0` | (2889, 3510) L1 | Altar 1 | no | no | - | Hero's Quest done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:heros-guild:0` | (2889, 3510) L1 | (2889, 3510) L1 | `{ x: 2889, z: 3510, radius: 3, level: 1 }` | Altar 1 | no | no | - | Hero's Quest done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:heros-guild:0` | (2891, 3501) | [normal](../resources/tree/normal.md) 16 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:heros-guild:0` | (2891, 3501) | x 2882-2904, z 3489-3512 | `{ x: 2893, z: 3501, radius: 20 }` | [normal](../resources/tree/normal.md) 16 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:heros-guild:0` | (2890, 3508) L1 | Ladder 1 | up (2889, 3508) L2 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:heros-guild:1` | (2890, 3508) L2 | Ladder 1 | down (2889, 3508) L1 by Climb-down | no | no | - | Hero's Quest done |
-| `connector:heros-guild:2` | (2892, 3507) | Ladder 1 | down (2893, 9907) by Climb-down | no | no | - | Hero's Quest done |
-| `connector:heros-guild:3` | (2895, 3505) L1 | Ladder 1 | up (2894, 3505) L2 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:heros-guild:4` | (2895, 3505) L2 | Ladder 1 | down (2894, 3505) L1 by Climb-down | no | no | - | Hero's Quest done |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:heros-guild:0` | (2890, 3508) L1 | (2890, 3508) L1 | `{ x: 2890, z: 3508, radius: 3, level: 1 }` | Ladder 1 | up (2889, 3508) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heros-guild:1` | (2890, 3508) L2 | (2890, 3508) L2 | `{ x: 2890, z: 3508, radius: 3, level: 2 }` | Ladder 1 | down (2889, 3508) L1 by Climb-down | no | no | - | Hero's Quest done |
+| `connector:heros-guild:2` | (2892, 3507) | (2892, 3507) | `{ x: 2892, z: 3507, radius: 3 }` | Ladder 1 | down (2893, 9907) by Climb-down | no | no | - | Hero's Quest done |
+| `connector:heros-guild:3` | (2895, 3505) L1 | (2895, 3505) L1 | `{ x: 2895, z: 3505, radius: 3, level: 1 }` | Ladder 1 | up (2894, 3505) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heros-guild:4` | (2895, 3505) L2 | (2895, 3505) L2 | `{ x: 2895, z: 3505, radius: 3, level: 2 }` | Ladder 1 | down (2894, 3505) L1 by Climb-down | no | no | - | Hero's Quest done |

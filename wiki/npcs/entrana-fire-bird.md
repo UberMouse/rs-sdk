@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Entrana](../places/entrana.md) | (2847, 3386) | 1 | 15 | (2832, 3371)-(2862, 3401) | 70 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Entrana](../places/entrana.md) | (2847, 3386) | (2847, 3386) | 1 | 15 | x 2832-2862, z 3371-3401 | 70 ticks | - | `{ x: 2847, z: 3386, radius: 25 }` | no |
 
 ## Drops
 

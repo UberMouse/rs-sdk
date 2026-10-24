@@ -5,132 +5,132 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:rellekka:0` | (2625, 3675) | Yrsa's Accountrements (viking_clothes_shop) 1 | no | no | - | - |
-| `shop:rellekka:1` | (2642, 3677) | Fremennik Fish Monger (viking_fishmonger) 1, Fremennik Fur Trader (viking_furshop) 1, Sigmund the Merchant (viking_general_store) 1 | no | no | - | - |
-| `shop:rellekka:2` | (2662, 3673) | Rellekka Longhall Bar (viking_bar) 1 | no | no | - | - |
-| `shop:rellekka:3` | (2663, 3694) | Skulgrimen's Battle Gear (viking_weapons_shop) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:rellekka:0` | (2625, 3675) | (2625, 3675) | x 2621-2629, z 3671-3679 | `{ x: 2625, z: 3675, radius: 9 }` | Yrsa's Accountrements (viking_clothes_shop) 1 | no | no | - | - |
+| `shop:rellekka:1` | (2642, 3677) | x 2640-2646, z 3675-3680 | x 2637-2649, z 3672-3683 | `{ x: 2643, z: 3678, radius: 12 }` | Fremennik Fish Monger (viking_fishmonger) 1, Fremennik Fur Trader (viking_furshop) 1, Sigmund the Merchant (viking_general_store) 1 | no | no | - | - |
+| `shop:rellekka:2` | (2662, 3673) | (2662, 3673) | x 2661-2663, z 3672-3674 | `{ x: 2662, z: 3673, radius: 5 }` | Rellekka Longhall Bar (viking_bar) 1 | no | no | - | - |
+| `shop:rellekka:3` | (2663, 3694) | (2663, 3694) | x 2661-2665, z 3692-3696 | `{ x: 2663, z: 3694, radius: 6 }` | Skulgrimen's Battle Gear (viking_weapons_shop) 1 | no | no | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:rellekka:0` | (2617, 3666) | Furnace 2 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:rellekka:0` | (2617, 3666) | x 2616-2617, z 3665-3666 | `{ x: 2617, z: 3666, radius: 5 }` | Furnace 2 | no | no | - | The Fremennik Trials done |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:rellekka:0` | (2620, 3663) | Anvil 3 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:rellekka:0` | (2620, 3663) | x 2620, z 3661-3665 | `{ x: 2620, z: 3663, radius: 5 }` | Anvil 3 | no | no | - | The Fremennik Trials done |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:rellekka:0` | (2624, 3674) | Fire 1 | no | no | - | - |
-| `fire:rellekka:1` | (2628, 3653) | Fire 1 | no | no | - | - |
-| `fire:rellekka:2` | (2641, 3651) | Fire 1 | no | no | - | - |
-| `fire:rellekka:3` | (2658, 3671) | Fire 1 | no | no | - | - |
-| `fire:rellekka:4` | (2668, 3702) | Fire 1 | no | no | - | - |
-| `fire:rellekka:5` | (2674, 3665) | Fire 1 | no | no | - | - |
-| `fire:rellekka:6` | (2675, 3676) | Fire 1 | no | no | - | - |
-| `fire:rellekka:7` | (2681, 3690) | Fire 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:rellekka:0` | (2624, 3674) | (2624, 3674) | `{ x: 2624, z: 3674, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:1` | (2628, 3653) | (2628, 3653) | `{ x: 2628, z: 3653, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:2` | (2641, 3651) | (2641, 3651) | `{ x: 2641, z: 3651, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:3` | (2658, 3671) | (2658, 3671) | `{ x: 2658, z: 3671, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:4` | (2668, 3702) | (2668, 3702) | `{ x: 2668, z: 3702, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:5` | (2674, 3665) | (2674, 3665) | `{ x: 2674, z: 3665, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:6` | (2675, 3676) | (2675, 3676) | `{ x: 2675, z: 3676, radius: 3 }` | Fire 1 | no | no | - | - |
+| `fire:rellekka:7` | (2681, 3690) | (2681, 3690) | `{ x: 2681, z: 3690, radius: 3 }` | Fire 1 | no | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:rellekka:0` | (2617, 3659) | Spinning wheel 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:rellekka:0` | (2617, 3659) | (2617, 3659) | `{ x: 2617, z: 3659, radius: 3 }` | Spinning wheel 1 | no | no | - | The Fremennik Trials done |
 
 ## [Pottery wheels](../services/pottery-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-wheel:rellekka:0` | (2620, 3659) | Potter's Wheel 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-wheel:rellekka:0` | (2620, 3659) | (2620, 3659) | `{ x: 2620, z: 3659, radius: 3 }` | Potter's Wheel 1 | no | no | - | - |
 
 ## [Pottery ovens](../services/pottery-oven.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pottery-oven:rellekka:0` | (2616, 3662) | Pottery Oven 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `pottery-oven:rellekka:0` | (2616, 3662) | (2616, 3662) | `{ x: 2616, z: 3662, radius: 3 }` | Pottery Oven 1 | no | no | - | - |
 
 ## [Sand pits](../services/sand-pit.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `sand-pit:rellekka:0` | (2667, 3707) | Sand pit 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `sand-pit:rellekka:0` | (2667, 3707) | (2667, 3707) | `{ x: 2667, z: 3707, radius: 3 }` | Sand pit 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:rellekka:0` | (2693, 3658) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:rellekka:0` | (2693, 3658) | (2693, 3658) | `{ x: 2693, z: 3658, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:rellekka:0` | (2683, 3706) | [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 7 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:rellekka:0` | (2683, 3706) | x 2680-2686, z 3702-3709 | `{ x: 2683, z: 3706, radius: 8 }` | [clay](../resources/rock/clay.md) 4, [coal](../resources/rock/coal.md) 7 | no | no | - | The Fremennik Trials done |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:rellekka:0` | (2637, 3694) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | no | no | - | - |
-| `fishing-spot:rellekka:1` | (2647, 3710) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:rellekka:0` | (2637, 3694) | x 2633-2642, z 3687-3699 | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md#movement), [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | no | no | - | - |
+| `fishing-spot:rellekka:1` | (2647, 3710) | x 2645-2648, z 3708-3711 | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 4 | no | no | - | - |
 
 ## Stalls
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `stall:rellekka:0` | (2638, 3676) | [Fish stall](../resources/stall/viking_fish_market.md) 2, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - | - |
-| `stall:rellekka:1` | (2647, 3678) | [Fish stall](../resources/stall/viking_fish_market.md) 1, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `stall:rellekka:0` | (2638, 3676) | x 2638, z 3672-3680 | `{ x: 2638, z: 3676, radius: 7 }` | [Fish stall](../resources/stall/viking_fish_market.md) 2, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - | - |
+| `stall:rellekka:1` | (2647, 3678) | x 2647, z 3676-3680 | `{ x: 2647, z: 3678, radius: 5 }` | [Fish stall](../resources/stall/viking_fish_market.md) 1, [Fur stall](../resources/stall/viking_fur_market.md) 1 | no | no | - | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `thieving-chest:rellekka:0` | (2630, 3655) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - | - |
-| `thieving-chest:rellekka:1` | (2650, 3659) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
-| `thieving-chest:rellekka:2` | (2668, 3693) L1 | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `thieving-chest:rellekka:0` | (2630, 3655) | (2630, 3655) | `{ x: 2630, z: 3655, radius: 3 }` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | no | no | - | - |
+| `thieving-chest:rellekka:1` | (2650, 3659) | (2650, 3659) | `{ x: 2650, z: 3659, radius: 3 }` | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
+| `thieving-chest:rellekka:2` | (2668, 3693) L1 | (2668, 3693) L1 | `{ x: 2668, z: 3693, radius: 3, level: 1 }` | [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:rellekka:0` | (2627, 3654) | [Sassilik](../resources/pickpocket/viking_woman4.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:1` | (2640, 3651) | [Jennella](../resources/pickpocket/viking_woman3.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:2` | (2642, 3677) | [Agnar](../resources/pickpocket/viking_man.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:3` | (2655, 3652) | [Lensa](../resources/pickpocket/viking_woman2.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:4` | (2666, 3652) | [Pontak](../resources/pickpocket/viking_man5.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:5` | (2667, 3702) | [Freygerd](../resources/pickpocket/viking_woman.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:6` | (2674, 3676) | [Freidir](../resources/pickpocket/viking_man2.md) 1, [Inga](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:7` | (2676, 3665) | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - | - |
-| `pickpocket:rellekka:8` | (2679, 3690) | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:rellekka:0` | (2627, 3654) | (2627, 3654) | x 2615-2639, z 3642-3666 | `{ x: 2627, z: 3654, radius: 20 }` | [Sassilik](../resources/pickpocket/viking_woman4.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:1` | (2640, 3651) | (2640, 3651) | x 2628-2652, z 3639-3663 | `{ x: 2640, z: 3651, radius: 20 }` | [Jennella](../resources/pickpocket/viking_woman3.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:2` | (2642, 3677) | (2642, 3677) | x 2630-2654, z 3665-3689 | `{ x: 2642, z: 3677, radius: 20 }` | [Agnar](../resources/pickpocket/viking_man.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:3` | (2655, 3652) | (2655, 3652) | x 2643-2667, z 3640-3664 | `{ x: 2655, z: 3652, radius: 20 }` | [Lensa](../resources/pickpocket/viking_woman2.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:4` | (2666, 3652) | (2666, 3652) | x 2654-2678, z 3640-3664 | `{ x: 2666, z: 3652, radius: 20 }` | [Pontak](../resources/pickpocket/viking_man5.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:5` | (2667, 3702) | (2667, 3702) | x 2655-2679, z 3690-3714 | `{ x: 2667, z: 3702, radius: 20 }` | [Freygerd](../resources/pickpocket/viking_woman.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:6` | (2674, 3676) | x 2674, z 3675-3677 | x 2662-2686, z 3663-3689 | `{ x: 2674, z: 3676, radius: 21 }` | [Freidir](../resources/pickpocket/viking_man2.md) 1, [Inga](../resources/pickpocket/viking_woman_indoors.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:7` | (2676, 3665) | (2676, 3665) | x 2664-2688, z 3653-3677 | `{ x: 2676, z: 3665, radius: 20 }` | [Lanzig](../resources/pickpocket/viking_man4.md) 1 | no | no | - | - |
+| `pickpocket:rellekka:8` | (2679, 3690) | (2679, 3690) | x 2667-2691, z 3678-3702 | `{ x: 2679, z: 3690, radius: 20 }` | [Borrokar](../resources/pickpocket/viking_man3.md) 1 | no | no | - | - |
 
 ## Flax
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `flax:rellekka:0` | (2618, 3646) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `flax:rellekka:0` | (2618, 3646) | x 2616-2619, z 3645-3646 | `{ x: 2618, z: 3646, radius: 6 }` | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:rellekka:0` | (2619, 3671) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:1` | (2622, 3654) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:2` | (2625, 3664) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:3` | (2633, 3676) | Market Guard 1, Warrior 1 | no | no | - | - |
-| `npc:rellekka:4` | (2634, 3651) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:5` | (2645, 3676) | Market Guard 4, Warrior 1 | no | no | - | - |
-| `npc:rellekka:6` | (2650, 3652) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:7` | (2655, 3691) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:8` | (2666, 3678) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:9` | (2668, 3658) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:10` | (2668, 3670) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:11` | (2668, 3710) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:12` | (2673, 3695) | Warrior 1 | no | no | - | - |
-| `npc:rellekka:13` | (2680, 3663) | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | - |
-| `npc:rellekka:14` | (2685, 3653) | Warrior 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:rellekka:0` | (2619, 3671) | (2619, 3671) | x 2607-2631, z 3659-3683 | `{ x: 2619, z: 3671, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:1` | (2622, 3654) | (2622, 3654) | x 2610-2634, z 3642-3666 | `{ x: 2622, z: 3654, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:2` | (2625, 3664) | (2625, 3664) | x 2613-2637, z 3652-3676 | `{ x: 2625, z: 3664, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:3` | (2633, 3676) | x 2630-2635, z 3676 | x 2618-2647, z 3664-3688 | `{ x: 2633, z: 3676, radius: 23 }` | Market Guard 1, Warrior 1 | no | no | - | - |
+| `npc:rellekka:4` | (2634, 3651) | (2634, 3651) | x 2622-2646, z 3639-3663 | `{ x: 2634, z: 3651, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:5` | (2645, 3676) | x 2643-2650, z 3670-3683 | x 2631-2662, z 3658-3695 | `{ x: 2647, z: 3677, radius: 28 }` | Market Guard 4, Warrior 1 | no | no | - | - |
+| `npc:rellekka:6` | (2650, 3652) | (2650, 3652) | x 2638-2662, z 3640-3664 | `{ x: 2650, z: 3652, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:7` | (2655, 3691) | (2655, 3691) | x 2643-2667, z 3679-3703 | `{ x: 2655, z: 3691, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:8` | (2666, 3678) | (2666, 3678) | x 2654-2678, z 3666-3690 | `{ x: 2666, z: 3678, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:9` | (2668, 3658) | (2668, 3658) | x 2656-2680, z 3646-3670 | `{ x: 2668, z: 3658, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:10` | (2668, 3670) | (2668, 3670) | x 2656-2680, z 3658-3682 | `{ x: 2668, z: 3670, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:11` | (2668, 3710) | (2668, 3710) | x 2656-2680, z 3698-3722 | `{ x: 2668, z: 3710, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:12` | (2673, 3695) | (2673, 3695) | x 2661-2685, z 3683-3707 | `{ x: 2673, z: 3695, radius: 20 }` | Warrior 1 | no | no | - | - |
+| `npc:rellekka:13` | (2680, 3663) | x 2679-2681, z 3662-3665 | x 2674-2686, z 3657-3670 | `{ x: 2680, z: 3664, radius: 13 }` | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | - |
+| `npc:rellekka:14` | (2685, 3653) | (2685, 3653) | x 2673-2697, z 3641-3665 | `{ x: 2685, z: 3653, radius: 20 }` | Warrior 1 | no | no | - | - |

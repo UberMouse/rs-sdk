@@ -11,12 +11,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2375, 3436) | 3 | 12 | (2363, 3420)-(2387, 3452) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2501, 3141) | 2 | 12 | (2486, 3128)-(2516, 3153) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2380, 3434) | 6 | 12 | (2366, 3417)-(2394, 3451) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2436, 3434) | 1 | 12 | (2424, 3422)-(2448, 3446) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2375, 3436) | x 2375, z 3432-3440 | 3 | 12 | x 2363-2387, z 3420-3452 | 60 ticks | - | `{ x: 2375, z: 3436, radius: 23 }` | no |
+| [Kandarin](../places/kandarin.md) | (2501, 3141) | x 2498-2504, z 3140-3141 | 2 | 12 | x 2486-2516, z 3128-3153 | 60 ticks | - | `{ x: 2501, z: 3141, radius: 23 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2380, 3434) | x 2378-2382, z 3429-3439 | 6 | 12 | x 2366-2394, z 3417-3451 | 60 ticks | - | `{ x: 2380, z: 3434, radius: 26 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2436, 3434) | (2436, 3434) | 1 | 12 | x 2424-2448, z 3422-3446 | 60 ticks | - | `{ x: 2436, z: 3434, radius: 20 }` | no |
 
 ## Drops
 

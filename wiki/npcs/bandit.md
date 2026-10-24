@@ -23,12 +23,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3032, 3695) | 1 | 5 | (3027, 3690)-(3044, 3705) | 100 ticks | - | yes |
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3034, 3684) | 2 | 5 | (3026, 3678)-(3042, 3690) | 100 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3031, 3703) | 2 | 5 | (3024, 3696)-(3038, 3710) | 100 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3040, 3703) | 1 | 5 | (3035, 3698)-(3045, 3708) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3032, 3695) | x 3032-3039, z 3695-3700 | 1 | 5 | x 3027-3044, z 3690-3705 | 100 ticks | - | `{ x: 3036, z: 3698, radius: 16 }` | yes |
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3034, 3684) | x 3031-3037, z 3683-3685 | 2 | 5 | x 3026-3042, z 3678-3690 | 100 ticks | - | `{ x: 3034, z: 3684, radius: 13 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3031, 3703) | x 3029-3033, z 3701-3705 | 2 | 5 | x 3024-3038, z 3696-3710 | 100 ticks | - | `{ x: 3031, z: 3703, radius: 13 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3040, 3703) | (3040, 3703) | 1 | 5 | x 3035-3045, z 3698-3708 | 100 ticks | - | `{ x: 3040, z: 3703, radius: 11 }` | yes |
 
 ## Drops
 

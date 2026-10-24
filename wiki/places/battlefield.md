@@ -5,14 +5,14 @@
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:battlefield:0` | (2515, 3230) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | yes | - | - |
-| `pickpocket:battlefield:1` | (2528, 3222) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:battlefield:0` | (2515, 3230) | (2515, 3230) | x 2510-2520, z 3225-3235 | `{ x: 2515, z: 3230, radius: 11 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | yes | - | - |
+| `pickpocket:battlefield:1` | (2528, 3222) | x 2525-2532, z 3220-3226 | x 2520-2537, z 3215-3231 | `{ x: 2529, z: 3223, radius: 16 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:battlefield:0` | (2523, 3237) | Khazard trooper (khazard_troop) 8, Khazard trooper (khazard_troop_spearmen) 11, Mounted terrorbird gnome 1 | no | yes | - | - |
-| `npc:battlefield:1` | (2531, 3226) | Gnome troop (d_skingnomeknight) 5, Gnome troop (gnomeknight) 4 | no | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:battlefield:0` | (2523, 3237) | x 2511-2531, z 3232-3243 | x 2499-2543, z 3220-3255 | `{ x: 2521, z: 3238, radius: 32 }` | Khazard trooper (khazard_troop) 8, Khazard trooper (khazard_troop_spearmen) 11, Mounted terrorbird gnome 1 | no | yes | - | - |
+| `npc:battlefield:1` | (2531, 3226) | x 2529-2533, z 3225-3227 | x 2524-2538, z 3220-3232 | `{ x: 2531, z: 3226, radius: 13 }` | Gnome troop (d_skingnomeknight) 5, Gnome troop (gnomeknight) 4 | no | yes | - | - |

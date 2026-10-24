@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Lumbridge Swamp mine (Lumbridge Swamp)](../places/lumbridge-swamp-mine.md) | (3235, 3153) | 1 | 5 | (3230, 3148)-(3240, 3158) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Lumbridge Swamp mine (Lumbridge Swamp)](../places/lumbridge-swamp-mine.md) | (3235, 3153) | (3235, 3153) | 1 | 5 | x 3230-3240, z 3148-3158 | 100 ticks | - | `{ x: 3235, z: 3153, radius: 11 }` | yes |
 
 ## Interactions
 

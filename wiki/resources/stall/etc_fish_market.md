@@ -15,6 +15,6 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Miscellania and Etceteria](../../places/miscellania.md) | `stall:miscellania:1` | (2603, 3876) | (2602, 3876) | 1 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 22 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Miscellania and Etceteria](../../places/miscellania.md) | `stall:miscellania:1` | (2603, 3876) | (2602, 3876) | x 2600-2606, z 3876 | `{ x: 2603, z: 3876, radius: 6 }` | 1 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 22 ticks |

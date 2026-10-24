@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:ice-mountain:0` | (3007, 3489) | [normal](../resources/tree/normal.md) 43 | yes | no | - | - |
-| `tree:ice-mountain:1` | (3030, 3464) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:ice-mountain:0` | (3007, 3489) | x 2985-3029, z 3470-3510 | `{ x: 3007, z: 3490, radius: 33 }` | [normal](../resources/tree/normal.md) 43 | yes | no | - | - |
+| `tree:ice-mountain:1` | (3030, 3464) | x 3028-3031, z 3463-3464 | `{ x: 3030, z: 3464, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ice-mountain:0` | (3026, 3507) L2 | Black Knight 1 | yes | no | - | - |
-| `npc:ice-mountain:1` | (3031, 3502) | Black Knight 3 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ice-mountain:0` | (3026, 3507) L2 | (3026, 3507) L2 | x 3016-3036, z 3497-3517 L2 | `{ x: 3026, z: 3507, radius: 18, level: 2 }` | Black Knight 1 | yes | no | - | - |
+| `npc:ice-mountain:1` | (3031, 3502) | x 3030-3032, z 3502-3503 | x 3020-3042, z 3492-3513 | `{ x: 3031, z: 3503, radius: 19 }` | Black Knight 3 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:ice-mountain:0` | (3029, 3506) L2 | Staircase 1 | up (3028, 3507) L3 by Climb-up | yes | no | - | - |
-| `connector:ice-mountain:1` | (3029, 3507) L3 | Staircase 1 | down (3028, 3507) L2 by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:ice-mountain:0` | (3029, 3506) L2 | (3029, 3506) L2 | `{ x: 3029, z: 3506, radius: 3, level: 2 }` | Staircase 1 | up (3028, 3507) L3 by Climb-up | yes | no | - | - |
+| `connector:ice-mountain:1` | (3029, 3507) L3 | (3029, 3507) L3 | `{ x: 3029, z: 3507, radius: 3, level: 3 }` | Staircase 1 | down (3028, 3507) L2 by Climb-down | yes | no | - | - |

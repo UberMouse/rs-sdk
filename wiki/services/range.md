@@ -3,68 +3,68 @@
 
 63 sites, 29 of them in F2P; 48 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 4 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:0` | (2917, 3318) | (2917, 3319) | Range 1 | yes | - | Falador East bank (Falador), 66 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:1` | (3019, 3237) | (3018, 3237) | Range 1 | yes | - | Draynor bank (Draynor Village), 53 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:2` | (3036, 3342) | (3037, 3342) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:3` | (3039, 3367) | (3039, 3366) | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:4` | (3046, 3375) | (3047, 3375) | Range 1 | yes | - | Falador East bank (Falador), 24 ticks |
-| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:5` | (3052, 3356) | (3051, 3356) | Range 1 | yes | - | Falador East bank (Falador), 21 ticks |
-| [Falador (Asgarnia)](../places/falador.md) | `range:falador:0` | (2969, 3330) | (2968, 3331) | Range 2 | yes | - | Falador West bank (Falador), 32 ticks |
-| [Falador (Asgarnia)](../places/falador.md) | `range:falador:1` | (2988, 3365) | (2989, 3365) | Range 1 | yes | - | Falador East bank (Falador), 15 ticks |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | `range:rimmington:0` | (2970, 3209) | (2969, 3209) | Range 1 | yes | - | Draynor bank (Draynor Village), 74 ticks |
-| [Entrana](../places/entrana.md) | `range:entrana:0` | (2822, 3351) | (2821, 3351) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 70 ticks |
-| [Entrana](../places/entrana.md) | `range:entrana:1` | (2844, 3367) | (2844, 3368) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 88 ticks |
-| [Entrana](../places/entrana.md) | `range:entrana:2` | (2856, 3334) | (2856, 3335) | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 67 ticks |
-| [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:0` | (2630, 4731) | (2630, 4730) | Range 1 | no | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done | Ardougne South bank (East Ardougne), 93 ticks via 30 coins + carry Magic whistle |
-| [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:1` | (2758, 4731) | (2758, 4730) | Range 1 | no | unreached | - |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:0` | (2445, 3188) | (2444, 3188) | Range 1 | no | - | Castle Wars bank chest (Castle Wars), 61 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:1` | (2459, 3173) | (2460, 3173) | Range 1 | no | - | Castle Wars bank chest (Castle Wars), 57 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:2` | (2571, 3248) | (2571, 3249) | Range 1 | no | - | Ardougne South bank (East Ardougne), 50 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:3` | (2578, 3198) | (2578, 3197) | Range 1 | no | - | Ardougne South bank (East Ardougne), 58 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:4` | (2591, 3209) | (2592, 3209) | Range 1 | no | - | Ardougne South bank (East Ardougne), 51 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:5` | (2642, 3355) | (2642, 3356) | Range 1 | no | - | Ardougne North bank (East Ardougne), 26 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:6` | (2733, 3582) | (2733, 3581) | Range 1 | no | - | Seers' Village bank (Seers' Village), 54 ticks |
-| [Kandarin](../places/kandarin.md) | `range:kandarin:7` | (2763, 3274) | (2763, 3275) | Range 1 | no | unreached | - |
-| [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:0` | (2817, 3444) | (2817, 3443) | Range 1 | no | - | Catherby bank (Catherby), 8 ticks |
-| [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:1` | (2818, 3455) | (2819, 3454) | Range 1 | no | - | Catherby bank (Catherby), 12 ticks |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:0` | (2617, 3317) | (2616, 3317) | Range 1 | no | 13 Thieving | Ardougne North bank (East Ardougne), 22 ticks |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:1` | (2648, 3297) | (2647, 3298) | Range 1 | no | - | Ardougne South bank (East Ardougne), 21 ticks |
-| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | `range:fishing-guild:0` | (2616, 3396) | (2615, 3396) | Range 1 | no | 68 Fishing | Fishing Guild bank (Fishing Guild), 16 ticks |
-| [Hemenster (Kandarin)](../places/hemenster.md) | `range:hemenster:0` | (2637, 3432) | (2638, 3432) | Range 1 | no | - | Seers' Village bank (Seers' Village), 49 ticks |
-| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:0` | (2632, 3163) | (2633, 3163) | Range 1 | no | - | Yanille bank (Yanille), 46 ticks |
-| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:1` | (2636, 3170) | (2635, 3170) | Range 1 | no | - | Yanille bank (Yanille), 46 ticks |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | `range:seers-village:0` | (2715, 3476) | (2715, 3477) | Range 1 | no | - | Seers' Village bank (Seers' Village), 12 ticks |
-| [Sorcerer's Tower (Kandarin)](../places/sorcerers-tower.md) | `range:sorcerers-tower:0` | (2706, 3404) | (2705, 3404) | Range 1 | no | - | Seers' Village bank (Seers' Village), 61 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `range:tree-gnome-stronghold:0` | (2448, 3510) L1 | (2449, 3510) L1 | Range 1 | no | - | Grand Tree bank (Tree Gnome Stronghold), 14 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `range:tree-gnome-stronghold:1` | (2482, 3479) L1 | (2481, 3479) L1 | Range 1 | no | - | Grand Tree bank (Tree Gnome Stronghold), 28 ticks |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `range:west-ardougne:0` | (2547, 3322) | (2548, 3322) | Range 1 | no | unreached | - |
-| [Yanille (Kandarin)](../places/yanille.md) | `range:yanille:0` | (2549, 3098) | (2550, 3098) | Range 1 | no | - | Yanille bank (Yanille), 32 ticks |
-| [Yanille (Kandarin)](../places/yanille.md) | `range:yanille:1` | (2566, 3104) | (2566, 3103) | Range 1 | no | - | Yanille bank (Yanille), 24 ticks |
-| [Karamja](../places/karamja.md) | `range:karamja:0` | (2814, 3161) | (2813, 3161) | Range 1 | no | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 79 ticks via 30 coins |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | `range:brimhaven:0` | (2787, 3191) | (2788, 3191) | Range 1 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 | Ardougne South bank (East Ardougne), 78 ticks via 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:0` | (3271, 3180) | (3272, 3180) | Range 1 | yes | - | Al Kharid bank (Al Kharid), 11 ticks |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:1` | (3292, 3202) | (3292, 3203) | Range 1 | yes | - | Al Kharid bank (Al Kharid), 26 ticks |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:2` | (3318, 3138) | (3319, 3138) | Range 1 | yes | - | Shantay Pass bank chest (Shantay Pass), 19 ticks |
-| [Misthalin](../places/misthalin.md) | `range:misthalin:0` | (3144, 3452) L1 | (3144, 3451) L1 | Range 2 | yes | wear Chef's hat + 32 Cooking | Varrock West bank (Varrock), 37 ticks |
-| [Misthalin](../places/misthalin.md) | `range:misthalin:1` | (3156, 3410) | (3156, 3409) | Range 1 | yes | - | Varrock West bank (Varrock), 23 ticks |
-| [Misthalin](../places/misthalin.md) | `range:misthalin:2` | (3160, 3427) | (3160, 3428) | Range 1 | yes | - | Varrock West bank (Varrock), 21 ticks |
-| [Misthalin](../places/misthalin.md) | `range:misthalin:3` | (3188, 3352) | (3189, 3352) | Range 1 | yes | 32 quest points | Varrock West bank (Varrock), 48 ticks via 32 quest points |
-| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | `range:draynor-manor:0` | (3097, 3367) | (3098, 3367) | Range 1 | yes | - | Draynor bank (Draynor Village), 87 ticks |
-| [Edgeville (Misthalin)](../places/edgeville.md) | `range:edgeville:0` | (3081, 3508) L1 | (3081, 3509) L1 | Range 1 | yes | - | Edgeville bank (Edgeville), 18 ticks |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `range:lumbridge:0` | (3212, 3215) | (3211, 3215) | Cooking range 1 | yes | - | Draynor bank (Draynor Village), 92 ticks |
-| [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | `range:lumbridge-swamp:0` | (3230, 3196) | (3231, 3196) | Range 1 | yes | - | Draynor bank (Draynor Village), 90 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:0` | (3202, 3401) L1 | (3203, 3401) L1 | Range 1 | yes | - | Varrock West bank (Varrock), 33 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:1` | (3219, 3388) | (3219, 3387) | Range 1 | yes | - | Varrock West bank (Varrock), 33 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:2` | (3222, 3497) | (3222, 3496) | Range 2 | yes | - | Varrock East bank (Varrock), 49 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:3` | (3229, 3401) | (3230, 3401) | Range 1 | yes | - | Varrock East bank (Varrock), 28 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:4` | (3236, 3382) | (3236, 3383) | Range 1 | yes | - | Varrock East bank (Varrock), 32 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:5` | (3237, 3403) | (3237, 3404) | Range 1 | yes | - | Varrock East bank (Varrock), 19 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:6` | (3237, 3409) | (3237, 3410) | Range 1 | yes | - | Varrock East bank (Varrock), 17 ticks |
-| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:7` | (3286, 3488) | (3285, 3487) | Range 2 | yes | - | Varrock East bank (Varrock), 71 ticks |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | `range:taverley-dungeon:0` | (2922, 9713) | (2922, 9712) | Range 1 | no | - | Falador West bank (Falador), 196 ticks |
-| [Watchtower quest area](../places/watchtower-quest-area.md) | `range:watchtower-quest-area:0` | (2933, 4698) | (2934, 4698) | Range 1 | no | unreached | - |
-| [Wilderness](../places/wilderness.md) | `range:wilderness:0` | (3036, 3708) | (3036, 3707) | Range 1 | yes | - | Edgeville bank (Edgeville), 108 ticks |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | `range:rogues-castle:0` | (3280, 3929) | (3281, 3929) | Range 1 | no | - | Mage Arena bank (Mage Arena chamber), 115 ticks |
-| [Zanaris](../places/zanaris.md) | `range:zanaris:0` | (3151, 9558) | (3152, 9558) | Range 1 | no | wear Dramen staff | Zanaris bank (Zanaris), 10 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:0` | (2917, 3318) | (2917, 3319) | (2917, 3318) | `{ x: 2917, z: 3318, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 66 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:1` | (3019, 3237) | (3018, 3237) | (3019, 3237) | `{ x: 3019, z: 3237, radius: 3 }` | Range 1 | yes | - | Draynor bank (Draynor Village), 53 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:2` | (3036, 3342) | (3037, 3342) | (3036, 3342) | `{ x: 3036, z: 3342, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:3` | (3039, 3367) | (3039, 3366) | (3039, 3367) | `{ x: 3039, z: 3367, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 17 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:4` | (3046, 3375) | (3047, 3375) | (3046, 3375) | `{ x: 3046, z: 3375, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 24 ticks |
+| [Asgarnia](../places/asgarnia.md) | `range:asgarnia:5` | (3052, 3356) | (3051, 3356) | (3052, 3356) | `{ x: 3052, z: 3356, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 21 ticks |
+| [Falador (Asgarnia)](../places/falador.md) | `range:falador:0` | (2969, 3330) | (2968, 3331) | x 2967-2971, z 3328-3331 | `{ x: 2969, z: 3330, radius: 6 }` | Range 2 | yes | - | Falador West bank (Falador), 32 ticks |
+| [Falador (Asgarnia)](../places/falador.md) | `range:falador:1` | (2988, 3365) | (2989, 3365) | (2988, 3365) | `{ x: 2988, z: 3365, radius: 3 }` | Range 1 | yes | - | Falador East bank (Falador), 15 ticks |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `range:rimmington:0` | (2970, 3209) | (2969, 3209) | (2970, 3209) | `{ x: 2970, z: 3209, radius: 3 }` | Range 1 | yes | - | Draynor bank (Draynor Village), 74 ticks |
+| [Entrana](../places/entrana.md) | `range:entrana:0` | (2822, 3351) | (2821, 3351) | (2822, 3351) | `{ x: 2822, z: 3351, radius: 3 }` | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 70 ticks |
+| [Entrana](../places/entrana.md) | `range:entrana:1` | (2844, 3367) | (2844, 3368) | (2844, 3367) | `{ x: 2844, z: 3367, radius: 3 }` | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 88 ticks |
+| [Entrana](../places/entrana.md) | `range:entrana:2` | (2856, 3334) | (2856, 3335) | (2856, 3334) | `{ x: 2856, z: 3334, radius: 3 }` | Range 1 | no | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 67 ticks |
+| [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:0` | (2630, 4731) | (2630, 4730) | (2630, 4731) | `{ x: 2630, z: 4731, radius: 3 }` | Range 1 | no | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done | Ardougne South bank (East Ardougne), 93 ticks via 30 coins + carry Magic whistle |
+| [Fisher Realm](../places/fisher-realm.md) | `range:fisher-realm:1` | (2758, 4731) | (2758, 4730) | (2758, 4731) | `{ x: 2758, z: 4731, radius: 3 }` | Range 1 | no | unreached | - |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:0` | (2445, 3188) | (2444, 3188) | (2445, 3188) | `{ x: 2445, z: 3188, radius: 3 }` | Range 1 | no | - | Castle Wars bank chest (Castle Wars), 61 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:1` | (2459, 3173) | (2460, 3173) | (2459, 3173) | `{ x: 2459, z: 3173, radius: 3 }` | Range 1 | no | - | Castle Wars bank chest (Castle Wars), 57 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:2` | (2571, 3248) | (2571, 3249) | (2571, 3248) | `{ x: 2571, z: 3248, radius: 3 }` | Range 1 | no | - | Ardougne South bank (East Ardougne), 50 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:3` | (2578, 3198) | (2578, 3197) | (2578, 3198) | `{ x: 2578, z: 3198, radius: 3 }` | Range 1 | no | - | Ardougne South bank (East Ardougne), 58 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:4` | (2591, 3209) | (2592, 3209) | (2591, 3209) | `{ x: 2591, z: 3209, radius: 3 }` | Range 1 | no | - | Ardougne South bank (East Ardougne), 51 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:5` | (2642, 3355) | (2642, 3356) | (2642, 3355) | `{ x: 2642, z: 3355, radius: 3 }` | Range 1 | no | - | Ardougne North bank (East Ardougne), 26 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:6` | (2733, 3582) | (2733, 3581) | (2733, 3582) | `{ x: 2733, z: 3582, radius: 3 }` | Range 1 | no | - | Seers' Village bank (Seers' Village), 54 ticks |
+| [Kandarin](../places/kandarin.md) | `range:kandarin:7` | (2763, 3274) | (2763, 3275) | (2763, 3274) | `{ x: 2763, z: 3274, radius: 3 }` | Range 1 | no | unreached | - |
+| [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:0` | (2817, 3444) | (2817, 3443) | (2817, 3444) | `{ x: 2817, z: 3444, radius: 3 }` | Range 1 | no | - | Catherby bank (Catherby), 8 ticks |
+| [Catherby (Kandarin)](../places/catherby.md) | `range:catherby:1` | (2818, 3455) | (2819, 3454) | (2818, 3455) | `{ x: 2818, z: 3455, radius: 3 }` | Range 1 | no | - | Catherby bank (Catherby), 12 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:0` | (2617, 3317) | (2616, 3317) | (2617, 3317) | `{ x: 2617, z: 3317, radius: 3 }` | Range 1 | no | 13 Thieving | Ardougne North bank (East Ardougne), 22 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `range:east-ardougne:1` | (2648, 3297) | (2647, 3298) | (2648, 3297) | `{ x: 2648, z: 3297, radius: 3 }` | Range 1 | no | - | Ardougne South bank (East Ardougne), 21 ticks |
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | `range:fishing-guild:0` | (2616, 3396) | (2615, 3396) | (2616, 3396) | `{ x: 2616, z: 3396, radius: 3 }` | Range 1 | no | 68 Fishing | Fishing Guild bank (Fishing Guild), 16 ticks |
+| [Hemenster (Kandarin)](../places/hemenster.md) | `range:hemenster:0` | (2637, 3432) | (2638, 3432) | (2637, 3432) | `{ x: 2637, z: 3432, radius: 3 }` | Range 1 | no | - | Seers' Village bank (Seers' Village), 49 ticks |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:0` | (2632, 3163) | (2633, 3163) | (2632, 3163) | `{ x: 2632, z: 3163, radius: 3 }` | Range 1 | no | - | Yanille bank (Yanille), 46 ticks |
+| [Port Khazard (Kandarin)](../places/port-khazard.md) | `range:port-khazard:1` | (2636, 3170) | (2635, 3170) | (2636, 3170) | `{ x: 2636, z: 3170, radius: 3 }` | Range 1 | no | - | Yanille bank (Yanille), 46 ticks |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | `range:seers-village:0` | (2715, 3476) | (2715, 3477) | (2715, 3476) | `{ x: 2715, z: 3476, radius: 3 }` | Range 1 | no | - | Seers' Village bank (Seers' Village), 12 ticks |
+| [Sorcerer's Tower (Kandarin)](../places/sorcerers-tower.md) | `range:sorcerers-tower:0` | (2706, 3404) | (2705, 3404) | (2706, 3404) | `{ x: 2706, z: 3404, radius: 3 }` | Range 1 | no | - | Seers' Village bank (Seers' Village), 61 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `range:tree-gnome-stronghold:0` | (2448, 3510) L1 | (2449, 3510) L1 | (2448, 3510) L1 | `{ x: 2448, z: 3510, radius: 3, level: 1 }` | Range 1 | no | - | Grand Tree bank (Tree Gnome Stronghold), 14 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `range:tree-gnome-stronghold:1` | (2482, 3479) L1 | (2481, 3479) L1 | (2482, 3479) L1 | `{ x: 2482, z: 3479, radius: 3, level: 1 }` | Range 1 | no | - | Grand Tree bank (Tree Gnome Stronghold), 28 ticks |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | `range:west-ardougne:0` | (2547, 3322) | (2548, 3322) | (2547, 3322) | `{ x: 2547, z: 3322, radius: 3 }` | Range 1 | no | unreached | - |
+| [Yanille (Kandarin)](../places/yanille.md) | `range:yanille:0` | (2549, 3098) | (2550, 3098) | (2549, 3098) | `{ x: 2549, z: 3098, radius: 3 }` | Range 1 | no | - | Yanille bank (Yanille), 32 ticks |
+| [Yanille (Kandarin)](../places/yanille.md) | `range:yanille:1` | (2566, 3104) | (2566, 3103) | (2566, 3104) | `{ x: 2566, z: 3104, radius: 3 }` | Range 1 | no | - | Yanille bank (Yanille), 24 ticks |
+| [Karamja](../places/karamja.md) | `range:karamja:0` | (2814, 3161) | (2813, 3161) | (2814, 3161) | `{ x: 2814, z: 3161, radius: 3 }` | Range 1 | no | 30 coins or The Grand Tree done | Ardougne South bank (East Ardougne), 79 ticks via 30 coins |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | `range:brimhaven:0` | (2787, 3191) | (2788, 3191) | (2787, 3191) | `{ x: 2787, z: 3191, radius: 3 }` | Range 1 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 | Ardougne South bank (East Ardougne), 78 ticks via 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:0` | (3271, 3180) | (3272, 3180) | (3271, 3180) | `{ x: 3271, z: 3180, radius: 3 }` | Range 1 | yes | - | Al Kharid bank (Al Kharid), 11 ticks |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:1` | (3292, 3202) | (3292, 3203) | (3292, 3202) | `{ x: 3292, z: 3202, radius: 3 }` | Range 1 | yes | - | Al Kharid bank (Al Kharid), 26 ticks |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `range:al-kharid:2` | (3318, 3138) | (3319, 3138) | (3318, 3138) | `{ x: 3318, z: 3138, radius: 3 }` | Range 1 | yes | - | Shantay Pass bank chest (Shantay Pass), 19 ticks |
+| [Misthalin](../places/misthalin.md) | `range:misthalin:0` | (3144, 3452) L1 | (3144, 3451) L1 | x 3143-3145, z 3452 L1 | `{ x: 3144, z: 3452, radius: 4, level: 1 }` | Range 2 | yes | wear Chef's hat + 32 Cooking | Varrock West bank (Varrock), 37 ticks |
+| [Misthalin](../places/misthalin.md) | `range:misthalin:1` | (3156, 3410) | (3156, 3409) | (3156, 3410) | `{ x: 3156, z: 3410, radius: 3 }` | Range 1 | yes | - | Varrock West bank (Varrock), 23 ticks |
+| [Misthalin](../places/misthalin.md) | `range:misthalin:2` | (3160, 3427) | (3160, 3428) | (3160, 3427) | `{ x: 3160, z: 3427, radius: 3 }` | Range 1 | yes | - | Varrock West bank (Varrock), 21 ticks |
+| [Misthalin](../places/misthalin.md) | `range:misthalin:3` | (3188, 3352) | (3189, 3352) | (3188, 3352) | `{ x: 3188, z: 3352, radius: 3 }` | Range 1 | yes | 32 quest points | Varrock West bank (Varrock), 48 ticks via 32 quest points |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | `range:draynor-manor:0` | (3097, 3367) | (3098, 3367) | (3097, 3367) | `{ x: 3097, z: 3367, radius: 3 }` | Range 1 | yes | - | Draynor bank (Draynor Village), 87 ticks |
+| [Edgeville (Misthalin)](../places/edgeville.md) | `range:edgeville:0` | (3081, 3508) L1 | (3081, 3509) L1 | (3081, 3508) L1 | `{ x: 3081, z: 3508, radius: 3, level: 1 }` | Range 1 | yes | - | Edgeville bank (Edgeville), 18 ticks |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `range:lumbridge:0` | (3212, 3215) | (3211, 3215) | (3212, 3215) | `{ x: 3212, z: 3215, radius: 3 }` | Cooking range 1 | yes | - | Draynor bank (Draynor Village), 92 ticks |
+| [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | `range:lumbridge-swamp:0` | (3230, 3196) | (3231, 3196) | (3230, 3196) | `{ x: 3230, z: 3196, radius: 3 }` | Range 1 | yes | - | Draynor bank (Draynor Village), 90 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:0` | (3202, 3401) L1 | (3203, 3401) L1 | (3202, 3401) L1 | `{ x: 3202, z: 3401, radius: 3, level: 1 }` | Range 1 | yes | - | Varrock West bank (Varrock), 33 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:1` | (3219, 3388) | (3219, 3387) | (3219, 3388) | `{ x: 3219, z: 3388, radius: 3 }` | Range 1 | yes | - | Varrock West bank (Varrock), 33 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:2` | (3222, 3497) | (3222, 3496) | x 3221-3223, z 3497 | `{ x: 3222, z: 3497, radius: 4 }` | Range 2 | yes | - | Varrock East bank (Varrock), 49 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:3` | (3229, 3401) | (3230, 3401) | (3229, 3401) | `{ x: 3229, z: 3401, radius: 3 }` | Range 1 | yes | - | Varrock East bank (Varrock), 28 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:4` | (3236, 3382) | (3236, 3383) | (3236, 3382) | `{ x: 3236, z: 3382, radius: 3 }` | Range 1 | yes | - | Varrock East bank (Varrock), 32 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:5` | (3237, 3403) | (3237, 3404) | (3237, 3403) | `{ x: 3237, z: 3403, radius: 3 }` | Range 1 | yes | - | Varrock East bank (Varrock), 19 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:6` | (3237, 3409) | (3237, 3410) | (3237, 3409) | `{ x: 3237, z: 3409, radius: 3 }` | Range 1 | yes | - | Varrock East bank (Varrock), 17 ticks |
+| [Varrock (Misthalin)](../places/varrock.md) | `range:varrock:7` | (3286, 3488) | (3285, 3487) | x 3286, z 3486-3489 | `{ x: 3286, z: 3488, radius: 5 }` | Range 2 | yes | - | Varrock East bank (Varrock), 71 ticks |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | `range:taverley-dungeon:0` | (2922, 9713) | (2922, 9712) | (2922, 9713) | `{ x: 2922, z: 9713, radius: 3 }` | Range 1 | no | - | Falador West bank (Falador), 196 ticks |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | `range:watchtower-quest-area:0` | (2933, 4698) | (2934, 4698) | (2933, 4698) | `{ x: 2933, z: 4698, radius: 3 }` | Range 1 | no | unreached | - |
+| [Wilderness](../places/wilderness.md) | `range:wilderness:0` | (3036, 3708) | (3036, 3707) | (3036, 3708) | `{ x: 3036, z: 3708, radius: 3 }` | Range 1 | yes | - | Edgeville bank (Edgeville), 108 ticks |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | `range:rogues-castle:0` | (3280, 3929) | (3281, 3929) | (3280, 3929) | `{ x: 3280, z: 3929, radius: 3 }` | Range 1 | no | - | Mage Arena bank (Mage Arena chamber), 115 ticks |
+| [Zanaris](../places/zanaris.md) | `range:zanaris:0` | (3151, 9558) | (3152, 9558) | (3151, 9558) | `{ x: 3151, z: 9558, radius: 3 }` | Range 1 | no | wear Dramen staff | Zanaris bank (Zanaris), 10 ticks |

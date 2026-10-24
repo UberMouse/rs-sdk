@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:grand-tree-bank:0` | (2445, 3484) L1 | Bank booth 6, Gnome banker 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:grand-tree-bank:0` | (2445, 3484) L1 | x 2439-2450, z 3480-3489 L1 | `{ x: 2445, z: 3485, radius: 11, level: 1 }` | Bank booth 6, Gnome banker 4 | no | no | - | - |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Morytania](../places/morytania.md) | (3522, 3284) | 1 | 1 | (3521, 3283)-(3523, 3285) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Morytania](../places/morytania.md) | (3522, 3284) | (3522, 3284) | 1 | 1 | x 3521-3523, z 3283-3285 | 100 ticks | - | `{ x: 3522, z: 3284, radius: 5 }` | no |
 
 ## Interactions
 

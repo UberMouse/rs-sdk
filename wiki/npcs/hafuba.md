@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Ape Atoll](../places/ape-atoll.md) | (2797, 2798) L1 | 1 | 5 | (2792, 2793)-(2802, 2803) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Ape Atoll](../places/ape-atoll.md) | (2797, 2798) L1 | (2797, 2798) L1 | 1 | 5 | x 2792-2802, z 2793-2803 L1 | 100 ticks | - | `{ x: 2797, z: 2798, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

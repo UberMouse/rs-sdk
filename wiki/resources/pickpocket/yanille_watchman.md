@@ -17,7 +17,7 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:5` | (2547, 3116) L1 | (2547, 3116) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 51 ticks |
-| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:0` | (2547, 3112) L1 | (2547, 3112) L1 | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 50 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:5` | (2547, 3116) L1 | (2547, 3116) L1 | x 2545-2549, z 3116 L1 | x 2540-2554, z 3111-3121 L1 | `{ x: 2547, z: 3116, radius: 12, level: 1 }` | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 51 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `pickpocket:yanille:0` | (2547, 3112) L1 | (2547, 3112) L1 | x 2544-2549, z 3112 L1 | x 2539-2554, z 3107-3117 L1 | `{ x: 2547, z: 3112, radius: 13, level: 1 }` | 2 | no | no | - | Watch Tower at stage 1 or 18 Agility | Yanille bank (Yanille), 50 ticks |

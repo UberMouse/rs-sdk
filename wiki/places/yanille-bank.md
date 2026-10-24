@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:yanille-bank:0` | (2615, 3092) | Bank booth 3, Banker 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:yanille-bank:0` | (2615, 3092) | x 2614-2615, z 3091-3094 | `{ x: 2615, z: 3093, radius: 6 }` | Bank booth 3, Banker 3 | no | no | - | - |

@@ -5,13 +5,13 @@ The mining and combat instructors of Tutorial Island.
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:tutorial-island-caves:0` | (3080, 9496) | Furnace 2 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:tutorial-island-caves:0` | (3080, 9496) | x 3078-3081, z 9495-9496 | `{ x: 3080, z: 9496, radius: 6 }` | Furnace 2 | yes | no | - | unreached |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:tutorial-island-caves:0` | (3075, 9498) | Anvil 2 | yes | no | - | unreached |
-| `anvil:tutorial-island-caves:1` | (3083, 9498) | Anvil 2 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:tutorial-island-caves:0` | (3075, 9498) | x 3075, z 9497-9499 | `{ x: 3075, z: 9498, radius: 4 }` | Anvil 2 | yes | no | - | unreached |
+| `anvil:tutorial-island-caves:1` | (3083, 9498) | x 3083, z 9497-9499 | `{ x: 3083, z: 9498, radius: 4 }` | Anvil 2 | yes | no | - | unreached |

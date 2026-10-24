@@ -234,23 +234,23 @@ describe('renderWorld', () => {
 
           ## [Ranges](../services/range.md)
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`range:town:0\` | (3200, 3200) | Range 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`range:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Range 1 | yes | no | - | - |
 
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`tree:town:0\` | (3150, 3150) L1 | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff |
-          | \`tree:town:2\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-          | \`tree:town:10\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`tree:town:0\` | (3150, 3150) L1 | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [oak](../resources/tree/oak.md) 1, [yew](../resources/tree/yew.md) 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff |
+          | \`tree:town:2\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+          | \`tree:town:10\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
 
           ## Ladders and stairs
 
-          | Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|---|
-          | \`connector:town:0\` | (3200, 3200) | Ladder 1 | up (3160, 3161) L1 by Climb or Climb-up | yes | no | - | no stand |
+          | Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|---|
+          | \`connector:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Ladder 1 | up (3160, 3161) L1 by Climb or Climb-up | yes | no | - | no stand |
 
           ## Areas within
 
@@ -268,9 +268,9 @@ describe('renderWorld', () => {
 
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`tree:region:0\` | (3200, 3200) | [yew](../resources/tree/yew.md) 1 | no | yes | 12 | unreached |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`tree:region:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [yew](../resources/tree/yew.md) 1 | no | yes | 12 | unreached |
 
           ## Areas within
 
@@ -311,12 +311,12 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-          |---|---|---|---|---|---|---|---|---|---|
-          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | 1 | no | yes | 12 | unreached | - |
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
-          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | Town bank (Town), 1 tick |
-          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
+          | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|---|---|
+          | [Region](../../places/region.md) | \`tree:region:0\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | 1 | no | yes | 12 | unreached | - |
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
+          | [Town (Region)](../../places/town.md) | \`tree:town:2\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | 1 | yes | no | - | - | Town bank (Town), 1 tick |
+          | [Town (Region)](../../places/town.md) | \`tree:town:10\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | 1 | yes | no | - | - | none |
           "
         `);
     });
@@ -328,10 +328,12 @@ describe('renderWorld', () => {
                 .split('\n')
                 .find(l => l.startsWith('| Area'));
         expect(header('wiki/services/range.md')).toBe(
-            '| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |',
+            '| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires | Nearest bank |',
         );
         expect(pages.get('wiki/services/range.md')).toContain('| Range 1 | yes | - | none |');
-        expect(header('wiki/services/bank.md')).toBe('| Area | Site | Centre | Stand | Counts | F2P | Requires |');
+        expect(header('wiki/services/bank.md')).toBe(
+            '| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |',
+        );
     });
 
     test('a resource subtype with no axe rows and no respawnrate says so', () => {
@@ -361,9 +363,9 @@ describe('renderWorld', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-          |---|---|---|---|---|---|---|---|---|---|
-          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
+          | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|---|---|
+          | [Town (Region)](../../places/town.md) | \`tree:town:0\` | (3150, 3150) L1 | (3150, 3151) L1 | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | 1 | yes | no | - | 60 Woodcutting or 30 coins + wear Dramen staff | Town bank (Town), 12 ticks via 30 coins |
           "
         `);
     });
@@ -375,9 +377,9 @@ describe('renderWorld', () => {
 
           1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P | Requires |
-          |---|---|---|---|---|---|---|
-          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | Bank booth 2, Banker 1 | yes | - |
+          | Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | [Town bank (Town)](../places/town-bank.md) | \`bank:town-bank:0\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Bank booth 2, Banker 1 | yes | - |
           "
         `);
     });
@@ -456,7 +458,13 @@ const named: World = {
         site('bank:town:0', ['town'], [12, 13, 14], { banker: 2, booth: 1 }),
         site('fishing-spot:town:0', ['town'], [2, 3], { saltfish: 2 }),
         site('npc:town:0', ['town'], [10, 11], { goblin: 1, man3: 1 }),
-        site('pickpocket:town:0', ['town'], [5, 6], { man: 1, man2: 1 }),
+        site(
+            'pickpocket:town:0',
+            ['town'],
+            [5, 6],
+            { man: 1, man2: 1 },
+            { wander: 5, respawnTicks: 100, roam: { x1: 3195, z1: 3195, x2: 3206, z2: 3206, level: 0 } },
+        ),
         site('rock:town:0', ['town'], [0], { iron: 1 }),
         site('shop:town:0', ['town'], [7, 8, 9], { junkshop: 1, rottenshop: 1, swordshop: 1 }),
         site('stall:town:0', ['town'], [1], { bakerystall: 1 }),
@@ -605,57 +613,57 @@ describe('in-game names and resource data', () => {
 
           ## [Banks](../services/bank.md)
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`bank:town:0\` | (3200, 3200) | Bank booth 1, Banker 2 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`bank:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Bank booth 1, Banker 2 | yes | no | - | - |
 
           ## [Shops](../services/shop.md)
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`shop:town:0\` | (3200, 3200) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`shop:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | no | - | - |
 
           ## Trees
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`tree:town:0\` | (3200, 3200) | [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`tree:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
 
           ## Rocks
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`rock:town:0\` | (3200, 3200) | [iron](../resources/rock/iron.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`rock:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [iron](../resources/rock/iron.md) 1 | yes | no | - | - |
 
           ## Fishing spots
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`fishing-spot:town:0\` | (3200, 3200) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`fishing-spot:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | no | - | - |
 
           ## Stalls
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`stall:town:0\` | (3200, 3200) | [Baker's stall](../resources/stall/bakerystall.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`stall:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [Baker's stall](../resources/stall/bakerystall.md) 1 | yes | no | - | - |
 
           ## Thieving chests
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`thieving-chest:town:0\` | (3200, 3200) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`thieving-chest:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 1 | yes | no | - | - |
 
           ## Pickpocket targets
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`pickpocket:town:0\` | (3200, 3200) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
+          | Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|---|
+          | \`pickpocket:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | x 3195-3206, z 3195-3206 | \`{ x: 3201, z: 3201, radius: 12 }\` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | no | - | - |
 
           ## Monsters
 
-          | Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-          |---|---|---|---|---|---|---|
-          | \`npc:town:0\` | (3200, 3200) | Goblin 1, Man (man3) 1 | yes | no | - | - |
+          | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | \`npc:town:0\` | (3200, 3200) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Goblin 1, Man (man3) 1 | yes | no | - | - |
           "
         `);
     });
@@ -667,9 +675,9 @@ describe('in-game names and resource data', () => {
 
           1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P | Requires |
-          |---|---|---|---|---|---|---|
-          | [Town](../places/town.md) | \`shop:town:0\` | (3200, 3200) | (3200, 3199) | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | - |
+          | Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`shop:town:0\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Junk man (junkshop) 1, Shop of Distaste (rottenshop) 1, Sword Shop (swordshop) 1 | yes | - |
           "
         `);
         expect(namedPages.get('wiki/services/bank.md')).toMatchInlineSnapshot(`
@@ -678,9 +686,9 @@ describe('in-game names and resource data', () => {
 
           1 site, 1 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-          | Area | Site | Centre | Stand | Counts | F2P | Requires |
-          |---|---|---|---|---|---|---|
-          | [Town](../places/town.md) | \`bank:town:0\` | (3200, 3200) | (3200, 3199) | Bank booth 1, Banker 2 | yes | - |
+          | Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+          |---|---|---|---|---|---|---|---|---|
+          | [Town](../places/town.md) | \`bank:town:0\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | \`{ x: 3201, z: 3201, radius: 5 }\` | Bank booth 1, Banker 2 | yes | - |
           "
         `);
     });
@@ -706,9 +714,9 @@ describe('in-game names and resource data', () => {
 
           ## Sites
 
-          | Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-          |---|---|---|---|---|---|---|---|---|---|
-          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | 1 | yes | no | - | - | none |
+          | Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+          |---|---|---|---|---|---|---|---|---|---|---|---|---|
+          | [Town](../../places/town.md) | \`pickpocket:town:0\` | (3200, 3200) | (3200, 3199) | x 3200-3201, z 3200-3201 | x 3195-3206, z 3195-3206 | \`{ x: 3201, z: 3201, radius: 12 }\` | 1 | yes | no | - | - | none |
           "
         `);
     });
@@ -1157,7 +1165,7 @@ test("a connector's row says which ops lead where, an op that swaps the loc firs
             .split('\n')
             .find(l => l.startsWith('| `connector')),
     ).toBe(
-        '| `connector:region:0` | (3200, 3200) | Trapdoor 1 | down (3150, 9550) by Open, then Climb-down; to (3152, 3150) by Squeeze | yes | no | - | - |',
+        '| `connector:region:0` | (3200, 3200) | x 3200-3201, z 3200-3201 | `{ x: 3201, z: 3201, radius: 5 }` | Trapdoor 1 | down (3150, 9550) by Open, then Climb-down; to (3152, 3150) by Squeeze | yes | no | - | - |',
     );
 });
 

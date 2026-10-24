@@ -145,7 +145,7 @@ export interface SpotMovement {
     tiles: Tile[];
     /** The centre of `tiles`' box. */
     centre: Tile;
-    /** Chebyshev tiles from `centre` covering every tile, plus COVER_MARGIN of margin: an `area` to copy. */
+    /** Straight-line tiles from `centre` covering every tile, plus COVER_MARGIN of margin: an `area` to copy (cover.ts). */
     radius: number;
 }
 

@@ -5,18 +5,18 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:varrock-west-mine:0` | (3178, 3372) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:varrock-west-mine:0` | (3178, 3372) | x 3172-3185, z 3367-3375 | `{ x: 3179, z: 3371, radius: 12 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:varrock-west-mine:0` | (3178, 3370) | [clay](../resources/rock/clay.md) 3, [iron](../resources/rock/iron.md) 3, [silver](../resources/rock/silver.md) 3, [tin](../resources/rock/tin.md) 8 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:varrock-west-mine:0` | (3178, 3370) | x 3172-3183, z 3365-3377 | `{ x: 3178, z: 3371, radius: 12 }` | [clay](../resources/rock/clay.md) 3, [iron](../resources/rock/iron.md) 3, [silver](../resources/rock/silver.md) 3, [tin](../resources/rock/tin.md) 8 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:varrock-west-mine:0` | (3175, 3361) | Mugger 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:varrock-west-mine:0` | (3175, 3361) | (3175, 3361) | x 3163-3187, z 3349-3373 | `{ x: 3175, z: 3361, radius: 20 }` | Mugger 1 | yes | no | - | - |

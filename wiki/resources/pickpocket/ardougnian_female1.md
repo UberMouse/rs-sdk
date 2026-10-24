@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:7` | (2648, 3360) | (2648, 3360) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 28 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:2` | (2573, 3322) L1 | (2573, 3322) L1 | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 50 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:4` | (2613, 3317) | (2614, 3319) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 24 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:6` | (2621, 3293) L1 | (2621, 3293) L1 | 1 | no | no | - | - | Ardougne South bank (East Ardougne), 21 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:7` | (2648, 3360) | (2648, 3360) | x 2645-2652, z 3351-3367 | x 2631-2666, z 3337-3381 | `{ x: 2649, z: 3359, radius: 32 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 28 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:2` | (2573, 3322) L1 | (2573, 3322) L1 | (2573, 3322) L1 | x 2568-2578, z 3317-3327 L1 | `{ x: 2573, z: 3322, radius: 11, level: 1 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 50 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:4` | (2613, 3317) | (2614, 3319) | x 2612-2614, z 3316-3318 | x 2607-2619, z 3311-3323 | `{ x: 2613, z: 3317, radius: 12 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 24 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:6` | (2621, 3293) L1 | (2621, 3293) L1 | (2621, 3293) L1 | x 2616-2626, z 3288-3298 L1 | `{ x: 2621, z: 3293, radius: 11, level: 1 }` | 1 | no | no | - | - | Ardougne South bank (East Ardougne), 21 ticks |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Legends' Guild (Kandarin)](../places/legends-guild.md) | (2725, 3378) L1 | 1 | 3 | (2722, 3375)-(2728, 3381) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Legends' Guild (Kandarin)](../places/legends-guild.md) | (2725, 3378) L1 | (2725, 3378) L1 | 1 | 3 | x 2722-2728, z 3375-3381 L1 | 100 ticks | - | `{ x: 2725, z: 3378, radius: 8, level: 1 }` | no |
 
 ## Interactions
 

@@ -3,14 +3,14 @@
 
 9 sites, 4 of them in F2P; 7 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `spinning-wheel:asgarnia:0` | (2935, 3288) L1 | (2934, 3287) L1 | Spinning wheel 2 | yes | wear Brown apron + 40 Crafting | Falador East bank (Falador), 69 ticks |
-| [Falador (Asgarnia)](../places/falador.md) | `spinning-wheel:falador:0` | (2981, 3314) | (2982, 3314) | Spinning wheel 1 | yes | - | Falador East bank (Falador), 32 ticks |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `spinning-wheel:rellekka:0` | (2617, 3659) | (2617, 3660) | Spinning wheel 1 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 76 ticks via The Fremennik Trials done |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | `spinning-wheel:seers-village:0` | (2711, 3471) L1 | (2712, 3471) L1 | Spinning wheel 1 | no | - | Seers' Village bank (Seers' Village), 17 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:0` | (2475, 3398) L1 | (2476, 3398) L1 | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 24 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:1` | (2487, 3401) L1 | (2486, 3401) L1 | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 28 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:2` | (2488, 3410) L1 | (2488, 3409) L1 | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 32 ticks |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `spinning-wheel:barbarian-village:0` | (3081, 3430) | (3082, 3430) | Spinning wheel 1 | yes | - | Edgeville bank (Edgeville), 38 ticks |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | (3209, 3213) L1 | Spinning wheel 1 | yes | - | Draynor bank (Draynor Village), 98 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `spinning-wheel:asgarnia:0` | (2935, 3288) L1 | (2934, 3287) L1 | x 2934-2936, z 3287-3288 L1 | `{ x: 2935, z: 3288, radius: 5, level: 1 }` | Spinning wheel 2 | yes | wear Brown apron + 40 Crafting | Falador East bank (Falador), 69 ticks |
+| [Falador (Asgarnia)](../places/falador.md) | `spinning-wheel:falador:0` | (2981, 3314) | (2982, 3314) | (2981, 3314) | `{ x: 2981, z: 3314, radius: 3 }` | Spinning wheel 1 | yes | - | Falador East bank (Falador), 32 ticks |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `spinning-wheel:rellekka:0` | (2617, 3659) | (2617, 3660) | (2617, 3659) | `{ x: 2617, z: 3659, radius: 3 }` | Spinning wheel 1 | no | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 76 ticks via The Fremennik Trials done |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | `spinning-wheel:seers-village:0` | (2711, 3471) L1 | (2712, 3471) L1 | (2711, 3471) L1 | `{ x: 2711, z: 3471, radius: 3, level: 1 }` | Spinning wheel 1 | no | - | Seers' Village bank (Seers' Village), 17 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:0` | (2475, 3398) L1 | (2476, 3398) L1 | (2475, 3398) L1 | `{ x: 2475, z: 3398, radius: 3, level: 1 }` | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 24 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:1` | (2487, 3401) L1 | (2486, 3401) L1 | (2487, 3401) L1 | `{ x: 2487, z: 3401, radius: 3, level: 1 }` | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 28 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | `spinning-wheel:tree-gnome-stronghold:2` | (2488, 3410) L1 | (2488, 3409) L1 | (2488, 3410) L1 | `{ x: 2488, z: 3410, radius: 3, level: 1 }` | Spinning wheel 1 | no | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 32 ticks |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `spinning-wheel:barbarian-village:0` | (3081, 3430) | (3082, 3430) | (3081, 3430) | `{ x: 3081, z: 3430, radius: 3 }` | Spinning wheel 1 | yes | - | Edgeville bank (Edgeville), 38 ticks |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `spinning-wheel:lumbridge:0` | (3209, 3212) L1 | (3209, 3213) L1 | (3209, 3212) L1 | `{ x: 3209, z: 3212, radius: 3, level: 1 }` | Spinning wheel 1 | yes | - | Draynor bank (Draynor Village), 98 ticks |

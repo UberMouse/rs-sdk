@@ -24,17 +24,17 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2727, 3160) | 9 | 5 | (2718, 3153)-(2736, 3169) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2772, 3016) | 2 | 5 | (2766, 3009)-(2778, 3022) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2777, 3068) | 1 | 5 | (2772, 3059)-(2785, 3073) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2842, 3017) | 1 | 5 | (2837, 3012)-(2847, 3022) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2866, 3061) | 1 | 5 | (2861, 3056)-(2871, 3066) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2868, 3054) | 1 | 5 | (2863, 3049)-(2873, 3059) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2918, 2987) | 1 | 5 | (2913, 2980)-(2928, 2992) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2939, 2994) | 4 | 5 | (2926, 2982)-(2947, 3000) | 100 ticks | - | no |
-| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2801, 3067) | 1 | 5 | (2796, 3059)-(2810, 3072) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2727, 3160) | x 2723-2731, z 3158-3164 | 9 | 5 | x 2718-2736, z 3153-3169 | 100 ticks | - | `{ x: 2727, z: 3161, radius: 16 }` | no |
+| [Karamja](../places/karamja.md) | (2772, 3016) | x 2771-2773, z 3014-3017 | 2 | 5 | x 2766-2778, z 3009-3022 | 100 ticks | - | `{ x: 2772, z: 3016, radius: 13 }` | no |
+| [Karamja](../places/karamja.md) | (2777, 3068) | x 2777-2780, z 3064-3068 | 1 | 5 | x 2772-2785, z 3059-3073 | 100 ticks | - | `{ x: 2779, z: 3066, radius: 13 }` | no |
+| [Karamja](../places/karamja.md) | (2842, 3017) | (2842, 3017) | 1 | 5 | x 2837-2847, z 3012-3022 | 100 ticks | - | `{ x: 2842, z: 3017, radius: 11 }` | no |
+| [Karamja](../places/karamja.md) | (2866, 3061) | (2866, 3061) | 1 | 5 | x 2861-2871, z 3056-3066 | 100 ticks | - | `{ x: 2866, z: 3061, radius: 11 }` | no |
+| [Karamja](../places/karamja.md) | (2868, 3054) | (2868, 3054) | 1 | 5 | x 2863-2873, z 3049-3059 | 100 ticks | - | `{ x: 2868, z: 3054, radius: 11 }` | no |
+| [Karamja](../places/karamja.md) | (2918, 2987) | x 2918-2923, z 2985-2987 | 1 | 5 | x 2913-2928, z 2980-2992 | 100 ticks | - | `{ x: 2921, z: 2986, radius: 13 }` | no |
+| [Karamja](../places/karamja.md) | (2939, 2994) | x 2931-2942, z 2987-2995 | 4 | 5 | x 2926-2947, z 2982-3000 | 100 ticks | - | `{ x: 2937, z: 2991, radius: 18 }` | no |
+| [Tai Bwo Wannai (Karamja)](../places/tai-bwo-wannai.md) | (2801, 3067) | x 2801-2805, z 3064-3067 | 1 | 5 | x 2796-2810, z 3059-3072 | 100 ticks | - | `{ x: 2803, z: 3066, radius: 13 }` | no |
 
 ## Drops
 

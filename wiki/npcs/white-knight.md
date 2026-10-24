@@ -24,27 +24,27 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2921, 3514) | 1 | 5 | (2916, 3509)-(2926, 3519) | 100 ticks | - | no |
-| [Falador (Asgarnia)](../places/falador.md) | (2976, 3339) | 1 | 5 | (2971, 3334)-(2981, 3344) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2980, 3345) | 4 | 5 | (2968, 3336)-(2992, 3353) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2983, 3332) | 2 | 5 | (2978, 3325)-(2988, 3339) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2996, 3342) | 1 | 5 | (2991, 3337)-(3001, 3347) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2969, 3329) L1 | 1 | 5 | (2964, 3324)-(2974, 3334) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2974, 3337) L1 | 1 | 5 | (2969, 3332)-(2979, 3342) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2983, 3334) L1 | 3 | 5 | (2973, 3324)-(2994, 3343) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L1 | 2 | 5 | (2977, 3340)-(2992, 3350) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2971, 3328) L2 | 3 | 5 | (2961, 3323)-(2980, 3334) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L2 | 4 | 5 | (2976, 3334)-(2995, 3355) | 100 ticks | - | yes |
-| [Falador (Asgarnia)](../places/falador.md) | (2982, 3352) L3 | 1 | 5 | (2977, 3347)-(2987, 3357) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2959, 3338) | 2 | 5 | (2951, 3332)-(2967, 3343) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2972, 3345) | 1 | 5 | (2961, 3340)-(2977, 3351) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2961, 3351) L1 | 1 | 5 | (2956, 3346)-(2966, 3356) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2963, 3338) L1 | 3 | 5 | (2953, 3331)-(2974, 3346) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2957, 3341) L2 | 1 | 5 | (2952, 3336)-(2962, 3346) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2964, 3352) L2 | 1 | 5 | (2959, 3347)-(2969, 3357) | 100 ticks | - | yes |
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2962, 3339) L3 | 2 | 5 | (2955, 3333)-(2968, 3345) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2921, 3514) | (2921, 3514) | 1 | 5 | x 2916-2926, z 3509-3519 | 100 ticks | - | `{ x: 2921, z: 3514, radius: 11 }` | no |
+| [Falador (Asgarnia)](../places/falador.md) | (2976, 3339) | (2976, 3339) | 1 | 5 | x 2971-2981, z 3334-3344 | 100 ticks | - | `{ x: 2976, z: 3339, radius: 11 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2980, 3345) | x 2973-2987, z 3341-3348 | 4 | 5 | x 2968-2992, z 3336-3353 | 100 ticks | - | `{ x: 2980, z: 3345, radius: 18 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2983, 3332) | x 2983, z 3330-3334 | 2 | 5 | x 2978-2988, z 3325-3339 | 100 ticks | - | `{ x: 2983, z: 3332, radius: 12 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2996, 3342) | (2996, 3342) | 1 | 5 | x 2991-3001, z 3337-3347 | 100 ticks | - | `{ x: 2996, z: 3342, radius: 11 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2969, 3329) L1 | (2969, 3329) L1 | 1 | 5 | x 2964-2974, z 3324-3334 L1 | 100 ticks | - | `{ x: 2969, z: 3329, radius: 11, level: 1 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2974, 3337) L1 | (2974, 3337) L1 | 1 | 5 | x 2969-2979, z 3332-3342 L1 | 100 ticks | - | `{ x: 2974, z: 3337, radius: 11, level: 1 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2983, 3334) L1 | x 2978-2989, z 3329-3338 L1 | 3 | 5 | x 2973-2994, z 3324-3343 L1 | 100 ticks | - | `{ x: 2984, z: 3334, radius: 18, level: 1 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L1 | x 2982-2987, z 3345 L1 | 2 | 5 | x 2977-2992, z 3340-3350 L1 | 100 ticks | - | `{ x: 2985, z: 3345, radius: 13, level: 1 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2971, 3328) L2 | x 2966-2975, z 3328-3329 L2 | 3 | 5 | x 2961-2980, z 3323-3334 L2 | 100 ticks | - | `{ x: 2971, z: 3329, radius: 15, level: 2 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2985, 3345) L2 | x 2981-2990, z 3339-3350 L2 | 4 | 5 | x 2976-2995, z 3334-3355 L2 | 100 ticks | - | `{ x: 2986, z: 3345, radius: 18, level: 2 }` | yes |
+| [Falador (Asgarnia)](../places/falador.md) | (2982, 3352) L3 | (2982, 3352) L3 | 1 | 5 | x 2977-2987, z 3347-3357 L3 | 100 ticks | - | `{ x: 2982, z: 3352, radius: 11, level: 3 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2959, 3338) | x 2956-2962, z 3337-3338 | 2 | 5 | x 2951-2967, z 3332-3343 | 100 ticks | - | `{ x: 2959, z: 3338, radius: 13 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2972, 3345) | x 2966-2972, z 3345-3346 | 1 | 5 | x 2961-2977, z 3340-3351 | 100 ticks | - | `{ x: 2969, z: 3346, radius: 13 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2961, 3351) L1 | (2961, 3351) L1 | 1 | 5 | x 2956-2966, z 3346-3356 L1 | 100 ticks | - | `{ x: 2961, z: 3351, radius: 11, level: 1 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2963, 3338) L1 | x 2958-2969, z 3336-3341 L1 | 3 | 5 | x 2953-2974, z 3331-3346 L1 | 100 ticks | - | `{ x: 2964, z: 3339, radius: 17, level: 1 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2957, 3341) L2 | (2957, 3341) L2 | 1 | 5 | x 2952-2962, z 3336-3346 L2 | 100 ticks | - | `{ x: 2957, z: 3341, radius: 11, level: 2 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2964, 3352) L2 | (2964, 3352) L2 | 1 | 5 | x 2959-2969, z 3347-3357 L2 | 100 ticks | - | `{ x: 2964, z: 3352, radius: 11, level: 2 }` | yes |
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2962, 3339) L3 | x 2960-2963, z 3338-3340 L3 | 2 | 5 | x 2955-2968, z 3333-3345 L3 | 100 ticks | - | `{ x: 2962, z: 3339, radius: 13, level: 3 }` | yes |
 
 ## Drops
 

@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2902, 3604) | 1 | 0 | (2902, 3604)-(2902, 3604) | 100 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2906, 3623) | 1 | 0 | (2906, 3623)-(2906, 3623) | 100 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2921, 3611) | 5 | 0 | (2916, 3601)-(2923, 3622) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2902, 3604) | (2902, 3604) | 1 | 0 | (2902, 3604) | 100 ticks | - | `{ x: 2902, z: 3604, radius: 3 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2906, 3623) | (2906, 3623) | 1 | 0 | (2906, 3623) | 100 ticks | - | `{ x: 2906, z: 3623, radius: 3 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2921, 3611) | x 2916-2923, z 3601-3622 | 5 | 0 | x 2916-2923, z 3601-3622 | 100 ticks | - | `{ x: 2920, z: 3612, radius: 15 }` | no |
 
 ## Drops
 

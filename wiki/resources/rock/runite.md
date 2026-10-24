@@ -19,8 +19,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Heroes' Guild mine](../../places/heroes-guild-mine.md) | `rock:heroes-guild-mine:1` | (2939, 9891) | (2940, 9891) | 2 | no | no | - | Hero's Quest done | Falador West bank (Falador), 120 ticks via Hero's Quest done |
-| [Lava Maze dungeon](../../places/lava-maze-dungeon.md) | `rock:lava-maze-dungeon:0` | (3046, 10265) | (3045, 10265) | 1 | no | no | 44 | - | Mage Arena bank (Mage Arena chamber), 251 ticks |
-| [Wilderness](../../places/wilderness.md) | `rock:wilderness:2` | (3060, 3885) | (3060, 3885) | 2 | yes | no | 46 | - | Mage Arena bank (Mage Arena chamber), 154 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Heroes' Guild mine](../../places/heroes-guild-mine.md) | `rock:heroes-guild-mine:1` | (2939, 9891) | (2940, 9891) | x 2929-2942, z 9882-9900 | `{ x: 2936, z: 9891, radius: 15 }` | 2 | no | no | - | Hero's Quest done | Falador West bank (Falador), 120 ticks via Hero's Quest done |
+| [Lava Maze dungeon](../../places/lava-maze-dungeon.md) | `rock:lava-maze-dungeon:0` | (3046, 10265) | (3045, 10265) | (3046, 10265) | `{ x: 3046, z: 10265, radius: 3 }` | 1 | no | no | 44 | - | Mage Arena bank (Mage Arena chamber), 251 ticks |
+| [Wilderness](../../places/wilderness.md) | `rock:wilderness:2` | (3060, 3885) | (3060, 3885) | x 3059-3060, z 3884-3885 | `{ x: 3060, z: 3885, radius: 5 }` | 2 | yes | no | 46 | - | Mage Arena bank (Mage Arena chamber), 154 ticks |

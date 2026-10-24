@@ -3,9 +3,9 @@
 
 4 sites, 2 of them in F2P; 1 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `tanner:asgarnia:0` | (2934, 3284) L1 | (2934, 3284) L1 | Tanner 1 | yes | wear Brown apron + 40 Crafting |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `tanner:ranging-guild:0` | (2678, 3434) | (2678, 3434) | Leatherworker 1 | no | 40 Ranged |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `tanner:al-kharid:0` | (3276, 3193) | (3276, 3193) | Tanner 1 | yes | - |
-| [Canifis (Morytania)](../places/canifis.md) | `tanner:canifis:0` | (3490, 3503) | (3490, 3503) | Sbott 1 | no | Priest in Peril at stage 61 |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Counts | F2P | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `tanner:asgarnia:0` | (2934, 3284) L1 | (2934, 3284) L1 | (2934, 3284) L1 | x 2929-2939, z 3279-3289 L1 | `{ x: 2934, z: 3284, radius: 11, level: 1 }` | Tanner 1 | yes | wear Brown apron + 40 Crafting |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | `tanner:ranging-guild:0` | (2678, 3434) | (2678, 3434) | (2678, 3434) | x 2676-2680, z 3432-3436 | `{ x: 2678, z: 3434, radius: 6 }` | Leatherworker 1 | no | 40 Ranged |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `tanner:al-kharid:0` | (3276, 3193) | (3276, 3193) | (3276, 3193) | x 3271-3281, z 3188-3198 | `{ x: 3276, z: 3193, radius: 11 }` | Tanner 1 | yes | - |
+| [Canifis (Morytania)](../places/canifis.md) | `tanner:canifis:0` | (3490, 3503) | (3490, 3503) | (3490, 3503) | x 3488-3492, z 3501-3505 | `{ x: 3490, z: 3503, radius: 6 }` | Sbott 1 | no | Priest in Peril at stage 61 |

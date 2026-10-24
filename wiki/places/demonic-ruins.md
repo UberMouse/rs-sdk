@@ -5,15 +5,15 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:demonic-ruins:0` | (3300, 3874) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 45 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:demonic-ruins:0` | (3300, 3874) | x 3296-3304, z 3872-3875 | `{ x: 3300, z: 3874, radius: 8 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 45 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:demonic-ruins:0` | (3282, 3880) | Greater demon 1 | yes | yes | 46 | - |
-| `npc:demonic-ruins:1` | (3287, 3894) | Greater demon 1 | yes | yes | 47 | - |
-| `npc:demonic-ruins:2` | (3296, 3872) | Greater demon 1 | yes | yes | 45 | - |
-| `npc:demonic-ruins:3` | (3304, 3886) | Greater demon 1 | yes | yes | 46 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:demonic-ruins:0` | (3282, 3880) | (3282, 3880) | x 3276-3288, z 3874-3886 | `{ x: 3282, z: 3880, radius: 12 }` | Greater demon 1 | yes | yes | 46 | - |
+| `npc:demonic-ruins:1` | (3287, 3894) | (3287, 3894) | x 3281-3293, z 3888-3900 | `{ x: 3287, z: 3894, radius: 12 }` | Greater demon 1 | yes | yes | 47 | - |
+| `npc:demonic-ruins:2` | (3296, 3872) | (3296, 3872) | x 3290-3302, z 3866-3878 | `{ x: 3296, z: 3872, radius: 12 }` | Greater demon 1 | yes | yes | 45 | - |
+| `npc:demonic-ruins:3` | (3304, 3886) | (3304, 3886) | x 3298-3310, z 3880-3892 | `{ x: 3304, z: 3886, radius: 12 }` | Greater demon 1 | yes | yes | 46 | - |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2736, 3576) L1 | 1 | 5 | (2731, 3571)-(2741, 3581) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2736, 3576) L1 | (2736, 3576) L1 | 1 | 5 | x 2731-2741, z 3571-3581 L1 | 100 ticks | - | `{ x: 2736, z: 3576, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

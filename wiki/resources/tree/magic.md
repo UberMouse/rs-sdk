@@ -31,10 +31,10 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 7 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
-| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `tree:gnome-agility-course:0` | (2490, 3414) | (2489, 3414) | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 28 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 214 ticks via Regicide at stage 8 + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:28` | (2363, 3409) | (2368, 3411) | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 73 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | x 2608-2763, z 3291-3702 | `{ x: 2686, z: 3497, radius: 224 }` | 7 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | x 2378-2499, z 3380-3498 | `{ x: 2439, z: 3439, radius: 88 }` | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
+| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `tree:gnome-agility-course:0` | (2490, 3414) | (2489, 3414) | (2490, 3414) | `{ x: 2490, z: 3414, radius: 3 }` | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 28 ticks |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:7` | (2285, 3206) | (2287, 3206) | x 2242-2319, z 3131-3284 | `{ x: 2281, z: 3208, radius: 90 }` | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 214 ticks via Regicide at stage 8 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `tree:tirannwn:28` | (2363, 3409) | (2368, 3411) | x 2355-2372, z 3375-3453 | `{ x: 2364, z: 3414, radius: 44 }` | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 73 ticks |

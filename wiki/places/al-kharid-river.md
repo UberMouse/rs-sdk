@@ -7,12 +7,12 @@ Fishing spots on the river south of the bank.
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:al-kharid-river:0` | (3272, 3144) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:al-kharid-river:0` | (3272, 3144) | x 3267-3276, z 3140-3148 | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:al-kharid-river:0` | (3280, 3145) | Scorpion 1 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:al-kharid-river:0` | (3280, 3145) | (3280, 3145) | x 3268-3292, z 3133-3157 | `{ x: 3280, z: 3145, radius: 20 }` | Scorpion 1 | yes | yes | - | - |

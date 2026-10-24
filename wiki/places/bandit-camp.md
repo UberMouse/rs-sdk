@@ -5,20 +5,20 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:bandit-camp:0` | (3038, 3688) | Fire 3 | yes | yes | 22 | - |
-| `fire:bandit-camp:1` | (3035, 3698) | Fire 1 | yes | yes | 23 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:bandit-camp:0` | (3038, 3688) | x 3035-3041, z 3687-3688 | `{ x: 3038, z: 3688, radius: 7 }` | Fire 3 | yes | yes | 22 | - |
+| `fire:bandit-camp:1` | (3035, 3698) | (3035, 3698) | `{ x: 3035, z: 3698, radius: 3 }` | Fire 1 | yes | yes | 23 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:bandit-camp:0` | (3032, 3682) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 21 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:bandit-camp:0` | (3032, 3682) | x 3027-3039, z 3679-3686 | `{ x: 3033, z: 3683, radius: 11 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 21 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:bandit-camp:0` | (3034, 3684) | Bandit 2 | yes | yes | 21 | - |
-| `npc:bandit-camp:1` | (3036, 3697) | Bandit 1, Black Heather 1, Donny the lad 1, Speedy Keith 1 | yes | yes | 23 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:bandit-camp:0` | (3034, 3684) | x 3031-3037, z 3683-3685 | x 3026-3042, z 3678-3690 | `{ x: 3034, z: 3684, radius: 13 }` | Bandit 2 | yes | yes | 21 | - |
+| `npc:bandit-camp:1` | (3036, 3697) | x 3032-3039, z 3695-3700 | x 3027-3044, z 3690-3705 | `{ x: 3036, z: 3698, radius: 16 }` | Bandit 1, Black Heather 1, Donny the lad 1, Speedy Keith 1 | yes | yes | 23 | - |

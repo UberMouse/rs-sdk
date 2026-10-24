@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:6` | (2571, 3385) | (2571, 3385) | 4 | no | no | - | - | Ardougne North bank (East Ardougne), 36 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 38 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:5` | (2628, 3294) | (2628, 3294) | 2 | no | no | - | - | Ardougne South bank (East Ardougne), 14 ticks |
-| [Varrock Palace (Varrock)](../../places/palace.md) | `pickpocket:palace:0` | (3204, 3487) | (3204, 3487) | 2 | yes | no | - | - | Varrock East bank (Varrock), 43 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Kandarin](../../places/kandarin.md) | `pickpocket:kandarin:6` | (2571, 3385) | (2571, 3385) | x 2567-2575, z 3383-3388 | x 2562-2580, z 3378-3393 | `{ x: 2571, z: 3386, radius: 16 }` | 4 | no | no | - | - | Ardougne North bank (East Ardougne), 36 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:0` | (2580, 3298) | (2580, 3298) | x 2571-2587, z 3286-3308 | x 2556-2602, z 3271-3323 | `{ x: 2579, z: 3297, radius: 38 }` | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 38 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `pickpocket:east-ardougne:5` | (2628, 3294) | (2628, 3294) | x 2621-2632, z 3288-3299 | x 2616-2637, z 3283-3304 | `{ x: 2627, z: 3294, radius: 19 }` | 2 | no | no | - | - | Ardougne South bank (East Ardougne), 14 ticks |
+| [Varrock Palace (Varrock)](../../places/palace.md) | `pickpocket:palace:0` | (3204, 3487) | (3204, 3487) | x 3202-3205, z 3487 | x 3197-3210, z 3482-3492 | `{ x: 3204, z: 3487, radius: 12 }` | 2 | yes | no | - | - | Varrock East bank (Varrock), 43 ticks |

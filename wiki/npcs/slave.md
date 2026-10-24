@@ -10,15 +10,15 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Underground Pass](../places/underground-pass.md) | (2380, 9659) | 1 | 5 | (2375, 9654)-(2385, 9664) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2382, 9654) | 2 | 5 | (2376, 9648)-(2387, 9659) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2385, 9658) | 2 | 5 | (2379, 9652)-(2390, 9664) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2387, 9653) | 1 | 5 | (2382, 9648)-(2392, 9658) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2389, 9658) | 1 | 5 | (2384, 9653)-(2394, 9663) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2392, 9653) | 1 | 5 | (2387, 9648)-(2397, 9658) | 100 ticks | - | no |
-| [Underground Pass](../places/underground-pass.md) | (2393, 9659) | 2 | 5 | (2387, 9653)-(2399, 9664) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Underground Pass](../places/underground-pass.md) | (2380, 9659) | (2380, 9659) | 1 | 5 | x 2375-2385, z 9654-9664 | 100 ticks | - | `{ x: 2380, z: 9659, radius: 11 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2382, 9654) | x 2381-2382, z 9653-9654 | 2 | 5 | x 2376-2387, z 9648-9659 | 100 ticks | - | `{ x: 2382, z: 9654, radius: 12 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2385, 9658) | x 2384-2385, z 9657-9659 | 2 | 5 | x 2379-2390, z 9652-9664 | 100 ticks | - | `{ x: 2385, z: 9658, radius: 12 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2387, 9653) | (2387, 9653) | 1 | 5 | x 2382-2392, z 9648-9658 | 100 ticks | - | `{ x: 2387, z: 9653, radius: 11 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2389, 9658) | (2389, 9658) | 1 | 5 | x 2384-2394, z 9653-9663 | 100 ticks | - | `{ x: 2389, z: 9658, radius: 11 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2392, 9653) | (2392, 9653) | 1 | 5 | x 2387-2397, z 9648-9658 | 100 ticks | - | `{ x: 2392, z: 9653, radius: 11 }` | no |
+| [Underground Pass](../places/underground-pass.md) | (2393, 9659) | x 2392-2394, z 9658-9659 | 2 | 5 | x 2387-2399, z 9653-9664 | 100 ticks | - | `{ x: 2393, z: 9659, radius: 12 }` | no |
 
 ## Interactions
 

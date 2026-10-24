@@ -19,7 +19,7 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `rock:karamja:1` | (2822, 2999) | (2822, 2999) | 5 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 26 ticks |
-| [Shilo Village (Karamja)](../../places/shilo-village.md) | `rock:shilo-village:0` | (2825, 3002) | (2825, 3002) | 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 28 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Karamja](../../places/karamja.md) | `rock:karamja:1` | (2822, 2999) | (2822, 2999) | x 2820-2823, z 2998-3002 | `{ x: 2822, z: 3000, radius: 6 }` | 5 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 26 ticks |
+| [Shilo Village (Karamja)](../../places/shilo-village.md) | `rock:shilo-village:0` | (2825, 3002) | (2825, 3002) | x 2825, z 3001-3003 | `{ x: 2825, z: 3002, radius: 4 }` | 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 28 ticks |

@@ -5,15 +5,15 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:gutanoth:0` | (2518, 3035) | Dal's General Ogre Supplies (generalshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
-| `shop:gutanoth:1` | (2528, 3048) | Grud's Herblore Stall. (herbloreshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:gutanoth:0` | (2518, 3035) | (2518, 3035) | x 2516-2520, z 3033-3037 | `{ x: 2518, z: 3035, radius: 6 }` | Dal's General Ogre Supplies (generalshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| `shop:gutanoth:1` | (2528, 3048) | (2528, 3048) | x 2526-2530, z 3046-3050 | `{ x: 2528, z: 3048, radius: 6 }` | Grud's Herblore Stall. (herbloreshopogre) 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:gutanoth:0` | (2519, 3044) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
-| `npc:gutanoth:1` | (2523, 3056) | Ogre (ogre) 2 | no | no | - | unreached |
-| `npc:gutanoth:2` | (2527, 3042) | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:gutanoth:0` | (2519, 3044) | x 2518-2520, z 3041-3046 | x 2515-2523, z 3038-3049 | `{ x: 2519, z: 3044, radius: 11 }` | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |
+| `npc:gutanoth:1` | (2523, 3056) | x 2522-2523, z 3055-3057 | x 2519-2526, z 3052-3060 | `{ x: 2523, z: 3056, radius: 9 }` | Ogre (ogre) 2 | no | no | - | unreached |
+| `npc:gutanoth:2` | (2527, 3042) | x 2526-2528, z 3039-3044 | x 2523-2531, z 3036-3047 | `{ x: 2527, z: 3042, radius: 11 }` | Ogre (ogre2) 1, Ogre chieftain 1 | no | no | - | 1 Gold bar (used up) or carry Ogre relic or Watch Tower at stage 4 |

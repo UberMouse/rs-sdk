@@ -5,23 +5,23 @@ Legends' Quest npcs (quests/quest_legends).
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:legends-quest-cavern:0` | (2426, 4726) | Furnace 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:legends-quest-cavern:0` | (2426, 4726) | (2426, 4726) | `{ x: 2426, z: 4726, radius: 3 }` | Furnace 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:legends-quest-cavern:0` | (2384, 4706) | San Tojalon 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:1` | (2393, 4713) | San Tojalon 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:2` | (2394, 4731) | San Tojalon 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:3` | (2395, 4721) | San Tojalon 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:4` | (2401, 4705) | Irvig Senay 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:5` | (2405, 4712) | Irvig Senay 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:6` | (2408, 4698) | Ranalph Devere 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:7` | (2414, 4681) | Lesser demon 3 | no | no | - | unreached |
-| `npc:legends-quest-cavern:8` | (2412, 4723) | Irvig Senay 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:9` | (2414, 4731) | Irvig Senay 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:10` | (2417, 4699) | Ranalph Devere 1 | no | no | - | unreached |
-| `npc:legends-quest-cavern:11` | (2426, 4699) | Ranalph Devere 2 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:legends-quest-cavern:0` | (2384, 4706) | (2384, 4706) | x 2374-2394, z 4696-4716 | `{ x: 2384, z: 4706, radius: 18 }` | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:1` | (2393, 4713) | (2393, 4713) | x 2383-2403, z 4703-4723 | `{ x: 2393, z: 4713, radius: 18 }` | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:2` | (2394, 4731) | (2394, 4731) | x 2384-2404, z 4721-4741 | `{ x: 2394, z: 4731, radius: 18 }` | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:3` | (2395, 4721) | (2395, 4721) | x 2385-2405, z 4711-4731 | `{ x: 2395, z: 4721, radius: 18 }` | San Tojalon 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:4` | (2401, 4705) | (2401, 4705) | x 2398-2404, z 4702-4708 | `{ x: 2401, z: 4705, radius: 8 }` | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:5` | (2405, 4712) | (2405, 4712) | x 2402-2408, z 4709-4715 | `{ x: 2405, z: 4712, radius: 8 }` | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:6` | (2408, 4698) | (2408, 4698) | x 2405-2411, z 4695-4701 | `{ x: 2408, z: 4698, radius: 8 }` | Ranalph Devere 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:7` | (2414, 4681) | x 2412-2416, z 4677-4684 | x 2406-2422, z 4671-4690 | `{ x: 2414, z: 4681, radius: 16 }` | Lesser demon 3 | no | no | - | unreached |
+| `npc:legends-quest-cavern:8` | (2412, 4723) | (2412, 4723) | x 2409-2415, z 4720-4726 | `{ x: 2412, z: 4723, radius: 8 }` | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:9` | (2414, 4731) | (2414, 4731) | x 2411-2417, z 4728-4734 | `{ x: 2414, z: 4731, radius: 8 }` | Irvig Senay 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:10` | (2417, 4699) | (2417, 4699) | x 2414-2420, z 4696-4702 | `{ x: 2417, z: 4699, radius: 8 }` | Ranalph Devere 1 | no | no | - | unreached |
+| `npc:legends-quest-cavern:11` | (2426, 4699) | x 2424-2428, z 4696-4701 | x 2421-2431, z 4693-4704 | `{ x: 2426, z: 4699, radius: 11 }` | Ranalph Devere 2 | no | no | - | unreached |

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3038, 3695) | 1 | 5 | (3027, 3690)-(3044, 3705) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Bandit Camp (Wilderness)](../places/bandit-camp.md) | (3038, 3695) | x 3032-3039, z 3695-3700 | 1 | 5 | x 3027-3044, z 3690-3705 | 100 ticks | - | `{ x: 3036, z: 3698, radius: 16 }` | yes |
 
 ## Drops
 

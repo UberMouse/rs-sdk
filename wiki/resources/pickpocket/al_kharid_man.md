@@ -17,9 +17,9 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:0` | (3277, 3187) | (3277, 3187) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 12 ticks |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:2` | (3284, 3199) | (3284, 3199) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:3` | (3298, 3203) | (3297, 3203) | 3 | yes | yes | - | - | Al Kharid bank (Al Kharid), 21 ticks |
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:4` | (3294, 3196) | (3294, 3196) | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:0` | (3277, 3187) | (3277, 3187) | (3277, 3187) | x 3272-3282, z 3182-3192 | `{ x: 3277, z: 3187, radius: 11 }` | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 12 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:2` | (3284, 3199) | (3284, 3199) | (3284, 3199) | x 3279-3289, z 3194-3204 | `{ x: 3284, z: 3199, radius: 11 }` | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:3` | (3298, 3203) | (3297, 3203) | x 3293-3303, z 3199-3206 | x 3288-3308, z 3194-3211 | `{ x: 3298, z: 3203, radius: 17 }` | 3 | yes | yes | - | - | Al Kharid bank (Al Kharid), 21 ticks |
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:4` | (3294, 3196) | (3294, 3196) | (3294, 3196) | x 3289-3299, z 3191-3201 | `{ x: 3294, z: 3196, radius: 11 }` | 1 | yes | yes | - | - | Al Kharid bank (Al Kharid), 18 ticks |

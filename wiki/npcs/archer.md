@@ -24,18 +24,18 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3549) | 2 | 2 | (2895, 3547)-(2902, 3551) | 50 ticks | - | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3559) L1 | 2 | 2 | (2890, 3556)-(2895, 3561) | 50 ticks | - | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3569) L1 | 1 | 2 | (2891, 3567)-(2895, 3571) | 50 ticks | - | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3558) L1 | 2 | 2 | (2901, 3555)-(2907, 3561) | 50 ticks | - | no |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3569) L1 | 2 | 2 | (2902, 3566)-(2906, 3572) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3284) L2 | 1 | 10 | (2562, 3274)-(2582, 3294) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3309) L2 | 1 | 10 | (2562, 3299)-(2582, 3319) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3287) L2 | 2 | 10 | (2572, 3274)-(2598, 3300) | 50 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3306) L2 | 2 | 10 | (2572, 3293)-(2598, 3319) | 50 ticks | - | no |
-| [Misthalin](../places/misthalin.md) | (3145, 3200) | 1 | 5 | (3140, 3195)-(3150, 3205) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2899, 3549) | x 2897-2900, z 3549 | 2 | 2 | x 2895-2902, z 3547-3551 | 50 ticks | - | `{ x: 2899, z: 3549, radius: 8 }` | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3559) L1 | x 2892-2893, z 3558-3559 L1 | 2 | 2 | x 2890-2895, z 3556-3561 L1 | 50 ticks | - | `{ x: 2893, z: 3559, radius: 8, level: 1 }` | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2893, 3569) L1 | (2893, 3569) L1 | 1 | 2 | x 2891-2895, z 3567-3571 L1 | 50 ticks | - | `{ x: 2893, z: 3569, radius: 6, level: 1 }` | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3558) L1 | x 2903-2905, z 3557-3559 L1 | 2 | 2 | x 2901-2907, z 3555-3561 L1 | 50 ticks | - | `{ x: 2904, z: 3558, radius: 8, level: 1 }` | no |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | (2904, 3569) L1 | x 2904, z 3568-3570 L1 | 2 | 2 | x 2902-2906, z 3566-3572 L1 | 50 ticks | - | `{ x: 2904, z: 3569, radius: 7, level: 1 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3284) L2 | (2572, 3284) L2 | 1 | 10 | x 2562-2582, z 3274-3294 L2 | 50 ticks | - | `{ x: 2572, z: 3284, radius: 18, level: 2 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2572, 3309) L2 | (2572, 3309) L2 | 1 | 10 | x 2562-2582, z 3299-3319 L2 | 50 ticks | - | `{ x: 2572, z: 3309, radius: 18, level: 2 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3287) L2 | x 2582-2588, z 3284-3290 L2 | 2 | 10 | x 2572-2598, z 3274-3300 L2 | 50 ticks | - | `{ x: 2585, z: 3287, radius: 22, level: 2 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3306) L2 | x 2582-2588, z 3303-3309 L2 | 2 | 10 | x 2572-2598, z 3293-3319 L2 | 50 ticks | - | `{ x: 2585, z: 3306, radius: 22, level: 2 }` | no |
+| [Misthalin](../places/misthalin.md) | (3145, 3200) | (3145, 3200) | 1 | 5 | x 3140-3150, z 3195-3205 | 100 ticks | - | `{ x: 3145, z: 3200, radius: 11 }` | yes |
 
 ## Drops
 

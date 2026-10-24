@@ -23,21 +23,21 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:0` | (2791, 3019) | (2791, 3020) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 132 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:1` | (2801, 3010) | (2801, 3009) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 121 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:2` | (2807, 3021) | (2807, 3022) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 118 ticks via The Grand Tree done |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:0` | (2791, 3019) | (2791, 3020) | (2791, 3019) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 132 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:1` | (2801, 3010) | (2801, 3009) | (2801, 3010) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 121 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:2` | (2807, 3021) | (2807, 3022) | (2807, 3021) | [Movement](#movement) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 118 ticks via The Grand Tree done |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:karamja:0` | (2791, 3019) | 3 | 1 |
-| `fishing-spot:karamja:1` | (2801, 3010) | 3 | 1 |
-| `fishing-spot:karamja:2` | (2807, 3021) | 3 | 1 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:karamja:0` | `{ x: 2791, z: 3019, radius: 3 }` | 1 |
+| `fishing-spot:karamja:1` | `{ x: 2801, z: 3010, radius: 3 }` | 1 |
+| `fishing-spot:karamja:2` | `{ x: 2807, z: 3021, radius: 3 }` | 1 |
 
 `fishing-spot:karamja:0` tiles: (2791, 3019)
 

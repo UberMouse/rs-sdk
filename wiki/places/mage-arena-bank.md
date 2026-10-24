@@ -7,6 +7,6 @@ Gundai.
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:mage-arena-bank:0` | (2534, 4714) | Gundai 1 | no | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `bank:mage-arena-bank:0` | (2534, 4714) | (2534, 4714) | x 2529-2539, z 4709-4719 | `{ x: 2534, z: 4714, radius: 11 }` | Gundai 1 | no | yes | - | - |

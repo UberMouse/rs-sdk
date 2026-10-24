@@ -5,52 +5,52 @@ A walled village with Yanille soldiers, the Dragon Inn bartender and the watchto
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:watchtower-quest-area:0` | (2933, 4698) | Range 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:watchtower-quest-area:0` | (2933, 4698) | (2933, 4698) | `{ x: 2933, z: 4698, radius: 3 }` | Range 1 | no | no | - | unreached |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:watchtower-quest-area:0` | (2890, 4715) | Fire 2 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:watchtower-quest-area:0` | (2890, 4715) | x 2888-2891, z 4715 | `{ x: 2890, z: 4715, radius: 5 }` | Fire 2 | no | no | - | unreached |
 
 ## [Sand pits](../services/sand-pit.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `sand-pit:watchtower-quest-area:0` | (2926, 4703) | Sand pit 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `sand-pit:watchtower-quest-area:0` | (2926, 4703) | (2926, 4703) | `{ x: 2926, z: 4703, radius: 3 }` | Sand pit 1 | no | no | - | unreached |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:watchtower-quest-area:0` | (2933, 4701) | Sink 1 | no | no | - | unreached |
-| `water-source:watchtower-quest-area:1` | (2940, 4713) | Fountain 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:watchtower-quest-area:0` | (2933, 4701) | (2933, 4701) | `{ x: 2933, z: 4701, radius: 3 }` | Sink 1 | no | no | - | unreached |
+| `water-source:watchtower-quest-area:1` | (2940, 4713) | (2940, 4713) | `{ x: 2940, z: 4713, radius: 3 }` | Fountain 1 | no | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:watchtower-quest-area:0` | (2911, 4721) | [normal](../resources/tree/normal.md) 53, [oak](../resources/tree/oak.md) 12 | no | no | - | unreached |
-| `tree:watchtower-quest-area:1` | (2924, 4687) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:watchtower-quest-area:2` | (2928, 4701) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
-| `tree:watchtower-quest-area:3` | (2940, 4700) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:watchtower-quest-area:0` | (2911, 4721) | x 2880-2940, z 4696-4734 | `{ x: 2910, z: 4715, radius: 39 }` | [normal](../resources/tree/normal.md) 53, [oak](../resources/tree/oak.md) 12 | no | no | - | unreached |
+| `tree:watchtower-quest-area:1` | (2924, 4687) | (2924, 4687) | `{ x: 2924, z: 4687, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:watchtower-quest-area:2` | (2928, 4701) | (2928, 4701) | `{ x: 2928, z: 4701, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:watchtower-quest-area:3` | (2940, 4700) | x 2937-2941, z 4695-4705 | `{ x: 2939, z: 4700, radius: 9 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:watchtower-quest-area:0` | (2924, 4702) | Soldier 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:watchtower-quest-area:0` | (2924, 4702) | (2924, 4702) | x 2919-2929, z 4697-4707 | `{ x: 2924, z: 4702, radius: 11 }` | Soldier 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:watchtower-quest-area:0` | (2921, 4685) | Staircase 1 | up (2921, 4684) L1 by Climb-up | no | no | - | unreached |
-| `connector:watchtower-quest-area:1` | (2921, 4685) L1 | Staircase 1 | down (2921, 4688) by Climb-down | no | no | - | unreached |
-| `connector:watchtower-quest-area:2` | (2921, 4696) | Staircase 1 | up (2921, 4699) L1 by Climb-up | no | no | - | unreached |
-| `connector:watchtower-quest-area:3` | (2921, 4697) L1 | Staircase 1 | down (2921, 4695) by Climb-down | no | no | - | unreached |
-| `connector:watchtower-quest-area:4` | (2928, 4711) L1 | Ladder 1 | down (2927, 4711) by Climb-down | no | no | - | unreached |
-| `connector:watchtower-quest-area:5` | (2940, 4681) | Ladder 1 | up (2939, 4681) L1 by Climb-up | no | no | - | unreached |
-| `connector:watchtower-quest-area:6` | (2940, 4681) L1 | Ladder 1 | down (2939, 4681) by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:watchtower-quest-area:0` | (2921, 4685) | (2921, 4685) | `{ x: 2921, z: 4685, radius: 3 }` | Staircase 1 | up (2921, 4684) L1 by Climb-up | no | no | - | unreached |
+| `connector:watchtower-quest-area:1` | (2921, 4685) L1 | (2921, 4685) L1 | `{ x: 2921, z: 4685, radius: 3, level: 1 }` | Staircase 1 | down (2921, 4688) by Climb-down | no | no | - | unreached |
+| `connector:watchtower-quest-area:2` | (2921, 4696) | (2921, 4696) | `{ x: 2921, z: 4696, radius: 3 }` | Staircase 1 | up (2921, 4699) L1 by Climb-up | no | no | - | unreached |
+| `connector:watchtower-quest-area:3` | (2921, 4697) L1 | (2921, 4697) L1 | `{ x: 2921, z: 4697, radius: 3, level: 1 }` | Staircase 1 | down (2921, 4695) by Climb-down | no | no | - | unreached |
+| `connector:watchtower-quest-area:4` | (2928, 4711) L1 | (2928, 4711) L1 | `{ x: 2928, z: 4711, radius: 3, level: 1 }` | Ladder 1 | down (2927, 4711) by Climb-down | no | no | - | unreached |
+| `connector:watchtower-quest-area:5` | (2940, 4681) | (2940, 4681) | `{ x: 2940, z: 4681, radius: 3 }` | Ladder 1 | up (2939, 4681) L1 by Climb-up | no | no | - | unreached |
+| `connector:watchtower-quest-area:6` | (2940, 4681) L1 | (2940, 4681) L1 | `{ x: 2940, z: 4681, radius: 3, level: 1 }` | Ladder 1 | down (2939, 4681) by Climb-down | no | no | - | unreached |

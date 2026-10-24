@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Varrock (Misthalin)](../places/varrock.md) | (3232, 3423) | 1 | 5 | (3227, 3418)-(3237, 3428) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Varrock (Misthalin)](../places/varrock.md) | (3232, 3423) | (3232, 3423) | 1 | 5 | x 3227-3237, z 3418-3428 | 100 ticks | - | `{ x: 3232, z: 3423, radius: 11 }` | yes |
 
 ## Interactions
 

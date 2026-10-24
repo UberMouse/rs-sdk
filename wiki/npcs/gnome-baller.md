@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2391, 3488) | 4 | 3 | (2388, 3481)-(2394, 3495) | 100 ticks | - | no |
-| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2396, 3488) | 4 | 3 | (2393, 3482)-(2399, 3494) | 100 ticks | - | no |
-| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2400, 3488) | 6 | 4 | (2396, 3479)-(2404, 3497) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2391, 3488) | x 2391, z 3484-3492 | 4 | 3 | x 2388-2394, z 3481-3495 | 100 ticks | - | `{ x: 2391, z: 3488, radius: 11 }` | no |
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2396, 3488) | x 2396, z 3485-3491 | 4 | 3 | x 2393-2399, z 3482-3494 | 100 ticks | - | `{ x: 2396, z: 3488, radius: 10 }` | no |
+| [Gnome Ball Field (Tree Gnome Stronghold)](../places/gnome-ball-field.md) | (2400, 3488) | x 2400, z 3483-3493 | 6 | 4 | x 2396-2404, z 3479-3497 | 100 ticks | - | `{ x: 2400, z: 3488, radius: 13 }` | no |
 
 ## Drops
 

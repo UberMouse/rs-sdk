@@ -5,23 +5,23 @@ Ladder up into the Heroes' Guild at (2892, 3507).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:heroes-guild-mine:0` | (2922, 9910) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 5, [mithril](../resources/rock/mithril.md) 2 | no | no | - | Hero's Quest done |
-| `rock:heroes-guild-mine:1` | (2939, 9891) | [coal](../resources/rock/coal.md) 6, [runite](../resources/rock/runite.md) 2 | no | no | - | Hero's Quest done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:heroes-guild-mine:0` | (2922, 9910) | x 2915-2931, z 9901-9917 | `{ x: 2923, z: 9909, radius: 15 }` | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 5, [mithril](../resources/rock/mithril.md) 2 | no | no | - | Hero's Quest done |
+| `rock:heroes-guild-mine:1` | (2939, 9891) | x 2929-2942, z 9882-9900 | `{ x: 2936, z: 9891, radius: 15 }` | [coal](../resources/rock/coal.md) 6, [runite](../resources/rock/runite.md) 2 | no | no | - | Hero's Quest done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:heroes-guild-mine:0` | (2889, 9907) | Giant bat 1 | no | no | - | Hero's Quest done |
-| `npc:heroes-guild-mine:1` | (2896, 9911) | Giant bat 1 | no | no | - | Hero's Quest done |
-| `npc:heroes-guild-mine:2` | (2908, 9905) | Blue dragon 1 | no | no | - | Hero's Quest done |
-| `npc:heroes-guild-mine:3` | (2936, 9892) | Giant bat 3 | no | no | - | Hero's Quest done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:heroes-guild-mine:0` | (2889, 9907) | (2889, 9907) | x 2881-2897, z 9899-9915 | `{ x: 2889, z: 9907, radius: 15 }` | Giant bat 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:1` | (2896, 9911) | (2896, 9911) | x 2888-2904, z 9903-9919 | `{ x: 2896, z: 9911, radius: 15 }` | Giant bat 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:2` | (2908, 9905) | (2908, 9905) | x 2904-2912, z 9901-9909 | `{ x: 2908, z: 9905, radius: 9 }` | Blue dragon 1 | no | no | - | Hero's Quest done |
+| `npc:heroes-guild-mine:3` | (2936, 9892) | x 2934-2939, z 9887-9896 | x 2926-2947, z 9879-9904 | `{ x: 2937, z: 9892, radius: 21 }` | Giant bat 3 | no | no | - | Hero's Quest done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:heroes-guild-mine:0` | (2892, 9907) | Ladder 1 | up (2893, 3507) by Climb-up | no | no | - | Hero's Quest done |
-| `connector:heroes-guild-mine:1` | (2907, 9876) | Ladder 1 | up (2906, 3476) by Climb-up | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:heroes-guild-mine:0` | (2892, 9907) | (2892, 9907) | `{ x: 2892, z: 9907, radius: 3 }` | Ladder 1 | up (2893, 3507) by Climb-up | no | no | - | Hero's Quest done |
+| `connector:heroes-guild-mine:1` | (2907, 9876) | (2907, 9876) | `{ x: 2907, z: 9876, radius: 3 }` | Ladder 1 | up (2906, 3476) by Climb-up | no | no | - | unreached |

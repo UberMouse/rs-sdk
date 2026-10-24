@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2761, 3191) | 1 | 1 | (2760, 3185)-(2764, 3192) | 100 ticks | - | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2775, 3193) | 3 | 1 | (2769, 3189)-(2779, 3195) | 100 ticks | - | no |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | (2802, 3195) | 1 | 1 | (2801, 3194)-(2803, 3196) | 100 ticks | - | no |
-| [Karamja](../places/karamja.md) | (2777, 3198) | 2 | 1 | (2775, 3197)-(2779, 3199) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2761, 3191) | x 2761-2763, z 3186-3191 | 1 | 1 | x 2760-2764, z 3185-3192 | 100 ticks | - | `{ x: 2762, z: 3189, radius: 8 }` | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2775, 3193) | x 2770-2778, z 3190-3194 | 3 | 1 | x 2769-2779, z 3189-3195 | 100 ticks | - | `{ x: 2774, z: 3192, radius: 9 }` | no |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | (2802, 3195) | (2802, 3195) | 1 | 1 | x 2801-2803, z 3194-3196 | 100 ticks | - | `{ x: 2802, z: 3195, radius: 5 }` | no |
+| [Karamja](../places/karamja.md) | (2777, 3198) | x 2776-2778, z 3198 | 2 | 1 | x 2775-2779, z 3197-3199 | 100 ticks | - | `{ x: 2777, z: 3198, radius: 6 }` | no |
 
 ## Drops
 

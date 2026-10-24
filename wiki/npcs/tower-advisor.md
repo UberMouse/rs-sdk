@@ -10,12 +10,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2666, 3427) L2 | 1 | 0 | (2666, 3427)-(2666, 3427) | 100 ticks | - | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2667, 3430) L2 | 1 | 0 | (2667, 3430)-(2667, 3430) | 100 ticks | - | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3426) L2 | 1 | 0 | (2669, 3426)-(2669, 3426) | 100 ticks | - | no |
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2670, 3429) L2 | 1 | 0 | (2670, 3429)-(2670, 3429) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2666, 3427) L2 | (2666, 3427) L2 | 1 | 0 | (2666, 3427) L2 | 100 ticks | - | `{ x: 2666, z: 3427, radius: 3, level: 2 }` | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2667, 3430) L2 | (2667, 3430) L2 | 1 | 0 | (2667, 3430) L2 | 100 ticks | - | `{ x: 2667, z: 3430, radius: 3, level: 2 }` | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2669, 3426) L2 | (2669, 3426) L2 | 1 | 0 | (2669, 3426) L2 | 100 ticks | - | `{ x: 2669, z: 3426, radius: 3, level: 2 }` | no |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2670, 3429) L2 | (2670, 3429) L2 | 1 | 0 | (2670, 3429) L2 | 100 ticks | - | `{ x: 2670, z: 3429, radius: 3, level: 2 }` | no |
 
 ## Interactions
 

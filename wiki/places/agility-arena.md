@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:agility-arena:0` | (2806, 3185) | Pirate 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:agility-arena:1` | (2811, 3198) | Pirate 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:agility-arena:0` | (2806, 3185) | (2806, 3185) | x 2801-2811, z 3180-3190 | `{ x: 2806, z: 3185, radius: 11 }` | Pirate 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:agility-arena:1` | (2811, 3198) | (2811, 3198) | x 2806-2816, z 3193-3203 | `{ x: 2811, z: 3198, radius: 11 }` | Pirate 1 | no | no | - | 30 coins or The Grand Tree done |

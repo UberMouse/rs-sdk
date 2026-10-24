@@ -5,20 +5,20 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:zoo:0` | (2608, 3261) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:zoo:1` | (2622, 3270) | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:zoo:0` | (2608, 3261) | (2608, 3261) | `{ x: 2608, z: 3261, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:zoo:1` | (2622, 3270) | x 2617-2625, z 3261-3278 | `{ x: 2621, z: 3270, radius: 13 }` | [normal](../resources/tree/normal.md) 8 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:zoo:0` | (2605, 3269) | Pit Scorpion 3, Scorpion 3 | no | no | - | - |
-| `npc:zoo:1` | (2622, 3272) | Jogre 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:zoo:0` | (2605, 3269) | x 2602-2607, z 3267-3272 | x 2590-2619, z 3255-3284 | `{ x: 2605, z: 3270, radius: 25 }` | Pit Scorpion 3, Scorpion 3 | no | no | - | - |
+| `npc:zoo:1` | (2622, 3272) | (2622, 3272) | x 2619-2625, z 3269-3275 | `{ x: 2622, z: 3272, radius: 8 }` | Jogre 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:zoo:0` | (2621, 3261) | Ladder 1 | down (2620, 9661) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:zoo:0` | (2621, 3261) | (2621, 3261) | `{ x: 2621, z: 3261, radius: 3 }` | Ladder 1 | down (2620, 9661) by Climb-down | no | no | - | - |

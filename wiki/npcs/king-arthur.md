@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | (2764, 3515) | 1 | 5 | (2759, 3510)-(2769, 3520) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | (2764, 3515) | (2764, 3515) | 1 | 5 | x 2759-2769, z 3510-3520 | 100 ticks | - | `{ x: 2764, z: 3515, radius: 11 }` | no |
 
 ## Interactions
 

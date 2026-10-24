@@ -5,88 +5,88 @@ The two islands of areas/area_miscellania. Reached by the longship from Rellekka
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:miscellania:0` | (2517, 3865) | Greengrocer of Miscellania (misc_greengrocer) 1, Island Fishmonger (misc_fishmonger) 1 | no | no | - | The Fremennik Trials done |
-| `shop:miscellania:1` | (2604, 3876) | Etceteria Fish (etc_fishmonger) 1, Island Greengrocer (etc_greengrocer) 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:miscellania:0` | (2517, 3865) | x 2516-2518, z 3864-3866 | x 2514-2520, z 3862-3868 | `{ x: 2517, z: 3865, radius: 8 }` | Greengrocer of Miscellania (misc_greengrocer) 1, Island Fishmonger (misc_fishmonger) 1 | no | no | - | The Fremennik Trials done |
+| `shop:miscellania:1` | (2604, 3876) | x 2602-2605, z 3876 | x 2600-2607, z 3874-3878 | `{ x: 2604, z: 3876, radius: 8 }` | Etceteria Fish (etc_fishmonger) 1, Island Greengrocer (etc_greengrocer) 1 | no | no | - | The Fremennik Trials done |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:miscellania:0` | (2551, 3898) | Anvil 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:miscellania:0` | (2551, 3898) | (2551, 3898) | `{ x: 2551, z: 3898, radius: 3 }` | Anvil 1 | no | no | - | The Fremennik Trials done |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:miscellania:0` | (2498, 3859) | Fireplace 1 | no | no | - | The Fremennik Trials done |
-| `fire:miscellania:1` | (2513, 3871) | Fire 1 | no | no | - | The Fremennik Trials done |
-| `fire:miscellania:2` | (2516, 3854) | Fire 1 | no | no | - | The Fremennik Trials done |
-| `fire:miscellania:3` | (2542, 3898) | Fire 1 | no | no | - | The Fremennik Trials done |
-| `fire:miscellania:4` | (2550, 3896) | Fire 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:miscellania:0` | (2498, 3859) | (2498, 3859) | `{ x: 2498, z: 3859, radius: 3 }` | Fireplace 1 | no | no | - | The Fremennik Trials done |
+| `fire:miscellania:1` | (2513, 3871) | (2513, 3871) | `{ x: 2513, z: 3871, radius: 3 }` | Fire 1 | no | no | - | The Fremennik Trials done |
+| `fire:miscellania:2` | (2516, 3854) | (2516, 3854) | `{ x: 2516, z: 3854, radius: 3 }` | Fire 1 | no | no | - | The Fremennik Trials done |
+| `fire:miscellania:3` | (2542, 3898) | (2542, 3898) | `{ x: 2542, z: 3898, radius: 3 }` | Fire 1 | no | no | - | The Fremennik Trials done |
+| `fire:miscellania:4` | (2550, 3896) | (2550, 3896) | `{ x: 2550, z: 3896, radius: 3 }` | Fire 1 | no | no | - | The Fremennik Trials done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:miscellania:0` | (2520, 3888) | [normal](../resources/tree/normal.md) 4 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:1` | (2547, 3870) | [maple](../resources/tree/maple.md) 12, [normal](../resources/tree/normal.md) 20 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:2` | (2535, 3900) | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:3` | (2554, 3893) | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:4` | (2565, 3856) | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:5` | (2569, 3884) | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:6` | (2591, 3885) | [normal](../resources/tree/normal.md) 4 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:7` | (2589, 3866) | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:8` | (2609, 3856) | [normal](../resources/tree/normal.md) 3 | no | no | - | The Fremennik Trials done |
-| `tree:miscellania:9` | (2611, 3893) | [normal](../resources/tree/normal.md) 2 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:miscellania:0` | (2520, 3888) | x 2513-2525, z 3884-3894 | `{ x: 2519, z: 3889, radius: 11 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:1` | (2547, 3870) | x 2530-2562, z 3859-3888 | `{ x: 2546, z: 3874, radius: 25 }` | [maple](../resources/tree/maple.md) 12, [normal](../resources/tree/normal.md) 20 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:2` | (2535, 3900) | (2535, 3900) | `{ x: 2535, z: 3900, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:3` | (2554, 3893) | (2554, 3893) | `{ x: 2554, z: 3893, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:4` | (2565, 3856) | (2565, 3856) | `{ x: 2565, z: 3856, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:5` | (2569, 3884) | (2569, 3884) | `{ x: 2569, z: 3884, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:6` | (2591, 3885) | x 2584-2598, z 3876-3894 | `{ x: 2591, z: 3885, radius: 15 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:7` | (2589, 3866) | (2589, 3866) | `{ x: 2589, z: 3866, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:8` | (2609, 3856) | x 2604-2616, z 3852-3859 | `{ x: 2610, z: 3856, radius: 11 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | The Fremennik Trials done |
+| `tree:miscellania:9` | (2611, 3893) | x 2607-2614, z 3890-3895 | `{ x: 2611, z: 3893, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | The Fremennik Trials done |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:miscellania:0` | (2528, 3893) | [coal](../resources/rock/coal.md) 8 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:miscellania:0` | (2528, 3893) | x 2526-2529, z 3890-3895 | `{ x: 2528, z: 3893, radius: 7 }` | [coal](../resources/rock/coal.md) 8 | no | no | - | The Fremennik Trials done |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:miscellania:0` | (2577, 3854) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:miscellania:0` | (2577, 3854) | x 2572-2582, z 3850-3860 | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md#movement) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 4 | no | no | - | The Fremennik Trials done |
 
 ## Stalls
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `stall:miscellania:0` | (2516, 3863) | [Fish stall (misc_fish_market)](../resources/stall/misc_fish_market.md) 2, [Veg stall (misc_veg_market)](../resources/stall/misc_veg_market.md) 1 | no | no | - | The Fremennik Trials done |
-| `stall:miscellania:1` | (2603, 3876) | [Fish stall (etc_fish_market)](../resources/stall/etc_fish_market.md) 1, [Veg stall (etc_veg_market)](../resources/stall/etc_veg_market.md) 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `stall:miscellania:0` | (2516, 3863) | x 2513-2519, z 3862-3866 | `{ x: 2516, z: 3864, radius: 7 }` | [Fish stall (misc_fish_market)](../resources/stall/misc_fish_market.md) 2, [Veg stall (misc_veg_market)](../resources/stall/misc_veg_market.md) 1 | no | no | - | The Fremennik Trials done |
+| `stall:miscellania:1` | (2603, 3876) | x 2600-2606, z 3876 | `{ x: 2603, z: 3876, radius: 6 }` | [Fish stall (etc_fish_market)](../resources/stall/etc_fish_market.md) 1, [Veg stall (etc_veg_market)](../resources/stall/etc_veg_market.md) 1 | no | no | - | The Fremennik Trials done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:miscellania:0` | (2514, 3865) | Broddi 1, Chicken (misc_chicken) 2, Chicken (misc_chicken_brown) 2, Ragnvald 1, Rannveig 1, Rooster 1, Skraeling (misc_man_4) 1, Skraeling (misc_man_6) 1, Thora 1, Valgerd 1 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:1` | (2542, 3893) | Chicken (misc_chicken) 4 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:2` | (2552, 3869) | Rabbit 5 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:3` | (2588, 3874) | Rabbit 1 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:4` | (2592, 3867) | Rabbit 1 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:5` | (2603, 3877) | Chicken (misc_chicken) 1, Chicken (misc_chicken_brown) 2, Rooster 1, Skraeling (etc_guard1) 1, Skraeling (etc_guard2) 1 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:6` | (2606, 3867) | Chicken (misc_chicken_brown) 1 | no | no | - | The Fremennik Trials done |
-| `npc:miscellania:7` | (2614, 3898) | Chicken (misc_chicken) 3 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:miscellania:0` | (2514, 3865) | x 2511-2518, z 3854-3871 | x 2506-2523, z 3849-3876 | `{ x: 2515, z: 3863, radius: 20 }` | Broddi 1, Chicken (misc_chicken) 2, Chicken (misc_chicken_brown) 2, Ragnvald 1, Rannveig 1, Rooster 1, Skraeling (misc_man_4) 1, Skraeling (misc_man_6) 1, Thora 1, Valgerd 1 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:1` | (2542, 3893) | x 2537-2547, z 3892-3893 | x 2532-2552, z 3887-3898 | `{ x: 2542, z: 3893, radius: 15 }` | Chicken (misc_chicken) 4 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:2` | (2552, 3869) | x 2545-2560, z 3866-3871 | x 2540-2565, z 3861-3876 | `{ x: 2553, z: 3869, radius: 19 }` | Rabbit 5 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:3` | (2588, 3874) | (2588, 3874) | x 2583-2593, z 3869-3879 | `{ x: 2588, z: 3874, radius: 11 }` | Rabbit 1 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:4` | (2592, 3867) | (2592, 3867) | x 2587-2597, z 3862-3872 | `{ x: 2592, z: 3867, radius: 11 }` | Rabbit 1 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:5` | (2603, 3877) | x 2601-2606, z 3874-3878 | x 2596-2611, z 3869-3883 | `{ x: 2604, z: 3876, radius: 14 }` | Chicken (misc_chicken) 1, Chicken (misc_chicken_brown) 2, Rooster 1, Skraeling (etc_guard1) 1, Skraeling (etc_guard2) 1 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:6` | (2606, 3867) | (2606, 3867) | x 2601-2611, z 3862-3872 | `{ x: 2606, z: 3867, radius: 11 }` | Chicken (misc_chicken_brown) 1 | no | no | - | The Fremennik Trials done |
+| `npc:miscellania:7` | (2614, 3898) | x 2612-2617, z 3897-3900 | x 2607-2622, z 3892-3905 | `{ x: 2615, z: 3899, radius: 14 }` | Chicken (misc_chicken) 3 | no | no | - | The Fremennik Trials done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:miscellania:0` | (2505, 3848) | Staircase 1 | up (2504, 3849) L1 by Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:1` | (2505, 3848) L1 | Staircase 1 | down (2504, 3849) by Climb or Climb-down; up (2504, 3849) L2 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:2` | (2505, 3848) L2 | Staircase 1 | down (2505, 3850) L1 by Climb or Climb-down; up (2504, 3849) L3 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:3` | (2505, 3849) L3 | Staircase 1 | down (2505, 3850) L2 by Climb-down | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:4` | (2505, 3871) | Staircase 1 | up (2507, 3871) L1 by Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:5` | (2505, 3871) L1 | Staircase 1 | down (2507, 3871) by Climb or Climb-down; up (2507, 3871) L2 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:6` | (2505, 3871) L2 | Staircase 1 | down (2506, 3870) L1 by Climb or Climb-down; up (2507, 3871) L3 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:7` | (2506, 3871) L3 | Staircase 1 | down (2506, 3870) L2 by Climb-down | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:8` | (2613, 3867) | Staircase 1 | up (2615, 3867) L1 by Climb-up | no | no | - | The Fremennik Trials done |
-| `connector:miscellania:9` | (2614, 3867) L1 | Staircase 1 | down (2614, 3866) by Climb-down | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:miscellania:0` | (2505, 3848) | (2505, 3848) | `{ x: 2505, z: 3848, radius: 3 }` | Staircase 1 | up (2504, 3849) L1 by Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:1` | (2505, 3848) L1 | (2505, 3848) L1 | `{ x: 2505, z: 3848, radius: 3, level: 1 }` | Staircase 1 | down (2504, 3849) by Climb or Climb-down; up (2504, 3849) L2 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:2` | (2505, 3848) L2 | (2505, 3848) L2 | `{ x: 2505, z: 3848, radius: 3, level: 2 }` | Staircase 1 | down (2505, 3850) L1 by Climb or Climb-down; up (2504, 3849) L3 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:3` | (2505, 3849) L3 | (2505, 3849) L3 | `{ x: 2505, z: 3849, radius: 3, level: 3 }` | Staircase 1 | down (2505, 3850) L2 by Climb-down | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:4` | (2505, 3871) | (2505, 3871) | `{ x: 2505, z: 3871, radius: 3 }` | Staircase 1 | up (2507, 3871) L1 by Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:5` | (2505, 3871) L1 | (2505, 3871) L1 | `{ x: 2505, z: 3871, radius: 3, level: 1 }` | Staircase 1 | down (2507, 3871) by Climb or Climb-down; up (2507, 3871) L2 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:6` | (2505, 3871) L2 | (2505, 3871) L2 | `{ x: 2505, z: 3871, radius: 3, level: 2 }` | Staircase 1 | down (2506, 3870) L1 by Climb or Climb-down; up (2507, 3871) L3 by Climb or Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:7` | (2506, 3871) L3 | (2506, 3871) L3 | `{ x: 2506, z: 3871, radius: 3, level: 3 }` | Staircase 1 | down (2506, 3870) L2 by Climb-down | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:8` | (2613, 3867) | (2613, 3867) | `{ x: 2613, z: 3867, radius: 3 }` | Staircase 1 | up (2615, 3867) L1 by Climb-up | no | no | - | The Fremennik Trials done |
+| `connector:miscellania:9` | (2614, 3867) L1 | (2614, 3867) L1 | `{ x: 2614, z: 3867, radius: 3, level: 1 }` | Staircase 1 | down (2614, 3866) by Climb-down | no | no | - | The Fremennik Trials done |
 
 ## Areas within
 

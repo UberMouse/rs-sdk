@@ -5,15 +5,15 @@ quests/quest_regicide/scripts/quest_regicide.rs2:542 teleports here; descriptive
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:regicide-camp:0` | (2341, 4575) | [normal](../resources/tree/normal.md) 175, [yew](../resources/tree/yew.md) 4 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:regicide-camp:0` | (2341, 4575) | x 2304-2366, z 4544-4606 | `{ x: 2335, z: 4575, radius: 47 }` | [normal](../resources/tree/normal.md) 175, [yew](../resources/tree/yew.md) 4 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:regicide-camp:0` | (2307, 4584) | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 5, Rabbit (regicide_rabbit) 5 | no | no | - | unreached |
-| `npc:regicide-camp:1` | (2314, 4558) | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | unreached |
-| `npc:regicide-camp:2` | (2335, 4604) | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
-| `npc:regicide-camp:3` | (2363, 4575) | Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:regicide-camp:0` | (2307, 4584) | x 2304-2309, z 4582-4587 | x 2299-2314, z 4577-4592 | `{ x: 2307, z: 4585, radius: 15 }` | Rabbit (regicide_bunny1) 1, Rabbit (regicide_bunny2) 5, Rabbit (regicide_rabbit) 5 | no | no | - | unreached |
+| `npc:regicide-camp:1` | (2314, 4558) | x 2312-2316, z 4556-4561 | x 2307-2321, z 4551-4566 | `{ x: 2314, z: 4559, radius: 14 }` | Chicken (chicken) 2, Chicken (chicken_brown) 1, Tyras guard 3 | no | no | - | unreached |
+| `npc:regicide-camp:2` | (2335, 4604) | x 2334-2336, z 4603-4606 | x 2329-2341, z 4598-4611 | `{ x: 2335, z: 4605, radius: 13 }` | Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 2 | no | no | - | unreached |
+| `npc:regicide-camp:3` | (2363, 4575) | x 2362-2364, z 4573-4577 | x 2357-2369, z 4568-4582 | `{ x: 2363, z: 4575, radius: 13 }` | Rabbit (regicide_rabbit) 2 | no | no | - | unreached |

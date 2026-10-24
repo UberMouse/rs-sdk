@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3295) | 3 | 5 | (2566, 3281)-(2592, 3313) | 100 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2631, 3297) | 2 | 5 | (2616, 3283)-(2637, 3304) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2572, 3386) | 4 | 5 | (2562, 3378)-(2580, 3393) | 100 ticks | - | no |
-| [Varrock Palace (Varrock)](../places/palace.md) | (3204, 3487) | 2 | 5 | (3197, 3482)-(3210, 3492) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2585, 3295) | x 2571-2587, z 3286-3308 | 3 | 5 | x 2566-2592, z 3281-3313 | 100 ticks | - | `{ x: 2579, z: 3297, radius: 24 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2631, 3297) | x 2621-2632, z 3288-3299 | 2 | 5 | x 2616-2637, z 3283-3304 | 100 ticks | - | `{ x: 2627, z: 3294, radius: 19 }` | no |
+| [Kandarin](../places/kandarin.md) | (2572, 3386) | x 2567-2575, z 3383-3388 | 4 | 5 | x 2562-2580, z 3378-3393 | 100 ticks | - | `{ x: 2571, z: 3386, radius: 16 }` | no |
+| [Varrock Palace (Varrock)](../places/palace.md) | (3204, 3487) | x 3202-3205, z 3487 | 2 | 5 | x 3197-3210, z 3482-3492 | 100 ticks | - | `{ x: 3204, z: 3487, radius: 12 }` | yes |
 
 ## Drops
 

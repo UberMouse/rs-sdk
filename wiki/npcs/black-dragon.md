@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3051, 10268) | 2 | 10 | (3027, 10252)-(3064, 10279) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2832, 9825) | 2 | 10 | (2819, 9814)-(2845, 9836) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3051, 10268) | x 3037-3054, z 10262-10269 | 2 | 10 | x 3027-3064, z 10252-10279 | 60 ticks | - | `{ x: 3046, z: 10266, radius: 27 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2832, 9825) | x 2829-2835, z 9824-9826 | 2 | 10 | x 2819-2845, z 9814-9836 | 60 ticks | - | `{ x: 2832, z: 9825, radius: 21 }` | no |
 
 ## Drops
 

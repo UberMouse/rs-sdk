@@ -17,8 +17,8 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | 1 | yes | yes | - | - | Falador West bank (Falador), 14 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:7` | (3244, 3211) | (3244, 3211) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Falador (Asgarnia)](../../places/falador.md) | `pickpocket:falador:2` | (2966, 3381) | (2966, 3381) | x 2962-2970, z 3373-3389 | x 2957-2975, z 3368-3394 | `{ x: 2966, z: 3381, radius: 19 }` | 1 | yes | yes | - | - | Falador West bank (Falador), 14 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:4` | (3225, 3239) | (3225, 3239) | x 3217-3231, z 3236-3240 | x 3212-3236, z 3231-3245 | `{ x: 3224, z: 3238, radius: 17 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `pickpocket:lumbridge:7` | (3244, 3211) | (3244, 3211) | (3244, 3211) | x 3239-3249, z 3206-3216 | `{ x: 3244, z: 3211, radius: 11 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |

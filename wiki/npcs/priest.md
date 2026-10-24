@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2617, 3308) | 1 | 5 | (2612, 3303)-(2622, 3313) | 100 ticks | - | no |
-| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2529, 3285) | 1 | 5 | (2524, 3280)-(2534, 3290) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2617, 3308) | (2617, 3308) | 1 | 5 | x 2612-2622, z 3303-3313 | 100 ticks | - | `{ x: 2617, z: 3308, radius: 11 }` | no |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | (2529, 3285) | (2529, 3285) | 1 | 5 | x 2524-2534, z 3280-3290 | 100 ticks | - | `{ x: 2529, z: 3285, radius: 11 }` | no |
 
 ## Drops
 

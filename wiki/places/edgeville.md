@@ -5,46 +5,46 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:edgeville:0` | (3081, 3511) | Edgeville General Store (generalshop5) 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:edgeville:0` | (3081, 3511) | x 3080-3081, z 3511 | x 3075-3086, z 3506-3516 | `{ x: 3081, z: 3511, radius: 11 }` | Edgeville General Store (generalshop5) 2 | yes | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:edgeville:0` | (3081, 3508) L1 | Range 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:edgeville:0` | (3081, 3508) L1 | (3081, 3508) L1 | `{ x: 3081, z: 3508, radius: 3, level: 1 }` | Range 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:edgeville:0` | (3074, 3468) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:edgeville:1` | (3085, 3468) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:edgeville:2` | (3085, 3480) | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
-| `tree:edgeville:3` | (3090, 3503) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:edgeville:4` | (3103, 3511) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:edgeville:5` | (3118, 3490) | [normal](../resources/tree/normal.md) 14, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:edgeville:0` | (3074, 3468) | x 3074, z 3466-3469 | `{ x: 3074, z: 3468, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:edgeville:1` | (3085, 3468) | (3085, 3468) | `{ x: 3085, z: 3468, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:edgeville:2` | (3085, 3480) | (3085, 3480) | `{ x: 3085, z: 3480, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | yes | no | - | - |
+| `tree:edgeville:3` | (3090, 3503) | (3090, 3503) | `{ x: 3090, z: 3503, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:edgeville:4` | (3103, 3511) | (3103, 3511) | `{ x: 3103, z: 3511, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:edgeville:5` | (3118, 3490) | x 3111-3121, z 3473-3506 | `{ x: 3116, z: 3490, radius: 21 }` | [normal](../resources/tree/normal.md) 14, [willow](../resources/tree/willow.md) 2 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:edgeville:0` | (3098, 3509) | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 3 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:edgeville:0` | (3098, 3509) | x 3092-3101, z 3508-3511 | x 3087-3106, z 3503-3516 | `{ x: 3097, z: 3510, radius: 16 }` | [Man (man)](../resources/pickpocket/man.md) 1, [Man (man2)](../resources/pickpocket/man2.md) 1, [Man (man3)](../resources/pickpocket/man3.md) 3 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:edgeville:0` | (3078, 3499) | Imp 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:edgeville:0` | (3078, 3499) | (3078, 3499) | x 3053-3103, z 3474-3524 | `{ x: 3078, z: 3499, radius: 39 }` | Imp 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:edgeville:0` | (3096, 3511) | Ladder 1 | up (3095, 3511) L1 by Climb-up | yes | no | - | - |
-| `connector:edgeville:1` | (3096, 3511) L1 | Ladder 1 | down (3095, 3511) by Climb-down | yes | no | - | - |
-| `connector:edgeville:2` | (3097, 3468) | Trapdoor 1 | down (3096, 9868) by Open, then Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:edgeville:0` | (3096, 3511) | (3096, 3511) | `{ x: 3096, z: 3511, radius: 3 }` | Ladder 1 | up (3095, 3511) L1 by Climb-up | yes | no | - | - |
+| `connector:edgeville:1` | (3096, 3511) L1 | (3096, 3511) L1 | `{ x: 3096, z: 3511, radius: 3, level: 1 }` | Ladder 1 | down (3095, 3511) by Climb-down | yes | no | - | - |
+| `connector:edgeville:2` | (3097, 3468) | (3097, 3468) | `{ x: 3097, z: 3468, radius: 3 }` | Trapdoor 1 | down (3096, 9868) by Open, then Climb-down | yes | no | - | - |
 
 ## Areas within
 

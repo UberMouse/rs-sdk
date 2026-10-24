@@ -24,20 +24,20 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (3045, 10313) | 6 | 3 | (3026, 10303)-(3049, 10324) | 60 ticks | - | no |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | 2 | 3 | (3096, 9829)-(3103, 9839) | 60 ticks | - | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | 1 | 3 | (3103, 9824)-(3109, 9830) | 60 ticks | - | yes |
-| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | 9 | 3 | (3104, 9828)-(3125, 9853) | 60 ticks | - | yes |
-| [Kandarin](../places/kandarin.md) | (2507, 3149) | 1 | 3 | (2504, 3146)-(2510, 3152) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2547, 3146) | 2 | 3 | (2542, 3141)-(2551, 3150) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (3094, 3849) | 1 | 3 | (3091, 3846)-(3097, 3852) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3104, 3875) | 1 | 3 | (3101, 3872)-(3107, 3878) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3110, 3854) | 1 | 3 | (3107, 3851)-(3113, 3857) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3117, 3854) | 1 | 3 | (3114, 3851)-(3120, 3857) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3300, 3649) | 1 | 3 | (3297, 3646)-(3303, 3652) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3308, 3661) | 1 | 3 | (3305, 3658)-(3311, 3664) | 60 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (3045, 10313) | x 3029-3046, z 10306-10321 | 6 | 3 | x 3026-3049, z 10303-10324 | 60 ticks | - | `{ x: 3038, z: 10314, radius: 20 }` | no |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3100, 9834) | x 3099-3100, z 9832-9836 | 2 | 3 | x 3096-3103, z 9829-9839 | 60 ticks | - | `{ x: 3100, z: 9834, radius: 10 }` | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3106, 9827) | (3106, 9827) | 1 | 3 | x 3103-3109, z 9824-9830 | 60 ticks | - | `{ x: 3106, z: 9827, radius: 8 }` | yes |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3114, 9840) | x 3107-3122, z 9831-9850 | 9 | 3 | x 3104-3125, z 9828-9853 | 60 ticks | - | `{ x: 3115, z: 9841, radius: 21 }` | yes |
+| [Kandarin](../places/kandarin.md) | (2507, 3149) | (2507, 3149) | 1 | 3 | x 2504-2510, z 3146-3152 | 60 ticks | - | `{ x: 2507, z: 3149, radius: 8 }` | no |
+| [Kandarin](../places/kandarin.md) | (2547, 3146) | x 2545-2548, z 3144-3147 | 2 | 3 | x 2542-2551, z 3141-3150 | 60 ticks | - | `{ x: 2547, z: 3146, radius: 11 }` | no |
+| [Wilderness](../places/wilderness.md) | (3094, 3849) | (3094, 3849) | 1 | 3 | x 3091-3097, z 3846-3852 | 60 ticks | - | `{ x: 3094, z: 3849, radius: 8 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3104, 3875) | (3104, 3875) | 1 | 3 | x 3101-3107, z 3872-3878 | 60 ticks | - | `{ x: 3104, z: 3875, radius: 8 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3110, 3854) | (3110, 3854) | 1 | 3 | x 3107-3113, z 3851-3857 | 60 ticks | - | `{ x: 3110, z: 3854, radius: 8 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3117, 3854) | (3117, 3854) | 1 | 3 | x 3114-3120, z 3851-3857 | 60 ticks | - | `{ x: 3117, z: 3854, radius: 8 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3300, 3649) | (3300, 3649) | 1 | 3 | x 3297-3303, z 3646-3652 | 60 ticks | - | `{ x: 3300, z: 3649, radius: 8 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3308, 3661) | (3308, 3661) | 1 | 3 | x 3305-3311, z 3658-3664 | 60 ticks | - | `{ x: 3308, z: 3661, radius: 8 }` | yes |
 
 ## Drops
 

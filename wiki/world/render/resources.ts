@@ -5,20 +5,25 @@ import { fishStruct } from '../model/families/fishing';
 import { statRandomRule } from '../roll';
 import { first } from '../sources/configs';
 import type { DbRow } from '../sources/dbrows';
+import { COVER_MARGIN } from '../cover';
 import type { Feature, Site, World } from '../types';
 import { cmp } from '../util';
 import {
     areaCell,
     areasOf,
+    boxCells,
+    boxHeaders,
     byAreaThenId,
     coord,
     count,
+    coverCell,
     GENERATED,
     nearestLabel,
     reachLabel,
     reachSummary,
     RESOURCE_KINDS,
     resourcePath,
+    showsRoam,
     table,
     wilderness,
     yesNo,
@@ -376,13 +381,13 @@ function movementSection(holding: Site[], subtype: string): string[] {
     return [
         '## Movement',
         '',
-        "A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.",
+        `A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with ${COVER_MARGIN} tiles of margin, as a plan's \`area\` takes it.`,
         '',
         ...table(
-            ['Site', 'Cover centre', 'Cover radius', 'Tiles'],
+            ['Site', 'Area to copy', 'Tiles'],
             sites.map(s => {
                 const m = s.movement![subtype]!;
-                return [`\`${s.id}\``, coord(m.centre), String(m.radius), String(m.tiles.length)];
+                return [`\`${s.id}\``, coverCell(m), String(m.tiles.length)];
             }),
         ),
         '',
@@ -419,11 +424,14 @@ export function renderResources(world: World, data: PageData): Page[] {
                 ...new Map(features.map(f => [f.config, { config: f.config, source: f.source }])).values(),
             ].sort((a, b) => cmp(a.config, b.config));
             const f2p = holding.filter(s => s.f2p).length;
+            const roam = showsRoam(holding);
             const row = (s: Site): string[] => [
                 areaCell(path, areas, s.areaPath),
                 `\`${s.id}\``,
                 coord(s.centre),
                 s.stand ? coord(s.stand) : '-',
+                // A fishing site's area to copy is its spots' movement cover, printed under Movement.
+                ...boxCells(s, roam, s.movement?.[subtype] ? '[Movement](#movement)' : undefined),
                 String(s.counts[subtype]),
                 yesNo(s.f2p),
                 yesNo(s.multiway),
@@ -451,6 +459,7 @@ export function renderResources(world: World, data: PageData): Page[] {
                             'Site',
                             'Centre',
                             'Stand',
+                            ...boxHeaders(roam),
                             'Count',
                             'F2P',
                             'Multiway',

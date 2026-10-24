@@ -3,382 +3,382 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:wilderness:0` | (3025, 3701) | Bandit Duty Free (taxfree) 1 | yes | yes | 23 | - |
-| `shop:wilderness:1` | (3036, 3707) | Tony's Pizza Bases (pizzabaseshop) 1 | yes | yes | 24 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:wilderness:0` | (3025, 3701) | (3025, 3701) | x 3022-3028, z 3698-3704 | `{ x: 3025, z: 3701, radius: 8 }` | Bandit Duty Free (taxfree) 1 | yes | yes | 23 | - |
+| `shop:wilderness:1` | (3036, 3707) | (3036, 3707) | x 3033-3039, z 3704-3710 | `{ x: 3036, z: 3707, radius: 8 }` | Tony's Pizza Bases (pizzabaseshop) 1 | yes | yes | 24 | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:wilderness:0` | (3144, 3735) | Furnace 2 | yes | no | 27 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:wilderness:0` | (3144, 3735) | x 3143-3144, z 3734-3735 | `{ x: 3144, z: 3735, radius: 5 }` | Furnace 2 | yes | no | 27 | - |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:wilderness:0` | (2991, 3689) | Anvil 1 | yes | no | 22 | - |
-| `anvil:wilderness:1` | (3062, 3952) | Anvil 1 | no | no | 55 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:wilderness:0` | (2991, 3689) | (2991, 3689) | `{ x: 2991, z: 3689, radius: 3 }` | Anvil 1 | yes | no | 22 | - |
+| `anvil:wilderness:1` | (3062, 3952) | (3062, 3952) | `{ x: 3062, z: 3952, radius: 3 }` | Anvil 1 | no | no | 55 | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:wilderness:0` | (3036, 3708) | Range 1 | yes | yes | 24 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:wilderness:0` | (3036, 3708) | (3036, 3708) | `{ x: 3036, z: 3708, radius: 3 }` | Range 1 | yes | yes | 24 | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:wilderness:0` | (3240, 3786) | Fire 2 | yes | yes | 34 | - |
-| `fire:wilderness:1` | (3245, 3796) | Fire 2 | yes | no | 35 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:wilderness:0` | (3240, 3786) | x 3240, z 3785-3786 | `{ x: 3240, z: 3786, radius: 4 }` | Fire 2 | yes | yes | 34 | - |
+| `fire:wilderness:1` | (3245, 3796) | x 3244-3245, z 3796 | `{ x: 3245, z: 3796, radius: 4 }` | Fire 2 | yes | no | 35 | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:wilderness:0` | (2947, 3820) | Chaos altar 1 | yes | yes | 38 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:wilderness:0` | (2947, 3820) | (2947, 3820) | `{ x: 2947, z: 3820, radius: 3 }` | Chaos altar 1 | yes | yes | 38 | - |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-ruins:wilderness:0` | (3059, 3590) | chaos 1 | yes | no | 9 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-ruins:wilderness:0` | (3059, 3590) | (3059, 3590) | `{ x: 3059, z: 3590, radius: 3 }` | chaos 1 | yes | no | 9 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:wilderness:0` | (2953, 3892) | [normal](../resources/tree/normal.md) 12 | yes | no | 49 | - |
-| `tree:wilderness:1` | (2967, 3943) | [normal](../resources/tree/normal.md) 34 | no | no | 56 | - |
-| `tree:wilderness:2` | (2959, 3541) | [normal](../resources/tree/normal.md) 12 | yes | no | 5 | - |
-| `tree:wilderness:3` | (2954, 3582) | [normal](../resources/tree/normal.md) 2 | yes | no | 8 | - |
-| `tree:wilderness:4` | (2959, 3852) | [normal](../resources/tree/normal.md) 4 | yes | no | 43 | - |
-| `tree:wilderness:5` | (2958, 3872) | [normal](../resources/tree/normal.md) 2 | yes | no | 45 | - |
-| `tree:wilderness:6` | (2989, 3781) | [normal](../resources/tree/normal.md) 123 | yes | no | 37 | - |
-| `tree:wilderness:7` | (2987, 3686) | [burnt](../resources/tree/burnt.md) 7, [normal](../resources/tree/normal.md) 156 | yes | yes | 28 | - |
-| `tree:wilderness:8` | (2988, 3582) | [normal](../resources/tree/normal.md) 54 | yes | no | 11 | - |
-| `tree:wilderness:9` | (2979, 3528) | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 1 | yes | no | 2 | - |
-| `tree:wilderness:10` | (3036, 3919) | [burnt](../resources/tree/burnt.md) 25, [normal](../resources/tree/normal.md) 39 | no | yes | 55 | - |
-| `tree:wilderness:11` | (2979, 3556) | [normal](../resources/tree/normal.md) 2 | yes | no | 5 | - |
-| `tree:wilderness:12` | (2977, 3738) | [normal](../resources/tree/normal.md) 1 | yes | no | 28 | - |
-| `tree:wilderness:13` | (3011, 3756) | [normal](../resources/tree/normal.md) 95 | yes | no | 35 | - |
-| `tree:wilderness:14` | (2995, 3633) | [normal](../resources/tree/normal.md) 13 | yes | no | 15 | - |
-| `tree:wilderness:15` | (2996, 3853) | [normal](../resources/tree/normal.md) 4 | yes | no | 42 | - |
-| `tree:wilderness:16` | (3015, 3532) | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 5 | yes | no | 4 | - |
-| `tree:wilderness:17` | (3000, 3965) | [normal](../resources/tree/normal.md) 7 | no | no | 56 | 52 Agility |
-| `tree:wilderness:18` | (3008, 3615) | [normal](../resources/tree/normal.md) 29 | yes | yes | 15 | - |
-| `tree:wilderness:19` | (3010, 3925) | [burnt](../resources/tree/burnt.md) 1 | no | no | 51 | - |
-| `tree:wilderness:20` | (3017, 3841) | [burnt](../resources/tree/burnt.md) 1 | no | no | 41 | - |
-| `tree:wilderness:21` | (3032, 3856) | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 5 | yes | yes | 45 | - |
-| `tree:wilderness:22` | (3022, 3937) | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
-| `tree:wilderness:23` | (3043, 3722) | [normal](../resources/tree/normal.md) 34 | yes | no | 28 | - |
-| `tree:wilderness:24` | (3043, 3819) | [burnt](../resources/tree/burnt.md) 14 | yes | no | 40 | - |
-| `tree:wilderness:25` | (3031, 3547) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | 4 | - |
-| `tree:wilderness:26` | (3053, 3584) | [normal](../resources/tree/normal.md) 84 | yes | yes | 12 | - |
-| `tree:wilderness:27` | (3038, 3665) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 19 | - |
-| `tree:wilderness:28` | (3040, 3676) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 20 | - |
-| `tree:wilderness:29` | (3048, 3527) | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 2 | yes | no | 2 | - |
-| `tree:wilderness:30` | (3043, 3650) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 17 | - |
-| `tree:wilderness:31` | (3086, 3656) | [burnt](../resources/tree/burnt.md) 2, [normal](../resources/tree/normal.md) 326 | yes | yes | 24 | - |
-| `tree:wilderness:32` | (3049, 3782) | [normal](../resources/tree/normal.md) 1 | yes | no | 33 | - |
-| `tree:wilderness:33` | (3051, 3842) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 41 | - |
-| `tree:wilderness:34` | (3052, 3885) | [burnt](../resources/tree/burnt.md) 2 | yes | no | 46 | - |
-| `tree:wilderness:35` | (3054, 3860) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 43 | - |
-| `tree:wilderness:36` | (3084, 3804) | [burnt](../resources/tree/burnt.md) 17, [normal](../resources/tree/normal.md) 24 | yes | no | 40 | - |
-| `tree:wilderness:37` | (3060, 3841) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 41 | - |
-| `tree:wilderness:38` | (3076, 3529) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | yes | no | 2 | - |
-| `tree:wilderness:39` | (3073, 3867) | [burnt](../resources/tree/burnt.md) 3 | yes | no | 44 | - |
-| `tree:wilderness:40` | (3071, 3883) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 46 | - |
-| `tree:wilderness:41` | (3079, 3738) | [normal](../resources/tree/normal.md) 2 | yes | no | 28 | - |
-| `tree:wilderness:42` | (3087, 3606) | [normal](../resources/tree/normal.md) 28 | yes | no | 12 | - |
-| `tree:wilderness:43` | (3082, 3893) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:44` | (3083, 3722) | [normal](../resources/tree/normal.md) 1 | yes | no | 26 | - |
-| `tree:wilderness:45` | (3087, 3957) | [burnt](../resources/tree/burnt.md) 2 | no | no | 55 | - |
-| `tree:wilderness:46` | (3091, 3888) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:47` | (3093, 3874) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 45 | - |
-| `tree:wilderness:48` | (3093, 3900) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:49` | (3115, 3729) | [normal](../resources/tree/normal.md) 130 | yes | no | 31 | - |
-| `tree:wilderness:50` | (3107, 3532) | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 2 | yes | no | 3 | - |
-| `tree:wilderness:51` | (3107, 3859) | [burnt](../resources/tree/burnt.md) 10, [normal](../resources/tree/normal.md) 7 | yes | no | 44 | - |
-| `tree:wilderness:52` | (3178, 3602) | [normal](../resources/tree/normal.md) 374 | yes | yes | 19 | - |
-| `tree:wilderness:53` | (3100, 3558) | [normal](../resources/tree/normal.md) 1 | yes | no | 5 | - |
-| `tree:wilderness:54` | (3121, 3842) | [burnt](../resources/tree/burnt.md) 9 | yes | yes | 42 | - |
-| `tree:wilderness:55` | (3101, 3889) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:56` | (3117, 3808) | [normal](../resources/tree/normal.md) 7 | yes | no | 38 | - |
-| `tree:wilderness:57` | (3115, 3634) | [normal](../resources/tree/normal.md) 34 | yes | no | 16 | - |
-| `tree:wilderness:58` | (3114, 3958) | [burnt](../resources/tree/burnt.md) 5 | no | no | 56 | - |
-| `tree:wilderness:59` | (3117, 3606) | [normal](../resources/tree/normal.md) 32 | yes | no | 12 | - |
-| `tree:wilderness:60` | (3105, 3900) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:61` | (3117, 3892) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 47 | - |
-| `tree:wilderness:62` | (3123, 3878) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
-| `tree:wilderness:63` | (3128, 3861) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 43 | - |
-| `tree:wilderness:64` | (3128, 3899) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:65` | (3132, 3530) | [normal](../resources/tree/normal.md) 2 | yes | no | 2 | - |
-| `tree:wilderness:66` | (3132, 3876) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
-| `tree:wilderness:67` | (3132, 3889) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:68` | (3187, 3772) | [burnt](../resources/tree/burnt.md) 38, [normal](../resources/tree/normal.md) 58 | yes | yes | 36 | - |
-| `tree:wilderness:69` | (3151, 3840) | [burnt](../resources/tree/burnt.md) 2, [normal](../resources/tree/normal.md) 3 | yes | yes | 42 | - |
-| `tree:wilderness:70` | (3138, 3914) | [burnt](../resources/tree/burnt.md) 1 | no | no | 50 | - |
-| `tree:wilderness:71` | (3138, 3927) | [burnt](../resources/tree/burnt.md) 1 | no | no | 51 | - |
-| `tree:wilderness:72` | (3141, 3941) | [burnt](../resources/tree/burnt.md) 2 | no | no | 53 | - |
-| `tree:wilderness:73` | (3141, 3618) | [normal](../resources/tree/normal.md) 1 | yes | no | 13 | - |
-| `tree:wilderness:74` | (3141, 3866) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
-| `tree:wilderness:75` | (3144, 3893) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 48 | - |
-| `tree:wilderness:76` | (3147, 3544) | [normal](../resources/tree/normal.md) 2 | yes | yes | 4 | - |
-| `tree:wilderness:77` | (3225, 3690) | [burnt](../resources/tree/burnt.md) 4, [normal](../resources/tree/normal.md) 497 | yes | yes | 26 | - |
-| `tree:wilderness:78` | (3145, 3745) | [normal](../resources/tree/normal.md) 1 | yes | no | 29 | - |
-| `tree:wilderness:79` | (3147, 3908) | [burnt](../resources/tree/burnt.md) 1 | no | no | 49 | - |
-| `tree:wilderness:80` | (3158, 3525) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | yes | yes | 2 | - |
-| `tree:wilderness:81` | (3148, 3956) | [burnt](../resources/tree/burnt.md) 1 | no | no | 55 | - |
-| `tree:wilderness:82` | (3153, 3859) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
-| `tree:wilderness:83` | (3154, 3825) | [normal](../resources/tree/normal.md) 2 | yes | yes | 39 | - |
-| `tree:wilderness:84` | (3159, 3720) | [normal](../resources/tree/normal.md) 2 | yes | no | 26 | - |
-| `tree:wilderness:85` | (3155, 3810) | [normal](../resources/tree/normal.md) 1 | yes | yes | 37 | - |
-| `tree:wilderness:86` | (3158, 3898) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:87` | (3159, 3872) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
-| `tree:wilderness:88` | (3159, 3883) | [normal](../resources/tree/normal.md) 1 | yes | yes | 46 | - |
-| `tree:wilderness:89` | (3162, 3907) | [burnt](../resources/tree/burnt.md) 1 | no | no | 49 | - |
-| `tree:wilderness:90` | (3164, 3815) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 38 | - |
-| `tree:wilderness:91` | (3169, 3832) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 40 | - |
-| `tree:wilderness:92` | (3172, 3874) | [burnt](../resources/tree/burnt.md) 1, [normal](../resources/tree/normal.md) 1 | yes | yes | 45 | - |
-| `tree:wilderness:93` | (3169, 3896) | [normal](../resources/tree/normal.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:94` | (3175, 3942) | [burnt](../resources/tree/burnt.md) 5 | no | no | 55 | - |
-| `tree:wilderness:95` | (3173, 3546) | [normal](../resources/tree/normal.md) 1 | yes | yes | 4 | - |
-| `tree:wilderness:96` | (3173, 3861) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
-| `tree:wilderness:97` | (3186, 3916) | [burnt](../resources/tree/burnt.md) 10 | no | no | 51 | - |
-| `tree:wilderness:98` | (3178, 3748) | [normal](../resources/tree/normal.md) 2 | yes | no | 29 | - |
-| `tree:wilderness:99` | (3185, 3887) | [burnt](../resources/tree/burnt.md) 3, [normal](../resources/tree/normal.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:100` | (3182, 3643) | [normal](../resources/tree/normal.md) 1 | yes | no | 16 | - |
-| `tree:wilderness:101` | (3186, 3813) | [burnt](../resources/tree/burnt.md) 3 | no | yes | 38 | - |
-| `tree:wilderness:102` | (3197, 3524) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2 | yes | yes | 2 | - |
-| `tree:wilderness:103` | (3186, 3943) | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
-| `tree:wilderness:104` | (3188, 3739) | [normal](../resources/tree/normal.md) 2 | yes | no | 28 | - |
-| `tree:wilderness:105` | (3188, 3934) | [burnt](../resources/tree/burnt.md) 1 | no | no | 52 | - |
-| `tree:wilderness:106` | (3195, 3865) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
-| `tree:wilderness:107` | (3196, 3896) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:108` | (3201, 3948) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 54 | - |
-| `tree:wilderness:109` | (3204, 3876) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
-| `tree:wilderness:110` | (3213, 3636) | [normal](../resources/tree/normal.md) 24 | yes | yes | 16 | - |
-| `tree:wilderness:111` | (3211, 3843) | [burnt](../resources/tree/burnt.md) 5 | no | yes | 42 | - |
-| `tree:wilderness:112` | (3207, 3900) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:113` | (3208, 3921) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
-| `tree:wilderness:114` | (3210, 3861) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
-| `tree:wilderness:115` | (3212, 3888) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:116` | (3221, 3804) | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 37 | - |
-| `tree:wilderness:117` | (3214, 3935) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 52 | - |
-| `tree:wilderness:118` | (3220, 3779) | [normal](../resources/tree/normal.md) 3 | yes | yes | 33 | - |
-| `tree:wilderness:119` | (3226, 3521) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | yes | 1 | - |
-| `tree:wilderness:120` | (3237, 3847) | [burnt](../resources/tree/burnt.md) 11 | yes | yes | 43 | - |
-| `tree:wilderness:121` | (3222, 3920) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
-| `tree:wilderness:122` | (3223, 3911) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 49 | - |
-| `tree:wilderness:123` | (3235, 3877) | [burnt](../resources/tree/burnt.md) 1, [normal](../resources/tree/normal.md) 1 | yes | yes | 46 | - |
-| `tree:wilderness:124` | (3234, 3924) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
-| `tree:wilderness:125` | (3299, 3597) | [burnt](../resources/tree/burnt.md) 10, [normal](../resources/tree/normal.md) 724, [oak](../resources/tree/oak.md) 9 | yes | yes | 17 | - |
-| `tree:wilderness:126` | (3238, 3627) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 15 | - |
-| `tree:wilderness:127` | (3240, 3892) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
-| `tree:wilderness:128` | (3242, 3914) | [burnt](../resources/tree/burnt.md) 2 | no | yes | 50 | - |
-| `tree:wilderness:129` | (3241, 3816) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 38 | - |
-| `tree:wilderness:130` | (3246, 3931) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 52 | - |
-| `tree:wilderness:131` | (3277, 3752) | [normal](../resources/tree/normal.md) 177 | yes | yes | 32 | - |
-| `tree:wilderness:132` | (3250, 3901) | [normal](../resources/tree/normal.md) 1 | yes | yes | 48 | - |
-| `tree:wilderness:133` | (3257, 3864) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
-| `tree:wilderness:134` | (3258, 3922) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
-| `tree:wilderness:135` | (3258, 3937) | [burnt](../resources/tree/burnt.md) 1 | no | yes | 53 | - |
-| `tree:wilderness:136` | (3270, 3805) | [normal](../resources/tree/normal.md) 23 | yes | yes | 37 | - |
-| `tree:wilderness:137` | (3269, 3837) | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 41 | - |
-| `tree:wilderness:138` | (3268, 3782) | [normal](../resources/tree/normal.md) 1 | yes | yes | 33 | - |
-| `tree:wilderness:139` | (3283, 3940) | [normal](../resources/tree/normal.md) 17 | no | yes | 55 | - |
-| `tree:wilderness:140` | (3275, 3865) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 44 | - |
-| `tree:wilderness:141` | (3295, 3793) | [normal](../resources/tree/normal.md) 95 | yes | yes | 39 | - |
-| `tree:wilderness:142` | (3284, 3663) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 19 | - |
-| `tree:wilderness:143` | (3282, 3853) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 42 | - |
-| `tree:wilderness:144` | (3289, 3835) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 40 | - |
-| `tree:wilderness:145` | (3298, 3691) | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 23 | - |
-| `tree:wilderness:146` | (3295, 3858) | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 43 | - |
-| `tree:wilderness:147` | (3300, 3664) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 19 | - |
-| `tree:wilderness:148` | (3308, 3720) | [normal](../resources/tree/normal.md) 32 | yes | yes | 26 | - |
-| `tree:wilderness:149` | (3302, 3838) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 40 | - |
-| `tree:wilderness:150` | (3302, 3847) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 41 | - |
-| `tree:wilderness:151` | (3309, 3791) | [normal](../resources/tree/normal.md) 1 | yes | yes | 34 | - |
-| `tree:wilderness:152` | (3314, 3879) | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 46 | - |
-| `tree:wilderness:153` | (3310, 3858) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | unreached |
-| `tree:wilderness:154` | (3319, 3837) | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 40 | - |
-| `tree:wilderness:155` | (3321, 3768) | [normal](../resources/tree/normal.md) 15 | yes | yes | 32 | - |
-| `tree:wilderness:156` | (3318, 3660) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 18 | - |
-| `tree:wilderness:157` | (3318, 3690) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 22 | - |
-| `tree:wilderness:158` | (3323, 3848) | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 42 | - |
-| `tree:wilderness:159` | (3333, 3906) | [burnt](../resources/tree/burnt.md) 12 | no | no | 49 | unreached |
-| `tree:wilderness:160` | (3332, 3656) | [burnt](../resources/tree/burnt.md) 4 | yes | no | 18 | - |
-| `tree:wilderness:161` | (3336, 3818) | [burnt](../resources/tree/burnt.md) 5 | yes | no | 38 | - |
-| `tree:wilderness:162` | (3334, 3709) | [burnt](../resources/tree/burnt.md) 2 | yes | no | 24 | - |
-| `tree:wilderness:163` | (3339, 3741) | [burnt](../resources/tree/burnt.md) 17 | yes | no | 30 | - |
-| `tree:wilderness:164` | (3337, 3786) | [burnt](../resources/tree/burnt.md) 8 | yes | no | 35 | - |
-| `tree:wilderness:165` | (3335, 3802) | [burnt](../resources/tree/burnt.md) 1 | yes | no | 36 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:wilderness:0` | (2953, 3892) | x 2945-2965, z 3881-3907 | `{ x: 2955, z: 3894, radius: 20 }` | [normal](../resources/tree/normal.md) 12 | yes | no | 49 | - |
+| `tree:wilderness:1` | (2967, 3943) | x 2945-2988, z 3910-3963 | `{ x: 2967, z: 3937, radius: 38 }` | [normal](../resources/tree/normal.md) 34 | no | no | 56 | - |
+| `tree:wilderness:2` | (2959, 3541) | x 2948-2968, z 3525-3557 | `{ x: 2958, z: 3541, radius: 22 }` | [normal](../resources/tree/normal.md) 12 | yes | no | 5 | - |
+| `tree:wilderness:3` | (2954, 3582) | x 2951-2956, z 3581-3583 | `{ x: 2954, z: 3582, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 8 | - |
+| `tree:wilderness:4` | (2959, 3852) | x 2956-2963, z 3846-3858 | `{ x: 2960, z: 3852, radius: 11 }` | [normal](../resources/tree/normal.md) 4 | yes | no | 43 | - |
+| `tree:wilderness:5` | (2958, 3872) | x 2956-2960, z 3871-3872 | `{ x: 2958, z: 3872, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 45 | - |
+| `tree:wilderness:6` | (2989, 3781) | x 2957-3032, z 3755-3811 | `{ x: 2995, z: 3783, radius: 51 }` | [normal](../resources/tree/normal.md) 123 | yes | no | 37 | - |
+| `tree:wilderness:7` | (2987, 3686) | x 2959-3030, z 3626-3741 | `{ x: 2995, z: 3684, radius: 72 }` | [burnt](../resources/tree/burnt.md) 7, [normal](../resources/tree/normal.md) 156 | yes | yes | 28 | - |
+| `tree:wilderness:8` | (2988, 3582) | x 2962-3020, z 3557-3607 | `{ x: 2991, z: 3582, radius: 42 }` | [normal](../resources/tree/normal.md) 54 | yes | no | 11 | - |
+| `tree:wilderness:9` | (2979, 3528) | x 2972-2987, z 3524-3532 | `{ x: 2980, z: 3528, radius: 12 }` | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 1 | yes | no | 2 | - |
+| `tree:wilderness:10` | (3036, 3919) | x 2972-3067, z 3905-3955 | `{ x: 3020, z: 3930, radius: 58 }` | [burnt](../resources/tree/burnt.md) 25, [normal](../resources/tree/normal.md) 39 | no | yes | 55 | - |
+| `tree:wilderness:11` | (2979, 3556) | x 2977-2981, z 3555-3556 | `{ x: 2979, z: 3556, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 5 | - |
+| `tree:wilderness:12` | (2977, 3738) | (2977, 3738) | `{ x: 2977, z: 3738, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 28 | - |
+| `tree:wilderness:13` | (3011, 3756) | x 2988-3044, z 3726-3792 | `{ x: 3016, z: 3759, radius: 47 }` | [normal](../resources/tree/normal.md) 95 | yes | no | 35 | - |
+| `tree:wilderness:14` | (2995, 3633) | x 2989-3000, z 3621-3638 | `{ x: 2995, z: 3630, radius: 14 }` | [normal](../resources/tree/normal.md) 13 | yes | no | 15 | - |
+| `tree:wilderness:15` | (2996, 3853) | x 2994-3000, z 3851-3855 | `{ x: 2997, z: 3853, radius: 7 }` | [normal](../resources/tree/normal.md) 4 | yes | no | 42 | - |
+| `tree:wilderness:16` | (3015, 3532) | x 2995-3029, z 3522-3547 | `{ x: 3012, z: 3535, radius: 25 }` | [normal](../resources/tree/normal.md) 19, [oak](../resources/tree/oak.md) 5 | yes | no | 4 | - |
+| `tree:wilderness:17` | (3000, 3965) | x 2996-3004, z 3964-3966 | `{ x: 3000, z: 3965, radius: 8 }` | [normal](../resources/tree/normal.md) 7 | no | no | 56 | 52 Agility |
+| `tree:wilderness:18` | (3008, 3615) | x 2998-3020, z 3602-3634 | `{ x: 3009, z: 3618, radius: 23 }` | [normal](../resources/tree/normal.md) 29 | yes | yes | 15 | - |
+| `tree:wilderness:19` | (3010, 3925) | (3010, 3925) | `{ x: 3010, z: 3925, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 51 | - |
+| `tree:wilderness:20` | (3017, 3841) | (3017, 3841) | `{ x: 3017, z: 3841, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 41 | - |
+| `tree:wilderness:21` | (3032, 3856) | x 3021-3051, z 3842-3872 | `{ x: 3036, z: 3857, radius: 25 }` | [burnt](../resources/tree/burnt.md) 8, [normal](../resources/tree/normal.md) 5 | yes | yes | 45 | - |
+| `tree:wilderness:22` | (3022, 3937) | (3022, 3937) | `{ x: 3022, z: 3937, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
+| `tree:wilderness:23` | (3043, 3722) | x 3024-3062, z 3712-3738 | `{ x: 3043, z: 3725, radius: 27 }` | [normal](../resources/tree/normal.md) 34 | yes | no | 28 | - |
+| `tree:wilderness:24` | (3043, 3819) | x 3027-3056, z 3801-3837 | `{ x: 3042, z: 3819, radius: 27 }` | [burnt](../resources/tree/burnt.md) 14 | yes | no | 40 | - |
+| `tree:wilderness:25` | (3031, 3547) | x 3028-3034, z 3546-3549 | `{ x: 3031, z: 3548, radius: 7 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | no | 4 | - |
+| `tree:wilderness:26` | (3053, 3584) | x 3030-3090, z 3548-3609 | `{ x: 3060, z: 3579, radius: 47 }` | [normal](../resources/tree/normal.md) 84 | yes | yes | 12 | - |
+| `tree:wilderness:27` | (3038, 3665) | (3038, 3665) | `{ x: 3038, z: 3665, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 19 | - |
+| `tree:wilderness:28` | (3040, 3676) | (3040, 3676) | `{ x: 3040, z: 3676, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 20 | - |
+| `tree:wilderness:29` | (3048, 3527) | x 3042-3055, z 3522-3533 | `{ x: 3049, z: 3528, radius: 13 }` | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 2 | yes | no | 2 | - |
+| `tree:wilderness:30` | (3043, 3650) | (3043, 3650) | `{ x: 3043, z: 3650, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 17 | - |
+| `tree:wilderness:31` | (3086, 3656) | x 3046-3134, z 3618-3704 | `{ x: 3090, z: 3661, radius: 65 }` | [burnt](../resources/tree/burnt.md) 2, [normal](../resources/tree/normal.md) 326 | yes | yes | 24 | - |
+| `tree:wilderness:32` | (3049, 3782) | (3049, 3782) | `{ x: 3049, z: 3782, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 33 | - |
+| `tree:wilderness:33` | (3051, 3842) | (3051, 3842) | `{ x: 3051, z: 3842, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 41 | - |
+| `tree:wilderness:34` | (3052, 3885) | x 3051-3053, z 3883-3887 | `{ x: 3052, z: 3885, radius: 6 }` | [burnt](../resources/tree/burnt.md) 2 | yes | no | 46 | - |
+| `tree:wilderness:35` | (3054, 3860) | (3054, 3860) | `{ x: 3054, z: 3860, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 43 | - |
+| `tree:wilderness:36` | (3084, 3804) | x 3059-3115, z 3770-3839 | `{ x: 3087, z: 3805, radius: 48 }` | [burnt](../resources/tree/burnt.md) 17, [normal](../resources/tree/normal.md) 24 | yes | no | 40 | - |
+| `tree:wilderness:37` | (3060, 3841) | (3060, 3841) | `{ x: 3060, z: 3841, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 41 | - |
+| `tree:wilderness:38` | (3076, 3529) | x 3066-3086, z 3526-3532 | `{ x: 3076, z: 3529, radius: 14 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1 | yes | no | 2 | - |
+| `tree:wilderness:39` | (3073, 3867) | x 3066-3081, z 3863-3870 | `{ x: 3074, z: 3867, radius: 12 }` | [burnt](../resources/tree/burnt.md) 3 | yes | no | 44 | - |
+| `tree:wilderness:40` | (3071, 3883) | x 3068-3074, z 3883 | `{ x: 3071, z: 3883, radius: 6 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 46 | - |
+| `tree:wilderness:41` | (3079, 3738) | x 3075-3082, z 3734-3741 | `{ x: 3079, z: 3738, radius: 9 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 28 | - |
+| `tree:wilderness:42` | (3087, 3606) | x 3079-3094, z 3599-3613 | `{ x: 3087, z: 3606, radius: 14 }` | [normal](../resources/tree/normal.md) 28 | yes | no | 12 | - |
+| `tree:wilderness:43` | (3082, 3893) | (3082, 3893) | `{ x: 3082, z: 3893, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:44` | (3083, 3722) | (3083, 3722) | `{ x: 3083, z: 3722, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 26 | - |
+| `tree:wilderness:45` | (3087, 3957) | x 3087, z 3954-3959 | `{ x: 3087, z: 3957, radius: 6 }` | [burnt](../resources/tree/burnt.md) 2 | no | no | 55 | - |
+| `tree:wilderness:46` | (3091, 3888) | (3091, 3888) | `{ x: 3091, z: 3888, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:47` | (3093, 3874) | (3093, 3874) | `{ x: 3093, z: 3874, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 45 | - |
+| `tree:wilderness:48` | (3093, 3900) | (3093, 3900) | `{ x: 3093, z: 3900, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:49` | (3115, 3729) | x 3094-3144, z 3715-3763 | `{ x: 3119, z: 3739, radius: 38 }` | [normal](../resources/tree/normal.md) 130 | yes | no | 31 | - |
+| `tree:wilderness:50` | (3107, 3532) | x 3097-3120, z 3526-3537 | `{ x: 3109, z: 3532, radius: 17 }` | [normal](../resources/tree/normal.md) 7, [oak](../resources/tree/oak.md) 2 | yes | no | 3 | - |
+| `tree:wilderness:51` | (3107, 3859) | x 3098-3117, z 3856-3868 | `{ x: 3108, z: 3862, radius: 15 }` | [burnt](../resources/tree/burnt.md) 10, [normal](../resources/tree/normal.md) 7 | yes | no | 44 | - |
+| `tree:wilderness:52` | (3178, 3602) | x 3099-3227, z 3545-3665 | `{ x: 3163, z: 3605, radius: 91 }` | [normal](../resources/tree/normal.md) 374 | yes | yes | 19 | - |
+| `tree:wilderness:53` | (3100, 3558) | (3100, 3558) | `{ x: 3100, z: 3558, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 5 | - |
+| `tree:wilderness:54` | (3121, 3842) | x 3101-3140, z 3835-3850 | `{ x: 3121, z: 3843, radius: 25 }` | [burnt](../resources/tree/burnt.md) 9 | yes | yes | 42 | - |
+| `tree:wilderness:55` | (3101, 3889) | (3101, 3889) | `{ x: 3101, z: 3889, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:56` | (3117, 3808) | x 3103-3128, z 3797-3820 | `{ x: 3116, z: 3809, radius: 21 }` | [normal](../resources/tree/normal.md) 7 | yes | no | 38 | - |
+| `tree:wilderness:57` | (3115, 3634) | x 3104-3124, z 3625-3641 | `{ x: 3114, z: 3633, radius: 16 }` | [normal](../resources/tree/normal.md) 34 | yes | no | 16 | - |
+| `tree:wilderness:58` | (3114, 3958) | x 3104-3125, z 3955-3960 | `{ x: 3115, z: 3958, radius: 15 }` | [burnt](../resources/tree/burnt.md) 5 | no | no | 56 | - |
+| `tree:wilderness:59` | (3117, 3606) | x 3105-3125, z 3598-3615 | `{ x: 3115, z: 3607, radius: 17 }` | [normal](../resources/tree/normal.md) 32 | yes | no | 12 | - |
+| `tree:wilderness:60` | (3105, 3900) | (3105, 3900) | `{ x: 3105, z: 3900, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:61` | (3117, 3892) | x 3114-3119, z 3888-3895 | `{ x: 3117, z: 3892, radius: 8 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 47 | - |
+| `tree:wilderness:62` | (3123, 3878) | (3123, 3878) | `{ x: 3123, z: 3878, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
+| `tree:wilderness:63` | (3128, 3861) | (3128, 3861) | `{ x: 3128, z: 3861, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 43 | - |
+| `tree:wilderness:64` | (3128, 3899) | (3128, 3899) | `{ x: 3128, z: 3899, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:65` | (3132, 3530) | x 3130-3133, z 3528-3531 | `{ x: 3132, z: 3530, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 2 | - |
+| `tree:wilderness:66` | (3132, 3876) | (3132, 3876) | `{ x: 3132, z: 3876, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
+| `tree:wilderness:67` | (3132, 3889) | (3132, 3889) | `{ x: 3132, z: 3889, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:68` | (3187, 3772) | x 3138-3229, z 3755-3801 | `{ x: 3184, z: 3778, radius: 55 }` | [burnt](../resources/tree/burnt.md) 38, [normal](../resources/tree/normal.md) 58 | yes | yes | 36 | - |
+| `tree:wilderness:69` | (3151, 3840) | x 3138-3162, z 3832-3848 | `{ x: 3150, z: 3840, radius: 18 }` | [burnt](../resources/tree/burnt.md) 2, [normal](../resources/tree/normal.md) 3 | yes | yes | 42 | - |
+| `tree:wilderness:70` | (3138, 3914) | (3138, 3914) | `{ x: 3138, z: 3914, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 50 | - |
+| `tree:wilderness:71` | (3138, 3927) | (3138, 3927) | `{ x: 3138, z: 3927, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 51 | - |
+| `tree:wilderness:72` | (3141, 3941) | x 3139-3143, z 3939-3943 | `{ x: 3141, z: 3941, radius: 6 }` | [burnt](../resources/tree/burnt.md) 2 | no | no | 53 | - |
+| `tree:wilderness:73` | (3141, 3618) | (3141, 3618) | `{ x: 3141, z: 3618, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 13 | - |
+| `tree:wilderness:74` | (3141, 3866) | (3141, 3866) | `{ x: 3141, z: 3866, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
+| `tree:wilderness:75` | (3144, 3893) | x 3141-3147, z 3889-3896 | `{ x: 3144, z: 3893, radius: 8 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 48 | - |
+| `tree:wilderness:76` | (3147, 3544) | x 3143-3150, z 3541-3547 | `{ x: 3147, z: 3544, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | yes | yes | 4 | - |
+| `tree:wilderness:77` | (3225, 3690) | x 3144-3279, z 3628-3724 | `{ x: 3212, z: 3676, radius: 87 }` | [burnt](../resources/tree/burnt.md) 4, [normal](../resources/tree/normal.md) 497 | yes | yes | 26 | - |
+| `tree:wilderness:78` | (3145, 3745) | (3145, 3745) | `{ x: 3145, z: 3745, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 29 | - |
+| `tree:wilderness:79` | (3147, 3908) | (3147, 3908) | `{ x: 3147, z: 3908, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 49 | - |
+| `tree:wilderness:80` | (3158, 3525) | x 3148-3169, z 3521-3531 | `{ x: 3159, z: 3526, radius: 16 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | yes | yes | 2 | - |
+| `tree:wilderness:81` | (3148, 3956) | (3148, 3956) | `{ x: 3148, z: 3956, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 55 | - |
+| `tree:wilderness:82` | (3153, 3859) | (3153, 3859) | `{ x: 3153, z: 3859, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
+| `tree:wilderness:83` | (3154, 3825) | x 3154, z 3821-3828 | `{ x: 3154, z: 3825, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | yes | 39 | - |
+| `tree:wilderness:84` | (3159, 3720) | x 3155-3162, z 3720 | `{ x: 3159, z: 3720, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 26 | - |
+| `tree:wilderness:85` | (3155, 3810) | (3155, 3810) | `{ x: 3155, z: 3810, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 37 | - |
+| `tree:wilderness:86` | (3158, 3898) | (3158, 3898) | `{ x: 3158, z: 3898, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:87` | (3159, 3872) | (3159, 3872) | `{ x: 3159, z: 3872, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
+| `tree:wilderness:88` | (3159, 3883) | (3159, 3883) | `{ x: 3159, z: 3883, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 46 | - |
+| `tree:wilderness:89` | (3162, 3907) | (3162, 3907) | `{ x: 3162, z: 3907, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 49 | - |
+| `tree:wilderness:90` | (3164, 3815) | x 3164, z 3811-3819 | `{ x: 3164, z: 3815, radius: 7 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 38 | - |
+| `tree:wilderness:91` | (3169, 3832) | x 3168-3171, z 3829-3837 | `{ x: 3170, z: 3833, radius: 8 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 40 | - |
+| `tree:wilderness:92` | (3172, 3874) | x 3168-3176, z 3871-3876 | `{ x: 3172, z: 3874, radius: 8 }` | [burnt](../resources/tree/burnt.md) 1, [normal](../resources/tree/normal.md) 1 | yes | yes | 45 | - |
+| `tree:wilderness:93` | (3169, 3896) | (3169, 3896) | `{ x: 3169, z: 3896, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:94` | (3175, 3942) | x 3172-3179, z 3932-3955 | `{ x: 3176, z: 3944, radius: 16 }` | [burnt](../resources/tree/burnt.md) 5 | no | no | 55 | - |
+| `tree:wilderness:95` | (3173, 3546) | (3173, 3546) | `{ x: 3173, z: 3546, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 4 | - |
+| `tree:wilderness:96` | (3173, 3861) | (3173, 3861) | `{ x: 3173, z: 3861, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
+| `tree:wilderness:97` | (3186, 3916) | x 3173-3196, z 3906-3925 | `{ x: 3185, z: 3916, radius: 19 }` | [burnt](../resources/tree/burnt.md) 10 | no | no | 51 | - |
+| `tree:wilderness:98` | (3178, 3748) | x 3177-3178, z 3746-3750 | `{ x: 3178, z: 3748, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 29 | - |
+| `tree:wilderness:99` | (3185, 3887) | x 3179-3191, z 3879-3895 | `{ x: 3185, z: 3887, radius: 13 }` | [burnt](../resources/tree/burnt.md) 3, [normal](../resources/tree/normal.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:100` | (3182, 3643) | (3182, 3643) | `{ x: 3182, z: 3643, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | 16 | - |
+| `tree:wilderness:101` | (3186, 3813) | x 3183-3191, z 3811-3817 | `{ x: 3187, z: 3814, radius: 8 }` | [burnt](../resources/tree/burnt.md) 3 | no | yes | 38 | - |
+| `tree:wilderness:102` | (3197, 3524) | x 3184-3209, z 3521-3529 | `{ x: 3197, z: 3525, radius: 17 }` | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 2 | yes | yes | 2 | - |
+| `tree:wilderness:103` | (3186, 3943) | (3186, 3943) | `{ x: 3186, z: 3943, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
+| `tree:wilderness:104` | (3188, 3739) | x 3188, z 3736-3741 | `{ x: 3188, z: 3739, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | 28 | - |
+| `tree:wilderness:105` | (3188, 3934) | (3188, 3934) | `{ x: 3188, z: 3934, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 52 | - |
+| `tree:wilderness:106` | (3195, 3865) | (3195, 3865) | `{ x: 3195, z: 3865, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
+| `tree:wilderness:107` | (3196, 3896) | (3196, 3896) | `{ x: 3196, z: 3896, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:108` | (3201, 3948) | (3201, 3948) | `{ x: 3201, z: 3948, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 54 | - |
+| `tree:wilderness:109` | (3204, 3876) | (3204, 3876) | `{ x: 3204, z: 3876, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 45 | - |
+| `tree:wilderness:110` | (3213, 3636) | x 3206-3227, z 3627-3644 | `{ x: 3217, z: 3636, radius: 18 }` | [normal](../resources/tree/normal.md) 24 | yes | yes | 16 | - |
+| `tree:wilderness:111` | (3211, 3843) | x 3206-3213, z 3834-3852 | `{ x: 3210, z: 3843, radius: 13 }` | [burnt](../resources/tree/burnt.md) 5 | no | yes | 42 | - |
+| `tree:wilderness:112` | (3207, 3900) | (3207, 3900) | `{ x: 3207, z: 3900, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:113` | (3208, 3921) | (3208, 3921) | `{ x: 3208, z: 3921, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
+| `tree:wilderness:114` | (3210, 3861) | (3210, 3861) | `{ x: 3210, z: 3861, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | - |
+| `tree:wilderness:115` | (3212, 3888) | (3212, 3888) | `{ x: 3212, z: 3888, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:116` | (3221, 3804) | x 3214-3228, z 3799-3810 | `{ x: 3221, z: 3805, radius: 13 }` | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 37 | - |
+| `tree:wilderness:117` | (3214, 3935) | (3214, 3935) | `{ x: 3214, z: 3935, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 52 | - |
+| `tree:wilderness:118` | (3220, 3779) | x 3217-3223, z 3778-3781 | `{ x: 3220, z: 3780, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | yes | yes | 33 | - |
+| `tree:wilderness:119` | (3226, 3521) | x 3221-3231, z 3520-3524 | `{ x: 3226, z: 3522, radius: 9 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | yes | 1 | - |
+| `tree:wilderness:120` | (3237, 3847) | x 3221-3247, z 3826-3860 | `{ x: 3234, z: 3843, radius: 25 }` | [burnt](../resources/tree/burnt.md) 11 | yes | yes | 43 | - |
+| `tree:wilderness:121` | (3222, 3920) | (3222, 3920) | `{ x: 3222, z: 3920, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
+| `tree:wilderness:122` | (3223, 3911) | (3223, 3911) | `{ x: 3223, z: 3911, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 49 | - |
+| `tree:wilderness:123` | (3235, 3877) | x 3231-3238, z 3873-3881 | `{ x: 3235, z: 3877, radius: 9 }` | [burnt](../resources/tree/burnt.md) 1, [normal](../resources/tree/normal.md) 1 | yes | yes | 46 | - |
+| `tree:wilderness:124` | (3234, 3924) | (3234, 3924) | `{ x: 3234, z: 3924, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
+| `tree:wilderness:125` | (3299, 3597) | x 3237-3337, z 3520-3650 | `{ x: 3287, z: 3585, radius: 86 }` | [burnt](../resources/tree/burnt.md) 10, [normal](../resources/tree/normal.md) 724, [oak](../resources/tree/oak.md) 9 | yes | yes | 17 | - |
+| `tree:wilderness:126` | (3238, 3627) | x 3237-3239, z 3622-3632 | `{ x: 3238, z: 3627, radius: 9 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 15 | - |
+| `tree:wilderness:127` | (3240, 3892) | (3240, 3892) | `{ x: 3240, z: 3892, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 47 | - |
+| `tree:wilderness:128` | (3242, 3914) | x 3240-3244, z 3910-3918 | `{ x: 3242, z: 3914, radius: 8 }` | [burnt](../resources/tree/burnt.md) 2 | no | yes | 50 | - |
+| `tree:wilderness:129` | (3241, 3816) | (3241, 3816) | `{ x: 3241, z: 3816, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 38 | - |
+| `tree:wilderness:130` | (3246, 3931) | (3246, 3931) | `{ x: 3246, z: 3931, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 52 | - |
+| `tree:wilderness:131` | (3277, 3752) | x 3248-3299, z 3736-3769 | `{ x: 3274, z: 3753, radius: 35 }` | [normal](../resources/tree/normal.md) 177 | yes | yes | 32 | - |
+| `tree:wilderness:132` | (3250, 3901) | (3250, 3901) | `{ x: 3250, z: 3901, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 48 | - |
+| `tree:wilderness:133` | (3257, 3864) | (3257, 3864) | `{ x: 3257, z: 3864, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 44 | - |
+| `tree:wilderness:134` | (3258, 3922) | (3258, 3922) | `{ x: 3258, z: 3922, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 51 | - |
+| `tree:wilderness:135` | (3258, 3937) | (3258, 3937) | `{ x: 3258, z: 3937, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | yes | 53 | - |
+| `tree:wilderness:136` | (3270, 3805) | x 3262-3279, z 3797-3815 | `{ x: 3271, z: 3806, radius: 16 }` | [normal](../resources/tree/normal.md) 23 | yes | yes | 37 | - |
+| `tree:wilderness:137` | (3269, 3837) | x 3265-3274, z 3832-3841 | `{ x: 3270, z: 3837, radius: 11 }` | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 41 | - |
+| `tree:wilderness:138` | (3268, 3782) | (3268, 3782) | `{ x: 3268, z: 3782, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 33 | - |
+| `tree:wilderness:139` | (3283, 3940) | x 3268-3301, z 3924-3952 | `{ x: 3285, z: 3938, radius: 26 }` | [normal](../resources/tree/normal.md) 17 | no | yes | 55 | - |
+| `tree:wilderness:140` | (3275, 3865) | x 3269-3282, z 3862-3867 | `{ x: 3276, z: 3865, radius: 11 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 44 | - |
+| `tree:wilderness:141` | (3295, 3793) | x 3279-3308, z 3765-3824 | `{ x: 3294, z: 3795, radius: 37 }` | [normal](../resources/tree/normal.md) 95 | yes | yes | 39 | - |
+| `tree:wilderness:142` | (3284, 3663) | x 3282-3286, z 3659-3668 | `{ x: 3284, z: 3664, radius: 9 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 19 | - |
+| `tree:wilderness:143` | (3282, 3853) | (3282, 3853) | `{ x: 3282, z: 3853, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 42 | - |
+| `tree:wilderness:144` | (3289, 3835) | (3289, 3835) | `{ x: 3289, z: 3835, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 40 | - |
+| `tree:wilderness:145` | (3298, 3691) | x 3290-3306, z 3684-3697 | `{ x: 3298, z: 3691, radius: 14 }` | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 23 | - |
+| `tree:wilderness:146` | (3295, 3858) | x 3292-3297, z 3857-3858 | `{ x: 3295, z: 3858, radius: 7 }` | [burnt](../resources/tree/burnt.md) 2 | yes | yes | 43 | - |
+| `tree:wilderness:147` | (3300, 3664) | x 3296-3306, z 3660-3670 | `{ x: 3301, z: 3665, radius: 11 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 19 | - |
+| `tree:wilderness:148` | (3308, 3720) | x 3299-3318, z 3714-3727 | `{ x: 3309, z: 3721, radius: 16 }` | [normal](../resources/tree/normal.md) 32 | yes | yes | 26 | - |
+| `tree:wilderness:149` | (3302, 3838) | (3302, 3838) | `{ x: 3302, z: 3838, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 40 | - |
+| `tree:wilderness:150` | (3302, 3847) | (3302, 3847) | `{ x: 3302, z: 3847, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 41 | - |
+| `tree:wilderness:151` | (3309, 3791) | (3309, 3791) | `{ x: 3309, z: 3791, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | 34 | - |
+| `tree:wilderness:152` | (3314, 3879) | x 3309-3322, z 3874-3885 | `{ x: 3316, z: 3880, radius: 13 }` | [burnt](../resources/tree/burnt.md) 4 | yes | yes | 46 | - |
+| `tree:wilderness:153` | (3310, 3858) | (3310, 3858) | `{ x: 3310, z: 3858, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 43 | unreached |
+| `tree:wilderness:154` | (3319, 3837) | x 3312-3325, z 3836-3838 | `{ x: 3319, z: 3837, radius: 11 }` | [burnt](../resources/tree/burnt.md) 3 | yes | yes | 40 | - |
+| `tree:wilderness:155` | (3321, 3768) | x 3317-3325, z 3765-3772 | `{ x: 3321, z: 3769, radius: 9 }` | [normal](../resources/tree/normal.md) 15 | yes | yes | 32 | - |
+| `tree:wilderness:156` | (3318, 3660) | (3318, 3660) | `{ x: 3318, z: 3660, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 18 | - |
+| `tree:wilderness:157` | (3318, 3690) | (3318, 3690) | `{ x: 3318, z: 3690, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 22 | - |
+| `tree:wilderness:158` | (3323, 3848) | (3323, 3848) | `{ x: 3323, z: 3848, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | yes | 42 | - |
+| `tree:wilderness:159` | (3333, 3906) | x 3328-3341, z 3904-3910 | `{ x: 3335, z: 3907, radius: 11 }` | [burnt](../resources/tree/burnt.md) 12 | no | no | 49 | unreached |
+| `tree:wilderness:160` | (3332, 3656) | x 3330-3334, z 3654-3657 | `{ x: 3332, z: 3656, radius: 6 }` | [burnt](../resources/tree/burnt.md) 4 | yes | no | 18 | - |
+| `tree:wilderness:161` | (3336, 3818) | x 3331-3339, z 3814-3821 | `{ x: 3335, z: 3818, radius: 9 }` | [burnt](../resources/tree/burnt.md) 5 | yes | no | 38 | - |
+| `tree:wilderness:162` | (3334, 3709) | x 3332-3335, z 3707-3710 | `{ x: 3334, z: 3709, radius: 6 }` | [burnt](../resources/tree/burnt.md) 2 | yes | no | 24 | - |
+| `tree:wilderness:163` | (3339, 3741) | x 3333-3345, z 3728-3757 | `{ x: 3339, z: 3743, radius: 20 }` | [burnt](../resources/tree/burnt.md) 17 | yes | no | 30 | - |
+| `tree:wilderness:164` | (3337, 3786) | x 3334-3339, z 3778-3793 | `{ x: 3337, z: 3786, radius: 12 }` | [burnt](../resources/tree/burnt.md) 8 | yes | no | 35 | - |
+| `tree:wilderness:165` | (3335, 3802) | (3335, 3802) | `{ x: 3335, z: 3802, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | yes | no | 36 | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:wilderness:0` | (3017, 3591) | [coal](../resources/rock/coal.md) 34 | yes | no | 10 | - |
-| `rock:wilderness:1` | (3057, 3945) | [adamantite](../resources/rock/adamantite.md) 1, [coal](../resources/rock/coal.md) 3, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 3 | no | no | 54 | - |
-| `rock:wilderness:2` | (3060, 3885) | [runite](../resources/rock/runite.md) 2 | yes | no | 46 | - |
-| `rock:wilderness:3` | (3087, 3762) | [adamantite](../resources/rock/adamantite.md) 7, [coal](../resources/rock/coal.md) 32, [iron](../resources/rock/iron.md) 16, [mithril](../resources/rock/mithril.md) 19 | yes | no | 32 | - |
-| `rock:wilderness:4` | (3104, 3567) | [coal](../resources/rock/coal.md) 3, [iron](../resources/rock/iron.md) 2 | yes | no | 7 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:wilderness:0` | (3017, 3591) | x 3009-3023, z 3586-3598 | `{ x: 3016, z: 3592, radius: 13 }` | [coal](../resources/rock/coal.md) 34 | yes | no | 10 | - |
+| `rock:wilderness:1` | (3057, 3945) | x 3055-3059, z 3941-3950 | `{ x: 3057, z: 3946, radius: 9 }` | [adamantite](../resources/rock/adamantite.md) 1, [coal](../resources/rock/coal.md) 3, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 3 | no | no | 54 | - |
+| `rock:wilderness:2` | (3060, 3885) | x 3059-3060, z 3884-3885 | `{ x: 3060, z: 3885, radius: 5 }` | [runite](../resources/rock/runite.md) 2 | yes | no | 46 | - |
+| `rock:wilderness:3` | (3087, 3762) | x 3075-3102, z 3748-3774 | `{ x: 3089, z: 3761, radius: 23 }` | [adamantite](../resources/rock/adamantite.md) 7, [coal](../resources/rock/coal.md) 32, [iron](../resources/rock/iron.md) 16, [mithril](../resources/rock/mithril.md) 19 | yes | no | 32 | - |
+| `rock:wilderness:4` | (3104, 3567) | x 3103-3105, z 3565-3570 | `{ x: 3104, z: 3568, radius: 7 }` | [coal](../resources/rock/coal.md) 3, [iron](../resources/rock/iron.md) 2 | yes | no | 7 | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:wilderness:0` | (3050, 3704) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | 24 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3704) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 1 | yes | yes | 24 | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `thieving-chest:wilderness:0` | (3190, 3962) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 3 | no | no | 56 | carry Lockpick + 23 Thieving |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `thieving-chest:wilderness:0` | (3190, 3962) | x 3188-3193, z 3962 | `{ x: 3191, z: 3962, radius: 6 }` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 3 | no | no | 56 | carry Lockpick + 23 Thieving |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:wilderness:0` | (3078, 3913) | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 50 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:wilderness:0` | (3078, 3913) | x 3076-3079, z 3909-3916 | x 3071-3084, z 3904-3921 | `{ x: 3078, z: 3913, radius: 15 }` | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 50 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:wilderness:0` | (2945, 3866) | Ice warrior 1 | yes | no | 44 | - |
-| `npc:wilderness:1` | (2946, 3857) | Ice warrior 1 | yes | no | 43 | - |
-| `npc:wilderness:2` | (2954, 3885) | Ice giant 5, Ice warrior 9 | yes | no | 48 | - |
-| `npc:wilderness:3` | (2953, 3926) | Ice giant 2, Ice spider 3, Ice warrior 7 | no | no | 53 | - |
-| `npc:wilderness:4` | (2953, 3858) | Ice warrior 1 | yes | no | 43 | - |
-| `npc:wilderness:5` | (2955, 3945) | Ice giant 1 | no | no | 54 | - |
-| `npc:wilderness:6` | (2958, 3866) | Ice warrior 1 | yes | no | 44 | - |
-| `npc:wilderness:7` | (2962, 3755) | Ghost 1 | yes | no | 30 | - |
-| `npc:wilderness:8` | (2967, 3946) | Ice warrior 2 | no | no | 54 | - |
-| `npc:wilderness:9` | (2971, 3938) | Ice warrior 1 | no | no | 53 | - |
-| `npc:wilderness:10` | (2982, 3568) | Dark wizard (bearded_dark_wizard) 3, Dark wizard (young_dark_wizard) 5 | yes | no | 7 | - |
-| `npc:wilderness:11` | (2979, 3950) | Ice giant 1, Ice warrior 2, Skeleton (skeleton_armed) 1 | no | no | 55 | - |
-| `npc:wilderness:12` | (2981, 3699) | Rat 1 | yes | no | 23 | - |
-| `npc:wilderness:13` | (2988, 3685) | Giant spider 5, Spider 6 | yes | no | 22 | - |
-| `npc:wilderness:14` | (2984, 3933) | Ice warrior 1 | no | no | 52 | - |
-| `npc:wilderness:15` | (2991, 3943) | Skeleton (skeleton_armed) 2 | no | no | 54 | 52 Agility |
-| `npc:wilderness:16` | (2990, 3755) | Ghost 1 | yes | no | 30 | - |
-| `npc:wilderness:17` | (2998, 3701) | Rat 4 | yes | no | 23 | - |
-| `npc:wilderness:18` | (3017, 3593) | Skeleton (skeleton_unarmed) 13 | yes | yes | 11 | - |
-| `npc:wilderness:19` | (3025, 3851) | Black Knight 5, Lesser demon 4 | yes | yes | 43 | - |
-| `npc:wilderness:20` | (3021, 3761) | Chaos dwarf 4 | yes | no | 31 | - |
-| `npc:wilderness:21` | (3025, 3568) | Scorpion 1 | yes | no | 7 | - |
-| `npc:wilderness:22` | (3028, 3577) | Scorpion 1 | yes | no | 8 | - |
-| `npc:wilderness:23` | (3031, 3703) | Bandit 2 | yes | yes | 24 | - |
-| `npc:wilderness:24` | (3032, 3570) | Scorpion 1 | yes | no | 7 | - |
-| `npc:wilderness:25` | (3037, 3671) | Guard Bandit 2 | yes | yes | 20 | - |
-| `npc:wilderness:26` | (3038, 3661) | Guard Bandit 2 | yes | yes | 18 | - |
-| `npc:wilderness:27` | (3040, 3581) | Scorpion 1 | yes | no | 8 | - |
-| `npc:wilderness:28` | (3040, 3703) | Bandit 1 | yes | yes | 23 | - |
-| `npc:wilderness:29` | (3044, 3570) | Scorpion 2 | yes | no | 7 | - |
-| `npc:wilderness:30` | (3053, 3887) | Deadly red spider 14 | yes | yes | 48 | - |
-| `npc:wilderness:31` | (3054, 3852) | Black Knight 3 | yes | no | 42 | - |
-| `npc:wilderness:32` | (3055, 3574) | Scorpion 1 | yes | no | 7 | - |
-| `npc:wilderness:33` | (3059, 3568) | Scorpion 2 | yes | no | 7 | - |
-| `npc:wilderness:34` | (3057, 3842) | Black Knight 1 | yes | no | 41 | - |
-| `npc:wilderness:35` | (3062, 3555) | Scorpion 1 | yes | no | 5 | - |
-| `npc:wilderness:36` | (3070, 3829) | King Scorpion 1 | yes | no | 39 | - |
-| `npc:wilderness:37` | (3073, 3532) | Skeleton (skeleton_unarmed) 2 | yes | no | 2 | - |
-| `npc:wilderness:38` | (3076, 3957) | Giant bat 7 | no | no | 56 | - |
-| `npc:wilderness:39` | (3078, 3810) | Green dragon 1 | yes | no | 37 | - |
-| `npc:wilderness:40` | (3081, 3551) | Skeleton (skeleton_armed) 1 | yes | no | 4 | - |
-| `npc:wilderness:41` | (3088, 3700) | Ghost 1 | yes | no | 23 | - |
-| `npc:wilderness:42` | (3091, 3861) | Lesser demon 1 | yes | no | 43 | - |
-| `npc:wilderness:43` | (3092, 3692) | Ghost 1 | yes | no | 22 | - |
-| `npc:wilderness:44` | (3092, 3810) | Green dragon 1 | yes | no | 37 | - |
-| `npc:wilderness:45` | (3094, 3849) | Giant 1 | yes | no | 42 | - |
-| `npc:wilderness:46` | (3094, 3869) | Lesser demon 1 | yes | no | 44 | - |
-| `npc:wilderness:47` | (3096, 3559) | Skeleton (skeleton_unarmed) 1 | yes | no | 5 | - |
-| `npc:wilderness:48` | (3097, 3700) | Ghost 1 | yes | no | 23 | - |
-| `npc:wilderness:49` | (3098, 3821) | Green dragon 1 | yes | no | 38 | - |
-| `npc:wilderness:50` | (3104, 3568) | Skeleton (skeleton_armed) 5 | yes | no | 7 | - |
-| `npc:wilderness:51` | (3104, 3875) | Giant 1 | yes | no | 45 | - |
-| `npc:wilderness:52` | (3105, 3696) | Ghost 1 | yes | no | 23 | - |
-| `npc:wilderness:53` | (3106, 3548) | Skeleton (skeleton_unarmed) 1 | yes | no | 4 | - |
-| `npc:wilderness:54` | (3107, 3528) | Skeleton (skeleton_unarmed) 1 | yes | no | 2 | - |
-| `npc:wilderness:55` | (3107, 3812) | Green dragon 1 | yes | no | 37 | - |
-| `npc:wilderness:56` | (3110, 3854) | Giant 1 | yes | no | 42 | - |
-| `npc:wilderness:57` | (3115, 3535) | Skeleton (skeleton_unarmed) 2 | yes | no | 3 | - |
-| `npc:wilderness:58` | (3113, 3689) | Ghost 1 | yes | no | 22 | - |
-| `npc:wilderness:59` | (3116, 3524) | Skeleton (skeleton_unarmed) 1 | yes | no | 1 | - |
-| `npc:wilderness:60` | (3117, 3854) | Giant 1 | yes | no | 42 | - |
-| `npc:wilderness:61` | (3118, 3820) | Green dragon 1 | yes | no | 38 | - |
-| `npc:wilderness:62` | (3139, 3818) | Moss giant 1 | yes | no | 38 | - |
-| `npc:wilderness:63` | (3142, 3804) | Moss giant 1, Skeleton (skeleton_armed) 1 | yes | no | 36 | - |
-| `npc:wilderness:64` | (3141, 3826) | Moss giant 1 | yes | no | 39 | - |
-| `npc:wilderness:65` | (3147, 3732) | Deadly red spider 2 | yes | no | 27 | - |
-| `npc:wilderness:66` | (3145, 3779) | Skeleton (skeleton_armed) 1 | yes | no | 33 | - |
-| `npc:wilderness:67` | (3150, 3744) | Deadly red spider 1 | yes | no | 29 | - |
-| `npc:wilderness:68` | (3153, 3676) | Zombie 1 | yes | no | 20 | - |
-| `npc:wilderness:69` | (3158, 3636) | Rat 3 | yes | no | 15 | - |
-| `npc:wilderness:70` | (3160, 3568) | Thug 1 | yes | yes | 7 | - |
-| `npc:wilderness:71` | (3170, 3885) | Spider 17 | yes | yes | 47 | - |
-| `npc:wilderness:72` | (3163, 3685) | Zombie 1 | yes | no | 21 | - |
-| `npc:wilderness:73` | (3169, 3578) | Thug 2 | yes | yes | 8 | - |
-| `npc:wilderness:74` | (3172, 3561) | Thug 1 | yes | yes | 6 | - |
-| `npc:wilderness:75` | (3175, 3572) | Thug 1 | yes | yes | 7 | - |
-| `npc:wilderness:76` | (3181, 3741) | Deadly red spider 3 | yes | no | 29 | - |
-| `npc:wilderness:77` | (3179, 3564) | Thug 1 | yes | yes | 6 | - |
-| `npc:wilderness:78` | (3179, 3786) | Skeleton (skeleton_armed) 1 | yes | yes | 34 | - |
-| `npc:wilderness:79` | (3181, 3850) | Red dragon 1 | no | yes | 42 | unreached |
-| `npc:wilderness:80` | (3183, 3725) | Rat 3 | yes | no | 26 | unreached |
-| `npc:wilderness:81` | (3184, 3580) | Thug 1 | yes | yes | 8 | - |
-| `npc:wilderness:82` | (3191, 3960) | Magic axe 9 | no | no | 56 | - |
-| `npc:wilderness:83` | (3189, 3563) | Thug 1 | yes | yes | 6 | - |
-| `npc:wilderness:84` | (3190, 3570) | Thug 1 | yes | yes | 7 | - |
-| `npc:wilderness:85` | (3219, 3742) | Skeleton (skeleton_armed) 4 | yes | yes | 29 | - |
-| `npc:wilderness:86` | (3213, 3819) | Red dragon 1 | no | yes | 38 | - |
-| `npc:wilderness:87` | (3223, 3830) | Red dragon 1 | no | yes | 39 | - |
-| `npc:wilderness:88` | (3228, 3739) | Skeleton (skeleton_armed) 1 | yes | yes | 28 | - |
-| `npc:wilderness:89` | (3233, 3783) | Chaos dwarf 1 | yes | yes | 33 | - |
-| `npc:wilderness:90` | (3241, 3796) | Chaos dwarf 1 | yes | no | 35 | - |
-| `npc:wilderness:91` | (3249, 3949) | Scorpion 1 | no | yes | 54 | - |
-| `npc:wilderness:92` | (3256, 3673) | Rat 6 | yes | yes | 20 | - |
-| `npc:wilderness:93` | (3253, 3782) | Chaos dwarf 1 | yes | yes | 33 | - |
-| `npc:wilderness:94` | (3256, 3954) | Scorpion 1 | no | yes | 55 | - |
-| `npc:wilderness:95` | (3261, 3736) | Skeleton (skeleton_armed) 1 | yes | yes | 28 | - |
-| `npc:wilderness:96` | (3271, 3728) | Skeleton (skeleton_armed) 5 | yes | yes | 27 | - |
-| `npc:wilderness:97` | (3269, 3823) | Poison spider 3 | yes | yes | 39 | - |
-| `npc:wilderness:98` | (3286, 3804) | Poison spider 21 | yes | yes | 38 | - |
-| `npc:wilderness:99` | (3277, 3663) | Ghost 3 | yes | yes | 19 | - |
-| `npc:wilderness:100` | (3277, 3783) | Poison spider 2 | yes | yes | 33 | - |
-| `npc:wilderness:101` | (3280, 3832) | Poison spider 3 | yes | yes | 40 | - |
-| `npc:wilderness:102` | (3279, 3654) | Ghost 1 | yes | yes | 17 | - |
-| `npc:wilderness:103` | (3286, 3791) | Poison spider 5 | yes | yes | 35 | - |
-| `npc:wilderness:104` | (3296, 3828) | Poison spider 11 | yes | yes | 40 | - |
-| `npc:wilderness:105` | (3289, 3652) | Ghost 2 | yes | yes | 17 | - |
-| `npc:wilderness:106` | (3302, 3788) | Poison spider 4 | yes | yes | 35 | - |
-| `npc:wilderness:107` | (3300, 3649) | Giant 1 | yes | yes | 17 | - |
-| `npc:wilderness:108` | (3308, 3816) | Poison spider 5 | yes | yes | 38 | - |
-| `npc:wilderness:109` | (3308, 3661) | Giant 1 | yes | yes | 18 | - |
-| `npc:wilderness:110` | (3312, 3769) | Black Knight 2 | yes | yes | 32 | - |
-| `npc:wilderness:111` | (3311, 3845) | Lesser demon 1 | yes | yes | 41 | - |
-| `npc:wilderness:112` | (3320, 3797) | Poison spider 4 | yes | yes | 35 | - |
-| `npc:wilderness:113` | (3321, 3830) | Poison spider 4 | yes | yes | 40 | - |
-| `npc:wilderness:114` | (3324, 3856) | Lesser demon 1 | yes | yes | 43 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:wilderness:0` | (2945, 3866) | (2945, 3866) | x 2942-2948, z 3863-3869 | `{ x: 2945, z: 3866, radius: 8 }` | Ice warrior 1 | yes | no | 44 | - |
+| `npc:wilderness:1` | (2946, 3857) | (2946, 3857) | x 2943-2949, z 3854-3860 | `{ x: 2946, z: 3857, radius: 8 }` | Ice warrior 1 | yes | no | 43 | - |
+| `npc:wilderness:2` | (2954, 3885) | x 2947-2963, z 3874-3902 | x 2944-2966, z 3871-3905 | `{ x: 2955, z: 3888, radius: 24 }` | Ice giant 5, Ice warrior 9 | yes | no | 48 | - |
+| `npc:wilderness:3` | (2953, 3926) | x 2947-2965, z 3913-3936 | x 2937-2975, z 3903-3946 | `{ x: 2956, z: 3925, radius: 33 }` | Ice giant 2, Ice spider 3, Ice warrior 7 | no | no | 53 | - |
+| `npc:wilderness:4` | (2953, 3858) | (2953, 3858) | x 2950-2956, z 3855-3861 | `{ x: 2953, z: 3858, radius: 8 }` | Ice warrior 1 | yes | no | 43 | - |
+| `npc:wilderness:5` | (2955, 3945) | (2955, 3945) | x 2952-2958, z 3942-3948 | `{ x: 2955, z: 3945, radius: 8 }` | Ice giant 1 | no | no | 54 | - |
+| `npc:wilderness:6` | (2958, 3866) | (2958, 3866) | x 2955-2961, z 3863-3869 | `{ x: 2958, z: 3866, radius: 8 }` | Ice warrior 1 | yes | no | 44 | - |
+| `npc:wilderness:7` | (2962, 3755) | (2962, 3755) | x 2954-2970, z 3747-3763 | `{ x: 2962, z: 3755, radius: 15 }` | Ghost 1 | yes | no | 30 | - |
+| `npc:wilderness:8` | (2967, 3946) | x 2964-2970, z 3944-3947 | x 2961-2973, z 3941-3950 | `{ x: 2967, z: 3946, radius: 11 }` | Ice warrior 2 | no | no | 54 | - |
+| `npc:wilderness:9` | (2971, 3938) | (2971, 3938) | x 2968-2974, z 3935-3941 | `{ x: 2971, z: 3938, radius: 8 }` | Ice warrior 1 | no | no | 53 | - |
+| `npc:wilderness:10` | (2982, 3568) | x 2976-2988, z 3562-3575 | x 2973-2991, z 3559-3578 | `{ x: 2982, z: 3569, radius: 17 }` | Dark wizard (bearded_dark_wizard) 3, Dark wizard (young_dark_wizard) 5 | yes | no | 7 | - |
+| `npc:wilderness:11` | (2979, 3950) | x 2977-2982, z 3942-3956 | x 2968-2991, z 3933-3965 | `{ x: 2980, z: 3949, radius: 23 }` | Ice giant 1, Ice warrior 2, Skeleton (skeleton_armed) 1 | no | no | 55 | - |
+| `npc:wilderness:12` | (2981, 3699) | (2981, 3699) | x 2966-2996, z 3684-3714 | `{ x: 2981, z: 3699, radius: 25 }` | Rat 1 | yes | no | 23 | - |
+| `npc:wilderness:13` | (2988, 3685) | x 2982-2993, z 3677-3692 | x 2972-3003, z 3667-3702 | `{ x: 2988, z: 3685, radius: 28 }` | Giant spider 5, Spider 6 | yes | no | 22 | - |
+| `npc:wilderness:14` | (2984, 3933) | (2984, 3933) | x 2981-2987, z 3930-3936 | `{ x: 2984, z: 3933, radius: 8 }` | Ice warrior 1 | no | no | 52 | - |
+| `npc:wilderness:15` | (2991, 3943) | x 2989-2992, z 3942-3944 | x 2980-3001, z 3933-3953 | `{ x: 2991, z: 3943, radius: 18 }` | Skeleton (skeleton_armed) 2 | no | no | 54 | 52 Agility |
+| `npc:wilderness:16` | (2990, 3755) | (2990, 3755) | x 2982-2998, z 3747-3763 | `{ x: 2990, z: 3755, radius: 15 }` | Ghost 1 | yes | no | 30 | - |
+| `npc:wilderness:17` | (2998, 3701) | x 2996-3000, z 3700-3703 | x 2981-3015, z 3685-3718 | `{ x: 2998, z: 3702, radius: 28 }` | Rat 4 | yes | no | 23 | - |
+| `npc:wilderness:18` | (3017, 3593) | x 3008-3025, z 3584-3602 | x 3000-3033, z 3576-3610 | `{ x: 3017, z: 3593, radius: 28 }` | Skeleton (skeleton_unarmed) 13 | yes | yes | 11 | - |
+| `npc:wilderness:19` | (3025, 3851) | x 3014-3042, z 3845-3856 | x 3004-3052, z 3835-3866 | `{ x: 3028, z: 3851, radius: 32 }` | Black Knight 5, Lesser demon 4 | yes | yes | 43 | - |
+| `npc:wilderness:20` | (3021, 3761) | x 3019-3025, z 3755-3766 | x 2999-3045, z 3735-3786 | `{ x: 3022, z: 3761, radius: 38 }` | Chaos dwarf 4 | yes | no | 31 | - |
+| `npc:wilderness:21` | (3025, 3568) | (3025, 3568) | x 3013-3037, z 3556-3580 | `{ x: 3025, z: 3568, radius: 20 }` | Scorpion 1 | yes | no | 7 | - |
+| `npc:wilderness:22` | (3028, 3577) | (3028, 3577) | x 3016-3040, z 3565-3589 | `{ x: 3028, z: 3577, radius: 20 }` | Scorpion 1 | yes | no | 8 | - |
+| `npc:wilderness:23` | (3031, 3703) | x 3029-3033, z 3701-3705 | x 3024-3038, z 3696-3710 | `{ x: 3031, z: 3703, radius: 13 }` | Bandit 2 | yes | yes | 24 | - |
+| `npc:wilderness:24` | (3032, 3570) | (3032, 3570) | x 3020-3044, z 3558-3582 | `{ x: 3032, z: 3570, radius: 20 }` | Scorpion 1 | yes | no | 7 | - |
+| `npc:wilderness:25` | (3037, 3671) | x 3036-3038, z 3670-3672 | x 3031-3043, z 3665-3677 | `{ x: 3037, z: 3671, radius: 12 }` | Guard Bandit 2 | yes | yes | 20 | - |
+| `npc:wilderness:26` | (3038, 3661) | x 3037-3039, z 3660-3661 | x 3032-3044, z 3655-3666 | `{ x: 3038, z: 3661, radius: 12 }` | Guard Bandit 2 | yes | yes | 18 | - |
+| `npc:wilderness:27` | (3040, 3581) | (3040, 3581) | x 3028-3052, z 3569-3593 | `{ x: 3040, z: 3581, radius: 20 }` | Scorpion 1 | yes | no | 8 | - |
+| `npc:wilderness:28` | (3040, 3703) | (3040, 3703) | x 3035-3045, z 3698-3708 | `{ x: 3040, z: 3703, radius: 11 }` | Bandit 1 | yes | yes | 23 | - |
+| `npc:wilderness:29` | (3044, 3570) | x 3041-3047, z 3567-3572 | x 3029-3059, z 3555-3584 | `{ x: 3044, z: 3570, radius: 25 }` | Scorpion 2 | yes | no | 7 | - |
+| `npc:wilderness:30` | (3053, 3887) | x 3046-3070, z 3871-3897 | x 3036-3080, z 3861-3907 | `{ x: 3058, z: 3884, radius: 35 }` | Deadly red spider 14 | yes | yes | 48 | - |
+| `npc:wilderness:31` | (3054, 3852) | x 3050-3058, z 3849-3854 | x 3040-3068, z 3839-3864 | `{ x: 3054, z: 3852, radius: 23 }` | Black Knight 3 | yes | no | 42 | - |
+| `npc:wilderness:32` | (3055, 3574) | (3055, 3574) | x 3043-3067, z 3562-3586 | `{ x: 3055, z: 3574, radius: 20 }` | Scorpion 1 | yes | no | 7 | - |
+| `npc:wilderness:33` | (3059, 3568) | x 3056-3062, z 3566-3570 | x 3044-3074, z 3554-3582 | `{ x: 3059, z: 3568, radius: 24 }` | Scorpion 2 | yes | no | 7 | - |
+| `npc:wilderness:34` | (3057, 3842) | (3057, 3842) | x 3047-3067, z 3832-3852 | `{ x: 3057, z: 3842, radius: 18 }` | Black Knight 1 | yes | no | 41 | - |
+| `npc:wilderness:35` | (3062, 3555) | (3062, 3555) | x 3050-3074, z 3543-3567 | `{ x: 3062, z: 3555, radius: 20 }` | Scorpion 1 | yes | no | 5 | - |
+| `npc:wilderness:36` | (3070, 3829) | (3070, 3829) | x 3062-3078, z 3821-3837 | `{ x: 3070, z: 3829, radius: 15 }` | King Scorpion 1 | yes | no | 39 | - |
+| `npc:wilderness:37` | (3073, 3532) | x 3072-3074, z 3531-3532 | x 3064-3082, z 3523-3540 | `{ x: 3073, z: 3532, radius: 16 }` | Skeleton (skeleton_unarmed) 2 | yes | no | 2 | - |
+| `npc:wilderness:38` | (3076, 3957) | x 3073-3080, z 3949-3961 | x 3065-3088, z 3941-3969 | `{ x: 3077, z: 3955, radius: 22 }` | Giant bat 7 | no | no | 56 | - |
+| `npc:wilderness:39` | (3078, 3810) | (3078, 3810) | x 3074-3082, z 3806-3814 | `{ x: 3078, z: 3810, radius: 9 }` | Green dragon 1 | yes | no | 37 | - |
+| `npc:wilderness:40` | (3081, 3551) | (3081, 3551) | x 3072-3090, z 3542-3560 | `{ x: 3081, z: 3551, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | no | 4 | - |
+| `npc:wilderness:41` | (3088, 3700) | (3088, 3700) | x 3080-3096, z 3692-3708 | `{ x: 3088, z: 3700, radius: 15 }` | Ghost 1 | yes | no | 23 | - |
+| `npc:wilderness:42` | (3091, 3861) | (3091, 3861) | x 3085-3097, z 3855-3867 | `{ x: 3091, z: 3861, radius: 12 }` | Lesser demon 1 | yes | no | 43 | - |
+| `npc:wilderness:43` | (3092, 3692) | (3092, 3692) | x 3084-3100, z 3684-3700 | `{ x: 3092, z: 3692, radius: 15 }` | Ghost 1 | yes | no | 22 | - |
+| `npc:wilderness:44` | (3092, 3810) | (3092, 3810) | x 3088-3096, z 3806-3814 | `{ x: 3092, z: 3810, radius: 9 }` | Green dragon 1 | yes | no | 37 | - |
+| `npc:wilderness:45` | (3094, 3849) | (3094, 3849) | x 3091-3097, z 3846-3852 | `{ x: 3094, z: 3849, radius: 8 }` | Giant 1 | yes | no | 42 | - |
+| `npc:wilderness:46` | (3094, 3869) | (3094, 3869) | x 3088-3100, z 3863-3875 | `{ x: 3094, z: 3869, radius: 12 }` | Lesser demon 1 | yes | no | 44 | - |
+| `npc:wilderness:47` | (3096, 3559) | (3096, 3559) | x 3088-3104, z 3551-3567 | `{ x: 3096, z: 3559, radius: 15 }` | Skeleton (skeleton_unarmed) 1 | yes | no | 5 | - |
+| `npc:wilderness:48` | (3097, 3700) | (3097, 3700) | x 3089-3105, z 3692-3708 | `{ x: 3097, z: 3700, radius: 15 }` | Ghost 1 | yes | no | 23 | - |
+| `npc:wilderness:49` | (3098, 3821) | (3098, 3821) | x 3094-3102, z 3817-3825 | `{ x: 3098, z: 3821, radius: 9 }` | Green dragon 1 | yes | no | 38 | - |
+| `npc:wilderness:50` | (3104, 3568) | x 3102-3106, z 3566-3570 | x 3093-3115, z 3557-3579 | `{ x: 3104, z: 3568, radius: 19 }` | Skeleton (skeleton_armed) 5 | yes | no | 7 | - |
+| `npc:wilderness:51` | (3104, 3875) | (3104, 3875) | x 3101-3107, z 3872-3878 | `{ x: 3104, z: 3875, radius: 8 }` | Giant 1 | yes | no | 45 | - |
+| `npc:wilderness:52` | (3105, 3696) | (3105, 3696) | x 3097-3113, z 3688-3704 | `{ x: 3105, z: 3696, radius: 15 }` | Ghost 1 | yes | no | 23 | - |
+| `npc:wilderness:53` | (3106, 3548) | (3106, 3548) | x 3098-3114, z 3540-3556 | `{ x: 3106, z: 3548, radius: 15 }` | Skeleton (skeleton_unarmed) 1 | yes | no | 4 | - |
+| `npc:wilderness:54` | (3107, 3528) | (3107, 3528) | x 3099-3115, z 3520-3536 | `{ x: 3107, z: 3528, radius: 15 }` | Skeleton (skeleton_unarmed) 1 | yes | no | 2 | - |
+| `npc:wilderness:55` | (3107, 3812) | (3107, 3812) | x 3103-3111, z 3808-3816 | `{ x: 3107, z: 3812, radius: 9 }` | Green dragon 1 | yes | no | 37 | - |
+| `npc:wilderness:56` | (3110, 3854) | (3110, 3854) | x 3107-3113, z 3851-3857 | `{ x: 3110, z: 3854, radius: 8 }` | Giant 1 | yes | no | 42 | - |
+| `npc:wilderness:57` | (3115, 3535) | x 3112-3117, z 3532-3538 | x 3104-3125, z 3524-3546 | `{ x: 3115, z: 3535, radius: 19 }` | Skeleton (skeleton_unarmed) 2 | yes | no | 3 | - |
+| `npc:wilderness:58` | (3113, 3689) | (3113, 3689) | x 3105-3121, z 3681-3697 | `{ x: 3113, z: 3689, radius: 15 }` | Ghost 1 | yes | no | 22 | - |
+| `npc:wilderness:59` | (3116, 3524) | (3116, 3524) | x 3108-3124, z 3516-3532 | `{ x: 3116, z: 3524, radius: 15 }` | Skeleton (skeleton_unarmed) 1 | yes | no | 1 | - |
+| `npc:wilderness:60` | (3117, 3854) | (3117, 3854) | x 3114-3120, z 3851-3857 | `{ x: 3117, z: 3854, radius: 8 }` | Giant 1 | yes | no | 42 | - |
+| `npc:wilderness:61` | (3118, 3820) | (3118, 3820) | x 3114-3122, z 3816-3824 | `{ x: 3118, z: 3820, radius: 9 }` | Green dragon 1 | yes | no | 38 | - |
+| `npc:wilderness:62` | (3139, 3818) | (3139, 3818) | x 3136-3142, z 3815-3821 | `{ x: 3139, z: 3818, radius: 8 }` | Moss giant 1 | yes | no | 38 | - |
+| `npc:wilderness:63` | (3142, 3804) | x 3140-3143, z 3802-3805 | x 3131-3152, z 3793-3814 | `{ x: 3142, z: 3804, radius: 19 }` | Moss giant 1, Skeleton (skeleton_armed) 1 | yes | no | 36 | - |
+| `npc:wilderness:64` | (3141, 3826) | (3141, 3826) | x 3138-3144, z 3823-3829 | `{ x: 3141, z: 3826, radius: 8 }` | Moss giant 1 | yes | no | 39 | - |
+| `npc:wilderness:65` | (3147, 3732) | x 3145-3149, z 3730-3734 | x 3135-3159, z 3720-3744 | `{ x: 3147, z: 3732, radius: 20 }` | Deadly red spider 2 | yes | no | 27 | - |
+| `npc:wilderness:66` | (3145, 3779) | (3145, 3779) | x 3136-3154, z 3770-3788 | `{ x: 3145, z: 3779, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | no | 33 | - |
+| `npc:wilderness:67` | (3150, 3744) | (3150, 3744) | x 3140-3160, z 3734-3754 | `{ x: 3150, z: 3744, radius: 18 }` | Deadly red spider 1 | yes | no | 29 | - |
+| `npc:wilderness:68` | (3153, 3676) | (3153, 3676) | x 3144-3162, z 3667-3685 | `{ x: 3153, z: 3676, radius: 16 }` | Zombie 1 | yes | no | 20 | - |
+| `npc:wilderness:69` | (3158, 3636) | x 3156-3160, z 3634-3639 | x 3141-3175, z 3619-3654 | `{ x: 3158, z: 3637, radius: 28 }` | Rat 3 | yes | no | 15 | - |
+| `npc:wilderness:70` | (3160, 3568) | (3160, 3568) | x 3155-3165, z 3563-3573 | `{ x: 3160, z: 3568, radius: 11 }` | Thug 1 | yes | yes | 7 | - |
+| `npc:wilderness:71` | (3170, 3885) | x 3162-3178, z 3879-3893 | x 3154-3186, z 3871-3901 | `{ x: 3170, z: 3886, radius: 25 }` | Spider 17 | yes | yes | 47 | - |
+| `npc:wilderness:72` | (3163, 3685) | (3163, 3685) | x 3154-3172, z 3676-3694 | `{ x: 3163, z: 3685, radius: 16 }` | Zombie 1 | yes | no | 21 | - |
+| `npc:wilderness:73` | (3169, 3578) | x 3167-3171, z 3576-3579 | x 3162-3176, z 3571-3584 | `{ x: 3169, z: 3578, radius: 13 }` | Thug 2 | yes | yes | 8 | - |
+| `npc:wilderness:74` | (3172, 3561) | (3172, 3561) | x 3167-3177, z 3556-3566 | `{ x: 3172, z: 3561, radius: 11 }` | Thug 1 | yes | yes | 6 | - |
+| `npc:wilderness:75` | (3175, 3572) | (3175, 3572) | x 3170-3180, z 3567-3577 | `{ x: 3175, z: 3572, radius: 11 }` | Thug 1 | yes | yes | 7 | - |
+| `npc:wilderness:76` | (3181, 3741) | x 3178-3183, z 3737-3744 | x 3168-3193, z 3727-3754 | `{ x: 3181, z: 3741, radius: 23 }` | Deadly red spider 3 | yes | no | 29 | - |
+| `npc:wilderness:77` | (3179, 3564) | (3179, 3564) | x 3174-3184, z 3559-3569 | `{ x: 3179, z: 3564, radius: 11 }` | Thug 1 | yes | yes | 6 | - |
+| `npc:wilderness:78` | (3179, 3786) | (3179, 3786) | x 3170-3188, z 3777-3795 | `{ x: 3179, z: 3786, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | yes | 34 | - |
+| `npc:wilderness:79` | (3181, 3850) | (3181, 3850) | x 3171-3191, z 3840-3860 | `{ x: 3181, z: 3850, radius: 18 }` | Red dragon 1 | no | yes | 42 | unreached |
+| `npc:wilderness:80` | (3183, 3725) | x 3182-3185, z 3724-3726 | x 3167-3200, z 3709-3741 | `{ x: 3184, z: 3725, radius: 27 }` | Rat 3 | yes | no | 26 | unreached |
+| `npc:wilderness:81` | (3184, 3580) | (3184, 3580) | x 3179-3189, z 3575-3585 | `{ x: 3184, z: 3580, radius: 11 }` | Thug 1 | yes | yes | 8 | - |
+| `npc:wilderness:82` | (3191, 3960) | x 3187-3194, z 3958-3961 | x 3177-3204, z 3948-3971 | `{ x: 3191, z: 3960, radius: 22 }` | Magic axe 9 | no | no | 56 | - |
+| `npc:wilderness:83` | (3189, 3563) | (3189, 3563) | x 3184-3194, z 3558-3568 | `{ x: 3189, z: 3563, radius: 11 }` | Thug 1 | yes | yes | 6 | - |
+| `npc:wilderness:84` | (3190, 3570) | (3190, 3570) | x 3185-3195, z 3565-3575 | `{ x: 3190, z: 3570, radius: 11 }` | Thug 1 | yes | yes | 7 | - |
+| `npc:wilderness:85` | (3219, 3742) | x 3211-3227, z 3738-3746 | x 3202-3236, z 3729-3755 | `{ x: 3219, z: 3742, radius: 25 }` | Skeleton (skeleton_armed) 4 | yes | yes | 29 | - |
+| `npc:wilderness:86` | (3213, 3819) | (3213, 3819) | x 3203-3223, z 3809-3829 | `{ x: 3213, z: 3819, radius: 18 }` | Red dragon 1 | no | yes | 38 | - |
+| `npc:wilderness:87` | (3223, 3830) | (3223, 3830) | x 3213-3233, z 3820-3840 | `{ x: 3223, z: 3830, radius: 18 }` | Red dragon 1 | no | yes | 39 | - |
+| `npc:wilderness:88` | (3228, 3739) | (3228, 3739) | x 3219-3237, z 3730-3748 | `{ x: 3228, z: 3739, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | yes | 28 | - |
+| `npc:wilderness:89` | (3233, 3783) | (3233, 3783) | x 3213-3253, z 3763-3803 | `{ x: 3233, z: 3783, radius: 32 }` | Chaos dwarf 1 | yes | yes | 33 | - |
+| `npc:wilderness:90` | (3241, 3796) | (3241, 3796) | x 3221-3261, z 3776-3816 | `{ x: 3241, z: 3796, radius: 32 }` | Chaos dwarf 1 | yes | no | 35 | - |
+| `npc:wilderness:91` | (3249, 3949) | (3249, 3949) | x 3237-3261, z 3937-3961 | `{ x: 3249, z: 3949, radius: 20 }` | Scorpion 1 | no | yes | 54 | - |
+| `npc:wilderness:92` | (3256, 3673) | x 3251-3261, z 3668-3677 | x 3236-3276, z 3653-3692 | `{ x: 3256, z: 3673, radius: 32 }` | Rat 6 | yes | yes | 20 | - |
+| `npc:wilderness:93` | (3253, 3782) | (3253, 3782) | x 3233-3273, z 3762-3802 | `{ x: 3253, z: 3782, radius: 32 }` | Chaos dwarf 1 | yes | yes | 33 | - |
+| `npc:wilderness:94` | (3256, 3954) | (3256, 3954) | x 3244-3268, z 3942-3966 | `{ x: 3256, z: 3954, radius: 20 }` | Scorpion 1 | no | yes | 55 | - |
+| `npc:wilderness:95` | (3261, 3736) | (3261, 3736) | x 3252-3270, z 3727-3745 | `{ x: 3261, z: 3736, radius: 16 }` | Skeleton (skeleton_armed) 1 | yes | yes | 28 | - |
+| `npc:wilderness:96` | (3271, 3728) | x 3264-3280, z 3726-3731 | x 3255-3289, z 3717-3740 | `{ x: 3272, z: 3729, radius: 24 }` | Skeleton (skeleton_armed) 5 | yes | yes | 27 | - |
+| `npc:wilderness:97` | (3269, 3823) | x 3268-3270, z 3822-3824 | x 3258-3280, z 3812-3834 | `{ x: 3269, z: 3823, radius: 19 }` | Poison spider 3 | yes | yes | 39 | - |
+| `npc:wilderness:98` | (3286, 3804) | x 3271-3307, z 3795-3816 | x 3261-3317, z 3785-3826 | `{ x: 3289, z: 3806, radius: 38 }` | Poison spider 21 | yes | yes | 38 | - |
+| `npc:wilderness:99` | (3277, 3663) | x 3272-3282, z 3662-3664 | x 3264-3290, z 3654-3672 | `{ x: 3277, z: 3663, radius: 19 }` | Ghost 3 | yes | yes | 19 | - |
+| `npc:wilderness:100` | (3277, 3783) | x 3276-3277, z 3782-3783 | x 3266-3287, z 3772-3793 | `{ x: 3277, z: 3783, radius: 19 }` | Poison spider 2 | yes | yes | 33 | - |
+| `npc:wilderness:101` | (3280, 3832) | x 3278-3281, z 3830-3833 | x 3268-3291, z 3820-3843 | `{ x: 3280, z: 3832, radius: 20 }` | Poison spider 3 | yes | yes | 40 | - |
+| `npc:wilderness:102` | (3279, 3654) | (3279, 3654) | x 3271-3287, z 3646-3662 | `{ x: 3279, z: 3654, radius: 15 }` | Ghost 1 | yes | yes | 17 | - |
+| `npc:wilderness:103` | (3286, 3791) | x 3283-3288, z 3788-3794 | x 3273-3298, z 3778-3804 | `{ x: 3286, z: 3791, radius: 22 }` | Poison spider 5 | yes | yes | 35 | - |
+| `npc:wilderness:104` | (3296, 3828) | x 3286-3306, z 3818-3834 | x 3276-3316, z 3808-3844 | `{ x: 3296, z: 3826, radius: 30 }` | Poison spider 11 | yes | yes | 40 | - |
+| `npc:wilderness:105` | (3289, 3652) | x 3288-3290, z 3650-3653 | x 3280-3298, z 3642-3661 | `{ x: 3289, z: 3652, radius: 17 }` | Ghost 2 | yes | yes | 17 | - |
+| `npc:wilderness:106` | (3302, 3788) | x 3297-3304, z 3785-3793 | x 3287-3314, z 3775-3803 | `{ x: 3301, z: 3789, radius: 23 }` | Poison spider 4 | yes | yes | 35 | - |
+| `npc:wilderness:107` | (3300, 3649) | (3300, 3649) | x 3297-3303, z 3646-3652 | `{ x: 3300, z: 3649, radius: 8 }` | Giant 1 | yes | yes | 17 | - |
+| `npc:wilderness:108` | (3308, 3816) | x 3306-3310, z 3808-3821 | x 3296-3320, z 3798-3831 | `{ x: 3308, z: 3815, radius: 24 }` | Poison spider 5 | yes | yes | 38 | - |
+| `npc:wilderness:109` | (3308, 3661) | (3308, 3661) | x 3305-3311, z 3658-3664 | `{ x: 3308, z: 3661, radius: 8 }` | Giant 1 | yes | yes | 18 | - |
+| `npc:wilderness:110` | (3312, 3769) | x 3310-3313, z 3769 | x 3300-3323, z 3759-3779 | `{ x: 3312, z: 3769, radius: 19 }` | Black Knight 2 | yes | yes | 32 | - |
+| `npc:wilderness:111` | (3311, 3845) | (3311, 3845) | x 3305-3317, z 3839-3851 | `{ x: 3311, z: 3845, radius: 12 }` | Lesser demon 1 | yes | yes | 41 | - |
+| `npc:wilderness:112` | (3320, 3797) | x 3317-3323, z 3794-3799 | x 3307-3333, z 3784-3809 | `{ x: 3320, z: 3797, radius: 22 }` | Poison spider 4 | yes | yes | 35 | - |
+| `npc:wilderness:113` | (3321, 3830) | x 3319-3322, z 3828-3832 | x 3309-3332, z 3818-3842 | `{ x: 3321, z: 3830, radius: 20 }` | Poison spider 4 | yes | yes | 40 | - |
+| `npc:wilderness:114` | (3324, 3856) | (3324, 3856) | x 3318-3330, z 3850-3862 | `{ x: 3324, z: 3856, radius: 12 }` | Lesser demon 1 | yes | yes | 43 | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:wilderness:0` | (3005, 3963) | Ladder 1 | down (3005, 10362) by Climb-Down | no | no | 56 | 52 Agility |
-| `connector:wilderness:1` | (3017, 3849) | Ladder 1 | down (3069, 10255) by Climb-down | no | no | 42 | - |
-| `connector:wilderness:2` | (3017, 3959) L1 | Ship's ladder 1 | up (3017, 3960) L2 by Climb-up | no | no | 55 | unreached |
-| `connector:wilderness:3` | (3017, 3959) L2 | Ship's ladder 1 | down (3017, 3958) L1 by Climb-down | no | no | 55 | unreached |
-| `connector:wilderness:4` | (3018, 3957) | Ladder 1 | up (3018, 3956) L1 by Climb-up | no | no | 55 | unreached |
-| `connector:wilderness:5` | (3018, 3957) L1 | Ladder 1 | down (3018, 3956) by Climb-down | no | no | 55 | unreached |
-| `connector:wilderness:6` | (3019, 3959) L1 | Ship's ladder 1 | up (3019, 3960) L2 by Climb-up | no | no | 55 | unreached |
-| `connector:wilderness:7` | (3019, 3959) L2 | Ship's ladder 1 | down (3019, 3958) L1 by Climb-down | no | no | 55 | unreached |
-| `connector:wilderness:8` | (3044, 3924) | Staircase 1 | down (3045, 10323) by Climb-down | no | no | 51 | - |
-| `connector:wilderness:9` | (3088, 3571) | Ladder 1 | down (3089, 9971) by Climb-Down | yes | no | 7 | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:wilderness:0` | (3005, 3963) | (3005, 3963) | `{ x: 3005, z: 3963, radius: 3 }` | Ladder 1 | down (3005, 10362) by Climb-Down | no | no | 56 | 52 Agility |
+| `connector:wilderness:1` | (3017, 3849) | (3017, 3849) | `{ x: 3017, z: 3849, radius: 3 }` | Ladder 1 | down (3069, 10255) by Climb-down | no | no | 42 | - |
+| `connector:wilderness:2` | (3017, 3959) L1 | (3017, 3959) L1 | `{ x: 3017, z: 3959, radius: 3, level: 1 }` | Ship's ladder 1 | up (3017, 3960) L2 by Climb-up | no | no | 55 | unreached |
+| `connector:wilderness:3` | (3017, 3959) L2 | (3017, 3959) L2 | `{ x: 3017, z: 3959, radius: 3, level: 2 }` | Ship's ladder 1 | down (3017, 3958) L1 by Climb-down | no | no | 55 | unreached |
+| `connector:wilderness:4` | (3018, 3957) | (3018, 3957) | `{ x: 3018, z: 3957, radius: 3 }` | Ladder 1 | up (3018, 3956) L1 by Climb-up | no | no | 55 | unreached |
+| `connector:wilderness:5` | (3018, 3957) L1 | (3018, 3957) L1 | `{ x: 3018, z: 3957, radius: 3, level: 1 }` | Ladder 1 | down (3018, 3956) by Climb-down | no | no | 55 | unreached |
+| `connector:wilderness:6` | (3019, 3959) L1 | (3019, 3959) L1 | `{ x: 3019, z: 3959, radius: 3, level: 1 }` | Ship's ladder 1 | up (3019, 3960) L2 by Climb-up | no | no | 55 | unreached |
+| `connector:wilderness:7` | (3019, 3959) L2 | (3019, 3959) L2 | `{ x: 3019, z: 3959, radius: 3, level: 2 }` | Ship's ladder 1 | down (3019, 3958) L1 by Climb-down | no | no | 55 | unreached |
+| `connector:wilderness:8` | (3044, 3924) | (3044, 3924) | `{ x: 3044, z: 3924, radius: 3 }` | Staircase 1 | down (3045, 10323) by Climb-down | no | no | 51 | - |
+| `connector:wilderness:9` | (3088, 3571) | (3088, 3571) | `{ x: 3088, z: 3571, radius: 3 }` | Ladder 1 | down (3089, 9971) by Climb-Down | yes | no | 7 | - |
 
 ## Areas within
 

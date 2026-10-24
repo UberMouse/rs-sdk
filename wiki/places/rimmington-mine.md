@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:rimmington-mine:0` | (2967, 3244) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:rimmington-mine:1` | (2988, 3249) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:rimmington-mine:0` | (2967, 3244) | (2967, 3244) | `{ x: 2967, z: 3244, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:rimmington-mine:1` | (2988, 3249) | x 2985-2990, z 3248-3250 | `{ x: 2988, z: 3249, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:rimmington-mine:0` | (2978, 3240) | [clay](../resources/rock/clay.md) 2, [copper](../resources/rock/copper.md) 5, [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 6, [tin](../resources/rock/tin.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:rimmington-mine:0` | (2978, 3240) | x 2968-2987, z 3233-3248 | `{ x: 2978, z: 3241, radius: 16 }` | [clay](../resources/rock/clay.md) 2, [copper](../resources/rock/copper.md) 5, [gold](../resources/rock/gold.md) 2, [iron](../resources/rock/iron.md) 6, [tin](../resources/rock/tin.md) 2 | yes | no | - | - |

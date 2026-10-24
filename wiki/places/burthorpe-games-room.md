@@ -5,17 +5,17 @@ minigames/game_gamesroom. Entered by the stairs in Burthorpe (board_game_stairs_
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:burthorpe-games-room:0` | (2201, 4942) | The Toad and Chicken (death_pub) 1 | no | no | - | - |
-| `shop:burthorpe-games-room:1` | (2207, 4958) | The Toad and Chicken (death_pub) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:burthorpe-games-room:0` | (2201, 4942) | (2201, 4942) | x 2196-2206, z 4937-4947 | `{ x: 2201, z: 4942, radius: 11 }` | The Toad and Chicken (death_pub) 1 | no | no | - | - |
+| `shop:burthorpe-games-room:1` | (2207, 4958) | (2207, 4958) | x 2202-2212, z 4953-4963 | `{ x: 2207, z: 4958, radius: 11 }` | The Toad and Chicken (death_pub) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:burthorpe-games-room:0` | (2205, 4935) L1 | Stairs 1 | - | no | no | - | - |
-| `connector:burthorpe-games-room:1` | (2207, 4935) | Stairs 1 | up (2207, 4934) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe-games-room:2` | (2207, 4935) L1 | Stairs 1 | down (2207, 4938) by Climb-down | no | no | - | - |
-| `connector:burthorpe-games-room:3` | (2212, 4941) | Stairs 1 | up (2212, 4944) L1 by Climb-up | no | no | - | - |
-| `connector:burthorpe-games-room:4` | (2212, 4942) L1 | Stairs 1 | down (2212, 4940) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:burthorpe-games-room:0` | (2205, 4935) L1 | (2205, 4935) L1 | `{ x: 2205, z: 4935, radius: 3, level: 1 }` | Stairs 1 | - | no | no | - | - |
+| `connector:burthorpe-games-room:1` | (2207, 4935) | (2207, 4935) | `{ x: 2207, z: 4935, radius: 3 }` | Stairs 1 | up (2207, 4934) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe-games-room:2` | (2207, 4935) L1 | (2207, 4935) L1 | `{ x: 2207, z: 4935, radius: 3, level: 1 }` | Stairs 1 | down (2207, 4938) by Climb-down | no | no | - | - |
+| `connector:burthorpe-games-room:3` | (2212, 4941) | (2212, 4941) | `{ x: 2212, z: 4941, radius: 3 }` | Stairs 1 | up (2212, 4944) L1 by Climb-up | no | no | - | - |
+| `connector:burthorpe-games-room:4` | (2212, 4942) L1 | (2212, 4942) L1 | `{ x: 2212, z: 4942, radius: 3, level: 1 }` | Stairs 1 | down (2212, 4940) by Climb-down | no | no | - | - |

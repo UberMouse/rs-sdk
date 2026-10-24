@@ -5,35 +5,35 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:grand-tree:0` | (2470, 3503) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:grand-tree:0` | (2470, 3503) | x 2457-2479, z 3493-3514 | `{ x: 2468, z: 3504, radius: 19 }` | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 3 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:grand-tree:0` | (2457, 3498) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | - |
-| `pickpocket:grand-tree:1` | (2462, 3503) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:grand-tree:2` | (2470, 3503) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:grand-tree:3` | (2476, 3502) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:grand-tree:4` | (2476, 3501) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome child](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:grand-tree:0` | (2457, 3498) L1 | (2457, 3498) L1 | x 2452-2462, z 3493-3503 L1 | `{ x: 2457, z: 3498, radius: 11, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | - |
+| `pickpocket:grand-tree:1` | (2462, 3503) | x 2458-2464, z 3497-3508 | x 2453-2469, z 3492-3513 | `{ x: 2461, z: 3503, radius: 17 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:grand-tree:2` | (2470, 3503) L2 | (2470, 3503) L2 | x 2465-2475, z 3498-3508 L2 | `{ x: 2470, z: 3503, radius: 11, level: 2 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:grand-tree:3` | (2476, 3502) | x 2471-2479, z 3496-3508 | x 2466-2484, z 3491-3513 | `{ x: 2475, z: 3502, radius: 18 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:grand-tree:4` | (2476, 3501) L1 | x 2474-2480, z 3498-3502 L1 | x 2469-2485, z 3493-3507 L1 | `{ x: 2477, z: 3500, radius: 14, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome child](../resources/pickpocket/gnomechildblue.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:grand-tree:0` | (2460, 3506) | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
-| `npc:grand-tree:1` | (2466, 3502) L2 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 3, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | - |
-| `npc:grand-tree:2` | (2468, 3495) L1 | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:grand-tree:3` | (2474, 3502) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
-| `npc:grand-tree:4` | (2477, 3512) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:grand-tree:0` | (2460, 3506) | x 2459-2461, z 3503-3509 | x 2454-2466, z 3498-3514 | `{ x: 2460, z: 3506, radius: 13 }` | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
+| `npc:grand-tree:1` | (2466, 3502) L2 | x 2463-2471, z 3494-3510 L2 | x 2458-2476, z 3489-3515 L2 | `{ x: 2467, z: 3502, radius: 19, level: 2 }` | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 3, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | - |
+| `npc:grand-tree:2` | (2468, 3495) L1 | x 2464-2473, z 3495-3496 L1 | x 2459-2478, z 3490-3501 L1 | `{ x: 2469, z: 3496, radius: 15, level: 1 }` | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:grand-tree:3` | (2474, 3502) | x 2468-2478, z 3497-3506 | x 2463-2483, z 3492-3511 | `{ x: 2473, z: 3502, radius: 18 }` | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
+| `npc:grand-tree:4` | (2477, 3512) | (2477, 3512) | x 2472-2482, z 3507-3517 | `{ x: 2477, z: 3512, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:grand-tree:0` | (2466, 3495) | Ladder 1 | up (2465, 3495) L1 by Climb-up | no | no | - | - |
-| `connector:grand-tree:1` | (2466, 3495) L1 | Ladder 1 | down (2465, 3495) by Climb or Climb-down; up (2465, 3495) L2 by Climb or Climb-up | no | no | - | - |
-| `connector:grand-tree:2` | (2466, 3495) L2 | Ladder 1 | down (2465, 3495) L1 by Climb or Climb-down; up (2465, 3495) L3 by Climb or Climb-up | no | no | - | - |
-| `connector:grand-tree:3` | (2466, 3495) L3 | Ladder 1 | down (2465, 3495) L2 by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:grand-tree:0` | (2466, 3495) | (2466, 3495) | `{ x: 2466, z: 3495, radius: 3 }` | Ladder 1 | up (2465, 3495) L1 by Climb-up | no | no | - | - |
+| `connector:grand-tree:1` | (2466, 3495) L1 | (2466, 3495) L1 | `{ x: 2466, z: 3495, radius: 3, level: 1 }` | Ladder 1 | down (2465, 3495) by Climb or Climb-down; up (2465, 3495) L2 by Climb or Climb-up | no | no | - | - |
+| `connector:grand-tree:2` | (2466, 3495) L2 | (2466, 3495) L2 | `{ x: 2466, z: 3495, radius: 3, level: 2 }` | Ladder 1 | down (2465, 3495) L1 by Climb or Climb-down; up (2465, 3495) L3 by Climb or Climb-up | no | no | - | - |
+| `connector:grand-tree:3` | (2466, 3495) L3 | (2466, 3495) L3 | `{ x: 2466, z: 3495, radius: 3, level: 3 }` | Ladder 1 | down (2465, 3495) L2 by Climb-down | no | no | - | - |

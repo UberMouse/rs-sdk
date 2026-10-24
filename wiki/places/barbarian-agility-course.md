@@ -5,27 +5,27 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:barbarian-agility-course:0` | (2533, 3542) | [normal](../resources/tree/normal.md) 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
-| `tree:barbarian-agility-course:1` | (2530, 3553) | [oak](../resources/tree/oak.md) 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:barbarian-agility-course:0` | (2533, 3542) | x 2529-2536, z 3542-3543 | `{ x: 2533, z: 3543, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `tree:barbarian-agility-course:1` | (2530, 3553) | (2530, 3553) | `{ x: 2530, z: 3553, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
 
 ## Agility courses
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `agility-course:barbarian-agility-course:0` | (2545, 3549) | [barbarian](../resources/agility-course/barbarian.md) 5 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `agility-course:barbarian-agility-course:0` | (2545, 3549) | x 2535-2551, z 3545-3553 every level | `{ x: 2543, z: 3549, radius: 12 }` | [barbarian](../resources/agility-course/barbarian.md) 5 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:barbarian-agility-course:0` | (2548, 3558) | Barbarian woman 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:barbarian-agility-course:0` | (2548, 3558) | (2548, 3558) | x 2538-2558, z 3548-3568 | `{ x: 2548, z: 3558, radius: 18 }` | Barbarian woman 1 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:barbarian-agility-course:0` | (2532, 3545) | Ladder 1 | up (2532, 3546) L1 by Climb-up | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
-| `connector:barbarian-agility-course:1` | (2532, 3545) L1 | Ladder 1 | down (2532, 3546) by Climb-down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
-| `connector:barbarian-agility-course:2` | (2547, 3551) | Ladder 1 | down (2548, 9951) by Climb-Down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:barbarian-agility-course:0` | (2532, 3545) | (2532, 3545) | `{ x: 2532, z: 3545, radius: 3 }` | Ladder 1 | up (2532, 3546) L1 by Climb-up | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `connector:barbarian-agility-course:1` | (2532, 3545) L1 | (2532, 3545) L1 | `{ x: 2532, z: 3545, radius: 3, level: 1 }` | Ladder 1 | down (2532, 3546) by Climb-down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |
+| `connector:barbarian-agility-course:2` | (2547, 3551) | (2547, 3551) | `{ x: 2547, z: 3551, radius: 3 }` | Ladder 1 | down (2548, 9951) by Climb-Down | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) + 35 Agility |

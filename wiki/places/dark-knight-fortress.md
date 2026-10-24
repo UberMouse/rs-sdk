@@ -5,31 +5,31 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:dark-knight-fortress:0` | (3022, 3624) | Dark warrior 1 | yes | yes | 14 | - |
-| `npc:dark-knight-fortress:1` | (3027, 3630) L1 | Dark warrior 5 | yes | yes | 15 | - |
-| `npc:dark-knight-fortress:2` | (3022, 3639) | Dark warrior 1 | yes | yes | 15 | - |
-| `npc:dark-knight-fortress:3` | (3022, 3639) L1 | Dark warrior 1 | yes | yes | 15 | - |
-| `npc:dark-knight-fortress:4` | (3033, 3630) | Dark warrior 4 | yes | yes | 15 | - |
-| `npc:dark-knight-fortress:5` | (3036, 3624) L1 | Dark warrior 1 | yes | yes | 14 | - |
-| `npc:dark-knight-fortress:6` | (3036, 3639) | Dark warrior 1 | yes | yes | 15 | - |
-| `npc:dark-knight-fortress:7` | (3036, 3639) L1 | Dark warrior 1 | yes | yes | 15 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:dark-knight-fortress:0` | (3022, 3624) | (3022, 3624) | x 3017-3027, z 3619-3629 | `{ x: 3022, z: 3624, radius: 11 }` | Dark warrior 1 | yes | yes | 14 | - |
+| `npc:dark-knight-fortress:1` | (3027, 3630) L1 | x 3022-3035, z 3624-3637 L1 | x 3017-3040, z 3619-3642 L1 | `{ x: 3029, z: 3631, radius: 20, level: 1 }` | Dark warrior 5 | yes | yes | 15 | - |
+| `npc:dark-knight-fortress:2` | (3022, 3639) | (3022, 3639) | x 3017-3027, z 3634-3644 | `{ x: 3022, z: 3639, radius: 11 }` | Dark warrior 1 | yes | yes | 15 | - |
+| `npc:dark-knight-fortress:3` | (3022, 3639) L1 | (3022, 3639) L1 | x 3017-3027, z 3634-3644 L1 | `{ x: 3022, z: 3639, radius: 11, level: 1 }` | Dark warrior 1 | yes | yes | 15 | - |
+| `npc:dark-knight-fortress:4` | (3033, 3630) | x 3029-3036, z 3624-3638 | x 3024-3041, z 3619-3643 | `{ x: 3033, z: 3631, radius: 18 }` | Dark warrior 4 | yes | yes | 15 | - |
+| `npc:dark-knight-fortress:5` | (3036, 3624) L1 | (3036, 3624) L1 | x 3031-3041, z 3619-3629 L1 | `{ x: 3036, z: 3624, radius: 11, level: 1 }` | Dark warrior 1 | yes | yes | 14 | - |
+| `npc:dark-knight-fortress:6` | (3036, 3639) | (3036, 3639) | x 3031-3041, z 3634-3644 | `{ x: 3036, z: 3639, radius: 11 }` | Dark warrior 1 | yes | yes | 15 | - |
+| `npc:dark-knight-fortress:7` | (3036, 3639) L1 | (3036, 3639) L1 | x 3031-3041, z 3634-3644 L1 | `{ x: 3036, z: 3639, radius: 11, level: 1 }` | Dark warrior 1 | yes | yes | 15 | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:dark-knight-fortress:0` | (3022, 3625) L1 | Ladder 1 | down (3021, 3625) by Climb or Climb-down; up (3021, 3625) L2 by Climb or Climb-up | yes | yes | 14 | - |
-| `connector:dark-knight-fortress:1` | (3022, 3625) L2 | Ladder 1 | down (3021, 3625) L1 by Climb or Climb-down; up (3021, 3625) L3 by Climb or Climb-up | yes | yes | 14 | - |
-| `connector:dark-knight-fortress:2` | (3022, 3625) L3 | Ladder 1 | down (3021, 3625) L2 by Climb-down | yes | no | 14 | - |
-| `connector:dark-knight-fortress:3` | (3022, 3638) L1 | Ladder 1 | down (3021, 3638) by Climb or Climb-down; up (3021, 3638) L2 by Climb or Climb-up | yes | yes | 15 | - |
-| `connector:dark-knight-fortress:4` | (3022, 3638) L2 | Ladder 1 | down (3021, 3638) L1 by Climb or Climb-down; up (3021, 3638) L3 by Climb or Climb-up | yes | yes | 15 | - |
-| `connector:dark-knight-fortress:5` | (3022, 3638) L3 | Ladder 1 | down (3021, 3638) L2 by Climb-down | yes | no | 15 | - |
-| `connector:dark-knight-fortress:6` | (3036, 3625) | Ladder 1 | up (3035, 3625) L1 by Climb-up | yes | yes | 14 | - |
-| `connector:dark-knight-fortress:7` | (3036, 3625) L1 | Ladder 1 | down (3035, 3625) by Climb or Climb-down; up (3035, 3625) L2 by Climb or Climb-up | yes | yes | 14 | - |
-| `connector:dark-knight-fortress:8` | (3036, 3625) L2 | Ladder 1 | down (3035, 3625) L1 by Climb or Climb-down; up (3035, 3625) L3 by Climb or Climb-up | yes | yes | 14 | - |
-| `connector:dark-knight-fortress:9` | (3036, 3625) L3 | Ladder 1 | down (3035, 3625) L2 by Climb-down | yes | no | 14 | - |
-| `connector:dark-knight-fortress:10` | (3036, 3638) L1 | Ladder 1 | down (3035, 3638) by Climb or Climb-down; up (3035, 3638) L2 by Climb or Climb-up | yes | yes | 15 | - |
-| `connector:dark-knight-fortress:11` | (3036, 3638) L2 | Ladder 1 | down (3035, 3638) L1 by Climb or Climb-down; up (3035, 3638) L3 by Climb or Climb-up | yes | yes | 15 | - |
-| `connector:dark-knight-fortress:12` | (3036, 3638) L3 | Ladder 1 | down (3035, 3638) L2 by Climb-down | yes | no | 15 | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:dark-knight-fortress:0` | (3022, 3625) L1 | (3022, 3625) L1 | `{ x: 3022, z: 3625, radius: 3, level: 1 }` | Ladder 1 | down (3021, 3625) by Climb or Climb-down; up (3021, 3625) L2 by Climb or Climb-up | yes | yes | 14 | - |
+| `connector:dark-knight-fortress:1` | (3022, 3625) L2 | (3022, 3625) L2 | `{ x: 3022, z: 3625, radius: 3, level: 2 }` | Ladder 1 | down (3021, 3625) L1 by Climb or Climb-down; up (3021, 3625) L3 by Climb or Climb-up | yes | yes | 14 | - |
+| `connector:dark-knight-fortress:2` | (3022, 3625) L3 | (3022, 3625) L3 | `{ x: 3022, z: 3625, radius: 3, level: 3 }` | Ladder 1 | down (3021, 3625) L2 by Climb-down | yes | no | 14 | - |
+| `connector:dark-knight-fortress:3` | (3022, 3638) L1 | (3022, 3638) L1 | `{ x: 3022, z: 3638, radius: 3, level: 1 }` | Ladder 1 | down (3021, 3638) by Climb or Climb-down; up (3021, 3638) L2 by Climb or Climb-up | yes | yes | 15 | - |
+| `connector:dark-knight-fortress:4` | (3022, 3638) L2 | (3022, 3638) L2 | `{ x: 3022, z: 3638, radius: 3, level: 2 }` | Ladder 1 | down (3021, 3638) L1 by Climb or Climb-down; up (3021, 3638) L3 by Climb or Climb-up | yes | yes | 15 | - |
+| `connector:dark-knight-fortress:5` | (3022, 3638) L3 | (3022, 3638) L3 | `{ x: 3022, z: 3638, radius: 3, level: 3 }` | Ladder 1 | down (3021, 3638) L2 by Climb-down | yes | no | 15 | - |
+| `connector:dark-knight-fortress:6` | (3036, 3625) | (3036, 3625) | `{ x: 3036, z: 3625, radius: 3 }` | Ladder 1 | up (3035, 3625) L1 by Climb-up | yes | yes | 14 | - |
+| `connector:dark-knight-fortress:7` | (3036, 3625) L1 | (3036, 3625) L1 | `{ x: 3036, z: 3625, radius: 3, level: 1 }` | Ladder 1 | down (3035, 3625) by Climb or Climb-down; up (3035, 3625) L2 by Climb or Climb-up | yes | yes | 14 | - |
+| `connector:dark-knight-fortress:8` | (3036, 3625) L2 | (3036, 3625) L2 | `{ x: 3036, z: 3625, radius: 3, level: 2 }` | Ladder 1 | down (3035, 3625) L1 by Climb or Climb-down; up (3035, 3625) L3 by Climb or Climb-up | yes | yes | 14 | - |
+| `connector:dark-knight-fortress:9` | (3036, 3625) L3 | (3036, 3625) L3 | `{ x: 3036, z: 3625, radius: 3, level: 3 }` | Ladder 1 | down (3035, 3625) L2 by Climb-down | yes | no | 14 | - |
+| `connector:dark-knight-fortress:10` | (3036, 3638) L1 | (3036, 3638) L1 | `{ x: 3036, z: 3638, radius: 3, level: 1 }` | Ladder 1 | down (3035, 3638) by Climb or Climb-down; up (3035, 3638) L2 by Climb or Climb-up | yes | yes | 15 | - |
+| `connector:dark-knight-fortress:11` | (3036, 3638) L2 | (3036, 3638) L2 | `{ x: 3036, z: 3638, radius: 3, level: 2 }` | Ladder 1 | down (3035, 3638) L1 by Climb or Climb-down; up (3035, 3638) L3 by Climb or Climb-up | yes | yes | 15 | - |
+| `connector:dark-knight-fortress:12` | (3036, 3638) L3 | (3036, 3638) L3 | `{ x: 3036, z: 3638, radius: 3, level: 3 }` | Ladder 1 | down (3035, 3638) L2 by Climb-down | yes | no | 15 | - |

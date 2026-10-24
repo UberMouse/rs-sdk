@@ -5,26 +5,26 @@
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:port-sarim:0` | (3030, 3217) | Gangplank 1 | up (3032, 3217) L1 by Cross | yes | no | - | - |
-| `connector:port-sarim:1` | (3031, 3217) L1 | Gangplank 1 | down (3029, 3217) by Cross | yes | no | - | - |
-| `connector:port-sarim:2` | (3032, 3224) L1 | Ship's ladder 1 | up (3032, 3225) L2 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:3` | (3032, 3224) L2 | Ship's ladder 1 | down (3032, 3223) L1 by Climb-down | yes | no | - | - |
-| `connector:port-sarim:4` | (3034, 3215) | Ship's ladder 1 | up (3034, 3214) L1 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:5` | (3034, 3215) L1 | Ship's ladder 1 | down (3034, 3214) by Climb-down | yes | no | - | - |
-| `connector:port-sarim:6` | (3034, 3219) | Ship's ladder 1 | up (3034, 3218) L1 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:7` | (3034, 3219) L1 | Ship's ladder 1 | down (3034, 3218) by Climb-down | yes | no | - | - |
-| `connector:port-sarim:8` | (3034, 3223) | Ship's ladder 1 | up (3034, 3222) L1 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:9` | (3034, 3223) L1 | Ship's ladder 1 | down (3034, 3222) by Climb-down | yes | no | - | - |
-| `connector:port-sarim:10` | (3036, 3224) L1 | Ship's ladder 1 | up (3036, 3225) L2 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:11` | (3036, 3224) L2 | Ship's ladder 1 | down (3036, 3223) L1 by Climb-down | yes | no | - | - |
-| `connector:port-sarim:12` | (3046, 3227) L1 | Ship's ladder 1 | up (3045, 3227) L2 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:13` | (3046, 3227) L2 | Ship's ladder 1 | down (3047, 3227) L1 by Climb-down | yes | no | - | - |
-| `connector:port-sarim:14` | (3046, 3231) L1 | Ship's ladder 1 | up (3045, 3231) L2 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:15` | (3046, 3231) L2 | Ship's ladder 1 | down (3047, 3231) L1 by Climb-down | yes | no | - | - |
-| `connector:port-sarim:16` | (3048, 3232) L1 | Gangplank 1 | down (3048, 3234) by Cross | yes | no | - | - |
-| `connector:port-sarim:17` | (3048, 3233) | Gangplank 1 | up (3048, 3231) L1 by Cross | yes | no | - | - |
-| `connector:port-sarim:18` | (3049, 3208) | Ship's ladder 1 | up (3048, 3208) L1 by Climb-up | yes | no | - | unreached |
-| `connector:port-sarim:19` | (3052, 3229) | Ship's ladder 1 | up (3051, 3229) L1 by Climb-up | yes | no | - | - |
-| `connector:port-sarim:20` | (3052, 3229) L1 | Ship's ladder 1 | down (3051, 3229) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:port-sarim:0` | (3030, 3217) | (3030, 3217) | `{ x: 3030, z: 3217, radius: 3 }` | Gangplank 1 | up (3032, 3217) L1 by Cross | yes | no | - | - |
+| `connector:port-sarim:1` | (3031, 3217) L1 | (3031, 3217) L1 | `{ x: 3031, z: 3217, radius: 3, level: 1 }` | Gangplank 1 | down (3029, 3217) by Cross | yes | no | - | - |
+| `connector:port-sarim:2` | (3032, 3224) L1 | (3032, 3224) L1 | `{ x: 3032, z: 3224, radius: 3, level: 1 }` | Ship's ladder 1 | up (3032, 3225) L2 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:3` | (3032, 3224) L2 | (3032, 3224) L2 | `{ x: 3032, z: 3224, radius: 3, level: 2 }` | Ship's ladder 1 | down (3032, 3223) L1 by Climb-down | yes | no | - | - |
+| `connector:port-sarim:4` | (3034, 3215) | (3034, 3215) | `{ x: 3034, z: 3215, radius: 3 }` | Ship's ladder 1 | up (3034, 3214) L1 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:5` | (3034, 3215) L1 | (3034, 3215) L1 | `{ x: 3034, z: 3215, radius: 3, level: 1 }` | Ship's ladder 1 | down (3034, 3214) by Climb-down | yes | no | - | - |
+| `connector:port-sarim:6` | (3034, 3219) | (3034, 3219) | `{ x: 3034, z: 3219, radius: 3 }` | Ship's ladder 1 | up (3034, 3218) L1 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:7` | (3034, 3219) L1 | (3034, 3219) L1 | `{ x: 3034, z: 3219, radius: 3, level: 1 }` | Ship's ladder 1 | down (3034, 3218) by Climb-down | yes | no | - | - |
+| `connector:port-sarim:8` | (3034, 3223) | (3034, 3223) | `{ x: 3034, z: 3223, radius: 3 }` | Ship's ladder 1 | up (3034, 3222) L1 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:9` | (3034, 3223) L1 | (3034, 3223) L1 | `{ x: 3034, z: 3223, radius: 3, level: 1 }` | Ship's ladder 1 | down (3034, 3222) by Climb-down | yes | no | - | - |
+| `connector:port-sarim:10` | (3036, 3224) L1 | (3036, 3224) L1 | `{ x: 3036, z: 3224, radius: 3, level: 1 }` | Ship's ladder 1 | up (3036, 3225) L2 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:11` | (3036, 3224) L2 | (3036, 3224) L2 | `{ x: 3036, z: 3224, radius: 3, level: 2 }` | Ship's ladder 1 | down (3036, 3223) L1 by Climb-down | yes | no | - | - |
+| `connector:port-sarim:12` | (3046, 3227) L1 | (3046, 3227) L1 | `{ x: 3046, z: 3227, radius: 3, level: 1 }` | Ship's ladder 1 | up (3045, 3227) L2 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:13` | (3046, 3227) L2 | (3046, 3227) L2 | `{ x: 3046, z: 3227, radius: 3, level: 2 }` | Ship's ladder 1 | down (3047, 3227) L1 by Climb-down | yes | no | - | - |
+| `connector:port-sarim:14` | (3046, 3231) L1 | (3046, 3231) L1 | `{ x: 3046, z: 3231, radius: 3, level: 1 }` | Ship's ladder 1 | up (3045, 3231) L2 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:15` | (3046, 3231) L2 | (3046, 3231) L2 | `{ x: 3046, z: 3231, radius: 3, level: 2 }` | Ship's ladder 1 | down (3047, 3231) L1 by Climb-down | yes | no | - | - |
+| `connector:port-sarim:16` | (3048, 3232) L1 | (3048, 3232) L1 | `{ x: 3048, z: 3232, radius: 3, level: 1 }` | Gangplank 1 | down (3048, 3234) by Cross | yes | no | - | - |
+| `connector:port-sarim:17` | (3048, 3233) | (3048, 3233) | `{ x: 3048, z: 3233, radius: 3 }` | Gangplank 1 | up (3048, 3231) L1 by Cross | yes | no | - | - |
+| `connector:port-sarim:18` | (3049, 3208) | (3049, 3208) | `{ x: 3049, z: 3208, radius: 3 }` | Ship's ladder 1 | up (3048, 3208) L1 by Climb-up | yes | no | - | unreached |
+| `connector:port-sarim:19` | (3052, 3229) | (3052, 3229) | `{ x: 3052, z: 3229, radius: 3 }` | Ship's ladder 1 | up (3051, 3229) L1 by Climb-up | yes | no | - | - |
+| `connector:port-sarim:20` | (3052, 3229) L1 | (3052, 3229) L1 | `{ x: 3052, z: 3229, radius: 3, level: 1 }` | Ship's ladder 1 | down (3051, 3229) by Climb-down | yes | no | - | - |

@@ -5,6 +5,6 @@ Inside the cosmic ruins, which are in Zanaris.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:cosmic-altar:0` | (2141, 4832) | cosmic 1 | no | no | - | carry Cosmic talisman + wear Dramen staff |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:cosmic-altar:0` | (2141, 4832) | (2141, 4832) | `{ x: 2141, z: 4832, radius: 3 }` | cosmic 1 | no | no | - | carry Cosmic talisman + wear Dramen staff |

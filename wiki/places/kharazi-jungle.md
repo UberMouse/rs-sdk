@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:kharazi-jungle:0` | (2852, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:kharazi-jungle:0` | (2852, 2925) | (2852, 2925) | `{ x: 2852, z: 2925, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:kharazi-jungle:0` | (2837, 2918) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:kharazi-jungle:1` | (2845, 2928) | Jungle Savage 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:kharazi-jungle:0` | (2837, 2918) | (2837, 2918) | x 2799-2875, z 2880-2956 | `{ x: 2837, z: 2918, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:kharazi-jungle:1` | (2845, 2928) | (2845, 2928) | x 2807-2883, z 2890-2966 | `{ x: 2845, z: 2928, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |

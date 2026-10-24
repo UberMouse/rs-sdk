@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2844, 10057) L1 | 1 | 0 | (2844, 10057)-(2844, 10057) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2844, 10057) L1 | (2844, 10057) L1 | 1 | 0 | (2844, 10057) L1 | 100 ticks | - | `{ x: 2844, z: 10057, radius: 3, level: 1 }` | no |
 
 ## Interactions
 

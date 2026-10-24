@@ -30,6 +30,6 @@ Base XP is the script's stat_advance tenths over 10; the server multiplies it by
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `agility-course:gnome-agility-course:0` | (2481, 3429) | (2474, 3436) | 16 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 20 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Gnome Stronghold agility course (Tree Gnome Stronghold)](../../places/gnome-agility-course.md) | `agility-course:gnome-agility-course:0` | (2481, 3429) | (2474, 3436) | x 2471-2487, z 3418-3435 every level | `{ x: 2479, z: 3427, radius: 16 }` | 16 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 20 ticks |

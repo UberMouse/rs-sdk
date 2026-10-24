@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Hemenster (Kandarin)](../places/hemenster.md) | (2650, 3452) | 1 | 5 | (2645, 3447)-(2655, 3457) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Hemenster (Kandarin)](../places/hemenster.md) | (2650, 3452) | (2650, 3452) | 1 | 5 | x 2645-2655, z 3447-3457 | 100 ticks | - | `{ x: 2650, z: 3452, radius: 11 }` | no |
 
 ## Interactions
 

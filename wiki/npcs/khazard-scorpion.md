@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2608, 3159) | 1 | 15 | (2591, 3144)-(2623, 3186) | 100 ticks | teleports (quests/quest_arena/scripts/quest_arena.rs2:262) | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2608, 3159) | x 2606-2608, z 3159-3171 | 1 | 15 | x 2591-2623, z 3144-3186 | 100 ticks | teleports (quests/quest_arena/scripts/quest_arena.rs2:262) | `{ x: 2607, z: 3165, radius: 30 }` | no |
 
 ## Drops
 

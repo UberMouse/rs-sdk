@@ -5,19 +5,19 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:elf-camp:0` | (2194, 3254) | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `fire:elf-camp:1` | (2204, 3250) | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:elf-camp:0` | (2194, 3254) | (2194, 3254) | `{ x: 2194, z: 3254, radius: 3 }` | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `fire:elf-camp:1` | (2204, 3250) | (2204, 3250) | `{ x: 2204, z: 3250, radius: 3 }` | Fire 1 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:elf-camp:0` | (2188, 3265) | [normal](../resources/tree/normal.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:elf-camp:0` | (2188, 3265) | x 2185-2191, z 3264-3266 | `{ x: 2188, z: 3265, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:elf-camp:0` | (2198, 3253) | Elf warrior (regicide_darkelf) 2, Elf warrior (regicide_darkelf2) 6 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:elf-camp:0` | (2198, 3253) | x 2193-2204, z 3244-3261 | x 2185-2212, z 3236-3269 | `{ x: 2199, z: 3253, radius: 26 }` | Elf warrior (regicide_darkelf) 2, Elf warrior (regicide_darkelf2) 6 | no | no | - | Regicide at stage 13 + 56 Agility |

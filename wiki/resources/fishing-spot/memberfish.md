@@ -29,27 +29,27 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:0` | (2694, 2706) | (2695, 2706) | 1 | no | yes | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 90 ticks via Monkey Madness done |
-| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2742) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 126 ticks via wear any mm greegree + Monkey Madness done |
-| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | 3 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
-| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | 6 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2647, 3710) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 145 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3273) | (2165, 3273) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 287 ticks via Regicide at stage 8 + 56 Agility |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:0` | (2694, 2706) | (2695, 2706) | (2694, 2706) | [Movement](#movement) | 1 | no | yes | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 90 ticks via Monkey Madness done |
+| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2742) | (2780, 2741) | [Movement](#movement) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 126 ticks via wear any mm greegree + Monkey Madness done |
+| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 3 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
+| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | x 2599-2612, z 3410-3426 | [Movement](#movement) | 6 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2647, 3710) | x 2645-2648, z 3708-3711 | [Movement](#movement) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 145 ticks |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3273) | (2165, 3273) | x 2165, z 3266-3286 | [Movement](#movement) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 287 ticks via Regicide at stage 8 + 56 Agility |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:ape-atoll:0` | (2701, 2702) | 10 | 2 |
-| `fishing-spot:ape-atoll:1` | (2776, 2737) | 8 | 2 |
-| `fishing-spot:catherby:0` | (2848, 3427) | 15 | 11 |
-| `fishing-spot:fishing-guild:0` | (2606, 3418) | 11 | 23 |
-| `fishing-spot:rellekka:1` | (2646, 3710) | 5 | 8 |
-| `fishing-spot:tirannwn:0` | (2165, 3276) | 13 | 5 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:ape-atoll:0` | `{ x: 2701, z: 2702, radius: 12 }` | 2 |
+| `fishing-spot:ape-atoll:1` | `{ x: 2776, z: 2737, radius: 10 }` | 2 |
+| `fishing-spot:catherby:0` | `{ x: 2848, z: 3427, radius: 16 }` | 11 |
+| `fishing-spot:fishing-guild:0` | `{ x: 2606, z: 3418, radius: 13 }` | 23 |
+| `fishing-spot:rellekka:1` | `{ x: 2646, z: 3710, radius: 6 }` | 8 |
+| `fishing-spot:tirannwn:0` | `{ x: 2165, z: 3276, radius: 13 }` | 5 |
 
 `fishing-spot:ape-atoll:0` tiles: (2694, 2706), (2707, 2698)
 

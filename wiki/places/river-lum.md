@@ -5,14 +5,14 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:river-lum:0` | (3163, 3360) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:river-lum:1` | (3168, 3347) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:river-lum:0` | (3163, 3360) | (3163, 3360) | `{ x: 3163, z: 3360, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:river-lum:1` | (3168, 3347) | x 3165-3171, z 3341-3350 | `{ x: 3168, z: 3346, radius: 9 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:river-lum:0` | (3156, 3342) | Cow 1 | yes | no | - | - |
-| `npc:river-lum:1` | (3169, 3350) | Duck (duck) 11, Duck (duck_female) 11 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:river-lum:0` | (3156, 3342) | (3156, 3342) | x 3151-3161, z 3337-3347 | `{ x: 3156, z: 3342, radius: 11 }` | Cow 1 | yes | no | - | - |
+| `npc:river-lum:1` | (3169, 3350) | x 3157-3177, z 3345-3356 | x 3122-3212, z 3310-3391 | `{ x: 3167, z: 3351, radius: 64 }` | Duck (duck) 11, Duck (duck_female) 11 | yes | no | - | - |

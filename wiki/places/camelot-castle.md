@@ -5,14 +5,14 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:camelot-castle:0` | (2757, 3498) | Fountain 1 | no | no | - | - |
-| `water-source:camelot-castle:1` | (2771, 3515) | Fountain 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:camelot-castle:0` | (2757, 3498) | (2757, 3498) | `{ x: 2757, z: 3498, radius: 3 }` | Fountain 1 | no | no | - | - |
+| `water-source:camelot-castle:1` | (2771, 3515) | (2771, 3515) | `{ x: 2771, z: 3515, radius: 3 }` | Fountain 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:camelot-castle:0` | (2769, 3493) | Ladder 1 | up (2768, 3493) L1 by Climb-up | no | no | - | - |
-| `connector:camelot-castle:1` | (2769, 3493) L1 | Ladder 1 | down (2768, 3493) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:camelot-castle:0` | (2769, 3493) | (2769, 3493) | `{ x: 2769, z: 3493, radius: 3 }` | Ladder 1 | up (2768, 3493) L1 by Climb-up | no | no | - | - |
+| `connector:camelot-castle:1` | (2769, 3493) L1 | (2769, 3493) L1 | `{ x: 2769, z: 3493, radius: 3, level: 1 }` | Ladder 1 | down (2768, 3493) by Climb-down | no | no | - | - |

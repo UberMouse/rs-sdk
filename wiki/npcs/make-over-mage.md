@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (2916, 3323) | 1 | 4 | (2912, 3319)-(2920, 3327) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (2916, 3323) | (2916, 3323) | 1 | 4 | x 2912-2920, z 3319-3327 | 100 ticks | - | `{ x: 2916, z: 3323, radius: 9 }` | yes |
 
 ## Interactions
 

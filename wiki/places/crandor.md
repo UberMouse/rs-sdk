@@ -3,24 +3,24 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:crandor:0` | (2821, 3245) | [mithril](../resources/rock/mithril.md) 7 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `rock:crandor:1` | (2834, 3293) | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `rock:crandor:2` | (2837, 3245) | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `rock:crandor:3` | (2861, 3287) | [gold](../resources/rock/gold.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:crandor:0` | (2821, 3245) | x 2819-2822, z 3242-3247 | `{ x: 2821, z: 3245, radius: 7 }` | [mithril](../resources/rock/mithril.md) 7 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:1` | (2834, 3293) | x 2832-2837, z 3290-3297 | `{ x: 2835, z: 3294, radius: 8 }` | [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:2` | (2837, 3245) | x 2835-2838, z 3243-3246 | `{ x: 2837, z: 3245, radius: 6 }` | [adamantite](../resources/rock/adamantite.md) 3, [coal](../resources/rock/coal.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `rock:crandor:3` | (2861, 3287) | x 2861-2862, z 3287-3288 | `{ x: 2862, z: 3288, radius: 5 }` | [gold](../resources/rock/gold.md) 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:crandor:0` | (2820, 3259) | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:1` | (2831, 3244) | Moss giant 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:2` | (2835, 3279) | Lesser demon 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:3` | (2842, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:4` | (2844, 3291) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:5` | (2850, 3248) | Skeleton 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:6` | (2851, 3258) | Skeleton 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:7` | (2851, 3298) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:8` | (2859, 3283) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:crandor:9` | (2861, 3295) | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:crandor:0` | (2820, 3259) | (2820, 3259) | x 2811-2829, z 3250-3268 | `{ x: 2820, z: 3259, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:1` | (2831, 3244) | x 2827-2834, z 3242-3246 | x 2824-2837, z 3239-3249 | `{ x: 2831, z: 3244, radius: 12 }` | Moss giant 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:2` | (2835, 3279) | x 2832-2837, z 3278-3280 | x 2826-2843, z 3272-3286 | `{ x: 2835, z: 3279, radius: 15 }` | Lesser demon 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:3` | (2842, 3298) | (2842, 3298) | x 2834-2850, z 3290-3306 | `{ x: 2842, z: 3298, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:4` | (2844, 3291) | (2844, 3291) | x 2836-2852, z 3283-3299 | `{ x: 2844, z: 3291, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:5` | (2850, 3248) | x 2846-2854, z 3247-3249 | x 2837-2863, z 3238-3258 | `{ x: 2850, z: 3248, radius: 20 }` | Skeleton 3 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:6` | (2851, 3258) | x 2850-2852, z 3256-3260 | x 2841-2861, z 3247-3269 | `{ x: 2851, z: 3258, radius: 18 }` | Skeleton 2 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:7` | (2851, 3298) | (2851, 3298) | x 2843-2859, z 3290-3306 | `{ x: 2851, z: 3298, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:8` | (2859, 3283) | (2859, 3283) | x 2851-2867, z 3275-3291 | `{ x: 2859, z: 3283, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:crandor:9` | (2861, 3295) | (2861, 3295) | x 2853-2869, z 3287-3303 | `{ x: 2861, z: 3295, radius: 15 }` | King Scorpion 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |

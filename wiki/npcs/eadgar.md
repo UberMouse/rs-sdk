@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2829, 10083) | 1 | 5 | (2824, 10078)-(2834, 10088) | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | no |
-| - | (2890, 10086) L2 | 1 | 5 | (2885, 10081)-(2895, 10091) | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2829, 10083) | (2829, 10083) | 1 | 5 | x 2824-2834, z 10078-10088 | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | `{ x: 2829, z: 10083, radius: 11 }` | no |
+| - | (2890, 10086) L2 | (2890, 10086) L2 | 1 | 5 | x 2885-2895, z 10081-10091 L2 | 100 ticks | teleports (npc/scripts/npc_walk.rs2:25) | `{ x: 2890, z: 10086, radius: 11, level: 2 }` | no |
 
 ## Interactions
 

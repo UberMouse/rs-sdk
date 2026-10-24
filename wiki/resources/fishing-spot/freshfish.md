@@ -38,39 +38,39 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:0` | (2844, 3358) | (2843, 3360) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 88 ticks |
-| [Fisher Realm](../../places/fisher-realm.md) | `fishing-spot:fisher-realm:0` | (2673, 4707) | (2673, 4707) | 3 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done | Ardougne South bank (East Ardougne), 93 ticks via 30 coins + carry Magic whistle |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:0` | (2466, 3152) | (2462, 3155) | 5 | no | no | - | - | Castle Wars bank chest (Castle Wars), 48 ticks |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:2` | (2528, 3411) | (2527, 3409) | 6 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 55 ticks |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:4` | (2564, 3372) | (2563, 3372) | 2 | no | no | - | - | Ardougne North bank (East Ardougne), 56 ticks |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:5` | (2716, 3531) | (2716, 3531) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 32 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | (2382, 3418) | 7 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 41 ticks |
-| [Shilo Village (Karamja)](../../places/shilo-village.md) | `fishing-spot:shilo-village:0` | (2855, 2974) | (2855, 2972) | 3 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 9 ticks |
-| [Barbarian Village fishing (Barbarian Village)](../../places/barbarian-village-fishing.md) | `fishing-spot:barbarian-village-fishing:0` | (3107, 3429) | (3105, 3430) | 2 | yes | yes | - | - | Edgeville bank (Edgeville), 35 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `fishing-spot:lumbridge:0` | (3238, 3252) | (3239, 3252) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 85 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:1` | (2216, 3240) | (2216, 3240) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 283 ticks via Regicide at stage 8 + 56 Agility |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:2` | (2272, 3249) | (2271, 3249) | 5 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 236 ticks via Regicide at stage 8 + 56 Agility |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:0` | (2844, 3358) | (2843, 3360) | x 2840-2849, z 3356-3361 | [Movement](#movement) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 88 ticks |
+| [Fisher Realm](../../places/fisher-realm.md) | `fishing-spot:fisher-realm:0` | (2673, 4707) | (2673, 4707) | x 2668-2679, z 4702-4710 | [Movement](#movement) | 3 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done | Ardougne South bank (East Ardougne), 93 ticks via 30 coins + carry Magic whistle |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:0` | (2466, 3152) | (2462, 3155) | x 2461-2474, z 3145-3157 | [Movement](#movement) | 5 | no | no | - | - | Castle Wars bank chest (Castle Wars), 48 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:2` | (2528, 3411) | (2527, 3409) | x 2508-2537, z 3403-3421 | [Movement](#movement) | 6 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 55 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:4` | (2564, 3372) | (2563, 3372) | x 2561-2566, z 3370-3374 | [Movement](#movement) | 2 | no | no | - | - | Ardougne North bank (East Ardougne), 56 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:5` | (2716, 3531) | (2716, 3531) | x 2714-2718, z 3529-3533 | [Movement](#movement) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 32 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | (2382, 3418) | x 2382-2391, z 3407-3423 | [Movement](#movement) | 7 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 41 ticks |
+| [Shilo Village (Karamja)](../../places/shilo-village.md) | `fishing-spot:shilo-village:0` | (2855, 2974) | (2855, 2972) | x 2855-2856, z 2973-2977 | [Movement](#movement) | 3 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done | Shilo Village bank (Shilo Village), 9 ticks |
+| [Barbarian Village fishing (Barbarian Village)](../../places/barbarian-village-fishing.md) | `fishing-spot:barbarian-village-fishing:0` | (3107, 3429) | (3105, 3430) | x 3104-3110, z 3424-3434 | [Movement](#movement) | 2 | yes | yes | - | - | Edgeville bank (Edgeville), 35 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `fishing-spot:lumbridge:0` | (3238, 3252) | (3239, 3252) | (3238, 3252) | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 85 ticks |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:1` | (2216, 3240) | (2216, 3240) | x 2210-2225, z 3232-3248 | [Movement](#movement) | 4 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 283 ticks via Regicide at stage 8 + 56 Agility |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:2` | (2272, 3249) | (2271, 3249) | x 2264-2282, z 3240-3258 | [Movement](#movement) | 5 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 236 ticks via Regicide at stage 8 + 56 Agility |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:entrana:0` | (2845, 3359) | 8 | 7 |
-| `fishing-spot:fisher-realm:0` | (2673, 4705) | 9 | 7 |
-| `fishing-spot:kandarin:0` | (2468, 3151) | 10 | 9 |
-| `fishing-spot:kandarin:2` | (2522, 3412) | 18 | 10 |
-| `fishing-spot:kandarin:4` | (2565, 3370) | 8 | 5 |
-| `fishing-spot:kandarin:5` | (2721, 3529) | 10 | 7 |
-| `fishing-spot:tree-gnome-stronghold:0` | (2388, 3416) | 12 | 12 |
-| `fishing-spot:shilo-village:0` | (2846, 2973) | 27 | 13 |
-| `fishing-spot:barbarian-village-fishing:0` | (3107, 3429) | 8 | 5 |
-| `fishing-spot:lumbridge:0` | (3239, 3248) | 10 | 8 |
-| `fishing-spot:tirannwn:1` | (2218, 3240) | 11 | 11 |
-| `fishing-spot:tirannwn:2` | (2269, 3249) | 16 | 11 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:entrana:0` | `{ x: 2845, z: 3359, radius: 9 }` | 7 |
+| `fishing-spot:fisher-realm:0` | `{ x: 2673, z: 4705, radius: 11 }` | 7 |
+| `fishing-spot:kandarin:0` | `{ x: 2468, z: 3151, radius: 12 }` | 9 |
+| `fishing-spot:kandarin:2` | `{ x: 2522, z: 3412, radius: 21 }` | 10 |
+| `fishing-spot:kandarin:4` | `{ x: 2565, z: 3370, radius: 9 }` | 5 |
+| `fishing-spot:kandarin:5` | `{ x: 2721, z: 3529, radius: 12 }` | 7 |
+| `fishing-spot:tree-gnome-stronghold:0` | `{ x: 2388, z: 3416, radius: 13 }` | 12 |
+| `fishing-spot:shilo-village:0` | `{ x: 2846, z: 2973, radius: 28 }` | 13 |
+| `fishing-spot:barbarian-village-fishing:0` | `{ x: 3107, z: 3429, radius: 9 }` | 5 |
+| `fishing-spot:lumbridge:0` | `{ x: 3239, z: 3248, radius: 11 }` | 8 |
+| `fishing-spot:tirannwn:1` | `{ x: 2218, z: 3240, radius: 13 }` | 11 |
+| `fishing-spot:tirannwn:2` | `{ x: 2269, z: 3249, radius: 18 }` | 11 |
 
 `fishing-spot:entrana:0` tiles: (2840, 3356), (2842, 3359), (2843, 3359), (2845, 3356), (2847, 3361), (2848, 3361), (2849, 3361)
 

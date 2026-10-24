@@ -5,39 +5,39 @@
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:black-knights-fortress:0` | (3027, 3510) L1 | Chaos altar 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:black-knights-fortress:0` | (3027, 3510) L1 | (3027, 3510) L1 | `{ x: 3027, z: 3510, radius: 3, level: 1 }` | Chaos altar 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:black-knights-fortress:0` | (3020, 3515) | Black Knight 5, Fortress Guard 6 | yes | no | - | - |
-| `npc:black-knights-fortress:1` | (3014, 3516) L2 | Black Knight 1 | yes | no | - | - |
-| `npc:black-knights-fortress:2` | (3015, 3515) L1 | Black Knight 1 | yes | no | - | - |
-| `npc:black-knights-fortress:3` | (3023, 3513) L1 | Black Knight 3 | yes | no | - | - |
-| `npc:black-knights-fortress:4` | (3023, 3514) L2 | Black Knight 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:black-knights-fortress:0` | (3020, 3515) | x 3008-3029, z 3512-3517 | x 2998-3039, z 3502-3527 | `{ x: 3019, z: 3515, radius: 28 }` | Black Knight 5, Fortress Guard 6 | yes | no | - | - |
+| `npc:black-knights-fortress:1` | (3014, 3516) L2 | (3014, 3516) L2 | x 3004-3024, z 3506-3526 L2 | `{ x: 3014, z: 3516, radius: 18, level: 2 }` | Black Knight 1 | yes | no | - | - |
+| `npc:black-knights-fortress:2` | (3015, 3515) L1 | (3015, 3515) L1 | x 3005-3025, z 3505-3525 L1 | `{ x: 3015, z: 3515, radius: 18, level: 1 }` | Black Knight 1 | yes | no | - | - |
+| `npc:black-knights-fortress:3` | (3023, 3513) L1 | x 3023-3024, z 3510-3516 L1 | x 3013-3034, z 3500-3526 L1 | `{ x: 3024, z: 3513, radius: 21, level: 1 }` | Black Knight 3 | yes | no | - | - |
+| `npc:black-knights-fortress:4` | (3023, 3514) L2 | (3023, 3514) L2 | x 3013-3033, z 3504-3524 L2 | `{ x: 3023, z: 3514, radius: 18, level: 2 }` | Black Knight 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:black-knights-fortress:0` | (3010, 3515) | Staircase 1 | up (3012, 3515) L1 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:1` | (3010, 3516) L2 | Staircase 1 | up (3010, 3515) L3 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:2` | (3010, 3516) L3 | Staircase 1 | down (3010, 3515) L2 by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:3` | (3011, 3515) L1 | Staircase 1 | down (3011, 3514) by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:4` | (3015, 3519) | Ladder 1 | up (3015, 3518) L1 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:5` | (3015, 3519) L1 | Ladder 1 | down (3015, 3518) by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:6` | (3016, 3519) L1 | Ladder 1 | up (3016, 3518) L2 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:7` | (3016, 3519) L2 | Ladder 1 | down (3016, 3518) L1 by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:8` | (3017, 3516) L1 | Ladder 1 | up (3016, 3516) L2 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:9` | (3017, 3516) L2 | Ladder 1 | down (3016, 3516) L1 by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:10` | (3021, 3510) | Ladder 1 | up (3022, 3510) L1 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:11` | (3021, 3510) L1 | Ladder 1 | down (3022, 3510) by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:12` | (3022, 3518) | Ladder 1 | up (3022, 3517) L1 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:13` | (3022, 3518) L1 | Ladder 1 | down (3022, 3517) by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:14` | (3023, 3513) L1 | Ladder 1 | up (3023, 3514) L2 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:15` | (3023, 3513) L2 | Ladder 1 | down (3023, 3514) L1 by Climb-down | yes | no | - | - |
-| `connector:black-knights-fortress:16` | (3025, 3513) L1 | Ladder 1 | up (3025, 3514) L2 by Climb-up | yes | no | - | - |
-| `connector:black-knights-fortress:17` | (3025, 3513) L2 | Ladder 1 | down (3025, 3514) L1 by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:black-knights-fortress:0` | (3010, 3515) | (3010, 3515) | `{ x: 3010, z: 3515, radius: 3 }` | Staircase 1 | up (3012, 3515) L1 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:1` | (3010, 3516) L2 | (3010, 3516) L2 | `{ x: 3010, z: 3516, radius: 3, level: 2 }` | Staircase 1 | up (3010, 3515) L3 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:2` | (3010, 3516) L3 | (3010, 3516) L3 | `{ x: 3010, z: 3516, radius: 3, level: 3 }` | Staircase 1 | down (3010, 3515) L2 by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:3` | (3011, 3515) L1 | (3011, 3515) L1 | `{ x: 3011, z: 3515, radius: 3, level: 1 }` | Staircase 1 | down (3011, 3514) by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:4` | (3015, 3519) | (3015, 3519) | `{ x: 3015, z: 3519, radius: 3 }` | Ladder 1 | up (3015, 3518) L1 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:5` | (3015, 3519) L1 | (3015, 3519) L1 | `{ x: 3015, z: 3519, radius: 3, level: 1 }` | Ladder 1 | down (3015, 3518) by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:6` | (3016, 3519) L1 | (3016, 3519) L1 | `{ x: 3016, z: 3519, radius: 3, level: 1 }` | Ladder 1 | up (3016, 3518) L2 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:7` | (3016, 3519) L2 | (3016, 3519) L2 | `{ x: 3016, z: 3519, radius: 3, level: 2 }` | Ladder 1 | down (3016, 3518) L1 by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:8` | (3017, 3516) L1 | (3017, 3516) L1 | `{ x: 3017, z: 3516, radius: 3, level: 1 }` | Ladder 1 | up (3016, 3516) L2 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:9` | (3017, 3516) L2 | (3017, 3516) L2 | `{ x: 3017, z: 3516, radius: 3, level: 2 }` | Ladder 1 | down (3016, 3516) L1 by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:10` | (3021, 3510) | (3021, 3510) | `{ x: 3021, z: 3510, radius: 3 }` | Ladder 1 | up (3022, 3510) L1 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:11` | (3021, 3510) L1 | (3021, 3510) L1 | `{ x: 3021, z: 3510, radius: 3, level: 1 }` | Ladder 1 | down (3022, 3510) by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:12` | (3022, 3518) | (3022, 3518) | `{ x: 3022, z: 3518, radius: 3 }` | Ladder 1 | up (3022, 3517) L1 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:13` | (3022, 3518) L1 | (3022, 3518) L1 | `{ x: 3022, z: 3518, radius: 3, level: 1 }` | Ladder 1 | down (3022, 3517) by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:14` | (3023, 3513) L1 | (3023, 3513) L1 | `{ x: 3023, z: 3513, radius: 3, level: 1 }` | Ladder 1 | up (3023, 3514) L2 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:15` | (3023, 3513) L2 | (3023, 3513) L2 | `{ x: 3023, z: 3513, radius: 3, level: 2 }` | Ladder 1 | down (3023, 3514) L1 by Climb-down | yes | no | - | - |
+| `connector:black-knights-fortress:16` | (3025, 3513) L1 | (3025, 3513) L1 | `{ x: 3025, z: 3513, radius: 3, level: 1 }` | Ladder 1 | up (3025, 3514) L2 by Climb-up | yes | no | - | - |
+| `connector:black-knights-fortress:17` | (3025, 3513) L2 | (3025, 3513) L2 | `{ x: 3025, z: 3513, radius: 3, level: 2 }` | Ladder 1 | down (3025, 3514) L1 by Climb-down | yes | no | - | - |

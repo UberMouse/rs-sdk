@@ -17,7 +17,7 @@ import { locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { questFacts } from '../requirements';
 import { readConfigs } from '../sources/configs';
-import { COVER_MARGIN } from '../sources/fishing-movement';
+import { COVER_MARGIN } from '../cover';
 
 const world = loadWorld();
 const data = readGameData();
@@ -55,12 +55,10 @@ describe('Catherby shore', () => {
         for (const subtype of ['rarefish', 'memberfish', 'saltfish']) {
             const m = catherby.movement![subtype]!;
             for (const t of m.tiles)
-                expect(Math.max(Math.abs(t.x - m.centre.x), Math.abs(t.z - m.centre.z))).toBeLessThanOrEqual(
-                    m.radius - COVER_MARGIN,
-                );
+                expect(Math.hypot(t.x - m.centre.x, t.z - m.centre.z)).toBeLessThanOrEqual(m.radius - COVER_MARGIN);
         }
         expect(catherby.movement!.rarefish!.centre).toEqual({ level: 0, x: 2848, z: 3427 });
-        expect(catherby.movement!.rarefish!.radius).toBe(15);
+        expect(catherby.movement!.rarefish!.radius).toBe(16);
     });
 });
 
@@ -70,7 +68,7 @@ test('every fishing site covers its spawns, and a spot that never moves covers o
         for (const f of s.features.map(i => world.features[i]!)) {
             const m = s.movement![f.subtype]!;
             expect(m.tiles.some(t => t.x === f.tile.x && t.z === f.tile.z && t.level === f.tile.level)).toBe(true);
-            expect(Math.max(Math.abs(f.tile.x - m.centre.x), Math.abs(f.tile.z - m.centre.z))).toBeLessThanOrEqual(
+            expect(Math.hypot(f.tile.x - m.centre.x, f.tile.z - m.centre.z)).toBeLessThanOrEqual(
                 m.radius - COVER_MARGIN,
             );
         }

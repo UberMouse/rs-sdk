@@ -35,6 +35,16 @@ her bar. The collision data has no sight flags, so a line of sight there is a li
 that block walking but not sight (`blockrange=no`, the bar's pumps) cleared. Coordinates are `(x, z)`,
 with ` L<n>` above level 0; underground areas sit at z + 6400.
 
+Every table of sites (the resource, service, place and npc pages) gives each site's Box, the box its features'
+tiles span (`x x1-x2, z z1-z2`; one tile as its coord), a Roam where its npcs walk (the box grown by their wander,
+`Site.roam`), and an Area to copy: the plan `area` (`{ x, z, radius }`, conductor `AreaSchema`) that covers every
+tile of the roam, or of the box where there is none (`cover.ts`): the box's centre, and the straight-line distance
+to its farthest corner rounded up plus `COVER_MARGIN` (3) tiles, as a plan's area holds what is within its radius
+of the centre in a straight line (`conductor/lib/area.ts` `inArea`). A fishing site's Area to copy points to its
+Movement on its resource page, whose cover is the same over every tile its spots move to. Size a gathering `area`
+from that cell, never from the centre and a guessed radius: a tight area idles the bot while a target stands just
+outside it, and a wide one costs only a few tiles of walking.
+
 `npcSpawns` in world.json clusters every placed npc's spawns the same way, per config, whether or
 not a feature kind takes it. The npc pages (`wiki/generate-npcs.ts`) read their Locations from it
 and from the sites, and the shop pages (`wiki/generate-shops.ts`) their Coordinates from the shop
@@ -348,9 +358,9 @@ record. A plan names its method (`PlanDef.method`, see
   random(250) ticks (`fishing_movement.rs2`), so a bot walks to wherever one stands now. The fishing family's
   floor assumes a spot is always at hand and charges no walk to the next one, so it is an upper bound; the
   availability (a spot's uptime on the tile in reach, the walk to the next) is not modelled. Each fishing-spot site
-  carries the tiles its spots can stand on and a covering area (`Site.movement`, `sources/fishing-movement.ts`: the
-  box's centre and a Chebyshev radius that reaches every tile with 3 tiles of margin), shown on the resource page;
-  a plan's `area` should be at least that. Spots sharing an enum are one site (`SiteOptions.shore`).
+  carries the tiles its spots can stand on and a covering area (`Site.movement`, `sources/fishing-movement.ts` and
+  `cover.ts`: the tiles' box's centre and a straight-line radius that reaches every tile with `COVER_MARGIN` (3)
+  tiles of margin), shown under Movement on the resource page; a plan's `area` should be at least that. Spots sharing an enum are one site (`SiteOptions.shore`).
 
 Adding a method:
 

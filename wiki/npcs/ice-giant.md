@@ -24,20 +24,20 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2885, 9933) | 3 | 3 | (2877, 9924)-(2894, 9944) | 60 ticks | - | no |
-| - | (2886, 9957) | 4 | 3 | (2880, 9947)-(2893, 9968) | 60 ticks | - | no |
-| [Asgarnia](../places/asgarnia.md) | (2824, 3510) | 1 | 3 | (2821, 3507)-(2827, 3513) | 60 ticks | - | no |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3056, 9566) | 2 | 3 | (3049, 9561)-(3060, 9571) | 60 ticks | - | yes |
-| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3065, 9571) | 1 | 3 | (3053, 9568)-(3068, 9590) | 60 ticks | - | yes |
-| [Kandarin](../places/kandarin.md) | (2804, 3507) | 1 | 3 | (2801, 3504)-(2807, 3510) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2811, 3506) | 1 | 3 | (2808, 3503)-(2814, 3509) | 60 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2817, 3514) | 1 | 3 | (2814, 3511)-(2820, 3517) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (2949, 3927) | 2 | 3 | (2944, 3910)-(2968, 3939) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (2953, 3896) | 5 | 3 | (2944, 3871)-(2966, 3905) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (2955, 3945) | 1 | 3 | (2952, 3942)-(2958, 3948) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (2978, 3956) | 1 | 3 | (2974, 3939)-(2985, 3959) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2885, 9933) | x 2880-2891, z 9927-9941 | 3 | 3 | x 2877-2894, z 9924-9944 | 60 ticks | - | `{ x: 2886, z: 9934, radius: 17 }` | no |
+| - | (2886, 9957) | x 2883-2890, z 9950-9965 | 4 | 3 | x 2880-2893, z 9947-9968 | 60 ticks | - | `{ x: 2887, z: 9958, radius: 17 }` | no |
+| [Asgarnia](../places/asgarnia.md) | (2824, 3510) | (2824, 3510) | 1 | 3 | x 2821-2827, z 3507-3513 | 60 ticks | - | `{ x: 2824, z: 3510, radius: 8 }` | no |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3056, 9566) | x 3052-3057, z 9564-9568 | 2 | 3 | x 3049-3060, z 9561-9571 | 60 ticks | - | `{ x: 3055, z: 9566, radius: 11 }` | yes |
+| [Asgarnian Ice Dungeon](../places/asgarnian-ice-dungeon.md) | (3065, 9571) | x 3056-3065, z 9571-9587 | 1 | 3 | x 3053-3068, z 9568-9590 | 60 ticks | - | `{ x: 3061, z: 9579, radius: 17 }` | yes |
+| [Kandarin](../places/kandarin.md) | (2804, 3507) | (2804, 3507) | 1 | 3 | x 2801-2807, z 3504-3510 | 60 ticks | - | `{ x: 2804, z: 3507, radius: 8 }` | no |
+| [Kandarin](../places/kandarin.md) | (2811, 3506) | (2811, 3506) | 1 | 3 | x 2808-2814, z 3503-3509 | 60 ticks | - | `{ x: 2811, z: 3506, radius: 8 }` | no |
+| [Kandarin](../places/kandarin.md) | (2817, 3514) | (2817, 3514) | 1 | 3 | x 2814-2820, z 3511-3517 | 60 ticks | - | `{ x: 2817, z: 3514, radius: 8 }` | no |
+| [Wilderness](../places/wilderness.md) | (2949, 3927) | x 2947-2965, z 3913-3936 | 2 | 3 | x 2944-2968, z 3910-3939 | 60 ticks | - | `{ x: 2956, z: 3925, radius: 23 }` | no |
+| [Wilderness](../places/wilderness.md) | (2953, 3896) | x 2947-2963, z 3874-3902 | 5 | 3 | x 2944-2966, z 3871-3905 | 60 ticks | - | `{ x: 2955, z: 3888, radius: 24 }` | yes |
+| [Wilderness](../places/wilderness.md) | (2955, 3945) | (2955, 3945) | 1 | 3 | x 2952-2958, z 3942-3948 | 60 ticks | - | `{ x: 2955, z: 3945, radius: 8 }` | no |
+| [Wilderness](../places/wilderness.md) | (2978, 3956) | x 2977-2982, z 3942-3956 | 1 | 3 | x 2974-2985, z 3939-3959 | 60 ticks | - | `{ x: 2980, z: 3949, radius: 15 }` | no |
 
 ## Drops
 

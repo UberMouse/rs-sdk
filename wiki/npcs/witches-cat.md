@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2131, 4602) L1 | 1 | 5 | (2126, 4597)-(2136, 4607) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2131, 4602) L1 | (2131, 4602) L1 | 1 | 5 | x 2126-2136, z 4597-4607 L1 | 100 ticks | - | `{ x: 2131, z: 4602, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

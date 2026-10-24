@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:flax:0` | (2754, 3433) | [yew](../resources/tree/yew.md) 1 | no | no | - | - |
-| `tree:flax:1` | (2754, 3454) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:flax:0` | (2754, 3433) | (2754, 3433) | `{ x: 2754, z: 3433, radius: 3 }` | [yew](../resources/tree/yew.md) 1 | no | no | - | - |
+| `tree:flax:1` | (2754, 3454) | (2754, 3454) | `{ x: 2754, z: 3454, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Flax
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `flax:flax:0` | (2743, 3444) | [flax](../resources/flax/flax.md) 48 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `flax:flax:0` | (2743, 3444) | x 2737-2750, z 3438-3452 | `{ x: 2744, z: 3445, radius: 13 }` | [flax](../resources/flax/flax.md) 48 | no | no | - | - |

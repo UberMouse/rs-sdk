@@ -5,22 +5,22 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:tai-bwo-wannai:0` | (2800, 3057) | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done or The Grand Tree done + Tai Bwo Wannai Trio done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:tai-bwo-wannai:0` | (2800, 3057) | (2800, 3057) | x 2795-2805, z 3052-3062 | `{ x: 2800, z: 3057, radius: 11 }` | Tamayu's Spear Stall (tbwt_tamayu_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done or The Grand Tree done + Tai Bwo Wannai Trio done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:tai-bwo-wannai:0` | (2788, 3061) | Chicken 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:tai-bwo-wannai:1` | (2803, 3066) | Chicken 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:tai-bwo-wannai:0` | (2788, 3061) | (2788, 3061) | x 2783-2793, z 3056-3066 | `{ x: 2788, z: 3061, radius: 11 }` | Chicken 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:tai-bwo-wannai:1` | (2803, 3066) | x 2801-2805, z 3064-3067 | x 2796-2810, z 3059-3072 | `{ x: 2803, z: 3066, radius: 13 }` | Chicken 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:tai-bwo-wannai:0` | (2796, 3076) | Ladder 1 | up (2795, 3076) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | Ladder 1 | down (2795, 3076) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:tai-bwo-wannai:2` | (2804, 3075) | Ladder 1 | up (2803, 3075) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | Ladder 1 | down (2803, 3075) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:tai-bwo-wannai:0` | (2796, 3076) | (2796, 3076) | `{ x: 2796, z: 3076, radius: 3 }` | Ladder 1 | up (2795, 3076) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:tai-bwo-wannai:1` | (2796, 3076) L1 | (2796, 3076) L1 | `{ x: 2796, z: 3076, radius: 3, level: 1 }` | Ladder 1 | down (2795, 3076) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:tai-bwo-wannai:2` | (2804, 3075) | (2804, 3075) | `{ x: 2804, z: 3075, radius: 3 }` | Ladder 1 | up (2803, 3075) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:tai-bwo-wannai:3` | (2804, 3075) L1 | (2804, 3075) L1 | `{ x: 2804, z: 3075, radius: 3, level: 1 }` | Ladder 1 | down (2803, 3075) by Climb-down | no | no | - | 30 coins or The Grand Tree done |

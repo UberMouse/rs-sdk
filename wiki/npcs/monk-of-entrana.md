@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Entrana](../places/entrana.md) | (2835, 3335) | 3 | 5 | (2825, 3330)-(2844, 3341) | 100 ticks | - | no |
-| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | 3 | 5 | (3040, 3229)-(3054, 3241) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Entrana](../places/entrana.md) | (2835, 3335) | x 2830-2839, z 3335-3336 | 3 | 5 | x 2825-2844, z 3330-3341 | 100 ticks | - | `{ x: 2835, z: 3336, radius: 15 }` | no |
+| [Port Sarim (Asgarnia)](../places/port-sarim.md) | (3047, 3235) | x 3045-3049, z 3234-3236 | 3 | 5 | x 3040-3054, z 3229-3241 | 100 ticks | - | `{ x: 3047, z: 3235, radius: 13 }` | yes |
 
 ## Interactions
 

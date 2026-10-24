@@ -11,10 +11,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Morytania](../places/morytania.md) | (3416, 3514) | 11 | 3 | (3409, 3506)-(3423, 3521) | 35 ticks | - | no |
-| [Morytania](../places/morytania.md) | (3429, 3463) | 10 | 3 | (3420, 3455)-(3437, 3471) | 35 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Morytania](../places/morytania.md) | (3416, 3514) | x 3412-3420, z 3509-3518 | 11 | 3 | x 3409-3423, z 3506-3521 | 35 ticks | - | `{ x: 3416, z: 3514, radius: 14 }` | no |
+| [Morytania](../places/morytania.md) | (3429, 3463) | x 3423-3434, z 3458-3468 | 10 | 3 | x 3420-3437, z 3455-3471 | 35 ticks | - | `{ x: 3429, z: 3463, radius: 16 }` | no |
 
 ## Drops
 

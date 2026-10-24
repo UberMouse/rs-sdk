@@ -5,24 +5,24 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:white-wolf-mountain:0` | (2840, 3479) | [normal](../resources/tree/normal.md) 12 | no | yes | - | - |
-| `tree:white-wolf-mountain:1` | (2834, 3503) | [normal](../resources/tree/normal.md) 5 | no | yes | - | - |
-| `tree:white-wolf-mountain:2` | (2850, 3515) | [normal](../resources/tree/normal.md) 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `tree:white-wolf-mountain:3` | (2860, 3506) | [normal](../resources/tree/normal.md) 6 | no | yes | - | - |
-| `tree:white-wolf-mountain:4` | (2868, 3472) | [normal](../resources/tree/normal.md) 3 | no | yes | - | - |
-| `tree:white-wolf-mountain:5` | (2871, 3497) | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:white-wolf-mountain:0` | (2840, 3479) | x 2826-2856, z 3468-3489 | `{ x: 2841, z: 3479, radius: 22 }` | [normal](../resources/tree/normal.md) 12 | no | yes | - | - |
+| `tree:white-wolf-mountain:1` | (2834, 3503) | x 2826-2838, z 3497-3511 | `{ x: 2832, z: 3504, radius: 13 }` | [normal](../resources/tree/normal.md) 5 | no | yes | - | - |
+| `tree:white-wolf-mountain:2` | (2850, 3515) | (2850, 3515) | `{ x: 2850, z: 3515, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `tree:white-wolf-mountain:3` | (2860, 3506) | x 2851-2868, z 3499-3512 | `{ x: 2860, z: 3506, radius: 15 }` | [normal](../resources/tree/normal.md) 6 | no | yes | - | - |
+| `tree:white-wolf-mountain:4` | (2868, 3472) | x 2867-2871, z 3470-3473 | `{ x: 2869, z: 3472, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | no | yes | - | - |
+| `tree:white-wolf-mountain:5` | (2871, 3497) | (2871, 3497) | `{ x: 2871, z: 3497, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:white-wolf-mountain:0` | (2849, 3513) | Ice warrior 2 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:white-wolf-mountain:0` | (2849, 3513) | x 2847-2850, z 3512-3514 | x 2844-2853, z 3509-3517 | `{ x: 2849, z: 3513, radius: 10 }` | Ice warrior 2 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:white-wolf-mountain:0` | (2827, 3510) | Ladder 1 | down (2828, 9910) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:white-wolf-mountain:1` | (2848, 3513) | Ladder 1 | down (2849, 9913) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:white-wolf-mountain:0` | (2827, 3510) | (2827, 3510) | `{ x: 2827, z: 3510, radius: 3 }` | Ladder 1 | down (2828, 9910) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:white-wolf-mountain:1` | (2848, 3513) | (2848, 3513) | `{ x: 2848, z: 3513, radius: 3 }` | Ladder 1 | down (2849, 9913) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |

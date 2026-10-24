@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9683) | 1 | 5 | (2561, 9675)-(2574, 9688) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | (2566, 9683) | x 2566-2569, z 9680-9683 | 1 | 5 | x 2561-2574, z 9675-9688 | 100 ticks | - | `{ x: 2568, z: 9682, radius: 13 }` | no |
 
 ## Drops
 

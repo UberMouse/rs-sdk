@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Tirannwn](../places/tirannwn.md) | (2242, 3269) | 1 | 1 | (2241, 3268)-(2243, 3270) | 100 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2299, 3329) | 1 | 1 | (2298, 3328)-(2300, 3330) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Tirannwn](../places/tirannwn.md) | (2242, 3269) | (2242, 3269) | 1 | 1 | x 2241-2243, z 3268-3270 | 100 ticks | - | `{ x: 2242, z: 3269, radius: 5 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2299, 3329) | (2299, 3329) | 1 | 1 | x 2298-2300, z 3328-3330 | 100 ticks | - | `{ x: 2299, z: 3329, radius: 5 }` | no |
 
 ## Interactions
 

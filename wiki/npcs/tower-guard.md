@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2546, 3116) | 1 | 8 | (2538, 3108)-(2554, 3124) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2554, 3117) | 1 | 8 | (2546, 3109)-(2562, 3125) | 100 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3090) | 1 | 8 | (2527, 3077)-(2555, 3102) | 100 ticks | - | no |
-| [Yanille (Kandarin)](../places/yanille.md) | (2547, 3113) | 2 | 8 | (2537, 3104)-(2557, 3121) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2546, 3116) | (2546, 3116) | 1 | 8 | x 2538-2554, z 3108-3124 | 100 ticks | - | `{ x: 2546, z: 3116, radius: 15 }` | no |
+| [Kandarin](../places/kandarin.md) | (2554, 3117) | (2554, 3117) | 1 | 8 | x 2546-2562, z 3109-3125 | 100 ticks | - | `{ x: 2554, z: 3117, radius: 15 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2540, 3090) | x 2535-2547, z 3085-3094 | 1 | 8 | x 2527-2555, z 3077-3102 | 100 ticks | - | `{ x: 2541, z: 3090, radius: 23 }` | no |
+| [Yanille (Kandarin)](../places/yanille.md) | (2547, 3113) | x 2545-2549, z 3112-3113 | 2 | 8 | x 2537-2557, z 3104-3121 | 100 ticks | - | `{ x: 2547, z: 3113, radius: 17 }` | no |
 
 ## Drops
 

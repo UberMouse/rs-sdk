@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Elf Camp (Tirannwn)](../places/elf-camp.md) | (2205, 3252) | 1 | 0 | (2205, 3252)-(2205, 3252) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Elf Camp (Tirannwn)](../places/elf-camp.md) | (2205, 3252) | (2205, 3252) | 1 | 0 | (2205, 3252) | 100 ticks | - | `{ x: 2205, z: 3252, radius: 3 }` | no |
 
 ## Interactions
 

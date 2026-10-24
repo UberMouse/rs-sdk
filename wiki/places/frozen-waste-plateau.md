@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:frozen-waste-plateau:0` | (2975, 3917) | [normal](../resources/tree/normal.md) 10 | no | no | 52 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:frozen-waste-plateau:0` | (2975, 3917) | x 2967-2982, z 3907-3928 | `{ x: 2975, z: 3918, radius: 17 }` | [normal](../resources/tree/normal.md) 10 | no | no | 52 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:frozen-waste-plateau:0` | (2962, 3923) | Ice spider 6 | no | no | 52 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:frozen-waste-plateau:0` | (2962, 3923) | x 2960-2965, z 3915-3929 | x 2950-2975, z 3905-3939 | `{ x: 2963, z: 3922, radius: 25 }` | Ice spider 6 | no | no | 52 | - |

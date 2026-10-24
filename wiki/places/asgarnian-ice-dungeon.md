@@ -5,28 +5,28 @@ Ladder up to Mudskipper Point at (3008, 3150).
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:asgarnian-ice-dungeon:0` | (3049, 9566) | [blurite](../resources/rock/blurite.md) 1 | yes | no | - | - |
-| `rock:asgarnian-ice-dungeon:1` | (3059, 9564) | [blurite](../resources/rock/blurite.md) 1 | yes | no | - | - |
-| `rock:asgarnian-ice-dungeon:2` | (3067, 9582) | [blurite](../resources/rock/blurite.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:asgarnian-ice-dungeon:0` | (3049, 9566) | (3049, 9566) | `{ x: 3049, z: 9566, radius: 3 }` | [blurite](../resources/rock/blurite.md) 1 | yes | no | - | - |
+| `rock:asgarnian-ice-dungeon:1` | (3059, 9564) | (3059, 9564) | `{ x: 3059, z: 9564, radius: 3 }` | [blurite](../resources/rock/blurite.md) 1 | yes | no | - | - |
+| `rock:asgarnian-ice-dungeon:2` | (3067, 9582) | x 3067, z 9581-9582 | `{ x: 3067, z: 9582, radius: 4 }` | [blurite](../resources/rock/blurite.md) 2 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:asgarnian-ice-dungeon:0` | (2995, 9575) | Pirate 7 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:1` | (2989, 9583) | Pirate 2 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:2` | (2996, 9547) | Mugger 4 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:3` | (3019, 9591) | Hobgoblin 1 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:4` | (3046, 9580) | Ice warrior 3 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:5` | (3049, 9590) | Ice warrior 1 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:6` | (3055, 9567) | Ice giant 2, Ice warrior 2 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:7` | (3053, 9576) | Ice warrior 1 | yes | no | - | - |
-| `npc:asgarnian-ice-dungeon:8` | (3060, 9580) | Ice giant 1, Ice warrior 4 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:asgarnian-ice-dungeon:0` | (2995, 9575) | x 2984-3000, z 9569-9584 | x 2979-3005, z 9564-9589 | `{ x: 2992, z: 9577, radius: 22 }` | Pirate 7 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:1` | (2989, 9583) | x 2986-2991, z 9582-9583 | x 2981-2996, z 9577-9588 | `{ x: 2989, z: 9583, radius: 13 }` | Pirate 2 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:2` | (2996, 9547) | x 2993-2999, z 9544-9550 | x 2981-3011, z 9532-9562 | `{ x: 2996, z: 9547, radius: 25 }` | Mugger 4 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:3` | (3019, 9591) | (3019, 9591) | x 3016-3022, z 9588-9594 | `{ x: 3019, z: 9591, radius: 8 }` | Hobgoblin 1 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:4` | (3046, 9580) | x 3044-3048, z 9575-9583 | x 3041-3051, z 9572-9586 | `{ x: 3046, z: 9579, radius: 12 }` | Ice warrior 3 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:5` | (3049, 9590) | (3049, 9590) | x 3046-3052, z 9587-9593 | `{ x: 3049, z: 9590, radius: 8 }` | Ice warrior 1 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:6` | (3055, 9567) | x 3052-3057, z 9564-9568 | x 3049-3060, z 9561-9571 | `{ x: 3055, z: 9566, radius: 11 }` | Ice giant 2, Ice warrior 2 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:7` | (3053, 9576) | (3053, 9576) | x 3050-3056, z 9573-9579 | `{ x: 3053, z: 9576, radius: 8 }` | Ice warrior 1 | yes | no | - | - |
+| `npc:asgarnian-ice-dungeon:8` | (3060, 9580) | x 3056-3065, z 9571-9587 | x 3053-3068, z 9568-9590 | `{ x: 3061, z: 9579, radius: 17 }` | Ice giant 1, Ice warrior 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:asgarnian-ice-dungeon:0` | (3008, 9550) | Ladder 1 | up (3009, 3150) by Climb-up | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:asgarnian-ice-dungeon:0` | (3008, 9550) | (3008, 9550) | `{ x: 3008, z: 9550, radius: 3 }` | Ladder 1 | up (3009, 3150) by Climb-up | yes | no | - | - |

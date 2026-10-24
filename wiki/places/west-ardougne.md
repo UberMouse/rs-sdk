@@ -5,65 +5,65 @@
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:west-ardougne:0` | (2501, 3330) | Anvil 1 | no | no | - | Biohazard done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:west-ardougne:0` | (2501, 3330) | (2501, 3330) | `{ x: 2501, z: 3330, radius: 3 }` | Anvil 1 | no | no | - | Biohazard done |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:west-ardougne:0` | (2547, 3322) | Range 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:west-ardougne:0` | (2547, 3322) | (2547, 3322) | `{ x: 2547, z: 3322, radius: 3 }` | Range 1 | no | no | - | unreached |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:west-ardougne:0` | (2526, 3319) | Fireplace 1 | no | no | - | Biohazard done |
-| `fire:west-ardougne:1` | (2542, 3284) | Fireplace 1 | no | no | - | Biohazard done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:west-ardougne:0` | (2526, 3319) | (2526, 3319) | `{ x: 2526, z: 3319, radius: 3 }` | Fireplace 1 | no | no | - | Biohazard done |
+| `fire:west-ardougne:1` | (2542, 3284) | (2542, 3284) | `{ x: 2542, z: 3284, radius: 3 }` | Fireplace 1 | no | no | - | Biohazard done |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:west-ardougne:0` | (2529, 3286) | Altar 1 | no | no | - | Biohazard done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:west-ardougne:0` | (2529, 3286) | (2529, 3286) | `{ x: 2529, z: 3286, radius: 3 }` | Altar 1 | no | no | - | Biohazard done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:west-ardougne:0` | (2508, 3293) | [normal](../resources/tree/normal.md) 22 | no | no | - | Biohazard done |
-| `tree:west-ardougne:1` | (2509, 3328) | [normal](../resources/tree/normal.md) 1 | no | no | - | Biohazard done |
-| `tree:west-ardougne:2` | (2536, 3321) | [normal](../resources/tree/normal.md) 3 | no | no | - | Biohazard done |
-| `tree:west-ardougne:3` | (2541, 3294) | [normal](../resources/tree/normal.md) 3 | no | no | - | Biohazard done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:west-ardougne:0` | (2508, 3293) | x 2500-2514, z 3284-3303 | `{ x: 2507, z: 3294, radius: 16 }` | [normal](../resources/tree/normal.md) 22 | no | no | - | Biohazard done |
+| `tree:west-ardougne:1` | (2509, 3328) | (2509, 3328) | `{ x: 2509, z: 3328, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Biohazard done |
+| `tree:west-ardougne:2` | (2536, 3321) | x 2534-2539, z 3318-3325 | `{ x: 2537, z: 3322, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | Biohazard done |
+| `tree:west-ardougne:3` | (2541, 3294) | x 2536-2547, z 3290-3297 | `{ x: 2542, z: 3294, radius: 11 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | Biohazard done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:west-ardougne:0` | (2510, 3326) | Man 1, Mourner (mourner3) 1, Rat 6, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (w_ardoungecitizenlady1) 2 | no | no | - | Biohazard done |
-| `npc:west-ardougne:1` | (2501, 3292) | Ghost 2 | no | no | - | Biohazard done |
-| `npc:west-ardougne:2` | (2501, 3315) | Mourner (mourner3) 1 | no | no | - | Biohazard done |
-| `npc:west-ardougne:3` | (2511, 3287) | Zombie 1 | no | no | - | Biohazard done |
-| `npc:west-ardougne:4` | (2525, 3303) | Mourner (mourner2) 1, Mourner (mourner3) 1, Mourner (mourner_armed) 2, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (dskin_w_ardoungecitizenlady3) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - | Biohazard done |
-| `npc:west-ardougne:5` | (2531, 3329) | Rat 2 | no | no | - | Biohazard done + Plague City at stage 21 |
-| `npc:west-ardougne:6` | (2536, 3291) | Mourner (mourner2) 1, Mourner (mourner3) 1 | no | no | - | Biohazard done |
-| `npc:west-ardougne:7` | (2543, 3326) | Mourner (mourner2) 2, Mourner (mournerstew1) 1, Mourner (mournerstew3) 3 | no | no | - | Biohazard done |
-| `npc:west-ardougne:8` | (2543, 3309) | Mourner (mourner_armed) 1 | no | no | - | Biohazard done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:west-ardougne:0` | (2510, 3326) | x 2500-2521, z 3314-3331 | x 2485-2536, z 3299-3346 | `{ x: 2511, z: 3323, radius: 39 }` | Man 1, Mourner (mourner3) 1, Rat 6, Woman (dskin_w_ardoungecitizen2) 1, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (w_ardoungecitizenlady1) 2 | no | no | - | Biohazard done |
+| `npc:west-ardougne:1` | (2501, 3292) | x 2501, z 3289-3294 | x 2493-2509, z 3281-3302 | `{ x: 2501, z: 3292, radius: 17 }` | Ghost 2 | no | no | - | Biohazard done |
+| `npc:west-ardougne:2` | (2501, 3315) | (2501, 3315) | x 2496-2506, z 3310-3320 | `{ x: 2501, z: 3315, radius: 11 }` | Mourner (mourner3) 1 | no | no | - | Biohazard done |
+| `npc:west-ardougne:3` | (2511, 3287) | (2511, 3287) | x 2502-2520, z 3278-3296 | `{ x: 2511, z: 3287, radius: 16 }` | Zombie 1 | no | no | - | Biohazard done |
+| `npc:west-ardougne:4` | (2525, 3303) | x 2518-2532, z 3292-3309 | x 2513-2537, z 3287-3314 | `{ x: 2525, z: 3301, radius: 22 }` | Mourner (mourner2) 1, Mourner (mourner3) 1, Mourner (mourner_armed) 2, Woman (dskin_w_ardoungecitizenlady1) 1, Woman (dskin_w_ardoungecitizenlady3) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - | Biohazard done |
+| `npc:west-ardougne:5` | (2531, 3329) | x 2529-2532, z 3328-3330 | x 2514-2547, z 3313-3345 | `{ x: 2531, z: 3329, radius: 27 }` | Rat 2 | no | no | - | Biohazard done + Plague City at stage 21 |
+| `npc:west-ardougne:6` | (2536, 3291) | x 2535-2536, z 3288-3294 | x 2530-2541, z 3283-3299 | `{ x: 2536, z: 3291, radius: 13 }` | Mourner (mourner2) 1, Mourner (mourner3) 1 | no | no | - | Biohazard done |
+| `npc:west-ardougne:7` | (2543, 3326) | x 2538-2545, z 3321-3329 | x 2533-2550, z 3316-3334 | `{ x: 2542, z: 3325, radius: 16 }` | Mourner (mourner2) 2, Mourner (mournerstew1) 1, Mourner (mournerstew3) 3 | no | no | - | Biohazard done |
+| `npc:west-ardougne:8` | (2543, 3309) | (2543, 3309) | x 2538-2548, z 3304-3314 | `{ x: 2543, z: 3309, radius: 11 }` | Mourner (mourner_armed) 1 | no | no | - | Biohazard done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:west-ardougne:0` | (2523, 3314) | Staircase 1 | up (2523, 3313) L1 by Climb-up | no | no | - | Biohazard done |
-| `connector:west-ardougne:1` | (2523, 3314) L1 | Staircase 1 | down (2523, 3317) by Climb-down | no | no | - | Biohazard done |
-| `connector:west-ardougne:2` | (2526, 3291) | Staircase 1 | up (2527, 3293) L1 by Climb-up | no | no | - | Biohazard done |
-| `connector:west-ardougne:3` | (2526, 3292) L1 | Staircase 1 | down (2526, 3290) by Climb-down | no | no | - | Biohazard done |
-| `connector:west-ardougne:4` | (2527, 3314) L1 | Staircase 1 | up (2527, 3313) L2 by Climb-up | no | no | - | Biohazard done |
-| `connector:west-ardougne:5` | (2527, 3314) L2 | Staircase 1 | down (2527, 3317) L1 by Climb-down | no | no | - | Biohazard done |
-| `connector:west-ardougne:6` | (2530, 3317) L1 | Staircase 1 | down (2530, 3320) by Climb-down | no | no | - | Biohazard done |
-| `connector:west-ardougne:7` | (2530, 3319) | Staircase 1 | up (2529, 3317) L1 by Climb-up | no | no | - | Biohazard done |
-| `connector:west-ardougne:8` | (2531, 3294) | Staircase 1 | up (2531, 3293) L1 by Climb-up | no | no | - | Biohazard done |
-| `connector:west-ardougne:9` | (2531, 3294) L1 | Staircase 1 | down (2530, 3294) by Climb-down | no | no | - | Biohazard done |
-| `connector:west-ardougne:10` | (2542, 3324) | Staircase 1 | up (2543, 3326) L1 by Climb-up | no | no | - | unreached |
-| `connector:west-ardougne:11` | (2543, 3325) L1 | Staircase 1 | down (2544, 3325) by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:west-ardougne:0` | (2523, 3314) | (2523, 3314) | `{ x: 2523, z: 3314, radius: 3 }` | Staircase 1 | up (2523, 3313) L1 by Climb-up | no | no | - | Biohazard done |
+| `connector:west-ardougne:1` | (2523, 3314) L1 | (2523, 3314) L1 | `{ x: 2523, z: 3314, radius: 3, level: 1 }` | Staircase 1 | down (2523, 3317) by Climb-down | no | no | - | Biohazard done |
+| `connector:west-ardougne:2` | (2526, 3291) | (2526, 3291) | `{ x: 2526, z: 3291, radius: 3 }` | Staircase 1 | up (2527, 3293) L1 by Climb-up | no | no | - | Biohazard done |
+| `connector:west-ardougne:3` | (2526, 3292) L1 | (2526, 3292) L1 | `{ x: 2526, z: 3292, radius: 3, level: 1 }` | Staircase 1 | down (2526, 3290) by Climb-down | no | no | - | Biohazard done |
+| `connector:west-ardougne:4` | (2527, 3314) L1 | (2527, 3314) L1 | `{ x: 2527, z: 3314, radius: 3, level: 1 }` | Staircase 1 | up (2527, 3313) L2 by Climb-up | no | no | - | Biohazard done |
+| `connector:west-ardougne:5` | (2527, 3314) L2 | (2527, 3314) L2 | `{ x: 2527, z: 3314, radius: 3, level: 2 }` | Staircase 1 | down (2527, 3317) L1 by Climb-down | no | no | - | Biohazard done |
+| `connector:west-ardougne:6` | (2530, 3317) L1 | (2530, 3317) L1 | `{ x: 2530, z: 3317, radius: 3, level: 1 }` | Staircase 1 | down (2530, 3320) by Climb-down | no | no | - | Biohazard done |
+| `connector:west-ardougne:7` | (2530, 3319) | (2530, 3319) | `{ x: 2530, z: 3319, radius: 3 }` | Staircase 1 | up (2529, 3317) L1 by Climb-up | no | no | - | Biohazard done |
+| `connector:west-ardougne:8` | (2531, 3294) | (2531, 3294) | `{ x: 2531, z: 3294, radius: 3 }` | Staircase 1 | up (2531, 3293) L1 by Climb-up | no | no | - | Biohazard done |
+| `connector:west-ardougne:9` | (2531, 3294) L1 | (2531, 3294) L1 | `{ x: 2531, z: 3294, radius: 3, level: 1 }` | Staircase 1 | down (2530, 3294) by Climb-down | no | no | - | Biohazard done |
+| `connector:west-ardougne:10` | (2542, 3324) | (2542, 3324) | `{ x: 2542, z: 3324, radius: 3 }` | Staircase 1 | up (2543, 3326) L1 by Climb-up | no | no | - | unreached |
+| `connector:west-ardougne:11` | (2543, 3325) L1 | (2543, 3325) L1 | `{ x: 2543, z: 3325, radius: 3, level: 1 }` | Staircase 1 | down (2544, 3325) by Climb-down | no | no | - | unreached |

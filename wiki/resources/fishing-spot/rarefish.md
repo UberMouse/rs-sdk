@@ -31,25 +31,25 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | 2 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
-| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | 11 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
-| [Miscellania and Etceteria](../../places/miscellania.md) | `fishing-spot:miscellania:0` | (2577, 3854) | (2577, 3853) | 4 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 47 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 2 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
+| [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | x 2599-2612, z 3410-3426 | [Movement](#movement) | 11 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | x 2633-2642, z 3687-3699 | [Movement](#movement) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | x 2923-2926, z 3179-3181 | [Movement](#movement) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
+| [Miscellania and Etceteria](../../places/miscellania.md) | `fishing-spot:miscellania:0` | (2577, 3854) | (2577, 3853) | x 2572-2582, z 3850-3860 | [Movement](#movement) | 4 | no | no | - | The Fremennik Trials done | Miscellania bank (Miscellania and Etceteria), 47 ticks |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:catherby:0` | (2848, 3427) | 15 | 11 |
-| `fishing-spot:fishing-guild:0` | (2606, 3418) | 11 | 23 |
-| `fishing-spot:rellekka:0` | (2641, 3697) | 6 | 11 |
-| `fishing-spot:karamja:5` | (2924, 3179) | 6 | 8 |
-| `fishing-spot:miscellania:0` | (2578, 3855) | 9 | 15 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:catherby:0` | `{ x: 2848, z: 3427, radius: 16 }` | 11 |
+| `fishing-spot:fishing-guild:0` | `{ x: 2606, z: 3418, radius: 13 }` | 23 |
+| `fishing-spot:rellekka:0` | `{ x: 2641, z: 3697, radius: 7 }` | 11 |
+| `fishing-spot:karamja:5` | `{ x: 2924, z: 3179, radius: 7 }` | 8 |
+| `fishing-spot:miscellania:0` | `{ x: 2578, z: 3855, radius: 11 }` | 15 |
 
 `fishing-spot:catherby:0` tiles: (2836, 3431), (2837, 3431), (2838, 3431), (2844, 3429), (2845, 3429), (2846, 3429), (2853, 3423), (2854, 3423), (2855, 3423), (2859, 3426), (2860, 3426)
 

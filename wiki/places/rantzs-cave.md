@@ -5,6 +5,6 @@ Big Chompy Bird Hunting (quests/quest_chompybird).
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:rantzs-cave:0` | (2647, 9395) | Fire 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:rantzs-cave:0` | (2647, 9395) | (2647, 9395) | `{ x: 2647, z: 9395, radius: 3 }` | Fire 1 | no | no | - | - |

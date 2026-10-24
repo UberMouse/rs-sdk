@@ -24,14 +24,14 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3334) | 7 | 3 | (2902, 3328)-(2913, 3340) | 100 ticks | - | no |
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L1 | 4 | 3 | (2903, 3330)-(2912, 3339) | 100 ticks | - | no |
-| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L2 | 4 | 3 | (2903, 3329)-(2913, 3339) | 100 ticks | - | no |
-| [Draynor willows (Draynor Village)](../places/draynor-willows.md) | (3085, 3237) | 2 | 3 | (3081, 3233)-(3088, 3241) | 100 ticks | - | yes |
-| [Misthalin](../places/misthalin.md) | (3227, 3369) | 11 | 3 | (3220, 3360)-(3235, 3377) | 100 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (2982, 3568) | 8 | 3 | (2973, 3559)-(2991, 3578) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3334) | x 2905-2910, z 3331-3337 | 7 | 3 | x 2902-2913, z 3328-3340 | 100 ticks | - | `{ x: 2908, z: 3334, radius: 12 }` | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L1 | x 2906-2909, z 3333-3336 L1 | 4 | 3 | x 2903-2912, z 3330-3339 L1 | 100 ticks | - | `{ x: 2908, z: 3335, radius: 11, level: 1 }` | no |
+| [Dark Wizards' Tower (Asgarnia)](../places/dark-wizards-tower.md) | (2908, 3335) L2 | x 2906-2910, z 3332-3336 L2 | 4 | 3 | x 2903-2913, z 3329-3339 L2 | 100 ticks | - | `{ x: 2908, z: 3334, radius: 11, level: 2 }` | no |
+| [Draynor willows (Draynor Village)](../places/draynor-willows.md) | (3085, 3237) | x 3084-3085, z 3236-3238 | 2 | 3 | x 3081-3088, z 3233-3241 | 100 ticks | - | `{ x: 3085, z: 3237, radius: 9 }` | yes |
+| [Misthalin](../places/misthalin.md) | (3227, 3369) | x 3223-3232, z 3363-3374 | 11 | 3 | x 3220-3235, z 3360-3377 | 100 ticks | - | `{ x: 3228, z: 3369, radius: 16 }` | yes |
+| [Wilderness](../places/wilderness.md) | (2982, 3568) | x 2976-2988, z 3562-3575 | 8 | 3 | x 2973-2991, z 3559-3578 | 100 ticks | - | `{ x: 2982, z: 3569, radius: 17 }` | yes |
 
 ## Drops
 

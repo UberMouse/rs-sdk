@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:gnome-ball-field:0` | (2407, 3498) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:gnome-ball-field:1` | (2410, 3478) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:gnome-ball-field:0` | (2407, 3498) | (2407, 3498) | `{ x: 2407, z: 3498, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:gnome-ball-field:1` | (2410, 3478) | x 2408-2412, z 3475-3481 | `{ x: 2410, z: 3478, radius: 7 }` | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:gnome-ball-field:0` | (2392, 3476) | [Gnome child](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:gnome-ball-field:1` | (2406, 3476) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:gnome-ball-field:2` | (2410, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:gnome-ball-field:0` | (2392, 3476) | x 2391-2392, z 3475-3476 | x 2386-2397, z 3470-3481 | `{ x: 2392, z: 3476, radius: 12 }` | [Gnome child](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:gnome-ball-field:1` | (2406, 3476) | (2406, 3476) | x 2401-2411, z 3471-3481 | `{ x: 2406, z: 3476, radius: 11 }` | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:gnome-ball-field:2` | (2410, 3496) | (2410, 3496) | x 2405-2415, z 3491-3501 | `{ x: 2410, z: 3496, radius: 11 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:gnome-ball-field:0` | (2396, 3475) L1 | Staircase 1 | down (2397, 3475) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:gnome-ball-field:0` | (2396, 3475) L1 | (2396, 3475) L1 | `{ x: 2396, z: 3475, radius: 3, level: 1 }` | Staircase 1 | down (2397, 3475) by Climb-down | no | no | - | - |

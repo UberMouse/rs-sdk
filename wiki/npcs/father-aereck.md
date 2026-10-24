@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3206) | 1 | 5 | (3239, 3201)-(3249, 3211) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | (3244, 3206) | (3244, 3206) | 1 | 5 | x 3239-3249, z 3201-3211 | 100 ticks | - | `{ x: 3244, z: 3206, radius: 11 }` | yes |
 
 ## Interactions
 

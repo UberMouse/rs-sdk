@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Wilderness](../places/wilderness.md) | (3025, 3701) | 1 | 3 | (3022, 3698)-(3028, 3704) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Wilderness](../places/wilderness.md) | (3025, 3701) | (3025, 3701) | 1 | 3 | x 3022-3028, z 3698-3704 | 100 ticks | - | `{ x: 3025, z: 3701, radius: 8 }` | yes |
 
 ## Interactions
 

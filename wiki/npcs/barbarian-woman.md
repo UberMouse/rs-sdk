@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2550, 3563) | 1 | 10 | (2536, 3550)-(2564, 3580) | 50 ticks | - | no |
-| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2548, 3558) | 1 | 10 | (2538, 3548)-(2558, 3568) | 50 ticks | - | no |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | 2 | 10 | (3065, 3426)-(3096, 3455) | 50 ticks | - | yes |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | 3 | 10 | (3065, 3399)-(3096, 3439) | 50 ticks | - | yes |
-| [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | 1 | 10 | (3215, 3385)-(3235, 3405) | 50 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Barbarian Outpost (Kandarin)](../places/barbarian-outpost.md) | (2550, 3563) | x 2546-2554, z 3560-3570 | 1 | 10 | x 2536-2564, z 3550-3580 | 50 ticks | - | `{ x: 2550, z: 3565, radius: 24 }` | no |
+| [Barbarian Outpost agility course (Kandarin)](../places/barbarian-agility-course.md) | (2548, 3558) | (2548, 3558) | 1 | 10 | x 2538-2558, z 3548-3568 | 50 ticks | - | `{ x: 2548, z: 3558, radius: 18 }` | no |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3077, 3443) | x 3075-3086, z 3436-3445 | 2 | 10 | x 3065-3096, z 3426-3455 | 50 ticks | - | `{ x: 3081, z: 3441, radius: 25 }` | yes |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | (3082, 3422) | x 3075-3086, z 3409-3429 | 3 | 10 | x 3065-3096, z 3399-3439 | 50 ticks | - | `{ x: 3081, z: 3419, radius: 29 }` | yes |
+| [Varrock (Misthalin)](../places/varrock.md) | (3225, 3395) | (3225, 3395) | 1 | 10 | x 3215-3235, z 3385-3405 | 50 ticks | - | `{ x: 3225, z: 3395, radius: 18 }` | yes |
 
 ## Drops
 

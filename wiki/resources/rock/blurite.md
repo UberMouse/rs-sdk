@@ -19,8 +19,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:0` | (3049, 9566) | (3049, 9567) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 139 ticks |
-| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:1` | (3059, 9564) | (3058, 9564) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 141 ticks |
-| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:2` | (3067, 9582) | (3066, 9582) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 144 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:0` | (3049, 9566) | (3049, 9567) | (3049, 9566) | `{ x: 3049, z: 9566, radius: 3 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 139 ticks |
+| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:1` | (3059, 9564) | (3058, 9564) | (3059, 9564) | `{ x: 3059, z: 9564, radius: 3 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 141 ticks |
+| [Asgarnian Ice Dungeon](../../places/asgarnian-ice-dungeon.md) | `rock:asgarnian-ice-dungeon:2` | (3067, 9582) | (3066, 9582) | x 3067, z 9581-9582 | `{ x: 3067, z: 9582, radius: 4 }` | 2 | yes | no | - | - | Draynor bank (Draynor Village), 144 ticks |

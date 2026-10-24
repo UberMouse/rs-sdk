@@ -15,7 +15,7 @@ Base XP is the dbrow value; the server multiplies it by its xpRate (25 on the lo
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:0` | (2638, 3676) | (2637, 3676) | 2 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:1` | (2647, 3678) | (2647, 3678) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:0` | (2638, 3676) | (2637, 3676) | x 2638, z 3672-3680 | `{ x: 2638, z: 3676, radius: 7 }` | 2 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `stall:rellekka:1` | (2647, 3678) | (2647, 3678) | x 2647, z 3676-3680 | `{ x: 2647, z: 3678, radius: 5 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 126 ticks |

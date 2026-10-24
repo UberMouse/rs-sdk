@@ -24,16 +24,16 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3624) | 1 | 5 | (3017, 3619)-(3027, 3629) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) | 1 | 5 | (3017, 3634)-(3027, 3644) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3033, 3630) | 4 | 5 | (3024, 3619)-(3041, 3643) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) | 1 | 5 | (3031, 3634)-(3041, 3644) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) L1 | 1 | 5 | (3017, 3634)-(3027, 3644) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3027, 3630) L1 | 5 | 5 | (3017, 3619)-(3040, 3642) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3624) L1 | 1 | 5 | (3031, 3619)-(3041, 3629) | 100 ticks | - | yes |
-| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) L1 | 1 | 5 | (3031, 3634)-(3041, 3644) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3624) | (3022, 3624) | 1 | 5 | x 3017-3027, z 3619-3629 | 100 ticks | - | `{ x: 3022, z: 3624, radius: 11 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) | (3022, 3639) | 1 | 5 | x 3017-3027, z 3634-3644 | 100 ticks | - | `{ x: 3022, z: 3639, radius: 11 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3033, 3630) | x 3029-3036, z 3624-3638 | 4 | 5 | x 3024-3041, z 3619-3643 | 100 ticks | - | `{ x: 3033, z: 3631, radius: 18 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) | (3036, 3639) | 1 | 5 | x 3031-3041, z 3634-3644 | 100 ticks | - | `{ x: 3036, z: 3639, radius: 11 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3022, 3639) L1 | (3022, 3639) L1 | 1 | 5 | x 3017-3027, z 3634-3644 L1 | 100 ticks | - | `{ x: 3022, z: 3639, radius: 11, level: 1 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3027, 3630) L1 | x 3022-3035, z 3624-3637 L1 | 5 | 5 | x 3017-3040, z 3619-3642 L1 | 100 ticks | - | `{ x: 3029, z: 3631, radius: 20, level: 1 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3624) L1 | (3036, 3624) L1 | 1 | 5 | x 3031-3041, z 3619-3629 L1 | 100 ticks | - | `{ x: 3036, z: 3624, radius: 11, level: 1 }` | yes |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | (3036, 3639) L1 | (3036, 3639) L1 | 1 | 5 | x 3031-3041, z 3634-3644 L1 | 100 ticks | - | `{ x: 3036, z: 3639, radius: 11, level: 1 }` | yes |
 
 ## Drops
 

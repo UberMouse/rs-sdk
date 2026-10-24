@@ -5,18 +5,18 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:asgarnia-chaos-temple:0` | (2932, 3537) | Fireplace 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:asgarnia-chaos-temple:0` | (2932, 3537) | (2932, 3537) | `{ x: 2932, z: 3537, radius: 3 }` | Fireplace 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:asgarnia-chaos-temple:0` | (2926, 3526) | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:asgarnia-chaos-temple:0` | (2926, 3526) | x 2924-2927, z 3522-3530 | `{ x: 2926, z: 3526, radius: 8 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | Hygd 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:asgarnia-chaos-temple:0` | (2926, 3536) | (2926, 3536) | x 2921-2931, z 3531-3541 | `{ x: 2926, z: 3536, radius: 11 }` | Hygd 1 | no | no | - | - |

@@ -5,42 +5,42 @@ For new accounts only, so the world index's walk from the Lumbridge spawn never 
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:tutorial-island:0` | (3089, 3121) | Fireplace 1 | yes | no | - | unreached |
-| `fire:tutorial-island:1` | (3095, 3102) | Fireplace 1 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:tutorial-island:0` | (3089, 3121) | (3089, 3121) | `{ x: 3089, z: 3121, radius: 3 }` | Fireplace 1 | yes | no | - | unreached |
+| `fire:tutorial-island:1` | (3095, 3102) | (3095, 3102) | `{ x: 3095, z: 3102, radius: 3 }` | Fireplace 1 | yes | no | - | unreached |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:tutorial-island:0` | (3077, 3086) | Sink 1 | yes | no | - | unreached |
-| `water-source:tutorial-island:1` | (3090, 3109) | Sink 1 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:tutorial-island:0` | (3077, 3086) | (3077, 3086) | `{ x: 3077, z: 3086, radius: 3 }` | Sink 1 | yes | no | - | unreached |
+| `water-source:tutorial-island:1` | (3090, 3109) | (3090, 3109) | `{ x: 3090, z: 3109, radius: 3 }` | Sink 1 | yes | no | - | unreached |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:tutorial-island:0` | (3121, 3106) | Altar 1 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:tutorial-island:0` | (3121, 3106) | (3121, 3106) | `{ x: 3121, z: 3106, radius: 3 }` | Altar 1 | yes | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:tutorial-island:0` | (3082, 3124) | Staircase 1 | up (3084, 3124) L1 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:1` | (3083, 3124) L1 | Staircase 1 | down (3084, 3124) by Climb-down | yes | no | - | unreached |
-| `connector:tutorial-island:2` | (3092, 3104) L1 | Staircase 1 | - | yes | no | - | unreached |
-| `connector:tutorial-island:3` | (3093, 3105) L2 | Staircase 1 | - | yes | no | - | unreached |
-| `connector:tutorial-island:4` | (3115, 3107) | Staircase 1 | up (3117, 3107) L1 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:5` | (3116, 3107) L1 | Staircase 1 | down (3117, 3107) by Climb-down | yes | no | - | unreached |
-| `connector:tutorial-island:6` | (3116, 3126) | Ladder 1 | up (3115, 3126) L1 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:7` | (3116, 3126) L1 | Ladder 1 | down (3115, 3126) by Climb-down | yes | no | - | unreached |
-| `connector:tutorial-island:8` | (3123, 3128) | Ladder 1 | up (3122, 3128) L1 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:9` | (3123, 3128) L1 | Ladder 1 | down (3122, 3128) by Climb-down | yes | no | - | unreached |
-| `connector:tutorial-island:10` | (3126, 3124) L1 | Ladder 1 | up (3125, 3124) L2 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:11` | (3126, 3124) L2 | Ladder 1 | down (3125, 3124) L1 by Climb-down | yes | no | - | unreached |
-| `connector:tutorial-island:12` | (3139, 3078) | Ladder 1 | up (3138, 3078) L1 by Climb-up | yes | no | - | unreached |
-| `connector:tutorial-island:13` | (3139, 3078) L1 | Ladder 1 | down (3138, 3078) by Climb-down | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:tutorial-island:0` | (3082, 3124) | (3082, 3124) | `{ x: 3082, z: 3124, radius: 3 }` | Staircase 1 | up (3084, 3124) L1 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:1` | (3083, 3124) L1 | (3083, 3124) L1 | `{ x: 3083, z: 3124, radius: 3, level: 1 }` | Staircase 1 | down (3084, 3124) by Climb-down | yes | no | - | unreached |
+| `connector:tutorial-island:2` | (3092, 3104) L1 | (3092, 3104) L1 | `{ x: 3092, z: 3104, radius: 3, level: 1 }` | Staircase 1 | - | yes | no | - | unreached |
+| `connector:tutorial-island:3` | (3093, 3105) L2 | (3093, 3105) L2 | `{ x: 3093, z: 3105, radius: 3, level: 2 }` | Staircase 1 | - | yes | no | - | unreached |
+| `connector:tutorial-island:4` | (3115, 3107) | (3115, 3107) | `{ x: 3115, z: 3107, radius: 3 }` | Staircase 1 | up (3117, 3107) L1 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:5` | (3116, 3107) L1 | (3116, 3107) L1 | `{ x: 3116, z: 3107, radius: 3, level: 1 }` | Staircase 1 | down (3117, 3107) by Climb-down | yes | no | - | unreached |
+| `connector:tutorial-island:6` | (3116, 3126) | (3116, 3126) | `{ x: 3116, z: 3126, radius: 3 }` | Ladder 1 | up (3115, 3126) L1 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:7` | (3116, 3126) L1 | (3116, 3126) L1 | `{ x: 3116, z: 3126, radius: 3, level: 1 }` | Ladder 1 | down (3115, 3126) by Climb-down | yes | no | - | unreached |
+| `connector:tutorial-island:8` | (3123, 3128) | (3123, 3128) | `{ x: 3123, z: 3128, radius: 3 }` | Ladder 1 | up (3122, 3128) L1 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:9` | (3123, 3128) L1 | (3123, 3128) L1 | `{ x: 3123, z: 3128, radius: 3, level: 1 }` | Ladder 1 | down (3122, 3128) by Climb-down | yes | no | - | unreached |
+| `connector:tutorial-island:10` | (3126, 3124) L1 | (3126, 3124) L1 | `{ x: 3126, z: 3124, radius: 3, level: 1 }` | Ladder 1 | up (3125, 3124) L2 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:11` | (3126, 3124) L2 | (3126, 3124) L2 | `{ x: 3126, z: 3124, radius: 3, level: 2 }` | Ladder 1 | down (3125, 3124) L1 by Climb-down | yes | no | - | unreached |
+| `connector:tutorial-island:12` | (3139, 3078) | (3139, 3078) | `{ x: 3139, z: 3078, radius: 3 }` | Ladder 1 | up (3138, 3078) L1 by Climb-up | yes | no | - | unreached |
+| `connector:tutorial-island:13` | (3139, 3078) L1 | (3139, 3078) L1 | `{ x: 3139, z: 3078, radius: 3, level: 1 }` | Ladder 1 | down (3138, 3078) by Climb-down | yes | no | - | unreached |
 
 ## Areas within
 

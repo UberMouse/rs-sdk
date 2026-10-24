@@ -5,7 +5,7 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:the-hollows:0` | (3498, 3385) | Myre Blamish Snail 7, Ochre Blamish Snail 2 | no | no | - | unreached |
-| `npc:the-hollows:1` | (3511, 3393) | Myre Blamish Snail 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:the-hollows:0` | (3498, 3385) | x 3493-3506, z 3380-3394 | x 3473-3526, z 3360-3414 | `{ x: 3500, z: 3387, radius: 42 }` | Myre Blamish Snail 7, Ochre Blamish Snail 2 | no | no | - | unreached |
+| `npc:the-hollows:1` | (3511, 3393) | (3511, 3393) | x 3491-3531, z 3373-3413 | `{ x: 3511, z: 3393, radius: 32 }` | Myre Blamish Snail 1 | no | no | - | unreached |

@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:the-forgotten-cemetery:0` | (2977, 3753) | [normal](../resources/tree/normal.md) 7 | yes | no | 30 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:the-forgotten-cemetery:0` | (2977, 3753) | x 2966-2988, z 3746-3759 | `{ x: 2977, z: 3753, radius: 17 }` | [normal](../resources/tree/normal.md) 7 | yes | no | 30 | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | [Man](../resources/pickpocket/man.md) 1 | yes | no | 28 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:the-forgotten-cemetery:0` | (2974, 3742) | (2974, 3742) | x 2969-2979, z 3737-3747 | `{ x: 2974, z: 3742, radius: 11 }` | [Man](../resources/pickpocket/man.md) 1 | yes | no | 28 | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:the-forgotten-cemetery:0` | (2968, 3749) | Ghost 1 | yes | no | 29 | - |
-| `npc:the-forgotten-cemetery:1` | (2968, 3761) | Ghost 1 | yes | no | 31 | - |
-| `npc:the-forgotten-cemetery:2` | (2977, 3753) | Skeleton 1 | yes | no | 30 | - |
-| `npc:the-forgotten-cemetery:3` | (2983, 3762) | Ghost 1, Skeleton 1 | yes | no | 31 | - |
-| `npc:the-forgotten-cemetery:4` | (2985, 3749) | Ghost 1 | yes | no | 29 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:the-forgotten-cemetery:0` | (2968, 3749) | (2968, 3749) | x 2960-2976, z 3741-3757 | `{ x: 2968, z: 3749, radius: 15 }` | Ghost 1 | yes | no | 29 | - |
+| `npc:the-forgotten-cemetery:1` | (2968, 3761) | (2968, 3761) | x 2960-2976, z 3753-3769 | `{ x: 2968, z: 3761, radius: 15 }` | Ghost 1 | yes | no | 31 | - |
+| `npc:the-forgotten-cemetery:2` | (2977, 3753) | (2977, 3753) | x 2968-2986, z 3744-3762 | `{ x: 2977, z: 3753, radius: 16 }` | Skeleton 1 | yes | no | 30 | - |
+| `npc:the-forgotten-cemetery:3` | (2983, 3762) | x 2980-2985, z 3761-3763 | x 2971-2994, z 3752-3772 | `{ x: 2983, z: 3762, radius: 19 }` | Ghost 1, Skeleton 1 | yes | no | 31 | - |
+| `npc:the-forgotten-cemetery:4` | (2985, 3749) | (2985, 3749) | x 2977-2993, z 3741-3757 | `{ x: 2985, z: 3749, radius: 15 }` | Ghost 1 | yes | no | 29 | - |

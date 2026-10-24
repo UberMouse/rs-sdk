@@ -5,19 +5,19 @@ Inside the chaos ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:chaos-altar:0` | (2270, 4841) | chaos 1 | no | no | - | carry Chaos talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:chaos-altar:0` | (2270, 4841) | (2270, 4841) | `{ x: 2270, z: 4841, radius: 3 }` | chaos 1 | no | no | - | carry Chaos talisman |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:chaos-altar:0` | (2255, 4829) L2 | Ladder 1 | up (2254, 4829) L3 by Climb-up | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:1` | (2255, 4829) L3 | Ladder 1 | down (2254, 4829) L2 by Climb-down | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:2` | (2259, 4845) | Ladder 1 | up (2258, 4845) L1 by Climb-up | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:3` | (2259, 4845) L1 | Ladder 1 | down (2258, 4845) by Climb-down | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:4` | (2275, 4834) L1 | Ladder 1 | up (2274, 4834) L2 by Climb-up | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:5` | (2275, 4834) L2 | Ladder 1 | down (2274, 4834) L1 by Climb-down | no | no | - | carry Chaos talisman |
-| `connector:chaos-altar:6` | (2282, 4853) L1 | Ladder 1 | up (2281, 4853) L2 by Climb-up | no | no | - | unreached |
-| `connector:chaos-altar:7` | (2282, 4853) L2 | Ladder 1 | down (2281, 4853) L1 by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:chaos-altar:0` | (2255, 4829) L2 | (2255, 4829) L2 | `{ x: 2255, z: 4829, radius: 3, level: 2 }` | Ladder 1 | up (2254, 4829) L3 by Climb-up | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:1` | (2255, 4829) L3 | (2255, 4829) L3 | `{ x: 2255, z: 4829, radius: 3, level: 3 }` | Ladder 1 | down (2254, 4829) L2 by Climb-down | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:2` | (2259, 4845) | (2259, 4845) | `{ x: 2259, z: 4845, radius: 3 }` | Ladder 1 | up (2258, 4845) L1 by Climb-up | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:3` | (2259, 4845) L1 | (2259, 4845) L1 | `{ x: 2259, z: 4845, radius: 3, level: 1 }` | Ladder 1 | down (2258, 4845) by Climb-down | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:4` | (2275, 4834) L1 | (2275, 4834) L1 | `{ x: 2275, z: 4834, radius: 3, level: 1 }` | Ladder 1 | up (2274, 4834) L2 by Climb-up | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:5` | (2275, 4834) L2 | (2275, 4834) L2 | `{ x: 2275, z: 4834, radius: 3, level: 2 }` | Ladder 1 | down (2274, 4834) L1 by Climb-down | no | no | - | carry Chaos talisman |
+| `connector:chaos-altar:6` | (2282, 4853) L1 | (2282, 4853) L1 | `{ x: 2282, z: 4853, radius: 3, level: 1 }` | Ladder 1 | up (2281, 4853) L2 by Climb-up | no | no | - | unreached |
+| `connector:chaos-altar:7` | (2282, 4853) L2 | (2282, 4853) L2 | `{ x: 2282, z: 4853, radius: 3, level: 2 }` | Ladder 1 | down (2281, 4853) L1 by Climb-down | no | no | - | unreached |

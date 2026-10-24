@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3683) | 1 | 3 | (2670, 3680)-(2676, 3686) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2673, 3683) | (2673, 3683) | 1 | 3 | x 2670-2676, z 3680-3686 | 100 ticks | - | `{ x: 2673, z: 3683, radius: 8 }` | no |
 
 ## Interactions
 

@@ -5,30 +5,30 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:wizards-guild:0` | (2595, 3087) L1 | Magic Guild Store (magicguildshop) 1 | no | no | - | 66 Magic |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:wizards-guild:0` | (2595, 3087) L1 | (2595, 3087) L1 | (2595, 3087) L1 | `{ x: 2595, z: 3087, radius: 3, level: 1 }` | Magic Guild Store (magicguildshop) 1 | no | no | - | 66 Magic |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:wizards-guild:0` | (2577, 3068) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:wizards-guild:1` | (2589, 3073) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:wizards-guild:0` | (2577, 3068) | (2577, 3068) | `{ x: 2577, z: 3068, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:wizards-guild:1` | (2589, 3073) | x 2577-2599, z 3065-3086 | `{ x: 2588, z: 3076, radius: 19 }` | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:wizards-guild:0` | (2588, 3087) L2 | Wizard 2 | no | no | - | 66 Magic |
-| `npc:wizards-guild:1` | (2589, 3084) | Wizard 1 | no | no | - | 66 Magic |
-| `npc:wizards-guild:2` | (2593, 3084) L1 | Wizard 1 | no | no | - | 66 Magic |
-| `npc:wizards-guild:3` | (2595, 3073) L1 | Soldier 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:wizards-guild:0` | (2588, 3087) L2 | x 2586-2589, z 3085-3088 L2 | x 2581-2594, z 3080-3093 L2 | `{ x: 2588, z: 3087, radius: 13, level: 2 }` | Wizard 2 | no | no | - | 66 Magic |
+| `npc:wizards-guild:1` | (2589, 3084) | (2589, 3084) | x 2584-2594, z 3079-3089 | `{ x: 2589, z: 3084, radius: 11 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:wizards-guild:2` | (2593, 3084) L1 | (2593, 3084) L1 | x 2588-2598, z 3079-3089 L1 | `{ x: 2593, z: 3084, radius: 11, level: 1 }` | Wizard 1 | no | no | - | 66 Magic |
+| `npc:wizards-guild:3` | (2595, 3073) L1 | (2595, 3073) L1 | x 2590-2600, z 3068-3078 L1 | `{ x: 2595, z: 3073, radius: 11, level: 1 }` | Soldier 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:wizards-guild:0` | (2590, 3084) L1 | Staircase 1 | up (2590, 3087) L2 by Climb-up | no | no | - | 66 Magic |
-| `connector:wizards-guild:1` | (2590, 3085) L2 | Staircase 1 | down (2590, 3083) L1 by Climb-down | no | no | - | 66 Magic |
-| `connector:wizards-guild:2` | (2594, 3085) | Ladder 1 | down (2594, 9486) by Climb-down | no | no | - | 66 Magic |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:wizards-guild:0` | (2590, 3084) L1 | (2590, 3084) L1 | `{ x: 2590, z: 3084, radius: 3, level: 1 }` | Staircase 1 | up (2590, 3087) L2 by Climb-up | no | no | - | 66 Magic |
+| `connector:wizards-guild:1` | (2590, 3085) L2 | (2590, 3085) L2 | `{ x: 2590, z: 3085, radius: 3, level: 2 }` | Staircase 1 | down (2590, 3083) L1 by Climb-down | no | no | - | 66 Magic |
+| `connector:wizards-guild:2` | (2594, 3085) | (2594, 3085) | `{ x: 2594, z: 3085, radius: 3 }` | Ladder 1 | down (2594, 9486) by Climb-down | no | no | - | 66 Magic |

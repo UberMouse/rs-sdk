@@ -24,26 +24,26 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Isafdar (Tirannwn)](../places/isafdar.md) | (2239, 3165) | 6 | 5 | (2229, 3157)-(2247, 3174) | 50 ticks | - | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2552, 3869) | 5 | 5 | (2540, 3861)-(2565, 3876) | 50 ticks | - | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2588, 3874) | 1 | 5 | (2583, 3869)-(2593, 3879) | 50 ticks | - | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2592, 3867) | 1 | 5 | (2587, 3862)-(2597, 3872) | 50 ticks | - | no |
-| [Regicide camp](../places/regicide-camp.md) | (2307, 4584) | 11 | 5 | (2299, 4577)-(2314, 4592) | 50 ticks | - | no |
-| [Regicide camp](../places/regicide-camp.md) | (2335, 4604) | 3 | 5 | (2329, 4598)-(2341, 4611) | 50 ticks | - | no |
-| [Regicide camp](../places/regicide-camp.md) | (2363, 4575) | 2 | 5 | (2357, 4568)-(2369, 4582) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2185, 3279) | 9 | 5 | (2177, 3271)-(2193, 3286) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2189, 3223) | 6 | 5 | (2182, 3215)-(2195, 3230) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2207, 3196) | 3 | 5 | (2201, 3190)-(2213, 3203) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2230, 3238) | 7 | 5 | (2223, 3232)-(2239, 3244) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2243, 3161) | 1 | 5 | (2238, 3156)-(2248, 3166) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2265, 3141) | 2 | 5 | (2259, 3135)-(2270, 3146) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2273, 3182) | 1 | 5 | (2268, 3177)-(2278, 3187) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2277, 3161) | 3 | 5 | (2269, 3153)-(2284, 3169) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2279, 3219) | 1 | 5 | (2274, 3214)-(2284, 3224) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2296, 3176) | 5 | 5 | (2288, 3170)-(2302, 3182) | 50 ticks | - | no |
-| [Tirannwn](../places/tirannwn.md) | (2296, 3250) | 3 | 5 | (2290, 3244)-(2301, 3255) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Isafdar (Tirannwn)](../places/isafdar.md) | (2239, 3165) | x 2234-2242, z 3162-3169 | 6 | 5 | x 2229-2247, z 3157-3174 | 50 ticks | - | `{ x: 2238, z: 3166, radius: 16 }` | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2552, 3869) | x 2545-2560, z 3866-3871 | 5 | 5 | x 2540-2565, z 3861-3876 | 50 ticks | - | `{ x: 2553, z: 3869, radius: 19 }` | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2588, 3874) | (2588, 3874) | 1 | 5 | x 2583-2593, z 3869-3879 | 50 ticks | - | `{ x: 2588, z: 3874, radius: 11 }` | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2592, 3867) | (2592, 3867) | 1 | 5 | x 2587-2597, z 3862-3872 | 50 ticks | - | `{ x: 2592, z: 3867, radius: 11 }` | no |
+| [Regicide camp](../places/regicide-camp.md) | (2307, 4584) | x 2304-2309, z 4582-4587 | 11 | 5 | x 2299-2314, z 4577-4592 | 50 ticks | - | `{ x: 2307, z: 4585, radius: 15 }` | no |
+| [Regicide camp](../places/regicide-camp.md) | (2335, 4604) | x 2334-2336, z 4603-4606 | 3 | 5 | x 2329-2341, z 4598-4611 | 50 ticks | - | `{ x: 2335, z: 4605, radius: 13 }` | no |
+| [Regicide camp](../places/regicide-camp.md) | (2363, 4575) | x 2362-2364, z 4573-4577 | 2 | 5 | x 2357-2369, z 4568-4582 | 50 ticks | - | `{ x: 2363, z: 4575, radius: 13 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2185, 3279) | x 2182-2188, z 3276-3281 | 9 | 5 | x 2177-2193, z 3271-3286 | 50 ticks | - | `{ x: 2185, z: 3279, radius: 15 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2189, 3223) | x 2187-2190, z 3220-3225 | 6 | 5 | x 2182-2195, z 3215-3230 | 50 ticks | - | `{ x: 2189, z: 3223, radius: 14 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2207, 3196) | x 2206-2208, z 3195-3198 | 3 | 5 | x 2201-2213, z 3190-3203 | 50 ticks | - | `{ x: 2207, z: 3197, radius: 13 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2230, 3238) | x 2228-2234, z 3237-3239 | 7 | 5 | x 2223-2239, z 3232-3244 | 50 ticks | - | `{ x: 2231, z: 3238, radius: 13 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2243, 3161) | (2243, 3161) | 1 | 5 | x 2238-2248, z 3156-3166 | 50 ticks | - | `{ x: 2243, z: 3161, radius: 11 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2265, 3141) | x 2264-2265, z 3140-3141 | 2 | 5 | x 2259-2270, z 3135-3146 | 50 ticks | - | `{ x: 2265, z: 3141, radius: 12 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2273, 3182) | (2273, 3182) | 1 | 5 | x 2268-2278, z 3177-3187 | 50 ticks | - | `{ x: 2273, z: 3182, radius: 11 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2277, 3161) | x 2274-2279, z 3158-3164 | 3 | 5 | x 2269-2284, z 3153-3169 | 50 ticks | - | `{ x: 2277, z: 3161, radius: 15 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2279, 3219) | (2279, 3219) | 1 | 5 | x 2274-2284, z 3214-3224 | 50 ticks | - | `{ x: 2279, z: 3219, radius: 11 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2296, 3176) | x 2293-2297, z 3175-3177 | 5 | 5 | x 2288-2302, z 3170-3182 | 50 ticks | - | `{ x: 2295, z: 3176, radius: 13 }` | no |
+| [Tirannwn](../places/tirannwn.md) | (2296, 3250) | x 2295-2296, z 3249-3250 | 3 | 5 | x 2290-2301, z 3244-3255 | 50 ticks | - | `{ x: 2296, z: 3250, radius: 12 }` | no |
 
 ## Drops
 

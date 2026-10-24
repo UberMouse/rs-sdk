@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:varrock-west-bank:0` | (3187, 3441) | Bank booth 6, Banker 6 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:varrock-west-bank:0` | (3187, 3441) | x 3186-3187, z 3436-3446 | `{ x: 3187, z: 3441, radius: 9 }` | Bank booth 6, Banker 6 | yes | no | - | - |

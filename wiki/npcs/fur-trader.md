@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2666, 3295) | 1 | 5 | (2661, 3290)-(2671, 3300) | 100 ticks | - | no |
-| [Rellekka (Kandarin)](../places/rellekka.md) | (2640, 3675) | 1 | 3 | (2637, 3672)-(2649, 3683) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2666, 3295) | (2666, 3295) | 1 | 5 | x 2661-2671, z 3290-3300 | 100 ticks | - | `{ x: 2666, z: 3295, radius: 11 }` | no |
+| [Rellekka (Kandarin)](../places/rellekka.md) | (2640, 3675) | x 2640-2646, z 3675-3680 | 1 | 3 | x 2637-2649, z 3672-3683 | 100 ticks | - | `{ x: 2643, z: 3678, radius: 12 }` | no |
 
 ## Interactions
 

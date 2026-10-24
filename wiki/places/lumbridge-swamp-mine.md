@@ -5,6 +5,6 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:lumbridge-swamp-mine:0` | (3240, 3164) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 5 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:lumbridge-swamp-mine:0` | (3240, 3164) | x 3233-3243, z 3157-3167 | `{ x: 3238, z: 3162, radius: 11 }` | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 7, [mithril](../resources/rock/mithril.md) 5 | yes | no | - | - |

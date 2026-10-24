@@ -5,12 +5,12 @@ Inside the air ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:air-altar:0` | (2843, 4833) | air 1 | yes | no | - | carry Air talisman |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:air-altar:0` | (2843, 4833) | (2843, 4833) | `{ x: 2843, z: 4833, radius: 3 }` | air 1 | yes | no | - | carry Air talisman |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:air-altar:0` | (2845, 4830) | [normal](../resources/tree/normal.md) 240, [oak](../resources/tree/oak.md) 41 | yes | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:air-altar:0` | (2845, 4830) | x 2819-2869, z 4803-4855 | `{ x: 2844, z: 4829, radius: 40 }` | [normal](../resources/tree/normal.md) 240, [oak](../resources/tree/oak.md) 41 | yes | no | - | unreached |

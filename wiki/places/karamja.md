@@ -3,192 +3,192 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:karamja:0` | (2767, 3122) | Jiminua's Jungle Store. (junglestore) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `shop:karamja:1` | (2781, 3057) | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done or The Grand Tree done + Tai Bwo Wannai Trio done |
-| `shop:karamja:2` | (2803, 3152) | Davon's Amulet Store. (amuletshop) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `shop:karamja:3` | (2824, 2959) | Obli's General Store. (shilojunglestore) 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `shop:karamja:4` | (2902, 3148) | Karamja General Store (generalshop7) 2 | yes | no | - | 30 coins or The Grand Tree done |
-| `shop:karamja:5` | (2925, 3143) | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:karamja:0` | (2767, 3122) | (2767, 3122) | x 2762-2772, z 3117-3127 | `{ x: 2767, z: 3122, radius: 11 }` | Jiminua's Jungle Store. (junglestore) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `shop:karamja:1` | (2781, 3057) | (2781, 3057) | x 2776-2786, z 3052-3062 | `{ x: 2781, z: 3057, radius: 11 }` | Tiadeche's Karambwan Stall (tbwt_tiadeche_final_inventory) 1 | no | no | - | 30 coins + Tai Bwo Wannai Trio done or The Grand Tree done + Tai Bwo Wannai Trio done |
+| `shop:karamja:2` | (2803, 3152) | (2803, 3152) | (2803, 3152) | `{ x: 2803, z: 3152, radius: 3 }` | Davon's Amulet Store. (amuletshop) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `shop:karamja:3` | (2824, 2959) | (2824, 2959) | x 2821-2827, z 2956-2962 | `{ x: 2824, z: 2959, radius: 8 }` | Obli's General Store. (shilojunglestore) 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `shop:karamja:4` | (2902, 3148) | x 2902, z 3146-3150 | x 2897-2907, z 3141-3155 | `{ x: 2902, z: 3148, radius: 12 }` | Karamja General Store (generalshop7) 2 | yes | no | - | 30 coins or The Grand Tree done |
+| `shop:karamja:5` | (2925, 3143) | (2925, 3143) | x 2922-2928, z 3140-3146 | `{ x: 2925, z: 3143, radius: 8 }` | Karamja Wines, Spirits, and Beers. (boozeshop) 1 | yes | no | - | 30 coins or The Grand Tree done |
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:karamja:0` | (2790, 3101) | Anvil 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:karamja:0` | (2790, 3101) | (2790, 3101) | `{ x: 2790, z: 3101, radius: 3 }` | Anvil 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:karamja:0` | (2814, 3161) | Range 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:karamja:0` | (2814, 3161) | (2814, 3161) | `{ x: 2814, z: 3161, radius: 3 }` | Range 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:karamja:0` | (2790, 3048) | Fire 2 | no | no | - | 30 coins or The Grand Tree done |
-| `fire:karamja:1` | (2791, 3199) | Fireplace 1 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 4 |
-| `fire:karamja:2` | (2969, 2975) | Fire 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:karamja:0` | (2790, 3048) | x 2789-2790, z 3048 | `{ x: 2790, z: 3048, radius: 4 }` | Fire 2 | no | no | - | 30 coins or The Grand Tree done |
+| `fire:karamja:1` | (2791, 3199) | (2791, 3199) | `{ x: 2791, z: 3199, radius: 3 }` | Fireplace 1 | no | no | - | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 4 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 4 |
+| `fire:karamja:2` | (2969, 2975) | (2969, 2975) | `{ x: 2969, z: 2975, radius: 3 }` | Fire 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## [Mysterious ruins](../services/rc-ruins.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-ruins:karamja:0` | (2868, 3018) | nature 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-ruins:karamja:0` | (2868, 3018) | (2868, 3018) | `{ x: 2868, z: 3018, radius: 3 }` | nature 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:karamja:0` | (2762, 2939) | [jungle](../resources/tree/jungle.md) 35 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:1` | (2783, 2923) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
-| `tree:karamja:2` | (2795, 2940) | [jungle](../resources/tree/jungle.md) 52 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:3` | (2793, 2901) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:4` | (2809, 2914) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:5` | (2813, 2925) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:6` | (2819, 2937) | [jungle](../resources/tree/jungle.md) 26 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:7` | (2827, 2900) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:8` | (2844, 3174) | [normal](../resources/tree/normal.md) 42 | yes | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:9` | (2857, 2907) | [jungle](../resources/tree/jungle.md) 3 | no | no | - | unreached |
-| `tree:karamja:10` | (2866, 2937) | [jungle](../resources/tree/jungle.md) 50 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:11` | (2883, 2911) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
-| `tree:karamja:12` | (2895, 2926) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
-| `tree:karamja:13` | (2919, 3001) | [normal](../resources/tree/normal.md) 3 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:14` | (2916, 2916) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:15` | (2923, 2903) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
-| `tree:karamja:16` | (2936, 2940) | [jungle](../resources/tree/jungle.md) 42 | no | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:17` | (2942, 3148) | [normal](../resources/tree/normal.md) 3 | yes | no | - | 30 coins or The Grand Tree done |
-| `tree:karamja:18` | (2949, 2912) | [jungle](../resources/tree/jungle.md) 4 | no | no | - | unreached |
-| `tree:karamja:19` | (2948, 2927) | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
-| `tree:karamja:20` | (2956, 2897) | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:karamja:0` | (2762, 2939) | x 2759-2765, z 2935-2942 | `{ x: 2762, z: 2939, radius: 8 }` | [jungle](../resources/tree/jungle.md) 35 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:1` | (2783, 2923) | x 2779-2787, z 2922-2923 | `{ x: 2783, z: 2923, radius: 8 }` | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:2` | (2795, 2940) | x 2790-2801, z 2935-2942 | `{ x: 2796, z: 2939, radius: 11 }` | [jungle](../resources/tree/jungle.md) 52 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:3` | (2793, 2901) | (2793, 2901) | `{ x: 2793, z: 2901, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:4` | (2809, 2914) | (2809, 2914) | `{ x: 2809, z: 2914, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:5` | (2813, 2925) | (2813, 2925) | `{ x: 2813, z: 2925, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:6` | (2819, 2937) | x 2816-2825, z 2935-2940 | `{ x: 2821, z: 2938, radius: 9 }` | [jungle](../resources/tree/jungle.md) 26 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:7` | (2827, 2900) | (2827, 2900) | `{ x: 2827, z: 2900, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:8` | (2844, 3174) | x 2828-2859, z 3160-3187 | `{ x: 2844, z: 3174, radius: 25 }` | [normal](../resources/tree/normal.md) 42 | yes | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:9` | (2857, 2907) | x 2856-2858, z 2904-2913 | `{ x: 2857, z: 2909, radius: 9 }` | [jungle](../resources/tree/jungle.md) 3 | no | no | - | unreached |
+| `tree:karamja:10` | (2866, 2937) | x 2860-2872, z 2935-2940 | `{ x: 2866, z: 2938, radius: 10 }` | [jungle](../resources/tree/jungle.md) 50 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:11` | (2883, 2911) | x 2883, z 2907-2915 | `{ x: 2883, z: 2911, radius: 7 }` | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:12` | (2895, 2926) | x 2892-2897, z 2924-2927 | `{ x: 2895, z: 2926, radius: 7 }` | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:13` | (2919, 3001) | x 2914-2923, z 2998-3003 | `{ x: 2919, z: 3001, radius: 9 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:14` | (2916, 2916) | (2916, 2916) | `{ x: 2916, z: 2916, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:15` | (2923, 2903) | (2923, 2903) | `{ x: 2923, z: 2903, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
+| `tree:karamja:16` | (2936, 2940) | x 2931-2940, z 2929-2942 | `{ x: 2936, z: 2936, radius: 12 }` | [jungle](../resources/tree/jungle.md) 42 | no | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:17` | (2942, 3148) | x 2938-2944, z 3144-3153 | `{ x: 2941, z: 3149, radius: 9 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | 30 coins or The Grand Tree done |
+| `tree:karamja:18` | (2949, 2912) | x 2941-2956, z 2908-2915 | `{ x: 2949, z: 2912, radius: 12 }` | [jungle](../resources/tree/jungle.md) 4 | no | no | - | unreached |
+| `tree:karamja:19` | (2948, 2927) | x 2945-2950, z 2926-2927 | `{ x: 2948, z: 2927, radius: 7 }` | [jungle](../resources/tree/jungle.md) 2 | no | no | - | unreached |
+| `tree:karamja:20` | (2956, 2897) | (2956, 2897) | `{ x: 2956, z: 2897, radius: 3 }` | [jungle](../resources/tree/jungle.md) 1 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:karamja:0` | (2744, 3151) | [gold](../resources/rock/gold.md) 6 | no | no | - | 30 coins or The Grand Tree done |
-| `rock:karamja:1` | (2822, 2999) | [gems](../resources/rock/gems.md) 5 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `rock:karamja:2` | (2848, 3033) | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 1, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:karamja:0` | (2744, 3151) | x 2741-2746, z 3148-3155 | `{ x: 2744, z: 3152, radius: 8 }` | [gold](../resources/rock/gold.md) 6 | no | no | - | 30 coins or The Grand Tree done |
+| `rock:karamja:1` | (2822, 2999) | x 2820-2823, z 2998-3002 | `{ x: 2822, z: 3000, radius: 6 }` | [gems](../resources/rock/gems.md) 5 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `rock:karamja:2` | (2848, 3033) | x 2846-2851, z 3030-3037 | `{ x: 2849, z: 3034, radius: 8 }` | [adamantite](../resources/rock/adamantite.md) 2, [coal](../resources/rock/coal.md) 1, [iron](../resources/rock/iron.md) 1, [mithril](../resources/rock/mithril.md) 2, [silver](../resources/rock/silver.md) 1 | no | no | - | 30 coins or The Grand Tree done |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:karamja:0` | (2791, 3019) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `fishing-spot:karamja:1` | (2801, 3010) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `fishing-spot:karamja:2` | (2807, 3021) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `fishing-spot:karamja:3` | (2899, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `fishing-spot:karamja:4` | (2912, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins or The Grand Tree done |
-| `fishing-spot:karamja:5` | (2925, 3180) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 3, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | yes | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:karamja:0` | (2791, 3019) | (2791, 3019) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md#movement) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `fishing-spot:karamja:1` | (2801, 3010) | (2801, 3010) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md#movement) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `fishing-spot:karamja:2` | (2807, 3021) | (2807, 3021) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md#movement) | [Fishing spot (category_632)](../resources/fishing-spot/category_632.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `fishing-spot:karamja:3` | (2899, 3119) | (2899, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md#movement) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `fishing-spot:karamja:4` | (2912, 3119) | (2912, 3119) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md#movement) | [Fishing spot (category_633)](../resources/fishing-spot/category_633.md) 1 | no | no | - | 30 coins or The Grand Tree done |
+| `fishing-spot:karamja:5` | (2925, 3180) | x 2923-2926, z 3179-3181 | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md#movement), [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 3, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 3 | yes | no | - | 30 coins or The Grand Tree done |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:karamja:0` | (2889, 3173) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `pickpocket:karamja:1` | (2948, 3146) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins or The Grand Tree done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:karamja:0` | (2889, 3173) | (2889, 3173) | x 2884-2894, z 3168-3178 | `{ x: 2889, z: 3173, radius: 11 }` | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `pickpocket:karamja:1` | (2948, 3146) | (2948, 3146) | x 2943-2953, z 3141-3151 | `{ x: 2948, z: 3146, radius: 11 }` | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | 30 coins or The Grand Tree done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:karamja:0` | (2767, 3204) | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:1` | (2772, 3016) | Tribesman 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:2` | (2776, 2905) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:3` | (2777, 3198) | Pirate Guard 2 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
-| `npc:karamja:4` | (2779, 3066) | Chicken 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:5` | (2777, 3116) | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:6` | (2780, 3030) | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:7` | (2783, 2920) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:8` | (2784, 2908) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:9` | (2785, 2955) | Scorpion 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:10` | (2787, 2948) | Scorpion 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:11` | (2797, 3111) | Jungle spider 5 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:12` | (2802, 2903) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:13` | (2802, 2913) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:14` | (2809, 3169) | Rat 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:15` | (2808, 3067) | Chicken 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:16` | (2809, 2912) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:17` | (2810, 2984) | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:18` | (2813, 2998) | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:19` | (2821, 2927) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:20` | (2824, 2907) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:21` | (2832, 3170) | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:22` | (2832, 3177) | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:23` | (2837, 3184) | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:24` | (2840, 2899) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:25` | (2841, 3163) | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:26` | (2842, 3017) | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:27` | (2843, 3156) | Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:28` | (2847, 3062) | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:29` | (2849, 3186) | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:30` | (2852, 3162) | Imp 1, Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:31` | (2853, 3054) | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:32` | (2861, 3085) | Jungle spider 13 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:33` | (2859, 3179) | Imp 2, Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:34` | (2859, 2923) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:35` | (2862, 3167) | Scorpion 2 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:36` | (2862, 2904) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:37` | (2868, 3158) | Scorpion 2 | yes | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:38` | (2866, 3061) | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:39` | (2868, 3054) | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:40` | (2875, 2949) | Undead One 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `npc:karamja:41` | (2877, 2959) | Undead One 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:42` | (2890, 3001) | Jungle spider 10 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:43` | (2887, 2914) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:44` | (2892, 2946) | Jogre 1, Jungle spider 3 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:45` | (2901, 2907) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:46` | (2903, 2945) | Jogre 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:47` | (2906, 3095) | The Shaikahan 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:48` | (2925, 3049) | Jogre 7, Jungle spider 12 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:49` | (2916, 2914) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:50` | (2916, 3062) | Jogre 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:51` | (2921, 2959) | Jogre 3 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:52` | (2921, 2986) | Jogre 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:53` | (2925, 2923) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:54` | (2930, 2903) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:55` | (2938, 2992) | Jogre 1, Tribesman 4 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:56` | (2932, 3032) | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:karamja:57` | (2939, 2914) | Jungle Savage 1 | no | no | - | unreached |
-| `npc:karamja:58` | (2955, 3029) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:karamja:59` | (2957, 3055) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:karamja:60` | (2969, 3042) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
-| `npc:karamja:61` | (2976, 3064) | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:karamja:0` | (2767, 3204) | (2767, 3204) | x 2764-2770, z 3201-3207 | `{ x: 2767, z: 3204, radius: 8 }` | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:1` | (2772, 3016) | x 2771-2773, z 3014-3017 | x 2766-2778, z 3009-3022 | `{ x: 2772, z: 3016, radius: 13 }` | Tribesman 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:2` | (2776, 2905) | (2776, 2905) | x 2738-2814, z 2867-2943 | `{ x: 2776, z: 2905, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:3` | (2777, 3198) | x 2776-2778, z 3198 | x 2775-2779, z 3197-3199 | `{ x: 2777, z: 3198, radius: 6 }` | Pirate Guard 2 | no | no | - | 30 coins + `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + Hero's Quest at stage 10 or `%blackarmgang >= ^blackarmgang_complete` (quests/quest_hero/scripts/locs/brimhaven_scarface_mansion.rs2:2) + The Grand Tree done + Hero's Quest at stage 10 |
+| `npc:karamja:4` | (2779, 3066) | x 2777-2780, z 3064-3068 | x 2772-2785, z 3059-3073 | `{ x: 2779, z: 3066, radius: 13 }` | Chicken 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:5` | (2777, 3116) | (2777, 3116) | x 2774-2780, z 3113-3119 | `{ x: 2777, z: 3116, radius: 8 }` | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:6` | (2780, 3030) | x 2780, z 3029-3031 | x 2777-2783, z 3026-3034 | `{ x: 2780, z: 3030, radius: 8 }` | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:7` | (2783, 2920) | (2783, 2920) | x 2745-2821, z 2882-2958 | `{ x: 2783, z: 2920, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:8` | (2784, 2908) | (2784, 2908) | x 2746-2822, z 2870-2946 | `{ x: 2784, z: 2908, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:9` | (2785, 2955) | (2785, 2955) | x 2773-2797, z 2943-2967 | `{ x: 2785, z: 2955, radius: 20 }` | Scorpion 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:10` | (2787, 2948) | x 2786-2788, z 2947-2948 | x 2774-2800, z 2935-2960 | `{ x: 2787, z: 2948, radius: 22 }` | Scorpion 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:11` | (2797, 3111) | x 2796-2799, z 3104-3116 | x 2793-2802, z 3101-3119 | `{ x: 2798, z: 3110, radius: 14 }` | Jungle spider 5 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:12` | (2802, 2903) | (2802, 2903) | x 2764-2840, z 2865-2941 | `{ x: 2802, z: 2903, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:13` | (2802, 2913) | (2802, 2913) | x 2764-2840, z 2875-2951 | `{ x: 2802, z: 2913, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:14` | (2809, 3169) | x 2807-2810, z 3167-3170 | x 2792-2825, z 3152-3185 | `{ x: 2809, z: 3169, radius: 28 }` | Rat 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:15` | (2808, 3067) | (2808, 3067) | x 2803-2813, z 3062-3072 | `{ x: 2808, z: 3067, radius: 11 }` | Chicken 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:16` | (2809, 2912) | (2809, 2912) | x 2771-2847, z 2874-2950 | `{ x: 2809, z: 2912, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:17` | (2810, 2984) | x 2810, z 2981-2987 | x 2807-2813, z 2978-2990 | `{ x: 2810, z: 2984, radius: 10 }` | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:18` | (2813, 2998) | x 2812-2814, z 2996-2999 | x 2809-2817, z 2993-3002 | `{ x: 2813, z: 2998, radius: 10 }` | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:19` | (2821, 2927) | (2821, 2927) | x 2783-2859, z 2889-2965 | `{ x: 2821, z: 2927, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:20` | (2824, 2907) | (2824, 2907) | x 2786-2862, z 2869-2945 | `{ x: 2824, z: 2907, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:21` | (2832, 3170) | (2832, 3170) | x 2807-2857, z 3145-3195 | `{ x: 2832, z: 3170, radius: 39 }` | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:22` | (2832, 3177) | (2832, 3177) | x 2807-2857, z 3152-3202 | `{ x: 2832, z: 3177, radius: 39 }` | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:23` | (2837, 3184) | (2837, 3184) | x 2812-2862, z 3159-3209 | `{ x: 2837, z: 3184, radius: 39 }` | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:24` | (2840, 2899) | (2840, 2899) | x 2802-2878, z 2861-2937 | `{ x: 2840, z: 2899, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:25` | (2841, 3163) | (2841, 3163) | x 2816-2866, z 3138-3188 | `{ x: 2841, z: 3163, radius: 39 }` | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:26` | (2842, 3017) | (2842, 3017) | x 2837-2847, z 3012-3022 | `{ x: 2842, z: 3017, radius: 11 }` | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:27` | (2843, 3156) | (2843, 3156) | x 2831-2855, z 3144-3168 | `{ x: 2843, z: 3156, radius: 20 }` | Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:28` | (2847, 3062) | x 2844-2850, z 3061-3063 | x 2841-2853, z 3058-3066 | `{ x: 2847, z: 3062, radius: 11 }` | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:29` | (2849, 3186) | (2849, 3186) | x 2824-2874, z 3161-3211 | `{ x: 2849, z: 3186, radius: 39 }` | Imp 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:30` | (2852, 3162) | x 2850-2853, z 3159-3165 | x 2825-2878, z 3134-3190 | `{ x: 2852, z: 3162, radius: 42 }` | Imp 1, Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:31` | (2853, 3054) | (2853, 3054) | x 2850-2856, z 3051-3057 | `{ x: 2853, z: 3054, radius: 8 }` | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:32` | (2861, 3085) | x 2855-2868, z 3081-3092 | x 2852-2871, z 3078-3095 | `{ x: 2862, z: 3087, radius: 17 }` | Jungle spider 13 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:33` | (2859, 3179) | x 2857-2862, z 3177-3180 | x 2832-2887, z 3152-3205 | `{ x: 2860, z: 3179, radius: 42 }` | Imp 2, Scorpion 1 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:34` | (2859, 2923) | (2859, 2923) | x 2821-2897, z 2885-2961 | `{ x: 2859, z: 2923, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:35` | (2862, 3167) | x 2861-2863, z 3165-3169 | x 2849-2875, z 3153-3181 | `{ x: 2862, z: 3167, radius: 23 }` | Scorpion 2 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:36` | (2862, 2904) | (2862, 2904) | x 2824-2900, z 2866-2942 | `{ x: 2862, z: 2904, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:37` | (2868, 3158) | x 2865-2870, z 3156-3159 | x 2853-2882, z 3144-3171 | `{ x: 2868, z: 3158, radius: 24 }` | Scorpion 2 | yes | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:38` | (2866, 3061) | (2866, 3061) | x 2861-2871, z 3056-3066 | `{ x: 2866, z: 3061, radius: 11 }` | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:39` | (2868, 3054) | (2868, 3054) | x 2863-2873, z 3049-3059 | `{ x: 2868, z: 3054, radius: 11 }` | Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:40` | (2875, 2949) | x 2873-2876, z 2947-2951 | x 2870-2879, z 2944-2954 | `{ x: 2875, z: 2949, radius: 11 }` | Undead One 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `npc:karamja:41` | (2877, 2959) | (2877, 2959) | x 2874-2880, z 2956-2962 | `{ x: 2877, z: 2959, radius: 8 }` | Undead One 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:42` | (2890, 3001) | x 2883-2896, z 2994-3007 | x 2880-2899, z 2991-3010 | `{ x: 2890, z: 3001, radius: 18 }` | Jungle spider 10 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:43` | (2887, 2914) | (2887, 2914) | x 2849-2925, z 2876-2952 | `{ x: 2887, z: 2914, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:44` | (2892, 2946) | x 2888-2896, z 2945-2948 | x 2885-2899, z 2942-2951 | `{ x: 2892, z: 2947, radius: 12 }` | Jogre 1, Jungle spider 3 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:45` | (2901, 2907) | (2901, 2907) | x 2863-2939, z 2869-2945 | `{ x: 2901, z: 2907, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:46` | (2903, 2945) | (2903, 2945) | x 2900-2906, z 2942-2948 | `{ x: 2903, z: 2945, radius: 8 }` | Jogre 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:47` | (2906, 3095) | (2906, 3095) | x 2874-2938, z 3063-3127 | `{ x: 2906, z: 3095, radius: 49 }` | The Shaikahan 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:48` | (2925, 3049) | x 2914-2935, z 3040-3060 | x 2911-2938, z 3037-3063 | `{ x: 2925, z: 3050, radius: 23 }` | Jogre 7, Jungle spider 12 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:49` | (2916, 2914) | (2916, 2914) | x 2878-2954, z 2876-2952 | `{ x: 2916, z: 2914, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:50` | (2916, 3062) | (2916, 3062) | x 2913-2919, z 3059-3065 | `{ x: 2916, z: 3062, radius: 8 }` | Jogre 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:51` | (2921, 2959) | x 2918-2925, z 2956-2963 | x 2915-2928, z 2953-2966 | `{ x: 2922, z: 2960, radius: 13 }` | Jogre 3 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:52` | (2921, 2986) | x 2918-2923, z 2985-2987 | x 2913-2928, z 2980-2992 | `{ x: 2921, z: 2986, radius: 13 }` | Jogre 1, Tribesman 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:53` | (2925, 2923) | (2925, 2923) | x 2887-2963, z 2885-2961 | `{ x: 2925, z: 2923, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:54` | (2930, 2903) | (2930, 2903) | x 2892-2968, z 2865-2941 | `{ x: 2930, z: 2903, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:55` | (2938, 2992) | x 2931-2942, z 2987-2995 | x 2926-2947, z 2982-3000 | `{ x: 2937, z: 2991, radius: 18 }` | Jogre 1, Tribesman 4 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:56` | (2932, 3032) | x 2931-2932, z 3032 | x 2928-2935, z 3029-3035 | `{ x: 2932, z: 3032, radius: 8 }` | Jungle spider 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:karamja:57` | (2939, 2914) | (2939, 2914) | x 2901-2977, z 2876-2952 | `{ x: 2939, z: 2914, radius: 57 }` | Jungle Savage 1 | no | no | - | unreached |
+| `npc:karamja:58` | (2955, 3029) | (2955, 3029) | x 2950-2960, z 3024-3034 | `{ x: 2955, z: 3029, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:karamja:59` | (2957, 3055) | (2957, 3055) | x 2952-2962, z 3050-3060 | `{ x: 2957, z: 3055, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:karamja:60` | (2969, 3042) | (2969, 3042) | x 2964-2974, z 3037-3047 | `{ x: 2969, z: 3042, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
+| `npc:karamja:61` | (2976, 3064) | (2976, 3064) | x 2971-2981, z 3059-3069 | `{ x: 2976, z: 3064, radius: 11 }` | Shipyard worker 1 | no | no | - | The Grand Tree done or 30 coins + The Grand Tree at stage 80 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:karamja:0` | (2763, 2952) | Ladder 1 | up (2763, 2951) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:1` | (2763, 2952) L1 | Ladder 1 | down (2763, 2951) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:2` | (2766, 3121) | Ladder 1 | up (2765, 3121) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:3` | (2766, 3121) L1 | Ladder 1 | down (2765, 3121) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:4` | (2782, 3087) | Ladder 1 | up (2781, 3087) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:5` | (2782, 3087) L1 | Ladder 1 | down (2781, 3087) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:6` | (2789, 2979) | Ladder 1 | up (2788, 2979) L1 by Climb-up | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |
-| `connector:karamja:7` | (2789, 2979) L1 | Ladder 1 | down (2788, 2979) by Climb-down | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |
-| `connector:karamja:8` | (2808, 3161) | Ladder 1 | up (2808, 3162) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:9` | (2808, 3161) L1 | Ladder 1 | down (2808, 3162) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:10` | (2809, 3065) | Ladder 1 | up (2808, 3065) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:11` | (2809, 3065) L1 | Ladder 1 | down (2808, 3065) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:12` | (2824, 2958) | Ladder 1 | up (2824, 2957) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:karamja:13` | (2824, 2958) L1 | Ladder 1 | down (2824, 2957) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:karamja:14` | (2954, 3141) | Ship's ladder 1 | up (2953, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:15` | (2954, 3141) L1 | Ship's ladder 1 | down (2953, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:16` | (2956, 3144) L1 | Gangplank 1 | down (2956, 3146) by Cross | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:17` | (2956, 3145) | Gangplank 1 | up (2956, 3143) L1 by Cross | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:18` | (2958, 3141) | Ship's ladder 1 | up (2957, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:19` | (2958, 3141) L1 | Ship's ladder 1 | down (2957, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:20` | (2962, 3141) | Ship's ladder 1 | up (2961, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:21` | (2962, 3141) L1 | Ship's ladder 1 | down (2961, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:22` | (2963, 3139) L1 | Ship's ladder 1 | up (2964, 3139) L2 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:23` | (2963, 3139) L2 | Ship's ladder 1 | down (2962, 3139) L1 by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:24` | (2963, 3143) L1 | Ship's ladder 1 | up (2964, 3143) L2 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:25` | (2963, 3143) L2 | Ship's ladder 1 | down (2962, 3143) L1 by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
-| `connector:karamja:26` | (2990, 3068) L1 | Ship's ladder 1 | up (2991, 3068) L2 by Climb-up | no | no | - | unreached |
-| `connector:karamja:27` | (2990, 3068) L2 | Ship's ladder 1 | down (2989, 3068) L1 by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:karamja:0` | (2763, 2952) | (2763, 2952) | `{ x: 2763, z: 2952, radius: 3 }` | Ladder 1 | up (2763, 2951) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:1` | (2763, 2952) L1 | (2763, 2952) L1 | `{ x: 2763, z: 2952, radius: 3, level: 1 }` | Ladder 1 | down (2763, 2951) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:2` | (2766, 3121) | (2766, 3121) | `{ x: 2766, z: 3121, radius: 3 }` | Ladder 1 | up (2765, 3121) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:3` | (2766, 3121) L1 | (2766, 3121) L1 | `{ x: 2766, z: 3121, radius: 3, level: 1 }` | Ladder 1 | down (2765, 3121) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:4` | (2782, 3087) | (2782, 3087) | `{ x: 2782, z: 3087, radius: 3 }` | Ladder 1 | up (2781, 3087) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:5` | (2782, 3087) L1 | (2782, 3087) L1 | `{ x: 2782, z: 3087, radius: 3, level: 1 }` | Ladder 1 | down (2781, 3087) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:6` | (2789, 2979) | (2789, 2979) | `{ x: 2789, z: 2979, radius: 3 }` | Ladder 1 | up (2788, 2979) L1 by Climb-up | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |
+| `connector:karamja:7` | (2789, 2979) L1 | (2789, 2979) L1 | `{ x: 2789, z: 2979, radius: 3, level: 1 }` | Ladder 1 | down (2788, 2979) by Climb-down | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |
+| `connector:karamja:8` | (2808, 3161) | (2808, 3161) | `{ x: 2808, z: 3161, radius: 3 }` | Ladder 1 | up (2808, 3162) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:9` | (2808, 3161) L1 | (2808, 3161) L1 | `{ x: 2808, z: 3161, radius: 3, level: 1 }` | Ladder 1 | down (2808, 3162) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:10` | (2809, 3065) | (2809, 3065) | `{ x: 2809, z: 3065, radius: 3 }` | Ladder 1 | up (2808, 3065) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:11` | (2809, 3065) L1 | (2809, 3065) L1 | `{ x: 2809, z: 3065, radius: 3, level: 1 }` | Ladder 1 | down (2808, 3065) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:12` | (2824, 2958) | (2824, 2958) | `{ x: 2824, z: 2958, radius: 3 }` | Ladder 1 | up (2824, 2957) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:karamja:13` | (2824, 2958) L1 | (2824, 2958) L1 | `{ x: 2824, z: 2958, radius: 3, level: 1 }` | Ladder 1 | down (2824, 2957) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:karamja:14` | (2954, 3141) | (2954, 3141) | `{ x: 2954, z: 3141, radius: 3 }` | Ship's ladder 1 | up (2953, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:15` | (2954, 3141) L1 | (2954, 3141) L1 | `{ x: 2954, z: 3141, radius: 3, level: 1 }` | Ship's ladder 1 | down (2953, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:16` | (2956, 3144) L1 | (2956, 3144) L1 | `{ x: 2956, z: 3144, radius: 3, level: 1 }` | Gangplank 1 | down (2956, 3146) by Cross | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:17` | (2956, 3145) | (2956, 3145) | `{ x: 2956, z: 3145, radius: 3 }` | Gangplank 1 | up (2956, 3143) L1 by Cross | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:18` | (2958, 3141) | (2958, 3141) | `{ x: 2958, z: 3141, radius: 3 }` | Ship's ladder 1 | up (2957, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:19` | (2958, 3141) L1 | (2958, 3141) L1 | `{ x: 2958, z: 3141, radius: 3, level: 1 }` | Ship's ladder 1 | down (2957, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:20` | (2962, 3141) | (2962, 3141) | `{ x: 2962, z: 3141, radius: 3 }` | Ship's ladder 1 | up (2961, 3141) L1 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:21` | (2962, 3141) L1 | (2962, 3141) L1 | `{ x: 2962, z: 3141, radius: 3, level: 1 }` | Ship's ladder 1 | down (2961, 3141) by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:22` | (2963, 3139) L1 | (2963, 3139) L1 | `{ x: 2963, z: 3139, radius: 3, level: 1 }` | Ship's ladder 1 | up (2964, 3139) L2 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:23` | (2963, 3139) L2 | (2963, 3139) L2 | `{ x: 2963, z: 3139, radius: 3, level: 2 }` | Ship's ladder 1 | down (2962, 3139) L1 by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:24` | (2963, 3143) L1 | (2963, 3143) L1 | `{ x: 2963, z: 3143, radius: 3, level: 1 }` | Ship's ladder 1 | up (2964, 3143) L2 by Climb-up | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:25` | (2963, 3143) L2 | (2963, 3143) L2 | `{ x: 2963, z: 3143, radius: 3, level: 2 }` | Ship's ladder 1 | down (2962, 3143) L1 by Climb-down | yes | no | - | 30 coins or The Grand Tree done |
+| `connector:karamja:26` | (2990, 3068) L1 | (2990, 3068) L1 | `{ x: 2990, z: 3068, radius: 3, level: 1 }` | Ship's ladder 1 | up (2991, 3068) L2 by Climb-up | no | no | - | unreached |
+| `connector:karamja:27` | (2990, 3068) L2 | (2990, 3068) L2 | `{ x: 2990, z: 3068, radius: 3, level: 2 }` | Ship's ladder 1 | down (2989, 3068) L1 by Climb-down | no | no | - | unreached |
 
 ## Areas within
 

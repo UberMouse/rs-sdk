@@ -5,15 +5,15 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:lumber-yard:0` | (3300, 3499) | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
-| `tree:lumber-yard:1` | (3304, 3516) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:lumber-yard:2` | (3317, 3513) | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:lumber-yard:0` | (3300, 3499) | x 3296-3306, z 3495-3503 | `{ x: 3301, z: 3499, radius: 10 }` | [normal](../resources/tree/normal.md) 4 | yes | no | - | - |
+| `tree:lumber-yard:1` | (3304, 3516) | (3304, 3516) | `{ x: 3304, z: 3516, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:lumber-yard:2` | (3317, 3513) | x 3314-3319, z 3510-3518 | `{ x: 3317, z: 3514, radius: 8 }` | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:lumber-yard:0` | (3310, 3509) | Ladder 1 | up (3309, 3509) L1 by Climb-up | yes | no | - | - |
-| `connector:lumber-yard:1` | (3310, 3509) L1 | Ladder 1 | down (3309, 3509) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:lumber-yard:0` | (3310, 3509) | (3310, 3509) | `{ x: 3310, z: 3509, radius: 3 }` | Ladder 1 | up (3309, 3509) L1 by Climb-up | yes | no | - | - |
+| `connector:lumber-yard:1` | (3310, 3509) L1 | (3310, 3509) L1 | `{ x: 3310, z: 3509, radius: 3, level: 1 }` | Ladder 1 | down (3309, 3509) by Climb-down | yes | no | - | - |

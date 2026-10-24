@@ -7,49 +7,49 @@ The grounds inside the guild's wooden barricade (wood_wall_barricadel in map squ
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:ranging-guild:0` | (2661, 3419) | Authentic throwing weapons. (ranging_guild_tribalshop) 1 | no | yes | - | 40 Ranged |
-| `shop:ranging-guild:1` | (2670, 3435) | Aaron's Archery Appendages. (ranging_guild_armourshop) 1, Dargaud's Bow and Arrows. (ranging_guild_bowshop) 1 | no | yes | - | 40 Ranged |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:ranging-guild:0` | (2661, 3419) | (2661, 3419) | x 2656-2666, z 3414-3424 | `{ x: 2661, z: 3419, radius: 11 }` | Authentic throwing weapons. (ranging_guild_tribalshop) 1 | no | yes | - | 40 Ranged |
+| `shop:ranging-guild:1` | (2670, 3435) | x 2667-2673, z 3434-3436 | x 2665-2675, z 3432-3438 | `{ x: 2670, z: 3435, radius: 9 }` | Aaron's Archery Appendages. (ranging_guild_armourshop) 1, Dargaud's Bow and Arrows. (ranging_guild_bowshop) 1 | no | yes | - | 40 Ranged |
 
 ## [Tanners](../services/tanner.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tanner:ranging-guild:0` | (2678, 3434) | Leatherworker 1 | no | yes | - | 40 Ranged |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `tanner:ranging-guild:0` | (2678, 3434) | (2678, 3434) | x 2676-2680, z 3432-3436 | `{ x: 2678, z: 3434, radius: 6 }` | Leatherworker 1 | no | yes | - | 40 Ranged |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:ranging-guild:0` | (2657, 3422) | [normal](../resources/tree/normal.md) 1 | no | yes | - | 40 Ranged |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:ranging-guild:0` | (2657, 3422) | (2657, 3422) | `{ x: 2657, z: 3422, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | yes | - | 40 Ranged |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ranging-guild:0` | (2655, 3428) | Guard 2 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:1` | (2659, 3438) | Guard 1 | no | yes | - | - |
-| `npc:ranging-guild:2` | (2663, 3425) | Guard 1 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:3` | (2668, 3415) | Guard 2 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:4` | (2671, 3439) | Guard 3 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:5` | (2675, 3428) | Guard 1 | no | yes | - | 40 Ranged |
-| `npc:ranging-guild:6` | (2682, 3430) | Guard 1 | no | yes | - | 40 Ranged |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ranging-guild:0` | (2655, 3428) | x 2655, z 3426-3429 | x 2650-2660, z 3421-3434 | `{ x: 2655, z: 3428, radius: 12 }` | Guard 2 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:1` | (2659, 3438) | (2659, 3438) | x 2654-2664, z 3433-3443 | `{ x: 2659, z: 3438, radius: 11 }` | Guard 1 | no | yes | - | - |
+| `npc:ranging-guild:2` | (2663, 3425) | (2663, 3425) | x 2658-2668, z 3420-3430 | `{ x: 2663, z: 3425, radius: 11 }` | Guard 1 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:3` | (2668, 3415) | x 2666-2669, z 3415 | x 2661-2674, z 3410-3420 | `{ x: 2668, z: 3415, radius: 12 }` | Guard 2 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:4` | (2671, 3439) | x 2669-2673, z 3438-3441 | x 2664-2678, z 3433-3446 | `{ x: 2671, z: 3440, radius: 13 }` | Guard 3 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:5` | (2675, 3428) | (2675, 3428) | x 2670-2680, z 3423-3433 | `{ x: 2675, z: 3428, radius: 11 }` | Guard 1 | no | yes | - | 40 Ranged |
+| `npc:ranging-guild:6` | (2682, 3430) | (2682, 3430) | x 2677-2687, z 3425-3435 | `{ x: 2682, z: 3430, radius: 11 }` | Guard 1 | no | yes | - | 40 Ranged |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:ranging-guild:0` | (2652, 3428) | Ladder 1 | up (2653, 3428) L1 by Climb-up | no | yes | - | unreached |
-| `connector:ranging-guild:1` | (2652, 3428) L1 | Ladder 1 | down (2653, 3428) by Climb or Climb-down; up (2653, 3428) L2 by Climb or Climb-up | no | no | - | unreached |
-| `connector:ranging-guild:2` | (2652, 3428) L2 | Ladder 1 | down (2653, 3428) L1 by Climb-down | no | yes | - | unreached |
-| `connector:ranging-guild:3` | (2668, 3412) | Ladder 1 | up (2668, 3413) L1 by Climb-up | no | yes | - | unreached |
-| `connector:ranging-guild:4` | (2668, 3412) L1 | Ladder 1 | down (2668, 3413) by Climb or Climb-down; up (2668, 3413) L2 by Climb or Climb-up | no | no | - | unreached |
-| `connector:ranging-guild:5` | (2668, 3412) L2 | Ladder 1 | down (2668, 3413) L1 by Climb-down | no | yes | - | unreached |
-| `connector:ranging-guild:6` | (2668, 3428) L1 | Ladder 1 | up (2667, 3428) L2 by Climb-up | no | no | - | unreached |
-| `connector:ranging-guild:7` | (2668, 3444) | Ladder 1 | up (2668, 3443) L1 by Climb-up | no | yes | - | unreached |
-| `connector:ranging-guild:8` | (2668, 3444) L1 | Ladder 1 | down (2668, 3443) by Climb or Climb-down; up (2668, 3443) L2 by Climb or Climb-up | no | no | - | unreached |
-| `connector:ranging-guild:9` | (2668, 3444) L2 | Ladder 1 | down (2668, 3443) L1 by Climb-down | no | yes | - | unreached |
-| `connector:ranging-guild:10` | (2684, 3428) | Ladder 1 | up (2683, 3428) L1 by Climb-up | no | yes | - | unreached |
-| `connector:ranging-guild:11` | (2684, 3428) L1 | Ladder 1 | down (2683, 3428) by Climb or Climb-down; up (2683, 3428) L2 by Climb or Climb-up | no | no | - | unreached |
-| `connector:ranging-guild:12` | (2684, 3428) L2 | Ladder 1 | down (2683, 3428) L1 by Climb-down | no | yes | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:ranging-guild:0` | (2652, 3428) | (2652, 3428) | `{ x: 2652, z: 3428, radius: 3 }` | Ladder 1 | up (2653, 3428) L1 by Climb-up | no | yes | - | unreached |
+| `connector:ranging-guild:1` | (2652, 3428) L1 | (2652, 3428) L1 | `{ x: 2652, z: 3428, radius: 3, level: 1 }` | Ladder 1 | down (2653, 3428) by Climb or Climb-down; up (2653, 3428) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:ranging-guild:2` | (2652, 3428) L2 | (2652, 3428) L2 | `{ x: 2652, z: 3428, radius: 3, level: 2 }` | Ladder 1 | down (2653, 3428) L1 by Climb-down | no | yes | - | unreached |
+| `connector:ranging-guild:3` | (2668, 3412) | (2668, 3412) | `{ x: 2668, z: 3412, radius: 3 }` | Ladder 1 | up (2668, 3413) L1 by Climb-up | no | yes | - | unreached |
+| `connector:ranging-guild:4` | (2668, 3412) L1 | (2668, 3412) L1 | `{ x: 2668, z: 3412, radius: 3, level: 1 }` | Ladder 1 | down (2668, 3413) by Climb or Climb-down; up (2668, 3413) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:ranging-guild:5` | (2668, 3412) L2 | (2668, 3412) L2 | `{ x: 2668, z: 3412, radius: 3, level: 2 }` | Ladder 1 | down (2668, 3413) L1 by Climb-down | no | yes | - | unreached |
+| `connector:ranging-guild:6` | (2668, 3428) L1 | (2668, 3428) L1 | `{ x: 2668, z: 3428, radius: 3, level: 1 }` | Ladder 1 | up (2667, 3428) L2 by Climb-up | no | no | - | unreached |
+| `connector:ranging-guild:7` | (2668, 3444) | (2668, 3444) | `{ x: 2668, z: 3444, radius: 3 }` | Ladder 1 | up (2668, 3443) L1 by Climb-up | no | yes | - | unreached |
+| `connector:ranging-guild:8` | (2668, 3444) L1 | (2668, 3444) L1 | `{ x: 2668, z: 3444, radius: 3, level: 1 }` | Ladder 1 | down (2668, 3443) by Climb or Climb-down; up (2668, 3443) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:ranging-guild:9` | (2668, 3444) L2 | (2668, 3444) L2 | `{ x: 2668, z: 3444, radius: 3, level: 2 }` | Ladder 1 | down (2668, 3443) L1 by Climb-down | no | yes | - | unreached |
+| `connector:ranging-guild:10` | (2684, 3428) | (2684, 3428) | `{ x: 2684, z: 3428, radius: 3 }` | Ladder 1 | up (2683, 3428) L1 by Climb-up | no | yes | - | unreached |
+| `connector:ranging-guild:11` | (2684, 3428) L1 | (2684, 3428) L1 | `{ x: 2684, z: 3428, radius: 3, level: 1 }` | Ladder 1 | down (2683, 3428) by Climb or Climb-down; up (2683, 3428) L2 by Climb or Climb-up | no | no | - | unreached |
+| `connector:ranging-guild:12` | (2684, 3428) L2 | (2684, 3428) L2 | `{ x: 2684, z: 3428, radius: 3, level: 2 }` | Ladder 1 | down (2683, 3428) L1 by Climb-down | no | yes | - | unreached |

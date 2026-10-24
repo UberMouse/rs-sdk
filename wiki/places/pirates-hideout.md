@@ -5,25 +5,25 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:pirates-hideout:0` | (3034, 3937) | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
-| `tree:pirates-hideout:1` | (3053, 3950) | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:pirates-hideout:0` | (3034, 3937) | (3034, 3937) | `{ x: 3034, z: 3937, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 53 | - |
+| `tree:pirates-hideout:1` | (3053, 3950) | (3053, 3950) | `{ x: 3053, z: 3950, radius: 3 }` | [burnt](../resources/tree/burnt.md) 1 | no | no | 54 | - |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:pirates-hideout:0` | (3053, 3944) | [coal](../resources/rock/coal.md) 1, [mithril](../resources/rock/mithril.md) 1 | no | no | 54 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:pirates-hideout:0` | (3053, 3944) | x 3052-3053, z 3942-3946 | `{ x: 3053, z: 3944, radius: 6 }` | [coal](../resources/rock/coal.md) 1, [mithril](../resources/rock/mithril.md) 1 | no | no | 54 | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `thieving-chest:pirates-hideout:0` | (3043, 3952) | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 2, [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | 55 | carry Lockpick + 39 Thieving |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `thieving-chest:pirates-hideout:0` | (3043, 3952) | x 3040-3044, z 3949-3957 | `{ x: 3042, z: 3953, radius: 8 }` | [chest_10_coins](../resources/thieving-chest/chest_10_coins.md) 2, [chest_50_coins](../resources/thieving-chest/chest_50_coins.md) 1, [chest_nature_rune](../resources/thieving-chest/chest_nature_rune.md) 1 | no | no | 55 | carry Lockpick + 39 Thieving |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:pirates-hideout:0` | (3041, 3954) | Pirate 12 | no | no | 55 | carry Lockpick + 39 Thieving |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:pirates-hideout:0` | (3041, 3954) | x 3039-3043, z 3950-3958 | x 3034-3048, z 3945-3963 | `{ x: 3041, z: 3954, radius: 15 }` | Pirate 12 | no | no | 55 | carry Lockpick + 39 Thieving |

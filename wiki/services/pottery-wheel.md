@@ -3,11 +3,11 @@
 
 6 sites, 2 of them in F2P; 3 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 1 it does not reach (unreached), 1 with no stand tile (no stand).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `pottery-wheel:asgarnia:0` | (2937, 3290) | (2938, 3290) | Potter's Wheel 4 | yes | wear Brown apron + 40 Crafting | Falador East bank (Falador), 63 ticks |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:0` | (2587, 3327) | (2587, 3327) | Potter's Wheel 2 | no | - | Ardougne North bank (East Ardougne), 46 ticks |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:1` | (2595, 3323) | - | Potter's Wheel 2 | no | no stand | - |
-| [Rellekka (Kandarin)](../places/rellekka.md) | `pottery-wheel:rellekka:0` | (2620, 3659) | (2619, 3659) | Potter's Wheel 1 | no | - | Seers' Village bank (Seers' Village), 133 ticks |
-| [Misthalin](../places/misthalin.md) | `pottery-wheel:misthalin:0` | (3358, 3332) | (3357, 3332) | Potter's Wheel 1 | no | unreached | - |
-| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `pottery-wheel:barbarian-village:0` | (3087, 3410) | (3086, 3410) | Potter's Wheel 2 | yes | - | Edgeville bank (Edgeville), 43 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `pottery-wheel:asgarnia:0` | (2937, 3290) | (2938, 3290) | x 2935-2938, z 3289-3291 | `{ x: 2937, z: 3290, radius: 6 }` | Potter's Wheel 4 | yes | wear Brown apron + 40 Crafting | Falador East bank (Falador), 63 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:0` | (2587, 3327) | (2587, 3327) | x 2586-2588, z 3327 | `{ x: 2587, z: 3327, radius: 4 }` | Potter's Wheel 2 | no | - | Ardougne North bank (East Ardougne), 46 ticks |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `pottery-wheel:east-ardougne:1` | (2595, 3323) | - | x 2595, z 3321-3324 | `{ x: 2595, z: 3323, radius: 5 }` | Potter's Wheel 2 | no | no stand | - |
+| [Rellekka (Kandarin)](../places/rellekka.md) | `pottery-wheel:rellekka:0` | (2620, 3659) | (2619, 3659) | (2620, 3659) | `{ x: 2620, z: 3659, radius: 3 }` | Potter's Wheel 1 | no | - | Seers' Village bank (Seers' Village), 133 ticks |
+| [Misthalin](../places/misthalin.md) | `pottery-wheel:misthalin:0` | (3358, 3332) | (3357, 3332) | (3358, 3332) | `{ x: 3358, z: 3332, radius: 3 }` | Potter's Wheel 1 | no | unreached | - |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | `pottery-wheel:barbarian-village:0` | (3087, 3410) | (3086, 3410) | x 3087, z 3409-3410 | `{ x: 3087, z: 3410, radius: 4 }` | Potter's Wheel 2 | yes | - | Edgeville bank (Edgeville), 43 ticks |

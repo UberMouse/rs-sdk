@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2542, 3031) | 3 | 5 | (2536, 3024)-(2548, 3039) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2542, 3031) | x 2541-2543, z 3029-3034 | 3 | 5 | x 2536-2548, z 3024-3039 | 100 ticks | - | `{ x: 2542, z: 3032, radius: 13 }` | no |
 
 ## Drops
 

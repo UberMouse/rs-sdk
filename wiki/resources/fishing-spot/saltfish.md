@@ -36,33 +36,33 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:0` | (2991, 3167) | (2991, 3167) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |
-| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:1` | (2876, 3337) | (2876, 3337) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 77 ticks |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2792, 3277) | (2792, 3277) | 4 | no | no | - | unreached | - |
-| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | 2 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
-| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3272, 3144) | (3272, 3144) | 2 | yes | yes | - | - | Al Kharid bank (Al Kharid), 13 ticks |
-| [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 13 ticks |
-| [Wilderness](../../places/wilderness.md) | `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3705) | 1 | yes | yes | 24 | - | Edgeville bank (Edgeville), 110 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:0` | (2991, 3167) | (2991, 3167) | x 2986-2996, z 3158-3176 | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |
+| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:1` | (2876, 3337) | (2876, 3337) | x 2875-2877, z 3331-3342 | [Movement](#movement) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 77 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2792, 3277) | (2792, 3277) | x 2789-2795, z 3273-3283 | [Movement](#movement) | 4 | no | no | - | unreached | - |
+| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 2 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | x 2633-2642, z 3687-3699 | [Movement](#movement) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | x 2923-2926, z 3179-3181 | [Movement](#movement) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
+| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3272, 3144) | (3272, 3144) | x 3267-3276, z 3140-3148 | [Movement](#movement) | 2 | yes | yes | - | - | Al Kharid bank (Al Kharid), 13 ticks |
+| [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | x 3085-3086, z 3227-3230 | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 13 ticks |
+| [Wilderness](../../places/wilderness.md) | `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3705) | (3050, 3704) | [Movement](#movement) | 1 | yes | yes | 24 | - | Edgeville bank (Edgeville), 110 ticks |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:asgarnia:0` | (2991, 3166) | 14 | 8 |
-| `fishing-spot:entrana:1` | (2877, 3337) | 9 | 10 |
-| `fishing-spot:kandarin:6` | (2792, 3278) | 8 | 10 |
-| `fishing-spot:catherby:0` | (2848, 3427) | 15 | 11 |
-| `fishing-spot:rellekka:0` | (2633, 3690) | 6 | 7 |
-| `fishing-spot:karamja:5` | (2924, 3179) | 6 | 8 |
-| `fishing-spot:al-kharid-river:0` | (3273, 3143) | 9 | 5 |
-| `fishing-spot:draynor-fishing:0` | (3086, 3229) | 5 | 4 |
-| `fishing-spot:wilderness:0` | (3050, 3704) | 8 | 3 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:asgarnia:0` | `{ x: 2991, z: 3166, radius: 16 }` | 8 |
+| `fishing-spot:entrana:1` | `{ x: 2877, z: 3337, radius: 10 }` | 10 |
+| `fishing-spot:kandarin:6` | `{ x: 2792, z: 3278, radius: 9 }` | 10 |
+| `fishing-spot:catherby:0` | `{ x: 2848, z: 3427, radius: 16 }` | 11 |
+| `fishing-spot:rellekka:0` | `{ x: 2633, z: 3690, radius: 6 }` | 7 |
+| `fishing-spot:karamja:5` | `{ x: 2924, z: 3179, radius: 7 }` | 8 |
+| `fishing-spot:al-kharid-river:0` | `{ x: 3273, z: 3143, radius: 11 }` | 5 |
+| `fishing-spot:draynor-fishing:0` | `{ x: 3086, z: 3229, radius: 6 }` | 4 |
+| `fishing-spot:wilderness:0` | `{ x: 3050, z: 3704, radius: 9 }` | 3 |
 
 `fishing-spot:asgarnia:0` tiles: (2986, 3176), (2986, 3177), (2990, 3169), (2996, 3155), (2996, 3156), (2996, 3157), (2996, 3158), (2996, 3159)
 

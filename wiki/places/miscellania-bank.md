@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:miscellania-bank:0` | (2621, 3895) | Banker 1 | no | no | - | The Fremennik Trials done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `bank:miscellania-bank:0` | (2621, 3895) | (2621, 3895) | (2621, 3895) | `{ x: 2621, z: 3895, radius: 3 }` | Banker 1 | no | no | - | The Fremennik Trials done |

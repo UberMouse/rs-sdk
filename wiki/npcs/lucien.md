@@ -24,10 +24,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3321) | 1 | 5 | (2568, 3316)-(2578, 3326) | 100 ticks | - | no |
-| [Varrock (Misthalin)](../places/varrock.md) | (3176, 3476) | 1 | 5 | (3168, 3471)-(3184, 3485) | 52 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2573, 3321) | (2573, 3321) | 1 | 5 | x 2568-2578, z 3316-3326 | 100 ticks | - | `{ x: 2573, z: 3321, radius: 11 }` | no |
+| [Varrock (Misthalin)](../places/varrock.md) | (3176, 3476) | x 3173-3179, z 3476-3480 | 1 | 5 | x 3168-3184, z 3471-3485 | 52 ticks | - | `{ x: 3176, z: 3478, radius: 14 }` | yes |
 
 ## Drops
 

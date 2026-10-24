@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2466, 3497) | 1 | 2 | (2464, 3495)-(2468, 3499) | 100 ticks | - | no |
-| [Grand Tree tunnels](../places/grand-tree-tunnels.md) | (2464, 9897) | 1 | 2 | (2462, 9895)-(2466, 9899) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2466, 3497) | (2466, 3497) | 1 | 2 | x 2464-2468, z 3495-3499 | 100 ticks | - | `{ x: 2466, z: 3497, radius: 6 }` | no |
+| [Grand Tree tunnels](../places/grand-tree-tunnels.md) | (2464, 9897) | (2464, 9897) | 1 | 2 | x 2462-2466, z 9895-9899 | 100 ticks | - | `{ x: 2464, z: 9897, radius: 6 }` | no |
 
 ## Interactions
 

@@ -5,33 +5,33 @@ Ladder up to East Ardougne at (2632, 3294) and to (2570, 3267); the Hazeel Cult 
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:ardougne-sewers:0` | (2607, 9671) | Fire 5 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:ardougne-sewers:0` | (2607, 9671) | x 2605-2609, z 9669-9674 | `{ x: 2607, z: 9672, radius: 7 }` | Fire 5 | no | no | - | unreached |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:ardougne-sewers:0` | (2671, 9681) | [coal](../resources/rock/coal.md) 5, [iron](../resources/rock/iron.md) 5 | no | no | - | 31 Thieving |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:ardougne-sewers:0` | (2671, 9681) | x 2667-2676, z 9677-9685 | `{ x: 2672, z: 9681, radius: 10 }` | [coal](../resources/rock/coal.md) 5, [iron](../resources/rock/iron.md) 5 | no | no | - | 31 Thieving |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:ardougne-sewers:0` | (2567, 9681) | Clivet 1, Rat 2 | no | no | - | - |
-| `npc:ardougne-sewers:1` | (2576, 9689) | Rat 5 | no | no | - | unreached |
-| `npc:ardougne-sewers:2` | (2601, 9710) | Rat 3 | no | no | - | unreached |
-| `npc:ardougne-sewers:3` | (2606, 9678) | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - | unreached |
-| `npc:ardougne-sewers:4` | (2618, 9725) | Rat 3 | no | no | - | unreached |
-| `npc:ardougne-sewers:5` | (2641, 9698) | Rat 1 | no | no | - | - |
-| `npc:ardougne-sewers:6` | (2645, 9711) | Rat 1 | no | no | - | - |
-| `npc:ardougne-sewers:7` | (2674, 9682) | Rat 2, Zombie 3 | no | no | - | 31 Thieving |
-| `npc:ardougne-sewers:8` | (2680, 9701) | Rat 1 | no | no | - | 31 Thieving |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:ardougne-sewers:0` | (2567, 9681) | x 2566-2569, z 9680-9683 | x 2551-2584, z 9665-9698 | `{ x: 2568, z: 9682, radius: 28 }` | Clivet 1, Rat 2 | no | no | - | - |
+| `npc:ardougne-sewers:1` | (2576, 9689) | x 2573-2578, z 9688-9691 | x 2558-2593, z 9673-9706 | `{ x: 2576, z: 9690, radius: 28 }` | Rat 5 | no | no | - | unreached |
+| `npc:ardougne-sewers:2` | (2601, 9710) | x 2600-2602, z 9709-9711 | x 2585-2617, z 9694-9726 | `{ x: 2601, z: 9710, radius: 26 }` | Rat 3 | no | no | - | unreached |
+| `npc:ardougne-sewers:3` | (2606, 9678) | x 2602-2610, z 9670-9688 | x 2587-2625, z 9655-9703 | `{ x: 2606, z: 9679, radius: 34 }` | Alomone 1, Hazeel Cultist 5, Rat 5 | no | no | - | unreached |
+| `npc:ardougne-sewers:4` | (2618, 9725) | x 2617-2619, z 9724-9726 | x 2602-2634, z 9709-9741 | `{ x: 2618, z: 9725, radius: 26 }` | Rat 3 | no | no | - | unreached |
+| `npc:ardougne-sewers:5` | (2641, 9698) | (2641, 9698) | x 2626-2656, z 9683-9713 | `{ x: 2641, z: 9698, radius: 25 }` | Rat 1 | no | no | - | - |
+| `npc:ardougne-sewers:6` | (2645, 9711) | (2645, 9711) | x 2630-2660, z 9696-9726 | `{ x: 2645, z: 9711, radius: 25 }` | Rat 1 | no | no | - | - |
+| `npc:ardougne-sewers:7` | (2674, 9682) | x 2669-2676, z 9678-9687 | x 2654-2691, z 9663-9702 | `{ x: 2673, z: 9683, radius: 31 }` | Rat 2, Zombie 3 | no | no | - | 31 Thieving |
+| `npc:ardougne-sewers:8` | (2680, 9701) | (2680, 9701) | x 2665-2695, z 9686-9716 | `{ x: 2680, z: 9701, radius: 25 }` | Rat 1 | no | no | - | 31 Thieving |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:ardougne-sewers:0` | (2570, 9667) | Ladder 1 | up (2570, 3268) by Climb-up | no | no | - | - |
-| `connector:ardougne-sewers:1` | (2632, 9694) | Ladder 1 | up (2631, 3294) by Climb-up | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:ardougne-sewers:0` | (2570, 9667) | (2570, 9667) | `{ x: 2570, z: 9667, radius: 3 }` | Ladder 1 | up (2570, 3268) by Climb-up | no | no | - | - |
+| `connector:ardougne-sewers:1` | (2632, 9694) | (2632, 9694) | `{ x: 2632, z: 9694, radius: 3 }` | Ladder 1 | up (2631, 3294) by Climb-up | no | no | - | - |

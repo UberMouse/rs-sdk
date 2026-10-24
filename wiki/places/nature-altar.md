@@ -5,12 +5,12 @@ Inside the nature ruins.
 
 ## [Runecrafting altars](../services/rc-altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rc-altar:nature-altar:0` | (2399, 4840) | nature 1 | no | no | - | 30 coins + carry Nature talisman or carry Nature talisman + The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rc-altar:nature-altar:0` | (2399, 4840) | (2399, 4840) | `{ x: 2399, z: 4840, radius: 3 }` | nature 1 | no | no | - | 30 coins + carry Nature talisman or carry Nature talisman + The Grand Tree done |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:nature-altar:0` | (2401, 4841) | [normal](../resources/tree/normal.md) 103, [oak](../resources/tree/oak.md) 44 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:nature-altar:0` | (2401, 4841) | x 2374-2423, z 4813-4862 | `{ x: 2399, z: 4838, radius: 39 }` | [normal](../resources/tree/normal.md) 103, [oak](../resources/tree/oak.md) 44 | no | no | - | unreached |

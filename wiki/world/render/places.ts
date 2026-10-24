@@ -4,6 +4,8 @@
 import type { Area, Connector, FeatureKind, Site, World } from '../types';
 import { cmp, push } from '../util';
 import {
+    boxCells,
+    boxHeaders,
     byKind,
     bySiteId,
     coord,
@@ -18,6 +20,7 @@ import {
     resourcePath,
     SERVICE_KINDS,
     servicePath,
+    showsRoam,
     table,
     wilderness,
     yesNo,
@@ -109,6 +112,11 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                     .join(', ');
             // A connector's row also says where it leads (World.connectors).
             const connector = kind === 'connector';
+            const ofKind = held.filter(({ site }) => site.kind === kind).sort((a, b) => bySiteId(a.site.id, b.site.id));
+            const roam = showsRoam(ofKind.map(({ site }) => site));
+            // A fishing site's area to copy is each subtype's movement cover, under Movement on its resource page.
+            const movement = (ps: readonly Part[]): string =>
+                ps.map(p => `[${label(kind, p)}](${link(path, resourcePath(kind, p.key))}#movement)`).join(', ');
             lines.push(
                 `## ${heading}`,
                 '',
@@ -116,6 +124,7 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                     [
                         'Site',
                         'Centre',
+                        ...boxHeaders(roam),
                         'Counts',
                         ...(connector ? ['Leads to'] : []),
                         'F2P',
@@ -123,19 +132,17 @@ export function renderPlaces(world: World, data: PageData): Page[] {
                         'Wilderness',
                         'Requires',
                     ],
-                    held
-                        .filter(({ site }) => site.kind === kind)
-                        .sort((a, b) => bySiteId(a.site.id, b.site.id))
-                        .map(({ site: s, parts: ps }) => [
-                            `\`${s.id}\``,
-                            coord(s.centre),
-                            counts(ps),
-                            ...(connector ? [leadsTo(s, byFeature)] : []),
-                            yesNo(s.f2p),
-                            yesNo(s.multiway),
-                            wilderness(s.wildernessLevel),
-                            requires(s),
-                        ]),
+                    ofKind.map(({ site: s, parts: ps }) => [
+                        `\`${s.id}\``,
+                        coord(s.centre),
+                        ...boxCells(s, roam, s.movement ? movement(ps) : undefined),
+                        counts(ps),
+                        ...(connector ? [leadsTo(s, byFeature)] : []),
+                        yesNo(s.f2p),
+                        yesNo(s.multiway),
+                        wilderness(s.wildernessLevel),
+                        requires(s),
+                    ]),
                 ),
                 '',
             );

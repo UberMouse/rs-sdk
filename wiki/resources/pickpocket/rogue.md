@@ -17,10 +17,10 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Wilderness](../../places/wilderness.md) | `pickpocket:wilderness:0` | (3078, 3913) | (3078, 3913) | 2 | no | no | 50 | - | Mage Arena bank (Mage Arena chamber), 33 ticks |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:0` | (3284, 3931) | (3284, 3931) | 10 | no | yes | 53 | - | Mage Arena bank (Mage Arena chamber), 114 ticks |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:1` | (3282, 3936) L3 | (3282, 3936) L3 | 2 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 122 ticks |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:2` | (3290, 3933) L2 | (3290, 3933) L2 | 6 | no | yes | 53 | unreached | - |
-| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:3` | (3289, 3931) L1 | (3289, 3931) L1 | 2 | no | yes | 52 | - | Mage Arena bank (Mage Arena chamber), 124 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Wilderness](../../places/wilderness.md) | `pickpocket:wilderness:0` | (3078, 3913) | (3078, 3913) | x 3076-3079, z 3909-3916 | x 3071-3084, z 3904-3921 | `{ x: 3078, z: 3913, radius: 15 }` | 2 | no | no | 50 | - | Mage Arena bank (Mage Arena chamber), 33 ticks |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:0` | (3284, 3931) | (3284, 3931) | x 3276-3292, z 3924-3939 | x 3271-3297, z 3919-3944 | `{ x: 3284, z: 3932, radius: 22 }` | 10 | no | yes | 53 | - | Mage Arena bank (Mage Arena chamber), 114 ticks |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:1` | (3282, 3936) L3 | (3282, 3936) L3 | x 3281-3282, z 3934-3938 L3 | x 3276-3287, z 3929-3943 L3 | `{ x: 3282, z: 3936, radius: 13, level: 3 }` | 2 | no | no | 53 | - | Mage Arena bank (Mage Arena chamber), 122 ticks |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:2` | (3290, 3933) L2 | (3290, 3933) L2 | x 3286-3296, z 3929-3939 L2 | x 3281-3301, z 3924-3944 L2 | `{ x: 3291, z: 3934, radius: 18, level: 2 }` | 6 | no | yes | 53 | unreached | - |
+| [Rogues' Castle (Wilderness)](../../places/rogues-castle.md) | `pickpocket:rogues-castle:3` | (3289, 3931) L1 | (3289, 3931) L1 | x 3288-3289, z 3930-3931 L1 | x 3283-3294, z 3925-3936 L1 | `{ x: 3289, z: 3931, radius: 12, level: 1 }` | 2 | no | yes | 52 | - | Mage Arena bank (Mage Arena chamber), 124 ticks |

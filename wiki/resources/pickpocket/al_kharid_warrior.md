@@ -17,6 +17,6 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:1` | (3292, 3172) | (3291, 3172) | 9 | yes | yes | - | - | Al Kharid bank (Al Kharid), 17 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Al Kharid (Kharidian Desert)](../../places/al-kharid.md) | `pickpocket:al-kharid:1` | (3292, 3172) | (3291, 3172) | x 3282-3301, z 3168-3177 | x 3277-3306, z 3163-3182 | `{ x: 3292, z: 3173, radius: 22 }` | 9 | yes | yes | - | - | Al Kharid bank (Al Kharid), 17 ticks |

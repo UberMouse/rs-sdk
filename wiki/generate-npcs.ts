@@ -11,8 +11,9 @@ import { hasCombatParams } from './world/classify';
 import { loadFreshWorld } from './world/load';
 import { centreOf, roamOf } from './world/place';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
-import { areaCell, areasOf, coord, KINDS, type Areas } from './world/render/common';
-import type { FeatureKind, NpcRoam, NpcSpawn, Site, Tile, World } from './world/types';
+import { boxCover } from './world/cover';
+import { areaCell, areasOf, box, coord, coverCell, KINDS, link, resourcePath, type Areas } from './world/render/common';
+import type { FeatureKind, NpcRoam, NpcSpawn, Rect, Site, Tile, World } from './world/types';
 import { readConfigs } from './world/sources/configs';
 import { readConstants } from './world/sources/constants';
 import { npcMovements, readMovementDefaults, type NpcMovement } from './world/sources/npc-movement';
@@ -52,9 +53,11 @@ interface NpcConfig {
 interface LocationRow {
     areaPath: string[]; // area ids, root first; empty outside every area
     centre: Tile;
+    bbox: Rect; // the cluster's, or the site's
     spawns: number;
     f2p: boolean;
     roam?: NpcRoam; // the cluster's, or the site's; a site holding locs has none
+    movement?: string[]; // a fishing site's subtypes, whose movement covers are its area to copy
 }
 
 interface DropEntry {
@@ -320,7 +323,7 @@ function npcLocator(world: World, movement: (config: string) => NpcMovement): (c
             const kinds = bySite.get(config);
             if (!kinds) {
                 for (const c of clusters.get(config) || []) {
-                    rows.push({ areaPath: c.areaPath, centre: c.centre, spawns: c.count, f2p: c.f2p, roam: c });
+                    rows.push({ areaPath: c.areaPath, centre: c.centre, bbox: c.bbox, spawns: c.count, f2p: c.f2p, roam: c });
                 }
                 continue;
             }
@@ -333,7 +336,8 @@ function npcLocator(world: World, movement: (config: string) => NpcMovement): (c
         for (const [site, { tiles, configs: here }] of inSites) {
             const centre = centreOf(tiles);
             const roam = site.roam ? roamOf(here, site.bbox, movement) : undefined;
-            rows.push({ areaPath: site.areaPath, centre, spawns: tiles.length, f2p: site.f2p, roam });
+            const subtypes = site.movement ? Object.keys(site.movement) : undefined;
+            rows.push({ areaPath: site.areaPath, centre, bbox: site.bbox, spawns: tiles.length, f2p: site.f2p, roam, movement: subtypes });
         }
         return rows;
     };
@@ -1031,9 +1035,10 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
         lines.push(page.locations.length > 1 ? '## Locations' : '## Location');
         lines.push('');
         // Wander and roam are how far the npcs walk on their own (Chebyshev tiles past the spawns' box, and that
-        // box grown by it); a scripted move past that is named with its line.
-        lines.push('| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |');
-        lines.push('|------|--------|--------|--------|------|---------|-------|-----|');
+        // box grown by it); a scripted move past that is named with its line. The area to copy covers the roam (the
+        // box without one); a fishing site's is its spots' movement cover, on its resource pages.
+        lines.push('| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |');
+        lines.push('|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|');
 
         const rows = [...page.locations].sort((a, b) =>
             cmp(areas.label(a.areaPath), areas.label(b.areaPath)) ||
@@ -1045,13 +1050,16 @@ function generateNpcMarkdown(page: NpcPage, objNames: Map<string, string>, areas
             const roamCells = r
                 ? [
                       String(r.wander),
-                      `(${r.roam.x1}, ${r.roam.z1})-(${r.roam.x2}, ${r.roam.z2})`,
+                      box(r.roam),
                       `${r.respawnTicks} ticks`,
                       r.moves ? `${r.moves.how} (${r.moves.source})` : '-',
                   ]
                 : ['-', '-', '-', '-'];
+            const copy = row.movement
+                ? row.movement.map(t => `[${t}](${link(pagePath, resourcePath('fishing-spot', t))}#movement)`).join(', ')
+                : coverCell(boxCover(r?.roam ?? row.bbox, row.centre.level));
             const f2p = row.f2p ? 'yes' : 'no';
-            lines.push(`| ${area} | ${coord(row.centre)} | ${row.spawns} | ${roamCells.join(' | ')} | ${f2p} |`);
+            lines.push(`| ${area} | ${coord(row.centre)} | ${box(row.bbox)} | ${row.spawns} | ${roamCells.join(' | ')} | ${copy} | ${f2p} |`);
         }
         lines.push('');
     } else if (primary.hasPatrol || primary.defaultmode === 'patrol') {

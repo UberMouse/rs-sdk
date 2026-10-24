@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Rantz's cave](../places/rantzs-cave.md) | (2640, 9391) | 1 | 3 | (2637, 9388)-(2643, 9394) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Rantz's cave](../places/rantzs-cave.md) | (2640, 9391) | (2640, 9391) | 1 | 3 | x 2637-2643, z 9388-9394 | 100 ticks | - | `{ x: 2640, z: 9391, radius: 8 }` | no |
 
 ## Interactions
 

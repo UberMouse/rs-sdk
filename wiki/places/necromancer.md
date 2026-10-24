@@ -5,19 +5,19 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:necromancer:0` | (2665, 3237) | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 3 | no | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:necromancer:0` | (2665, 3237) | x 2657-2675, z 3231-3250 | `{ x: 2666, z: 3241, radius: 17 }` | [normal](../resources/tree/normal.md) 5, [oak](../resources/tree/oak.md) 1, [willow](../resources/tree/willow.md) 3 | no | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:necromancer:0` | (2667, 3241) L1 | Invrigar the Necromancer 1 | no | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:necromancer:0` | (2667, 3241) L1 | (2667, 3241) L1 | x 2662-2672, z 3236-3246 L1 | `{ x: 2667, z: 3241, radius: 11, level: 1 }` | Invrigar the Necromancer 1 | no | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:necromancer:0` | (2669, 3243) | Staircase 1 | up (2669, 3246) L1 by Climb-up | no | yes | - | - |
-| `connector:necromancer:1` | (2669, 3244) L1 | Staircase 1 | down (2669, 3242) by Climb-down | no | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:necromancer:0` | (2669, 3243) | (2669, 3243) | `{ x: 2669, z: 3243, radius: 3 }` | Staircase 1 | up (2669, 3246) L1 by Climb-up | no | yes | - | - |
+| `connector:necromancer:1` | (2669, 3244) L1 | (2669, 3244) L1 | `{ x: 2669, z: 3244, radius: 3, level: 1 }` | Staircase 1 | down (2669, 3242) by Climb-down | no | yes | - | - |

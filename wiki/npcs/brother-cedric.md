@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2614, 3259) | 1 | 5 | (2609, 3254)-(2619, 3264) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2614, 3259) | (2614, 3259) | 1 | 5 | x 2609-2619, z 3254-3264 | 100 ticks | - | `{ x: 2614, z: 3259, radius: 11 }` | no |
 
 ## Interactions
 

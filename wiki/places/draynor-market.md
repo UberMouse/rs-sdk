@@ -5,26 +5,26 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:draynor-market:0` | (3079, 3250) | Diango's Toy Store (aprilfoolshorseshop) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:draynor-market:0` | (3079, 3250) | (3079, 3250) | x 3074-3084, z 3245-3255 | `{ x: 3079, z: 3250, radius: 11 }` | Diango's Toy Store (aprilfoolshorseshop) 1 | yes | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:draynor-market:0` | (3100, 3256) | Fireplace 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:draynor-market:0` | (3100, 3256) | (3100, 3256) | `{ x: 3100, z: 3256, radius: 3 }` | Fireplace 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:draynor-market:0` | (3085, 3243) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:draynor-market:1` | (3100, 3247) | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:draynor-market:0` | (3085, 3243) | x 3083-3086, z 3242-3243 | `{ x: 3085, z: 3243, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:draynor-market:1` | (3100, 3247) | x 3099-3101, z 3242-3252 | `{ x: 3100, z: 3247, radius: 9 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:draynor-market:0` | (3090, 3251) | Staircase 1 | up (3093, 3251) L1 by Climb-up | yes | no | - | - |
-| `connector:draynor-market:1` | (3091, 3251) L1 | Staircase 1 | down (3089, 3251) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:draynor-market:0` | (3090, 3251) | (3090, 3251) | `{ x: 3090, z: 3251, radius: 3 }` | Staircase 1 | up (3093, 3251) L1 by Climb-up | yes | no | - | - |
+| `connector:draynor-market:1` | (3091, 3251) L1 | (3091, 3251) L1 | `{ x: 3091, z: 3251, radius: 3, level: 1 }` | Staircase 1 | down (3089, 3251) by Climb-down | yes | no | - | - |

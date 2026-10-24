@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3363, 3341) | 3 | 2 | (3358, 3337)-(3366, 3345) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Exam Centre (Misthalin)](../places/exam-centre.md) | (3363, 3341) | x 3360-3364, z 3339-3343 | 3 | 2 | x 3358-3366, z 3337-3345 | 100 ticks | - | `{ x: 3362, z: 3341, radius: 9 }` | no |
 
 ## Interactions
 

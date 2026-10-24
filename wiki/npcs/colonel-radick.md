@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3091) | 1 | 4 | (2531, 3081)-(2551, 3098) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Yanille (Kandarin)](../places/yanille.md) | (2535, 3091) | x 2535-2547, z 3085-3094 | 1 | 4 | x 2531-2551, z 3081-3098 | 100 ticks | - | `{ x: 2541, z: 3090, radius: 17 }` | no |
 
 ## Drops
 

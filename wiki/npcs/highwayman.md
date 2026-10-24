@@ -23,13 +23,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Asgarnia](../places/asgarnia.md) | (3007, 3273) | 1 | 8 | (2999, 3265)-(3015, 3281) | 100 ticks | - | yes |
-| [Asgarnia](../places/asgarnia.md) | (3009, 3280) | 1 | 8 | (3001, 3272)-(3017, 3288) | 100 ticks | - | yes |
-| [Kandarin](../places/kandarin.md) | (2735, 3521) | 1 | 8 | (2727, 3513)-(2743, 3529) | 100 ticks | - | no |
-| [Kandarin](../places/kandarin.md) | (2749, 3521) | 1 | 8 | (2741, 3513)-(2757, 3529) | 100 ticks | - | no |
-| [Misthalin](../places/misthalin.md) | (3110, 3295) | 1 | 8 | (3102, 3287)-(3118, 3303) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Asgarnia](../places/asgarnia.md) | (3007, 3273) | (3007, 3273) | 1 | 8 | x 2999-3015, z 3265-3281 | 100 ticks | - | `{ x: 3007, z: 3273, radius: 15 }` | yes |
+| [Asgarnia](../places/asgarnia.md) | (3009, 3280) | (3009, 3280) | 1 | 8 | x 3001-3017, z 3272-3288 | 100 ticks | - | `{ x: 3009, z: 3280, radius: 15 }` | yes |
+| [Kandarin](../places/kandarin.md) | (2735, 3521) | (2735, 3521) | 1 | 8 | x 2727-2743, z 3513-3529 | 100 ticks | - | `{ x: 2735, z: 3521, radius: 15 }` | no |
+| [Kandarin](../places/kandarin.md) | (2749, 3521) | (2749, 3521) | 1 | 8 | x 2741-2757, z 3513-3529 | 100 ticks | - | `{ x: 2749, z: 3521, radius: 15 }` | no |
+| [Misthalin](../places/misthalin.md) | (3110, 3295) | (3110, 3295) | 1 | 8 | x 3102-3118, z 3287-3303 | 100 ticks | - | `{ x: 3110, z: 3295, radius: 15 }` | yes |
 
 ## Drops
 

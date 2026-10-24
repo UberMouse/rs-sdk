@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Kandarin](../places/kandarin.md) | (2622, 3367) | 3 | 3 | (2618, 3363)-(2626, 3370) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Kandarin](../places/kandarin.md) | (2622, 3367) | x 2621-2623, z 3366-3367 | 3 | 3 | x 2618-2626, z 3363-3370 | 100 ticks | - | `{ x: 2622, z: 3367, radius: 9 }` | no |
 
 ## Interactions
 

@@ -5,22 +5,22 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:arandar:0` | (2322, 3274) | [normal](../resources/tree/normal.md) 10 | no | no | - | unreached |
-| `tree:arandar:1` | (2326, 3313) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
-| `tree:arandar:2` | (2345, 3272) | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
-| `tree:arandar:3` | (2350, 3305) | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
-| `tree:arandar:4` | (2351, 3286) | [normal](../resources/tree/normal.md) 2 | no | no | - | Regicide at stage 13 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:arandar:0` | (2322, 3274) | x 2319-2329, z 3272-3275 | `{ x: 2324, z: 3274, radius: 9 }` | [normal](../resources/tree/normal.md) 10 | no | no | - | unreached |
+| `tree:arandar:1` | (2326, 3313) | x 2323-2327, z 3311-3314 | `{ x: 2325, z: 3313, radius: 6 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
+| `tree:arandar:2` | (2345, 3272) | (2345, 3272) | `{ x: 2345, z: 3272, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | no stand |
+| `tree:arandar:3` | (2350, 3305) | x 2348-2352, z 3299-3306 | `{ x: 2350, z: 3303, radius: 8 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | unreached |
+| `tree:arandar:4` | (2351, 3286) | x 2349-2352, z 3284-3287 | `{ x: 2351, z: 3286, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | Regicide at stage 13 |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:arandar:0` | (2326, 3273) | [limestone](../resources/rock/limestone.md) 4 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:arandar:0` | (2326, 3273) | x 2324-2327, z 3272-3275 | `{ x: 2326, z: 3274, radius: 6 }` | [limestone](../resources/rock/limestone.md) 4 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:arandar:0` | (2342, 3311) | Deadly red spider 10 | no | no | - | Regicide at stage 13 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:arandar:0` | (2342, 3311) | x 2337-2350, z 3309-3318 | x 2327-2360, z 3299-3328 | `{ x: 2344, z: 3314, radius: 26 }` | Deadly red spider 10 | no | no | - | Regicide at stage 13 |

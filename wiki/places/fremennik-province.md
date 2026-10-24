@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:fremennik-province:0` | (2682, 3623) | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 10 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:fremennik-province:0` | (2682, 3623) | x 2658-2702, z 3608-3654 | `{ x: 2680, z: 3631, radius: 35 }` | [normal](../resources/tree/normal.md) 57, [oak](../resources/tree/oak.md) 10 | no | no | - | - |

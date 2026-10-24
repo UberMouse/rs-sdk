@@ -5,129 +5,129 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:falador:0` | (2944, 3334) | Herquin's Gems. (gemshop) 1 | yes | yes | - | - |
-| `shop:falador:1` | (2954, 3387) | Falador General Store (generalshop4) 2, Flynn's Mace Market. (maceshop) 1 | yes | yes | - | - |
-| `shop:falador:2` | (2973, 3312) | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes | yes | - | - |
-| `shop:falador:3` | (2979, 3383) | Cassies' Shield Shop. (shieldshop) 1 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:falador:0` | (2944, 3334) | (2944, 3334) | x 2939-2949, z 3329-3339 | `{ x: 2944, z: 3334, radius: 11 }` | Herquin's Gems. (gemshop) 1 | yes | yes | - | - |
+| `shop:falador:1` | (2954, 3387) | x 2951-2957, z 3386-3389 | x 2946-2962, z 3381-3394 | `{ x: 2954, z: 3388, radius: 14 }` | Falador General Store (generalshop4) 2, Flynn's Mace Market. (maceshop) 1 | yes | yes | - | - |
+| `shop:falador:2` | (2973, 3312) | (2973, 3312) | x 2968-2978, z 3307-3317 | `{ x: 2973, z: 3312, radius: 11 }` | Wayne's Chains! - Chainmail specialist. (chainmailshop) 1 | yes | yes | - | - |
+| `shop:falador:3` | (2979, 3383) | (2979, 3383) | x 2974-2984, z 3378-3388 | `{ x: 2979, z: 3383, radius: 11 }` | Cassies' Shield Shop. (shieldshop) 1 | yes | yes | - | - |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:falador:0` | (2975, 3368) | Furnace 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:falador:0` | (2975, 3368) | (2975, 3368) | `{ x: 2975, z: 3368, radius: 3 }` | Furnace 1 | yes | yes | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:falador:0` | (2969, 3330) | Range 2 | yes | yes | - | - |
-| `range:falador:1` | (2988, 3365) | Range 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:falador:0` | (2969, 3330) | x 2967-2971, z 3328-3331 | `{ x: 2969, z: 3330, radius: 6 }` | Range 2 | yes | yes | - | - |
+| `range:falador:1` | (2988, 3365) | (2988, 3365) | `{ x: 2988, z: 3365, radius: 3 }` | Range 1 | yes | yes | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:falador:0` | (2981, 3314) | Spinning wheel 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:falador:0` | (2981, 3314) | (2981, 3314) | `{ x: 2981, z: 3314, radius: 3 }` | Spinning wheel 1 | yes | yes | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:falador:0` | (2949, 3381) | Fountain 1 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:falador:0` | (2949, 3381) | (2949, 3381) | `{ x: 2949, z: 3381, radius: 3 }` | Fountain 1 | yes | yes | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:falador:0` | (2936, 3305) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
-| `tree:falador:1` | (2948, 3313) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
-| `tree:falador:2` | (2948, 3358) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
-| `tree:falador:3` | (2977, 3364) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
-| `tree:falador:4` | (2985, 3390) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
-| `tree:falador:5` | (2988, 3375) | [normal](../resources/tree/normal.md) 2 | yes | yes | - | - |
-| `tree:falador:6` | (3010, 3313) | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [yew](../resources/tree/yew.md) 2 | yes | yes | - | - |
-| `tree:falador:7` | (3001, 3361) | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
-| `tree:falador:8` | (3022, 3395) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:falador:0` | (2936, 3305) | (2936, 3305) | `{ x: 2936, z: 3305, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| `tree:falador:1` | (2948, 3313) | x 2944-2953, z 3307-3320 | `{ x: 2949, z: 3314, radius: 12 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
+| `tree:falador:2` | (2948, 3358) | x 2945-2953, z 3354-3363 | `{ x: 2949, z: 3359, radius: 10 }` | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
+| `tree:falador:3` | (2977, 3364) | x 2972-2982, z 3364-3365 | `{ x: 2977, z: 3365, radius: 9 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
+| `tree:falador:4` | (2985, 3390) | x 2978-2990, z 3389-3390 | `{ x: 2984, z: 3390, radius: 10 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
+| `tree:falador:5` | (2988, 3375) | x 2986-2989, z 3373-3376 | `{ x: 2988, z: 3375, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | yes | yes | - | - |
+| `tree:falador:6` | (3010, 3313) | x 2992-3024, z 3305-3329 | `{ x: 3008, z: 3317, radius: 23 }` | [normal](../resources/tree/normal.md) 16, [oak](../resources/tree/oak.md) 5, [yew](../resources/tree/yew.md) 2 | yes | yes | - | - |
+| `tree:falador:7` | (3001, 3361) | x 2998-3005, z 3356-3366 | `{ x: 3002, z: 3361, radius: 10 }` | [normal](../resources/tree/normal.md) 4, [oak](../resources/tree/oak.md) 1 | yes | yes | - | - |
+| `tree:falador:8` | (3022, 3395) | (3022, 3395) | `{ x: 3022, z: 3395, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:falador:0` | (2952, 3381) | [Guard](../resources/pickpocket/guard1.md) 2 | yes | yes | - | - |
-| `pickpocket:falador:1` | (2959, 3307) | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
-| `pickpocket:falador:2` | (2966, 3381) | [Guard](../resources/pickpocket/guard1.md) 3, [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman3.md) 1 | yes | yes | - | - |
-| `pickpocket:falador:3` | (2981, 3378) | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | yes | - | - |
-| `pickpocket:falador:4` | (3006, 3322) | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:falador:0` | (2952, 3381) | x 2950-2953, z 3379-3382 | x 2948-2955, z 3377-3384 | `{ x: 2952, z: 3381, radius: 9 }` | [Guard](../resources/pickpocket/guard1.md) 2 | yes | yes | - | - |
+| `pickpocket:falador:1` | (2959, 3307) | (2959, 3307) | x 2954-2964, z 3302-3312 | `{ x: 2959, z: 3307, radius: 11 }` | [Man (man2)](../resources/pickpocket/man2.md) 1 | yes | yes | - | - |
+| `pickpocket:falador:2` | (2966, 3381) | x 2962-2970, z 3373-3389 | x 2957-2975, z 3368-3394 | `{ x: 2966, z: 3381, radius: 19 }` | [Guard](../resources/pickpocket/guard1.md) 3, [Man (man)](../resources/pickpocket/man.md) 1, [Woman](../resources/pickpocket/woman3.md) 1 | yes | yes | - | - |
+| `pickpocket:falador:3` | (2981, 3378) | (2981, 3378) | x 2976-2986, z 3373-3383 | `{ x: 2981, z: 3378, radius: 11 }` | [Man (man3)](../resources/pickpocket/man3.md) 1 | yes | yes | - | - |
+| `pickpocket:falador:4` | (3006, 3322) | x 3006-3007, z 3321-3323 | x 3004-3009, z 3319-3325 | `{ x: 3007, z: 3322, radius: 8 }` | [Guard](../resources/pickpocket/guard1.md) 3 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:falador:0` | (2947, 3329) | Imp 1 | yes | yes | - | - |
-| `npc:falador:1` | (2951, 3360) | Imp 1 | yes | yes | - | - |
-| `npc:falador:2` | (2971, 3328) L2 | White Knight 3 | yes | yes | - | - |
-| `npc:falador:3` | (2969, 3329) L1 | White Knight 1 | yes | yes | - | - |
-| `npc:falador:4` | (2980, 3345) | White Knight 4 | yes | yes | - | - |
-| `npc:falador:5` | (2974, 3337) L1 | White Knight 1 | yes | yes | - | - |
-| `npc:falador:6` | (2976, 3339) | White Knight 1 | yes | yes | - | - |
-| `npc:falador:7` | (2983, 3334) L1 | White Knight 3 | yes | yes | - | - |
-| `npc:falador:8` | (2985, 3345) L2 | White Knight 4 | yes | yes | - | - |
-| `npc:falador:9` | (2985, 3345) L1 | White Knight 2 | yes | yes | - | - |
-| `npc:falador:10` | (2982, 3352) L3 | White Knight 1 | yes | yes | - | - |
-| `npc:falador:11` | (2983, 3332) | White Knight 2 | yes | yes | - | - |
-| `npc:falador:12` | (2996, 3342) | White Knight 1 | yes | yes | - | - |
-| `npc:falador:13` | (3009, 3307) | Imp 1 | yes | no | - | - |
-| `npc:falador:14` | (3013, 3314) | Imp 2 | yes | no | - | - |
-| `npc:falador:15` | (3012, 3337) | Dwarf 1 | yes | no | - | - |
-| `npc:falador:16` | (3019, 3333) | Dwarf 1 | yes | no | - | - |
-| `npc:falador:17` | (3025, 3347) | Dwarf 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:falador:0` | (2947, 3329) | (2947, 3329) | x 2922-2972, z 3304-3354 | `{ x: 2947, z: 3329, radius: 39 }` | Imp 1 | yes | yes | - | - |
+| `npc:falador:1` | (2951, 3360) | (2951, 3360) | x 2926-2976, z 3335-3385 | `{ x: 2951, z: 3360, radius: 39 }` | Imp 1 | yes | yes | - | - |
+| `npc:falador:2` | (2971, 3328) L2 | x 2966-2975, z 3328-3329 L2 | x 2961-2980, z 3323-3334 L2 | `{ x: 2971, z: 3329, radius: 15, level: 2 }` | White Knight 3 | yes | yes | - | - |
+| `npc:falador:3` | (2969, 3329) L1 | (2969, 3329) L1 | x 2964-2974, z 3324-3334 L1 | `{ x: 2969, z: 3329, radius: 11, level: 1 }` | White Knight 1 | yes | yes | - | - |
+| `npc:falador:4` | (2980, 3345) | x 2973-2987, z 3341-3348 | x 2968-2992, z 3336-3353 | `{ x: 2980, z: 3345, radius: 18 }` | White Knight 4 | yes | yes | - | - |
+| `npc:falador:5` | (2974, 3337) L1 | (2974, 3337) L1 | x 2969-2979, z 3332-3342 L1 | `{ x: 2974, z: 3337, radius: 11, level: 1 }` | White Knight 1 | yes | yes | - | - |
+| `npc:falador:6` | (2976, 3339) | (2976, 3339) | x 2971-2981, z 3334-3344 | `{ x: 2976, z: 3339, radius: 11 }` | White Knight 1 | yes | yes | - | - |
+| `npc:falador:7` | (2983, 3334) L1 | x 2978-2989, z 3329-3338 L1 | x 2973-2994, z 3324-3343 L1 | `{ x: 2984, z: 3334, radius: 18, level: 1 }` | White Knight 3 | yes | yes | - | - |
+| `npc:falador:8` | (2985, 3345) L2 | x 2981-2990, z 3339-3350 L2 | x 2976-2995, z 3334-3355 L2 | `{ x: 2986, z: 3345, radius: 18, level: 2 }` | White Knight 4 | yes | yes | - | - |
+| `npc:falador:9` | (2985, 3345) L1 | x 2982-2987, z 3345 L1 | x 2977-2992, z 3340-3350 L1 | `{ x: 2985, z: 3345, radius: 13, level: 1 }` | White Knight 2 | yes | yes | - | - |
+| `npc:falador:10` | (2982, 3352) L3 | (2982, 3352) L3 | x 2977-2987, z 3347-3357 L3 | `{ x: 2982, z: 3352, radius: 11, level: 3 }` | White Knight 1 | yes | yes | - | - |
+| `npc:falador:11` | (2983, 3332) | x 2983, z 3330-3334 | x 2978-2988, z 3325-3339 | `{ x: 2983, z: 3332, radius: 12 }` | White Knight 2 | yes | yes | - | - |
+| `npc:falador:12` | (2996, 3342) | (2996, 3342) | x 2991-3001, z 3337-3347 | `{ x: 2996, z: 3342, radius: 11 }` | White Knight 1 | yes | yes | - | - |
+| `npc:falador:13` | (3009, 3307) | (3009, 3307) | x 2984-3034, z 3282-3332 | `{ x: 3009, z: 3307, radius: 39 }` | Imp 1 | yes | no | - | - |
+| `npc:falador:14` | (3013, 3314) | x 3011-3015, z 3314 | x 2986-3040, z 3289-3339 | `{ x: 3013, z: 3314, radius: 40 }` | Imp 2 | yes | no | - | - |
+| `npc:falador:15` | (3012, 3337) | (3012, 3337) | x 2999-3025, z 3324-3350 | `{ x: 3012, z: 3337, radius: 22 }` | Dwarf 1 | yes | no | - | - |
+| `npc:falador:16` | (3019, 3333) | (3019, 3333) | x 3006-3032, z 3320-3346 | `{ x: 3019, z: 3333, radius: 22 }` | Dwarf 1 | yes | no | - | - |
+| `npc:falador:17` | (3025, 3347) | (3025, 3347) | x 3012-3038, z 3334-3360 | `{ x: 3025, z: 3347, radius: 22 }` | Dwarf 1 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:falador:0` | (2946, 3363) | Ladder 1 | up (2947, 3363) L1 by Climb-up | yes | yes | - | unreached |
-| `connector:falador:1` | (2946, 3363) L1 | Ladder 1 | down (2947, 3363) by Climb-down | yes | yes | - | unreached |
-| `connector:falador:2` | (2946, 3378) | Ladder 1 | up (2945, 3378) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:3` | (2946, 3378) L1 | Ladder 1 | down (2945, 3378) by Climb-down | yes | yes | - | - |
-| `connector:falador:4` | (2954, 3389) | Ladder 1 | up (2953, 3389) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:5` | (2954, 3389) L1 | Ladder 1 | down (2953, 3389) by Climb-down | yes | yes | - | - |
-| `connector:falador:6` | (2954, 3390) L1 | Ladder 1 | up (2955, 3390) L2 by Climb-up | yes | yes | - | - |
-| `connector:falador:7` | (2954, 3390) L2 | Ladder 1 | down (2955, 3390) L1 by Climb-down | yes | yes | - | - |
-| `connector:falador:8` | (2959, 3369) | Staircase 1 | up (2959, 3372) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:9` | (2959, 3370) L1 | Staircase 1 | down (2959, 3368) by Climb-down | yes | yes | - | - |
-| `connector:falador:10` | (2962, 3394) L1 | Ladder 1 | up (2961, 3394) L2 by Climb-up | yes | yes | - | unreached |
-| `connector:falador:11` | (2962, 3394) L2 | Ladder 1 | up (2962, 3393) L3 by Climb-up | yes | yes | - | unreached |
-| `connector:falador:12` | (2962, 3394) L3 | Ladder 1 | down (2962, 3393) L2 by Climb-down | yes | yes | - | unreached |
-| `connector:falador:13` | (2969, 3394) L1 | Ladder 1 | up (2970, 3394) L2 by Climb-up | yes | yes | - | unreached |
-| `connector:falador:14` | (2969, 3394) L2 | Ladder 1 | up (2969, 3393) L3 by Climb-up | yes | yes | - | unreached |
-| `connector:falador:15` | (2969, 3394) L3 | Ladder 1 | down (2969, 3393) L2 by Climb-down | yes | yes | - | unreached |
-| `connector:falador:16` | (2971, 3370) | Staircase 1 | up (2971, 3373) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:17` | (2971, 3371) L1 | Staircase 1 | down (2971, 3369) by Climb-down | yes | yes | - | - |
-| `connector:falador:18` | (2973, 3384) | Staircase 1 | up (2972, 3385) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:19` | (2973, 3385) L1 | Staircase 1 | down (2972, 3384) by Climb-down | yes | yes | - | - |
-| `connector:falador:20` | (2983, 3351) | Ladder 1 | up (2983, 3350) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:21` | (2983, 3351) L1 | Ladder 1 | down (2983, 3350) by Climb-down | yes | yes | - | - |
-| `connector:falador:22` | (2983, 3351) L2 | Ladder 1 | up (2983, 3350) L3 by Climb-up | yes | yes | - | - |
-| `connector:falador:23` | (2983, 3351) L3 | Ladder 1 | down (2983, 3350) L2 by Climb-down | yes | yes | - | - |
-| `connector:falador:24` | (2983, 3352) L1 | Ladder 1 | up (2983, 3353) L2 by Climb-up | yes | yes | - | - |
-| `connector:falador:25` | (2983, 3352) L2 | Ladder 1 | down (2983, 3353) L1 by Climb-down | yes | yes | - | - |
-| `connector:falador:26` | (2984, 3337) L1 | Staircase 1 | up (2984, 3340) L2 by Climb-up | yes | yes | - | - |
-| `connector:falador:27` | (2984, 3338) L2 | Staircase 1 | down (2984, 3336) L1 by Climb-down | yes | yes | - | - |
-| `connector:falador:28` | (2994, 3341) | Ladder 1 | up (2993, 3341) L1 by Climb-up | yes | yes | - | - |
-| `connector:falador:29` | (2994, 3341) L1 | Ladder 1 | down (2993, 3341) by Climb-down | yes | yes | - | - |
-| `connector:falador:30` | (2994, 3341) L2 | Ladder 1 | up (2995, 3341) L3 by Climb-up | yes | yes | - | - |
-| `connector:falador:31` | (2994, 3341) L3 | Ladder 1 | down (2995, 3341) L2 by Climb-down | yes | yes | - | - |
-| `connector:falador:32` | (2996, 3341) L1 | Ladder 1 | up (2995, 3341) L2 by Climb-up | yes | yes | - | - |
-| `connector:falador:33` | (2996, 3341) L2 | Ladder 1 | down (2995, 3341) L1 by Climb-down | yes | yes | - | - |
-| `connector:falador:34` | (3011, 3338) | Staircase 1 | up (3011, 3337) L1 by Climb-up | yes | no | - | - |
-| `connector:falador:35` | (3011, 3338) L1 | Staircase 1 | down (3010, 3338) by Climb-down | yes | no | - | - |
-| `connector:falador:36` | (3018, 3343) | Staircase 1 | up (3021, 3344) L1 by Climb-up | yes | no | - | - |
-| `connector:falador:37` | (3019, 3343) L1 | Staircase 1 | down (3017, 3344) by Climb-down | yes | no | - | - |
-| `connector:falador:38` | (3021, 3332) | Staircase 1 | up (3024, 3333) L1 by Climb-up | yes | no | - | - |
-| `connector:falador:39` | (3022, 3332) L1 | Staircase 1 | down (3020, 3333) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:falador:0` | (2946, 3363) | (2946, 3363) | `{ x: 2946, z: 3363, radius: 3 }` | Ladder 1 | up (2947, 3363) L1 by Climb-up | yes | yes | - | unreached |
+| `connector:falador:1` | (2946, 3363) L1 | (2946, 3363) L1 | `{ x: 2946, z: 3363, radius: 3, level: 1 }` | Ladder 1 | down (2947, 3363) by Climb-down | yes | yes | - | unreached |
+| `connector:falador:2` | (2946, 3378) | (2946, 3378) | `{ x: 2946, z: 3378, radius: 3 }` | Ladder 1 | up (2945, 3378) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:3` | (2946, 3378) L1 | (2946, 3378) L1 | `{ x: 2946, z: 3378, radius: 3, level: 1 }` | Ladder 1 | down (2945, 3378) by Climb-down | yes | yes | - | - |
+| `connector:falador:4` | (2954, 3389) | (2954, 3389) | `{ x: 2954, z: 3389, radius: 3 }` | Ladder 1 | up (2953, 3389) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:5` | (2954, 3389) L1 | (2954, 3389) L1 | `{ x: 2954, z: 3389, radius: 3, level: 1 }` | Ladder 1 | down (2953, 3389) by Climb-down | yes | yes | - | - |
+| `connector:falador:6` | (2954, 3390) L1 | (2954, 3390) L1 | `{ x: 2954, z: 3390, radius: 3, level: 1 }` | Ladder 1 | up (2955, 3390) L2 by Climb-up | yes | yes | - | - |
+| `connector:falador:7` | (2954, 3390) L2 | (2954, 3390) L2 | `{ x: 2954, z: 3390, radius: 3, level: 2 }` | Ladder 1 | down (2955, 3390) L1 by Climb-down | yes | yes | - | - |
+| `connector:falador:8` | (2959, 3369) | (2959, 3369) | `{ x: 2959, z: 3369, radius: 3 }` | Staircase 1 | up (2959, 3372) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:9` | (2959, 3370) L1 | (2959, 3370) L1 | `{ x: 2959, z: 3370, radius: 3, level: 1 }` | Staircase 1 | down (2959, 3368) by Climb-down | yes | yes | - | - |
+| `connector:falador:10` | (2962, 3394) L1 | (2962, 3394) L1 | `{ x: 2962, z: 3394, radius: 3, level: 1 }` | Ladder 1 | up (2961, 3394) L2 by Climb-up | yes | yes | - | unreached |
+| `connector:falador:11` | (2962, 3394) L2 | (2962, 3394) L2 | `{ x: 2962, z: 3394, radius: 3, level: 2 }` | Ladder 1 | up (2962, 3393) L3 by Climb-up | yes | yes | - | unreached |
+| `connector:falador:12` | (2962, 3394) L3 | (2962, 3394) L3 | `{ x: 2962, z: 3394, radius: 3, level: 3 }` | Ladder 1 | down (2962, 3393) L2 by Climb-down | yes | yes | - | unreached |
+| `connector:falador:13` | (2969, 3394) L1 | (2969, 3394) L1 | `{ x: 2969, z: 3394, radius: 3, level: 1 }` | Ladder 1 | up (2970, 3394) L2 by Climb-up | yes | yes | - | unreached |
+| `connector:falador:14` | (2969, 3394) L2 | (2969, 3394) L2 | `{ x: 2969, z: 3394, radius: 3, level: 2 }` | Ladder 1 | up (2969, 3393) L3 by Climb-up | yes | yes | - | unreached |
+| `connector:falador:15` | (2969, 3394) L3 | (2969, 3394) L3 | `{ x: 2969, z: 3394, radius: 3, level: 3 }` | Ladder 1 | down (2969, 3393) L2 by Climb-down | yes | yes | - | unreached |
+| `connector:falador:16` | (2971, 3370) | (2971, 3370) | `{ x: 2971, z: 3370, radius: 3 }` | Staircase 1 | up (2971, 3373) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:17` | (2971, 3371) L1 | (2971, 3371) L1 | `{ x: 2971, z: 3371, radius: 3, level: 1 }` | Staircase 1 | down (2971, 3369) by Climb-down | yes | yes | - | - |
+| `connector:falador:18` | (2973, 3384) | (2973, 3384) | `{ x: 2973, z: 3384, radius: 3 }` | Staircase 1 | up (2972, 3385) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:19` | (2973, 3385) L1 | (2973, 3385) L1 | `{ x: 2973, z: 3385, radius: 3, level: 1 }` | Staircase 1 | down (2972, 3384) by Climb-down | yes | yes | - | - |
+| `connector:falador:20` | (2983, 3351) | (2983, 3351) | `{ x: 2983, z: 3351, radius: 3 }` | Ladder 1 | up (2983, 3350) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:21` | (2983, 3351) L1 | (2983, 3351) L1 | `{ x: 2983, z: 3351, radius: 3, level: 1 }` | Ladder 1 | down (2983, 3350) by Climb-down | yes | yes | - | - |
+| `connector:falador:22` | (2983, 3351) L2 | (2983, 3351) L2 | `{ x: 2983, z: 3351, radius: 3, level: 2 }` | Ladder 1 | up (2983, 3350) L3 by Climb-up | yes | yes | - | - |
+| `connector:falador:23` | (2983, 3351) L3 | (2983, 3351) L3 | `{ x: 2983, z: 3351, radius: 3, level: 3 }` | Ladder 1 | down (2983, 3350) L2 by Climb-down | yes | yes | - | - |
+| `connector:falador:24` | (2983, 3352) L1 | (2983, 3352) L1 | `{ x: 2983, z: 3352, radius: 3, level: 1 }` | Ladder 1 | up (2983, 3353) L2 by Climb-up | yes | yes | - | - |
+| `connector:falador:25` | (2983, 3352) L2 | (2983, 3352) L2 | `{ x: 2983, z: 3352, radius: 3, level: 2 }` | Ladder 1 | down (2983, 3353) L1 by Climb-down | yes | yes | - | - |
+| `connector:falador:26` | (2984, 3337) L1 | (2984, 3337) L1 | `{ x: 2984, z: 3337, radius: 3, level: 1 }` | Staircase 1 | up (2984, 3340) L2 by Climb-up | yes | yes | - | - |
+| `connector:falador:27` | (2984, 3338) L2 | (2984, 3338) L2 | `{ x: 2984, z: 3338, radius: 3, level: 2 }` | Staircase 1 | down (2984, 3336) L1 by Climb-down | yes | yes | - | - |
+| `connector:falador:28` | (2994, 3341) | (2994, 3341) | `{ x: 2994, z: 3341, radius: 3 }` | Ladder 1 | up (2993, 3341) L1 by Climb-up | yes | yes | - | - |
+| `connector:falador:29` | (2994, 3341) L1 | (2994, 3341) L1 | `{ x: 2994, z: 3341, radius: 3, level: 1 }` | Ladder 1 | down (2993, 3341) by Climb-down | yes | yes | - | - |
+| `connector:falador:30` | (2994, 3341) L2 | (2994, 3341) L2 | `{ x: 2994, z: 3341, radius: 3, level: 2 }` | Ladder 1 | up (2995, 3341) L3 by Climb-up | yes | yes | - | - |
+| `connector:falador:31` | (2994, 3341) L3 | (2994, 3341) L3 | `{ x: 2994, z: 3341, radius: 3, level: 3 }` | Ladder 1 | down (2995, 3341) L2 by Climb-down | yes | yes | - | - |
+| `connector:falador:32` | (2996, 3341) L1 | (2996, 3341) L1 | `{ x: 2996, z: 3341, radius: 3, level: 1 }` | Ladder 1 | up (2995, 3341) L2 by Climb-up | yes | yes | - | - |
+| `connector:falador:33` | (2996, 3341) L2 | (2996, 3341) L2 | `{ x: 2996, z: 3341, radius: 3, level: 2 }` | Ladder 1 | down (2995, 3341) L1 by Climb-down | yes | yes | - | - |
+| `connector:falador:34` | (3011, 3338) | (3011, 3338) | `{ x: 3011, z: 3338, radius: 3 }` | Staircase 1 | up (3011, 3337) L1 by Climb-up | yes | no | - | - |
+| `connector:falador:35` | (3011, 3338) L1 | (3011, 3338) L1 | `{ x: 3011, z: 3338, radius: 3, level: 1 }` | Staircase 1 | down (3010, 3338) by Climb-down | yes | no | - | - |
+| `connector:falador:36` | (3018, 3343) | (3018, 3343) | `{ x: 3018, z: 3343, radius: 3 }` | Staircase 1 | up (3021, 3344) L1 by Climb-up | yes | no | - | - |
+| `connector:falador:37` | (3019, 3343) L1 | (3019, 3343) L1 | `{ x: 3019, z: 3343, radius: 3, level: 1 }` | Staircase 1 | down (3017, 3344) by Climb-down | yes | no | - | - |
+| `connector:falador:38` | (3021, 3332) | (3021, 3332) | `{ x: 3021, z: 3332, radius: 3 }` | Staircase 1 | up (3024, 3333) L1 by Climb-up | yes | no | - | - |
+| `connector:falador:39` | (3022, 3332) L1 | (3022, 3332) L1 | `{ x: 3022, z: 3332, radius: 3, level: 1 }` | Staircase 1 | down (3020, 3333) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

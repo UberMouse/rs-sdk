@@ -5,31 +5,31 @@
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:rogues-castle:0` | (3280, 3929) | Range 1 | no | yes | 52 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:rogues-castle:0` | (3280, 3929) | (3280, 3929) | `{ x: 3280, z: 3929, radius: 3 }` | Range 1 | no | yes | 52 | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:rogues-castle:0` | (3278, 3921) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
-| `tree:rogues-castle:1` | (3294, 3922) | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:rogues-castle:0` | (3278, 3921) | x 3275-3281, z 3921 | `{ x: 3278, z: 3921, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
+| `tree:rogues-castle:1` | (3294, 3922) | x 3291-3297, z 3921-3922 | `{ x: 3294, z: 3922, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | yes | 51 | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:rogues-castle:0` | (3284, 3931) | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 | - |
-| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 | - |
-| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 | unreached |
-| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:rogues-castle:0` | (3284, 3931) | x 3276-3292, z 3924-3939 | x 3271-3297, z 3919-3944 | `{ x: 3284, z: 3932, radius: 22 }` | [Rogue](../resources/pickpocket/rogue.md) 10 | no | yes | 53 | - |
+| `pickpocket:rogues-castle:1` | (3282, 3936) L3 | x 3281-3282, z 3934-3938 L3 | x 3276-3287, z 3929-3943 L3 | `{ x: 3282, z: 3936, radius: 13, level: 3 }` | [Rogue](../resources/pickpocket/rogue.md) 2 | no | no | 53 | - |
+| `pickpocket:rogues-castle:2` | (3290, 3933) L2 | x 3286-3296, z 3929-3939 L2 | x 3281-3301, z 3924-3944 L2 | `{ x: 3291, z: 3934, radius: 18, level: 2 }` | [Rogue](../resources/pickpocket/rogue.md) 6 | no | yes | 53 | unreached |
+| `pickpocket:rogues-castle:3` | (3289, 3931) L1 | x 3288-3289, z 3930-3931 L1 | x 3283-3294, z 3925-3936 L1 | `{ x: 3289, z: 3931, radius: 12, level: 1 }` | [Rogue](../resources/pickpocket/rogue.md) 2 | no | yes | 52 | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:rogues-castle:0` | (3280, 3936) | Staircase 1 | up (3282, 3936) L1 by Climb-up | no | yes | 53 | - |
-| `connector:rogues-castle:1` | (3280, 3936) L1 | Staircase 1 | down (3282, 3936) by Climb or Climb-down; up (3282, 3936) L2 by Climb or Climb-up | no | yes | 53 | - |
-| `connector:rogues-castle:2` | (3280, 3936) L2 | Staircase 1 | down (3282, 3936) L1 by Climb or Climb-down; up (3281, 3936) L3 by Climb or Climb-up | no | yes | 53 | - |
-| `connector:rogues-castle:3` | (3280, 3936) L3 | Staircase 1 | down (3282, 3936) L2 by Climb-down | no | no | 53 | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:rogues-castle:0` | (3280, 3936) | (3280, 3936) | `{ x: 3280, z: 3936, radius: 3 }` | Staircase 1 | up (3282, 3936) L1 by Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:1` | (3280, 3936) L1 | (3280, 3936) L1 | `{ x: 3280, z: 3936, radius: 3, level: 1 }` | Staircase 1 | down (3282, 3936) by Climb or Climb-down; up (3282, 3936) L2 by Climb or Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:2` | (3280, 3936) L2 | (3280, 3936) L2 | `{ x: 3280, z: 3936, radius: 3, level: 2 }` | Staircase 1 | down (3282, 3936) L1 by Climb or Climb-down; up (3281, 3936) L3 by Climb or Climb-up | no | yes | 53 | - |
+| `connector:rogues-castle:3` | (3280, 3936) L3 | (3280, 3936) L3 | `{ x: 3280, z: 3936, radius: 3, level: 3 }` | Staircase 1 | down (3282, 3936) L2 by Climb-down | no | no | 53 | - |

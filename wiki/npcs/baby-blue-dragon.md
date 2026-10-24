@@ -24,11 +24,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9766) | 3 | 4 | (2891, 9759)-(2904, 9773) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2904, 9802) | 4 | 4 | (2888, 9792)-(2915, 9812) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2914, 9799) | 2 | 4 | (2907, 9793)-(2921, 9805) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2897, 9766) | x 2895-2900, z 9763-9769 | 3 | 4 | x 2891-2904, z 9759-9773 | 60 ticks | - | `{ x: 2898, z: 9766, radius: 13 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2904, 9802) | x 2892-2911, z 9796-9808 | 4 | 4 | x 2888-2915, z 9792-9812 | 60 ticks | - | `{ x: 2902, z: 9802, radius: 21 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2914, 9799) | x 2911-2917, z 9797-9801 | 2 | 4 | x 2907-2921, z 9793-9805 | 60 ticks | - | `{ x: 2914, z: 9799, radius: 13 }` | no |
 
 ## Drops
 

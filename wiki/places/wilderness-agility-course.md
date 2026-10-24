@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:wilderness-agility-course:0` | (2997, 3940) | [normal](../resources/tree/normal.md) 3 | no | no | 53 | 52 Agility |
-| `tree:wilderness-agility-course:1` | (2999, 3956) | [normal](../resources/tree/normal.md) 3 | no | no | 55 | 52 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:wilderness-agility-course:0` | (2997, 3940) | x 2995-2999, z 3938-3941 | `{ x: 2997, z: 3940, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | no | no | 53 | 52 Agility |
+| `tree:wilderness-agility-course:1` | (2999, 3956) | x 2998-3000, z 3956-3957 | `{ x: 2999, z: 3957, radius: 5 }` | [normal](../resources/tree/normal.md) 3 | no | no | 55 | 52 Agility |
 
 ## Agility courses
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `agility-course:wilderness-agility-course:0` | (3000, 3944) | [wilderness](../resources/agility-course/wilderness.md) 8 | no | no | 56 | 52 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `agility-course:wilderness-agility-course:0` | (3000, 3944) | x 2993-3005, z 3936-3960 | `{ x: 2999, z: 3948, radius: 17 }` | [wilderness](../resources/agility-course/wilderness.md) 8 | no | no | 56 | 52 Agility |

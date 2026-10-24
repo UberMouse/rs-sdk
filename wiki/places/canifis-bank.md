@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:canifis-bank:0` | (3513, 3480) | Bank booth 4, Banker 2 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:canifis-bank:0` | (3513, 3480) | x 3513-3514, z 3479-3482 | `{ x: 3514, z: 3481, radius: 6 }` | Bank booth 4, Banker 2 | no | no | - | Priest in Peril at stage 61 |

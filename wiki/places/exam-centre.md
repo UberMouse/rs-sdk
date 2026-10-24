@@ -5,8 +5,8 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:exam-centre:0` | (3349, 3354) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:exam-centre:1` | (3368, 3347) | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:exam-centre:2` | (3371, 3334) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:exam-centre:0` | (3349, 3354) | (3349, 3354) | `{ x: 3349, z: 3354, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:exam-centre:1` | (3368, 3347) | x 3364-3371, z 3343-3351 | `{ x: 3368, z: 3347, radius: 9 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:exam-centre:2` | (3371, 3334) | (3371, 3334) | `{ x: 3371, z: 3334, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |

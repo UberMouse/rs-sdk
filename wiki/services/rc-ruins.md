@@ -3,15 +3,15 @@
 
 10 sites, 7 of them in F2P; 7 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 0 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:0` | (2981, 3513) | (2980, 3513) | mind 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:1` | (2984, 3291) | (2983, 3291) | air 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:2` | (3052, 3444) | (3051, 3444) | body 1 | yes | - |
-| [Entrana](../places/entrana.md) | `rc-ruins:entrana:0` | (2857, 3380) | (2857, 3379) | law 1 | no | no weapons/armour (Entrana rule) |
-| [Karamja](../places/karamja.md) | `rc-ruins:karamja:0` | (2868, 3018) | (2867, 3018) | nature 1 | no | 30 coins or The Grand Tree done |
-| [Kharidian Desert](../places/kharidian-desert.md) | `rc-ruins:kharidian-desert:0` | (3312, 3254) | (3312, 3253) | fire 1 | yes | - |
-| [Misthalin](../places/misthalin.md) | `rc-ruins:misthalin:0` | (3305, 3473) | (3305, 3472) | earth 1 | yes | - |
-| [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | `rc-ruins:lumbridge-swamp:0` | (3184, 3164) | (3183, 3164) | water 1 | yes | - |
-| [Wilderness](../places/wilderness.md) | `rc-ruins:wilderness:0` | (3059, 3590) | (3058, 3590) | chaos 1 | yes | - |
-| [Zanaris](../places/zanaris.md) | `rc-ruins:zanaris:0` | (3175, 9496) | (3175, 9495) | cosmic 1 | no | wear Dramen staff |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:0` | (2981, 3513) | (2980, 3513) | (2981, 3513) | `{ x: 2981, z: 3513, radius: 3 }` | mind 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:1` | (2984, 3291) | (2983, 3291) | (2984, 3291) | `{ x: 2984, z: 3291, radius: 3 }` | air 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `rc-ruins:asgarnia:2` | (3052, 3444) | (3051, 3444) | (3052, 3444) | `{ x: 3052, z: 3444, radius: 3 }` | body 1 | yes | - |
+| [Entrana](../places/entrana.md) | `rc-ruins:entrana:0` | (2857, 3380) | (2857, 3379) | (2857, 3380) | `{ x: 2857, z: 3380, radius: 3 }` | law 1 | no | no weapons/armour (Entrana rule) |
+| [Karamja](../places/karamja.md) | `rc-ruins:karamja:0` | (2868, 3018) | (2867, 3018) | (2868, 3018) | `{ x: 2868, z: 3018, radius: 3 }` | nature 1 | no | 30 coins or The Grand Tree done |
+| [Kharidian Desert](../places/kharidian-desert.md) | `rc-ruins:kharidian-desert:0` | (3312, 3254) | (3312, 3253) | (3312, 3254) | `{ x: 3312, z: 3254, radius: 3 }` | fire 1 | yes | - |
+| [Misthalin](../places/misthalin.md) | `rc-ruins:misthalin:0` | (3305, 3473) | (3305, 3472) | (3305, 3473) | `{ x: 3305, z: 3473, radius: 3 }` | earth 1 | yes | - |
+| [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | `rc-ruins:lumbridge-swamp:0` | (3184, 3164) | (3183, 3164) | (3184, 3164) | `{ x: 3184, z: 3164, radius: 3 }` | water 1 | yes | - |
+| [Wilderness](../places/wilderness.md) | `rc-ruins:wilderness:0` | (3059, 3590) | (3058, 3590) | (3059, 3590) | `{ x: 3059, z: 3590, radius: 3 }` | chaos 1 | yes | - |
+| [Zanaris](../places/zanaris.md) | `rc-ruins:zanaris:0` | (3175, 9496) | (3175, 9495) | (3175, 9496) | `{ x: 3175, z: 9496, radius: 3 }` | cosmic 1 | no | wear Dramen staff |

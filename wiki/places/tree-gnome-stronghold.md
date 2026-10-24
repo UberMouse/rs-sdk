@@ -7,211 +7,211 @@ The entrance gate (oploc1,gnome_areagate, areas/area_gnome/scripts/gnome_gate.rs
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | Blurberry Bar (blurberrybar) 1 | no | no | - | - |
-| `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | Gianne's Restaurant (giannerestaurant) 2, Grand Tree Groceries (gnomeshop_hudo) 1 | no | no | - | - |
-| `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | Gulluck and Sons (gnomeshop_gulluck) 1 | no | no | - | - |
-| `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | Blurberry Bar (blurberrybar) 2 | no | no | - | - |
-| `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | Fine Fashions (gnomeshop_rometti) 1 | no | no | - | - |
-| `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | Funch's Fine Groceries (gnomeshop_heck) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:tree-gnome-stronghold:0` | (2417, 3498) L1 | (2417, 3498) L1 | x 2414-2420, z 3495-3501 L1 | `{ x: 2417, z: 3498, radius: 8, level: 1 }` | Blurberry Bar (blurberrybar) 1 | no | no | - | - |
+| `shop:tree-gnome-stronghold:1` | (2449, 3505) L1 | x 2448-2450, z 3503-3509 L1 | x 2443-2455, z 3498-3514 L1 | `{ x: 2449, z: 3506, radius: 13, level: 1 }` | Gianne's Restaurant (giannerestaurant) 2, Grand Tree Groceries (gnomeshop_hudo) 1 | no | no | - | - |
+| `shop:tree-gnome-stronghold:2` | (2468, 3487) L2 | (2468, 3487) L2 | x 2463-2473, z 3482-3492 L2 | `{ x: 2468, z: 3487, radius: 11, level: 2 }` | Gulluck and Sons (gnomeshop_gulluck) 1 | no | no | - | - |
+| `shop:tree-gnome-stronghold:3` | (2482, 3488) L1 | x 2482, z 3487-3489 L1 | x 2479-2485, z 3484-3492 L1 | `{ x: 2482, z: 3488, radius: 8, level: 1 }` | Blurberry Bar (blurberrybar) 2 | no | no | - | - |
+| `shop:tree-gnome-stronghold:4` | (2482, 3510) L1 | (2482, 3510) L1 | x 2477-2487, z 3505-3515 L1 | `{ x: 2482, z: 3510, radius: 11, level: 1 }` | Fine Fashions (gnomeshop_rometti) 1 | no | no | - | - |
+| `shop:tree-gnome-stronghold:5` | (2493, 3488) L1 | (2493, 3488) L1 | x 2488-2498, z 3483-3493 L1 | `{ x: 2493, z: 3488, radius: 11, level: 1 }` | Funch's Fine Groceries (gnomeshop_heck) 1 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:tree-gnome-stronghold:0` | (2448, 3510) L1 | Range 1 | no | no | - | - |
-| `range:tree-gnome-stronghold:1` | (2482, 3479) L1 | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:tree-gnome-stronghold:0` | (2448, 3510) L1 | (2448, 3510) L1 | `{ x: 2448, z: 3510, radius: 3, level: 1 }` | Range 1 | no | no | - | - |
+| `range:tree-gnome-stronghold:1` | (2482, 3479) L1 | (2482, 3479) L1 | `{ x: 2482, z: 3479, radius: 3, level: 1 }` | Range 1 | no | no | - | - |
 
 ## [Spinning wheels](../services/spinning-wheel.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `spinning-wheel:tree-gnome-stronghold:0` | (2475, 3398) L1 | Spinning wheel 1 | no | no | - | - |
-| `spinning-wheel:tree-gnome-stronghold:1` | (2487, 3401) L1 | Spinning wheel 1 | no | no | - | - |
-| `spinning-wheel:tree-gnome-stronghold:2` | (2488, 3410) L1 | Spinning wheel 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `spinning-wheel:tree-gnome-stronghold:0` | (2475, 3398) L1 | (2475, 3398) L1 | `{ x: 2475, z: 3398, radius: 3, level: 1 }` | Spinning wheel 1 | no | no | - | - |
+| `spinning-wheel:tree-gnome-stronghold:1` | (2487, 3401) L1 | (2487, 3401) L1 | `{ x: 2487, z: 3401, radius: 3, level: 1 }` | Spinning wheel 1 | no | no | - | - |
+| `spinning-wheel:tree-gnome-stronghold:2` | (2488, 3410) L1 | (2488, 3410) L1 | `{ x: 2488, z: 3410, radius: 3, level: 1 }` | Spinning wheel 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:tree-gnome-stronghold:0` | (2427, 3422) | [magic](../resources/tree/magic.md) 1, [normal](../resources/tree/normal.md) 179, [oak](../resources/tree/oak.md) 64, [willow](../resources/tree/willow.md) 11, [yew](../resources/tree/yew.md) 7 | no | no | - | - |
-| `tree:tree-gnome-stronghold:1` | (2430, 3520) | [normal](../resources/tree/normal.md) 51, [oak](../resources/tree/oak.md) 18 | no | no | - | - |
-| `tree:tree-gnome-stronghold:2` | (2438, 3383) | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:tree-gnome-stronghold:3` | (2448, 3499) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
-| `tree:tree-gnome-stronghold:4` | (2456, 3482) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:tree-gnome-stronghold:5` | (2479, 3442) | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 4 | no | no | - | - |
-| `tree:tree-gnome-stronghold:6` | (2486, 3490) | [normal](../resources/tree/normal.md) 23, [oak](../resources/tree/oak.md) 2, [yew](../resources/tree/yew.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:tree-gnome-stronghold:0` | (2427, 3422) | x 2378-2499, z 3380-3498 | `{ x: 2439, z: 3439, radius: 88 }` | [magic](../resources/tree/magic.md) 1, [normal](../resources/tree/normal.md) 179, [oak](../resources/tree/oak.md) 64, [willow](../resources/tree/willow.md) 11, [yew](../resources/tree/yew.md) 7 | no | no | - | - |
+| `tree:tree-gnome-stronghold:1` | (2430, 3520) | x 2379-2499, z 3497-3528 | `{ x: 2439, z: 3513, radius: 66 }` | [normal](../resources/tree/normal.md) 51, [oak](../resources/tree/oak.md) 18 | no | no | - | - |
+| `tree:tree-gnome-stronghold:2` | (2438, 3383) | (2438, 3383) | `{ x: 2438, z: 3383, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:tree-gnome-stronghold:3` | (2448, 3499) | x 2441-2454, z 3491-3509 | `{ x: 2448, z: 3500, radius: 15 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 2 | no | no | - | - |
+| `tree:tree-gnome-stronghold:4` | (2456, 3482) | x 2452-2460, z 3479-3484 | `{ x: 2456, z: 3482, radius: 8 }` | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:tree-gnome-stronghold:5` | (2479, 3442) | x 2465-2496, z 3428-3453 | `{ x: 2481, z: 3441, radius: 24 }` | [normal](../resources/tree/normal.md) 11, [oak](../resources/tree/oak.md) 4 | no | no | - | - |
+| `tree:tree-gnome-stronghold:6` | (2486, 3490) | x 2469-2500, z 3469-3512 | `{ x: 2485, z: 3491, radius: 31 }` | [normal](../resources/tree/normal.md) 23, [oak](../resources/tree/oak.md) 2, [yew](../resources/tree/yew.md) 1 | no | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 7 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:tree-gnome-stronghold:0` | (2386, 3417) | x 2382-2391, z 3407-3423 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 7 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:tree-gnome-stronghold:0` | (2380, 3427) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:4` | (2383, 3452) | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:6` | (2393, 3435) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:7` | (2403, 3434) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 3, [Gnome (gnome)](../resources/pickpocket/gnome.md) 6 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:8` | (2394, 3500) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:10` | (2396, 3471) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:11` | (2399, 3514) L1 | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildblue)](../resources/pickpocket/gnomechildblue.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 3 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:15` | (2418, 3489) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:18` | (2438, 3469) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:19` | (2433, 3492) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:23` | (2446, 3504) | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:27` | (2450, 3496) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:28` | (2456, 3465) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:29` | (2459, 3426) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:30` | (2466, 3489) L2 | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 4, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:37` | (2481, 3498) L2 | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
-| `pickpocket:tree-gnome-stronghold:38` | (2486, 3399) | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:tree-gnome-stronghold:0` | (2380, 3427) | x 2378-2383, z 3423-3433 | x 2373-2388, z 3418-3438 | `{ x: 2381, z: 3428, radius: 16 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:1` | (2379, 3482) | x 2378-2379, z 3482 | x 2373-2384, z 3477-3487 | `{ x: 2379, z: 3482, radius: 11 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:2` | (2383, 3496) | x 2381-2384, z 3496-3497 | x 2376-2389, z 3491-3502 | `{ x: 2383, z: 3497, radius: 13 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:3` | (2383, 3508) L1 | x 2382-2383, z 3506-3509 L1 | x 2377-2388, z 3501-3514 L1 | `{ x: 2383, z: 3508, radius: 13, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:4` | (2383, 3452) | (2383, 3452) | x 2378-2388, z 3447-3457 | `{ x: 2383, z: 3452, radius: 11 }` | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:5` | (2394, 3451) L1 | x 2392-2398, z 3450-3451 L1 | x 2387-2403, z 3445-3456 L1 | `{ x: 2395, z: 3451, radius: 13, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:6` | (2393, 3435) | (2393, 3435) | x 2388-2398, z 3430-3440 | `{ x: 2393, z: 3435, radius: 11 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:7` | (2403, 3434) | x 2394-2409, z 3417-3449 | x 2389-2414, z 3412-3454 | `{ x: 2402, z: 3433, radius: 28 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 3, [Gnome (gnome)](../resources/pickpocket/gnome.md) 6 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:8` | (2394, 3500) L1 | (2394, 3500) L1 | x 2389-2399, z 3495-3505 L1 | `{ x: 2394, z: 3500, radius: 11, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:9` | (2400, 3504) | x 2394-2405, z 3499-3507 | x 2389-2410, z 3494-3512 | `{ x: 2400, z: 3503, radius: 18 }` | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:10` | (2396, 3471) | (2396, 3471) | x 2391-2401, z 3466-3476 | `{ x: 2396, z: 3471, radius: 11 }` | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:11` | (2399, 3514) L1 | x 2397-2400, z 3514 L1 | x 2392-2405, z 3509-3519 L1 | `{ x: 2399, z: 3514, radius: 12, level: 1 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:12` | (2417, 3437) L1 | x 2408-2424, z 3425-3447 L1 | x 2403-2429, z 3420-3452 L1 | `{ x: 2416, z: 3436, radius: 24, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildblue)](../resources/pickpocket/gnomechildblue.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 3 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:13` | (2416, 3416) L1 | x 2415-2416, z 3415-3416 L1 | x 2410-2421, z 3410-3421 L1 | `{ x: 2416, z: 3416, radius: 12, level: 1 }` | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:14` | (2420, 3484) | x 2416-2422, z 3481-3487 | x 2411-2427, z 3476-3492 | `{ x: 2419, z: 3484, radius: 15 }` | [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:15` | (2418, 3489) L1 | x 2417-2418, z 3483-3495 L1 | x 2412-2423, z 3478-3500 L1 | `{ x: 2418, z: 3489, radius: 16, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:16` | (2418, 3472) L1 | (2418, 3472) L1 | x 2413-2423, z 3467-3477 L1 | `{ x: 2418, z: 3472, radius: 11, level: 1 }` | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:17` | (2430, 3432) | x 2420-2442, z 3426-3440 | x 2415-2447, z 3421-3445 | `{ x: 2431, z: 3433, radius: 23 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:18` | (2438, 3469) | x 2433-2442, z 3460-3478 | x 2428-2447, z 3455-3483 | `{ x: 2438, z: 3469, radius: 21 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:19` | (2433, 3492) | (2433, 3492) | x 2428-2438, z 3487-3497 | `{ x: 2433, z: 3492, radius: 11 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:20` | (2439, 3464) L1 | x 2436-2443, z 3463-3465 L1 | x 2431-2448, z 3458-3470 L1 | `{ x: 2440, z: 3464, radius: 14, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:21` | (2439, 3450) | x 2437-2441, z 3449-3451 | x 2432-2446, z 3444-3456 | `{ x: 2439, z: 3450, radius: 13 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:22` | (2444, 3407) | x 2441-2446, z 3403-3411 | x 2436-2451, z 3398-3416 | `{ x: 2444, z: 3407, radius: 16 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:23` | (2446, 3504) | x 2442-2450, z 3502-3505 | x 2437-2455, z 3497-3510 | `{ x: 2446, z: 3504, radius: 15 }` | [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:24` | (2449, 3494) L1 | x 2443-2457, z 3486-3506 L1 | x 2438-2462, z 3481-3511 L1 | `{ x: 2450, z: 3496, radius: 23, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3, [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 2, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:25` | (2449, 3488) | x 2448-2450, z 3486-3489 | x 2443-2455, z 3481-3494 | `{ x: 2449, z: 3488, radius: 13 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:26` | (2450, 3416) | (2450, 3416) | x 2445-2455, z 3411-3421 | `{ x: 2450, z: 3416, radius: 11 }` | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:27` | (2450, 3496) L2 | (2450, 3496) L2 | x 2445-2455, z 3491-3501 L2 | `{ x: 2450, z: 3496, radius: 11, level: 2 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:28` | (2456, 3465) | x 2454-2457, z 3462-3467 | x 2449-2462, z 3457-3472 | `{ x: 2456, z: 3465, radius: 14 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 1, [Gnome (gnome)](../resources/pickpocket/gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:29` | (2459, 3426) | x 2456-2462, z 3421-3431 | x 2451-2467, z 3416-3436 | `{ x: 2459, z: 3426, radius: 16 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 3 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:30` | (2466, 3489) L2 | x 2465-2467, z 3488-3490 L2 | x 2460-2472, z 3483-3495 L2 | `{ x: 2466, z: 3489, radius: 12, level: 2 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:31` | (2472, 3452) | x 2466-2476, z 3441-3458 | x 2461-2481, z 3436-3463 | `{ x: 2471, z: 3450, radius: 21 }` | [Gnome (darkskinned_gnome)](../resources/pickpocket/darkskinned_gnome.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:32` | (2474, 3405) | x 2470-2480, z 3399-3412 | x 2465-2485, z 3394-3417 | `{ x: 2475, z: 3406, radius: 19 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 3, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:33` | (2473, 3489) | (2473, 3489) | x 2468-2478, z 3484-3494 | `{ x: 2473, z: 3489, radius: 11 }` | [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:34` | (2482, 3496) L1 | x 2474-2490, z 3482-3508 L1 | x 2469-2495, z 3477-3513 L1 | `{ x: 2482, z: 3495, radius: 26, level: 1 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 2, [Gnome (gnome)](../resources/pickpocket/gnome.md) 3, [Gnome child (gnomechild)](../resources/pickpocket/gnomechild.md) 1, [Gnome child (gnomechildgreen)](../resources/pickpocket/gnomechildgreen.md) 1, [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:35` | (2484, 3470) | x 2475-2492, z 3467-3474 | x 2470-2497, z 3462-3479 | `{ x: 2484, z: 3471, radius: 20 }` | [Gnome (browclothedgnome)](../resources/pickpocket/browclothedgnome.md) 4, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:36` | (2482, 3404) L1 | x 2479-2486, z 3400-3407 L1 | x 2474-2491, z 3395-3412 L1 | `{ x: 2483, z: 3404, radius: 16, level: 1 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1, [Gnome woman (gnomefemale_dskinned)](../resources/pickpocket/gnomefemale_dskinned.md) 2 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:37` | (2481, 3498) L2 | (2481, 3498) L2 | x 2476-2486, z 3493-3503 L2 | `{ x: 2481, z: 3498, radius: 11, level: 2 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| `pickpocket:tree-gnome-stronghold:38` | (2486, 3399) | x 2482-2489, z 3397-3401 | x 2477-2494, z 3392-3406 | `{ x: 2486, z: 3399, radius: 15 }` | [Gnome woman (gnomefemale)](../resources/pickpocket/gnomefemale.md) 2 | no | no | - | - |
 
 ## Flax
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `flax:tree-gnome-stronghold:0` | (2399, 3422) | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
-| `flax:tree-gnome-stronghold:1` | (2408, 3388) | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
-| `flax:tree-gnome-stronghold:2` | (2409, 3441) | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
-| `flax:tree-gnome-stronghold:3` | (2424, 3401) | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
-| `flax:tree-gnome-stronghold:4` | (2428, 3424) | [flax](../resources/flax/flax.md) 4 | no | no | - | - |
-| `flax:tree-gnome-stronghold:5` | (2446, 3402) | [flax](../resources/flax/flax.md) 7 | no | no | - | - |
-| `flax:tree-gnome-stronghold:6` | (2446, 3440) | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
-| `flax:tree-gnome-stronghold:7` | (2450, 3425) | [flax](../resources/flax/flax.md) 3 | no | no | - | - |
-| `flax:tree-gnome-stronghold:8` | (2478, 3402) | [flax](../resources/flax/flax.md) 20 | no | no | - | - |
-| `flax:tree-gnome-stronghold:9` | (2476, 3445) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
-| `flax:tree-gnome-stronghold:10` | (2493, 3445) | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `flax:tree-gnome-stronghold:0` | (2399, 3422) | x 2395-2405, z 3418-3424 | `{ x: 2400, z: 3421, radius: 9 }` | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
+| `flax:tree-gnome-stronghold:1` | (2408, 3388) | x 2403-2413, z 3385-3390 | `{ x: 2408, z: 3388, radius: 9 }` | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
+| `flax:tree-gnome-stronghold:2` | (2409, 3441) | x 2406-2411, z 3438-3445 | `{ x: 2409, z: 3442, radius: 8 }` | [flax](../resources/flax/flax.md) 5 | no | no | - | - |
+| `flax:tree-gnome-stronghold:3` | (2424, 3401) | x 2419-2426, z 3397-3405 | `{ x: 2423, z: 3401, radius: 9 }` | [flax](../resources/flax/flax.md) 11 | no | no | - | - |
+| `flax:tree-gnome-stronghold:4` | (2428, 3424) | x 2426-2430, z 3422-3426 | `{ x: 2428, z: 3424, radius: 6 }` | [flax](../resources/flax/flax.md) 4 | no | no | - | - |
+| `flax:tree-gnome-stronghold:5` | (2446, 3402) | x 2442-2452, z 3396-3408 | `{ x: 2447, z: 3402, radius: 11 }` | [flax](../resources/flax/flax.md) 7 | no | no | - | - |
+| `flax:tree-gnome-stronghold:6` | (2446, 3440) | x 2442-2450, z 3436-3444 | `{ x: 2446, z: 3440, radius: 9 }` | [flax](../resources/flax/flax.md) 2 | no | no | - | - |
+| `flax:tree-gnome-stronghold:7` | (2450, 3425) | x 2448-2454, z 3418-3433 | `{ x: 2451, z: 3426, radius: 12 }` | [flax](../resources/flax/flax.md) 3 | no | no | - | - |
+| `flax:tree-gnome-stronghold:8` | (2478, 3402) | x 2466-2495, z 3392-3412 | `{ x: 2481, z: 3402, radius: 22 }` | [flax](../resources/flax/flax.md) 20 | no | no | - | - |
+| `flax:tree-gnome-stronghold:9` | (2476, 3445) | (2476, 3445) | `{ x: 2476, z: 3445, radius: 3 }` | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
+| `flax:tree-gnome-stronghold:10` | (2493, 3445) | (2493, 3445) | `{ x: 2493, z: 3445, radius: 3 }` | [flax](../resources/flax/flax.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:tree-gnome-stronghold:0` | (2381, 3428) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:1` | (2384, 3481) | Gnome troop (gnomeknight) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:2` | (2388, 3473) | Gnome troop (gnomeknight) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:3` | (2397, 3409) | Duck (duck) 5, Duck (duck_female) 1, Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:4` | (2392, 3454) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:5` | (2394, 3436) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:6` | (2407, 3385) | Giant spider 4 | no | no | - | - |
-| `npc:tree-gnome-stronghold:7` | (2408, 3452) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:8` | (2409, 3470) L1 | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:9` | (2410, 3416) | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:10` | (2415, 3473) L3 | Gnome guard (gnomekingsguard) 2, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | unreached |
-| `npc:tree-gnome-stronghold:11` | (2413, 3397) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:12` | (2421, 3410) | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1, Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | Gnome troop (gnomeknight) 1 | no | no | - | no stand |
-| `npc:tree-gnome-stronghold:14` | (2418, 3466) L1 | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:15` | (2420, 3435) | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:16` | (2420, 3447) | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:17` | (2432, 3387) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:18` | (2437, 3442) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:19` | (2441, 3497) | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:20` | (2442, 3388) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:21` | (2442, 3489) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:22` | (2445, 3429) L1 | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:23` | (2449, 3509) | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:24` | (2448, 3496) L2 | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:25` | (2449, 3421) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:26` | (2452, 3488) | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:27` | (2451, 3414) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:28` | (2461, 3394) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2, Mounted terrorbird gnome 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:29` | (2459, 3417) L1 | Gnome troop (d_skingnomeknight) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:30` | (2461, 3384) | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:31` | (2459, 3438) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:32` | (2460, 3487) L2 | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:33` | (2461, 3422) | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:34` | (2470, 3487) | Gnome guard (gnomekingsguard) 3, Gnome guard (gnomekingsguard2) 3 | no | no | - | - |
-| `npc:tree-gnome-stronghold:35` | (2466, 3456) | Mounted terrorbird gnome 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:36` | (2465, 3480) L2 | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:37` | (2466, 3468) | Gnome guard (gnomekingsguard) 4, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
-| `npc:tree-gnome-stronghold:38` | (2480, 3406) | Mounted terrorbird gnome 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:39` | (2482, 3501) | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
-| `npc:tree-gnome-stronghold:40` | (2483, 3496) L2 | Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:tree-gnome-stronghold:0` | (2381, 3428) | (2381, 3428) | x 2369-2393, z 3416-3440 | `{ x: 2381, z: 3428, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:1` | (2384, 3481) | (2384, 3481) | x 2379-2389, z 3476-3486 | `{ x: 2384, z: 3481, radius: 11 }` | Gnome troop (gnomeknight) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:2` | (2388, 3473) | (2388, 3473) | x 2383-2393, z 3468-3478 | `{ x: 2388, z: 3473, radius: 11 }` | Gnome troop (gnomeknight) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:3` | (2397, 3409) | x 2391-2404, z 3405-3413 | x 2356-2439, z 3370-3448 | `{ x: 2398, z: 3409, radius: 61 }` | Duck (duck) 5, Duck (duck_female) 1, Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:4` | (2392, 3454) | (2392, 3454) | x 2387-2397, z 3449-3459 | `{ x: 2392, z: 3454, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:5` | (2394, 3436) | (2394, 3436) | x 2389-2399, z 3431-3441 | `{ x: 2394, z: 3436, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:6` | (2407, 3385) | x 2402-2412, z 3381-3387 | x 2392-2422, z 3371-3397 | `{ x: 2407, z: 3384, radius: 23 }` | Giant spider 4 | no | no | - | - |
+| `npc:tree-gnome-stronghold:7` | (2408, 3452) | (2408, 3452) | x 2403-2413, z 3447-3457 | `{ x: 2408, z: 3452, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:8` | (2409, 3470) L1 | (2409, 3470) L1 | x 2404-2414, z 3465-3475 L1 | `{ x: 2409, z: 3470, radius: 11, level: 1 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:9` | (2410, 3416) | (2410, 3416) | x 2405-2415, z 3411-3421 | `{ x: 2410, z: 3416, radius: 11 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:10` | (2415, 3473) L3 | x 2412-2418, z 3471-3474 L3 | x 2407-2423, z 3466-3479 L3 | `{ x: 2415, z: 3473, radius: 14, level: 3 }` | Gnome guard (gnomekingsguard) 2, Gnome troop (d_skingnomeknight) 1, Gnome troop (gnomeknight) 1 | no | no | - | unreached |
+| `npc:tree-gnome-stronghold:11` | (2413, 3397) | (2413, 3397) | x 2401-2425, z 3385-3409 | `{ x: 2413, z: 3397, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:12` | (2421, 3410) | x 2415-2427, z 3408-3413 | x 2403-2439, z 3396-3425 | `{ x: 2421, z: 3411, radius: 27 }` | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1, Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:13` | (2415, 3433) L3 | (2415, 3433) L3 | x 2410-2420, z 3428-3438 L3 | `{ x: 2415, z: 3433, radius: 11, level: 3 }` | Gnome troop (gnomeknight) 1 | no | no | - | no stand |
+| `npc:tree-gnome-stronghold:14` | (2418, 3466) L1 | x 2416-2420, z 3466 L1 | x 2411-2425, z 3461-3471 L1 | `{ x: 2418, z: 3466, radius: 12, level: 1 }` | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:15` | (2420, 3435) | (2420, 3435) | x 2415-2425, z 3430-3440 | `{ x: 2420, z: 3435, radius: 11 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:16` | (2420, 3447) | (2420, 3447) | x 2415-2425, z 3442-3452 | `{ x: 2420, z: 3447, radius: 11 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:17` | (2432, 3387) | (2432, 3387) | x 2420-2444, z 3375-3399 | `{ x: 2432, z: 3387, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:18` | (2437, 3442) | (2437, 3442) | x 2425-2449, z 3430-3454 | `{ x: 2437, z: 3442, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:19` | (2441, 3497) | (2441, 3497) | x 2436-2446, z 3492-3502 | `{ x: 2441, z: 3497, radius: 11 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:20` | (2442, 3388) | (2442, 3388) | x 2430-2454, z 3376-3400 | `{ x: 2442, z: 3388, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:21` | (2442, 3489) | (2442, 3489) | x 2437-2447, z 3484-3494 | `{ x: 2442, z: 3489, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:22` | (2445, 3429) L1 | (2445, 3429) L1 | x 2440-2450, z 3424-3434 L1 | `{ x: 2445, z: 3429, radius: 11, level: 1 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:23` | (2449, 3509) | x 2447-2451, z 3507-3510 | x 2442-2456, z 3502-3515 | `{ x: 2449, z: 3509, radius: 13 }` | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:24` | (2448, 3496) L2 | x 2448, z 3495-3497 L2 | x 2443-2453, z 3490-3502 L2 | `{ x: 2448, z: 3496, radius: 11, level: 2 }` | Gnome guard (gnomekingsguard) 1, Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:25` | (2449, 3421) | (2449, 3421) | x 2437-2461, z 3409-3433 | `{ x: 2449, z: 3421, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:26` | (2452, 3488) | x 2450-2453, z 3485-3490 | x 2445-2458, z 3480-3495 | `{ x: 2452, z: 3488, radius: 14 }` | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:27` | (2451, 3414) | (2451, 3414) | x 2446-2456, z 3409-3419 | `{ x: 2451, z: 3414, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:28` | (2461, 3394) | x 2457-2464, z 3392-3395 | x 2445-2476, z 3380-3407 | `{ x: 2461, z: 3394, radius: 25 }` | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2, Mounted terrorbird gnome 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:29` | (2459, 3417) L1 | x 2458-2460, z 3417 L1 | x 2453-2465, z 3412-3422 L1 | `{ x: 2459, z: 3417, radius: 11, level: 1 }` | Gnome troop (d_skingnomeknight) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:30` | (2461, 3384) | x 2459-2463, z 3382-3385 | x 2454-2468, z 3377-3390 | `{ x: 2461, z: 3384, radius: 13 }` | Gnome guard (gnomekingsguard) 2, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:31` | (2459, 3438) | (2459, 3438) | x 2454-2464, z 3433-3443 | `{ x: 2459, z: 3438, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:32` | (2460, 3487) L2 | (2460, 3487) L2 | x 2455-2465, z 3482-3492 L2 | `{ x: 2460, z: 3487, radius: 11, level: 2 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:33` | (2461, 3422) | (2461, 3422) | x 2456-2466, z 3417-3427 | `{ x: 2461, z: 3422, radius: 11 }` | Gnome guard (gnomekingsguard2) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:34` | (2470, 3487) | x 2461-2481, z 3484-3490 | x 2456-2486, z 3479-3495 | `{ x: 2471, z: 3487, radius: 20 }` | Gnome guard (gnomekingsguard) 3, Gnome guard (gnomekingsguard2) 3 | no | no | - | - |
+| `npc:tree-gnome-stronghold:35` | (2466, 3456) | x 2463-2468, z 3456 | x 2451-2480, z 3444-3468 | `{ x: 2466, z: 3456, radius: 23 }` | Mounted terrorbird gnome 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:36` | (2465, 3480) L2 | x 2463-2466, z 3480 L2 | x 2458-2471, z 3475-3485 L2 | `{ x: 2465, z: 3480, radius: 12, level: 2 }` | Gnome guard (gnomekingsguard) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:37` | (2466, 3468) | x 2464-2468, z 3465-3472 | x 2459-2473, z 3460-3477 | `{ x: 2466, z: 3469, radius: 15 }` | Gnome guard (gnomekingsguard) 4, Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
+| `npc:tree-gnome-stronghold:38` | (2480, 3406) | (2480, 3406) | x 2468-2492, z 3394-3418 | `{ x: 2480, z: 3406, radius: 20 }` | Mounted terrorbird gnome 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:39` | (2482, 3501) | (2482, 3501) | x 2477-2487, z 3496-3506 | `{ x: 2482, z: 3501, radius: 11 }` | Gnome guard (gnomekingsguard) 1 | no | no | - | - |
+| `npc:tree-gnome-stronghold:40` | (2483, 3496) L2 | x 2483, z 3495-3497 L2 | x 2478-2488, z 3490-3502 L2 | `{ x: 2483, z: 3496, radius: 11, level: 2 }` | Gnome guard (gnomekingsguard2) 2 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:tree-gnome-stronghold:0` | (2384, 3506) | Staircase 1 | up (2384, 3505) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:1` | (2384, 3506) L1 | Staircase 1 | down (2383, 3506) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:2` | (2389, 3512) | Staircase 1 | up (2388, 3513) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:3` | (2389, 3513) L1 | Staircase 1 | down (2389, 3514) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:4` | (2395, 3474) | Staircase 1 | up (2396, 3476) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:5` | (2396, 3501) | Staircase 1 | up (2396, 3500) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:6` | (2396, 3501) L1 | Staircase 1 | down (2395, 3501) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:7` | (2398, 3512) | Staircase 1 | up (2397, 3513) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:8` | (2398, 3513) L1 | Staircase 1 | down (2398, 3514) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:9` | (2401, 3449) | Staircase 1 | up (2400, 3450) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:10` | (2401, 3450) L1 | Staircase 1 | down (2401, 3451) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:11` | (2408, 3435) | Ladder 1 | up (2407, 3435) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:12` | (2408, 3435) L1 | Ladder 1 | down (2407, 3435) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:13` | (2413, 3488) | Staircase 1 | up (2412, 3489) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:14` | (2413, 3489) L1 | Staircase 1 | down (2413, 3490) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:15` | (2416, 3445) | Staircase 1 | up (2415, 3446) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:16` | (2416, 3446) L1 | Staircase 1 | down (2416, 3447) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:17` | (2417, 3490) | Staircase 1 | up (2418, 3492) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:18` | (2418, 3417) | Staircase 1 | up (2418, 3416) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:19` | (2418, 3417) L1 | Staircase 1 | down (2417, 3417) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:20` | (2418, 3491) L1 | Staircase 1 | down (2419, 3491) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:21` | (2420, 3471) | Staircase 1 | up (2421, 3473) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:22` | (2421, 3472) L1 | Staircase 1 | down (2422, 3472) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:23` | (2423, 3422) L1 | Ladder 1 | up (2422, 3422) L2 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:24` | (2423, 3422) L2 | Ladder 1 | down (2422, 3422) L1 by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:25` | (2423, 3442) | Ladder 1 | up (2422, 3442) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:26` | (2423, 3442) L1 | Ladder 1 | down (2422, 3442) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:27` | (2437, 3464) | Ladder 1 | up (2436, 3464) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:28` | (2437, 3464) L1 | Ladder 1 | down (2436, 3464) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:29` | (2440, 3404) | Staircase 1 | up (2440, 3403) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:30` | (2440, 3404) L1 | Staircase 1 | down (2439, 3404) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:31` | (2443, 3463) | Ladder 1 | up (2442, 3463) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:32` | (2443, 3463) L1 | Ladder 1 | down (2442, 3463) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:33` | (2444, 3414) | Staircase 1 | up (2445, 3416) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:34` | (2445, 3415) L1 | Staircase 1 | down (2446, 3415) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:35` | (2445, 3434) | Staircase 1 | up (2445, 3433) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:36` | (2445, 3434) L1 | Staircase 1 | down (2444, 3434) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:37` | (2449, 3464) | Ladder 1 | up (2449, 3463) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:38` | (2449, 3464) L1 | Ladder 1 | down (2449, 3463) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:39` | (2455, 3417) | Staircase 1 | up (2457, 3417) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:40` | (2456, 3417) L1 | Staircase 1 | down (2456, 3416) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:41` | (2461, 3416) | Staircase 1 | up (2460, 3417) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:42` | (2461, 3417) L1 | Staircase 1 | down (2461, 3418) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:43` | (2475, 3400) | Staircase 1 | up (2475, 3399) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:44` | (2475, 3400) L1 | Staircase 1 | down (2474, 3400) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:45` | (2476, 3463) | Ladder 1 | up (2475, 3463) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:46` | (2476, 3463) L1 | Ladder 1 | down (2475, 3463) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:47` | (2479, 3408) | Staircase 1 | up (2479, 3407) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:48` | (2479, 3408) L1 | Staircase 1 | down (2478, 3408) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:49` | (2485, 3402) | Staircase 1 | up (2485, 3401) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:50` | (2485, 3402) L1 | Staircase 1 | down (2484, 3402) by Climb-down | no | no | - | - |
-| `connector:tree-gnome-stronghold:51` | (2488, 3407) | Staircase 1 | up (2489, 3409) L1 by Climb-up | no | no | - | - |
-| `connector:tree-gnome-stronghold:52` | (2489, 3408) L1 | Staircase 1 | down (2490, 3408) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:tree-gnome-stronghold:0` | (2384, 3506) | (2384, 3506) | `{ x: 2384, z: 3506, radius: 3 }` | Staircase 1 | up (2384, 3505) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:1` | (2384, 3506) L1 | (2384, 3506) L1 | `{ x: 2384, z: 3506, radius: 3, level: 1 }` | Staircase 1 | down (2383, 3506) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:2` | (2389, 3512) | (2389, 3512) | `{ x: 2389, z: 3512, radius: 3 }` | Staircase 1 | up (2388, 3513) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:3` | (2389, 3513) L1 | (2389, 3513) L1 | `{ x: 2389, z: 3513, radius: 3, level: 1 }` | Staircase 1 | down (2389, 3514) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:4` | (2395, 3474) | (2395, 3474) | `{ x: 2395, z: 3474, radius: 3 }` | Staircase 1 | up (2396, 3476) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:5` | (2396, 3501) | (2396, 3501) | `{ x: 2396, z: 3501, radius: 3 }` | Staircase 1 | up (2396, 3500) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:6` | (2396, 3501) L1 | (2396, 3501) L1 | `{ x: 2396, z: 3501, radius: 3, level: 1 }` | Staircase 1 | down (2395, 3501) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:7` | (2398, 3512) | (2398, 3512) | `{ x: 2398, z: 3512, radius: 3 }` | Staircase 1 | up (2397, 3513) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:8` | (2398, 3513) L1 | (2398, 3513) L1 | `{ x: 2398, z: 3513, radius: 3, level: 1 }` | Staircase 1 | down (2398, 3514) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:9` | (2401, 3449) | (2401, 3449) | `{ x: 2401, z: 3449, radius: 3 }` | Staircase 1 | up (2400, 3450) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:10` | (2401, 3450) L1 | (2401, 3450) L1 | `{ x: 2401, z: 3450, radius: 3, level: 1 }` | Staircase 1 | down (2401, 3451) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:11` | (2408, 3435) | (2408, 3435) | `{ x: 2408, z: 3435, radius: 3 }` | Ladder 1 | up (2407, 3435) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:12` | (2408, 3435) L1 | (2408, 3435) L1 | `{ x: 2408, z: 3435, radius: 3, level: 1 }` | Ladder 1 | down (2407, 3435) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:13` | (2413, 3488) | (2413, 3488) | `{ x: 2413, z: 3488, radius: 3 }` | Staircase 1 | up (2412, 3489) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:14` | (2413, 3489) L1 | (2413, 3489) L1 | `{ x: 2413, z: 3489, radius: 3, level: 1 }` | Staircase 1 | down (2413, 3490) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:15` | (2416, 3445) | (2416, 3445) | `{ x: 2416, z: 3445, radius: 3 }` | Staircase 1 | up (2415, 3446) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:16` | (2416, 3446) L1 | (2416, 3446) L1 | `{ x: 2416, z: 3446, radius: 3, level: 1 }` | Staircase 1 | down (2416, 3447) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:17` | (2417, 3490) | (2417, 3490) | `{ x: 2417, z: 3490, radius: 3 }` | Staircase 1 | up (2418, 3492) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:18` | (2418, 3417) | (2418, 3417) | `{ x: 2418, z: 3417, radius: 3 }` | Staircase 1 | up (2418, 3416) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:19` | (2418, 3417) L1 | (2418, 3417) L1 | `{ x: 2418, z: 3417, radius: 3, level: 1 }` | Staircase 1 | down (2417, 3417) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:20` | (2418, 3491) L1 | (2418, 3491) L1 | `{ x: 2418, z: 3491, radius: 3, level: 1 }` | Staircase 1 | down (2419, 3491) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:21` | (2420, 3471) | (2420, 3471) | `{ x: 2420, z: 3471, radius: 3 }` | Staircase 1 | up (2421, 3473) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:22` | (2421, 3472) L1 | (2421, 3472) L1 | `{ x: 2421, z: 3472, radius: 3, level: 1 }` | Staircase 1 | down (2422, 3472) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:23` | (2423, 3422) L1 | (2423, 3422) L1 | `{ x: 2423, z: 3422, radius: 3, level: 1 }` | Ladder 1 | up (2422, 3422) L2 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:24` | (2423, 3422) L2 | (2423, 3422) L2 | `{ x: 2423, z: 3422, radius: 3, level: 2 }` | Ladder 1 | down (2422, 3422) L1 by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:25` | (2423, 3442) | (2423, 3442) | `{ x: 2423, z: 3442, radius: 3 }` | Ladder 1 | up (2422, 3442) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:26` | (2423, 3442) L1 | (2423, 3442) L1 | `{ x: 2423, z: 3442, radius: 3, level: 1 }` | Ladder 1 | down (2422, 3442) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:27` | (2437, 3464) | (2437, 3464) | `{ x: 2437, z: 3464, radius: 3 }` | Ladder 1 | up (2436, 3464) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:28` | (2437, 3464) L1 | (2437, 3464) L1 | `{ x: 2437, z: 3464, radius: 3, level: 1 }` | Ladder 1 | down (2436, 3464) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:29` | (2440, 3404) | (2440, 3404) | `{ x: 2440, z: 3404, radius: 3 }` | Staircase 1 | up (2440, 3403) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:30` | (2440, 3404) L1 | (2440, 3404) L1 | `{ x: 2440, z: 3404, radius: 3, level: 1 }` | Staircase 1 | down (2439, 3404) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:31` | (2443, 3463) | (2443, 3463) | `{ x: 2443, z: 3463, radius: 3 }` | Ladder 1 | up (2442, 3463) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:32` | (2443, 3463) L1 | (2443, 3463) L1 | `{ x: 2443, z: 3463, radius: 3, level: 1 }` | Ladder 1 | down (2442, 3463) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:33` | (2444, 3414) | (2444, 3414) | `{ x: 2444, z: 3414, radius: 3 }` | Staircase 1 | up (2445, 3416) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:34` | (2445, 3415) L1 | (2445, 3415) L1 | `{ x: 2445, z: 3415, radius: 3, level: 1 }` | Staircase 1 | down (2446, 3415) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:35` | (2445, 3434) | (2445, 3434) | `{ x: 2445, z: 3434, radius: 3 }` | Staircase 1 | up (2445, 3433) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:36` | (2445, 3434) L1 | (2445, 3434) L1 | `{ x: 2445, z: 3434, radius: 3, level: 1 }` | Staircase 1 | down (2444, 3434) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:37` | (2449, 3464) | (2449, 3464) | `{ x: 2449, z: 3464, radius: 3 }` | Ladder 1 | up (2449, 3463) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:38` | (2449, 3464) L1 | (2449, 3464) L1 | `{ x: 2449, z: 3464, radius: 3, level: 1 }` | Ladder 1 | down (2449, 3463) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:39` | (2455, 3417) | (2455, 3417) | `{ x: 2455, z: 3417, radius: 3 }` | Staircase 1 | up (2457, 3417) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:40` | (2456, 3417) L1 | (2456, 3417) L1 | `{ x: 2456, z: 3417, radius: 3, level: 1 }` | Staircase 1 | down (2456, 3416) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:41` | (2461, 3416) | (2461, 3416) | `{ x: 2461, z: 3416, radius: 3 }` | Staircase 1 | up (2460, 3417) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:42` | (2461, 3417) L1 | (2461, 3417) L1 | `{ x: 2461, z: 3417, radius: 3, level: 1 }` | Staircase 1 | down (2461, 3418) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:43` | (2475, 3400) | (2475, 3400) | `{ x: 2475, z: 3400, radius: 3 }` | Staircase 1 | up (2475, 3399) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:44` | (2475, 3400) L1 | (2475, 3400) L1 | `{ x: 2475, z: 3400, radius: 3, level: 1 }` | Staircase 1 | down (2474, 3400) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:45` | (2476, 3463) | (2476, 3463) | `{ x: 2476, z: 3463, radius: 3 }` | Ladder 1 | up (2475, 3463) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:46` | (2476, 3463) L1 | (2476, 3463) L1 | `{ x: 2476, z: 3463, radius: 3, level: 1 }` | Ladder 1 | down (2475, 3463) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:47` | (2479, 3408) | (2479, 3408) | `{ x: 2479, z: 3408, radius: 3 }` | Staircase 1 | up (2479, 3407) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:48` | (2479, 3408) L1 | (2479, 3408) L1 | `{ x: 2479, z: 3408, radius: 3, level: 1 }` | Staircase 1 | down (2478, 3408) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:49` | (2485, 3402) | (2485, 3402) | `{ x: 2485, z: 3402, radius: 3 }` | Staircase 1 | up (2485, 3401) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:50` | (2485, 3402) L1 | (2485, 3402) L1 | `{ x: 2485, z: 3402, radius: 3, level: 1 }` | Staircase 1 | down (2484, 3402) by Climb-down | no | no | - | - |
+| `connector:tree-gnome-stronghold:51` | (2488, 3407) | (2488, 3407) | `{ x: 2488, z: 3407, radius: 3 }` | Staircase 1 | up (2489, 3409) L1 by Climb-up | no | no | - | - |
+| `connector:tree-gnome-stronghold:52` | (2489, 3408) L1 | (2489, 3408) L1 | `{ x: 2489, z: 3408, radius: 3, level: 1 }` | Staircase 1 | down (2490, 3408) by Climb-down | no | no | - | - |
 
 ## Areas within
 

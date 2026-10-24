@@ -10,11 +10,11 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Feldip Hills](../places/feldip-hills.md) | (2506, 3020) | 1 | 2 | (2504, 3018)-(2508, 3022) | 100 ticks | - | no |
-| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2518, 3035) | 1 | 2 | (2516, 3033)-(2520, 3037) | 100 ticks | - | no |
-| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2525, 3043) | 1 | 3 | (2522, 3040)-(2528, 3046) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Feldip Hills](../places/feldip-hills.md) | (2506, 3020) | (2506, 3020) | 1 | 2 | x 2504-2508, z 3018-3022 | 100 ticks | - | `{ x: 2506, z: 3020, radius: 6 }` | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2518, 3035) | (2518, 3035) | 1 | 2 | x 2516-2520, z 3033-3037 | 100 ticks | - | `{ x: 2518, z: 3035, radius: 6 }` | no |
+| [Gutanoth (Feldip Hills)](../places/gutanoth.md) | (2525, 3043) | (2525, 3043) | 1 | 3 | x 2522-2528, z 3040-3046 | 100 ticks | - | `{ x: 2525, z: 3043, radius: 8 }` | no |
 
 ## Drops
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2960, 3336) L2 | 1 | 5 | (2955, 3331)-(2965, 3341) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [White Knights' Castle (Falador)](../places/white-knights-castle.md) | (2960, 3336) L2 | (2960, 3336) L2 | 1 | 5 | x 2955-2965, z 3331-3341 L2 | 100 ticks | - | `{ x: 2960, z: 3336, radius: 11, level: 2 }` | yes |
 
 ## Interactions
 

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Fisher Realm](../places/fisher-realm.md) | (2634, 4688) L1 | 1 | 5 | (2629, 4683)-(2639, 4693) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Fisher Realm](../places/fisher-realm.md) | (2634, 4688) L1 | (2634, 4688) L1 | 1 | 5 | x 2629-2639, z 4683-4693 L1 | 100 ticks | - | `{ x: 2634, z: 4688, radius: 11, level: 1 }` | no |
 
 ## Interactions
 

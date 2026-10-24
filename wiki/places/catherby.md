@@ -5,69 +5,69 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:catherby:0` | (2800, 3439) | Candle Shop (candleshop) 1 | no | no | - | - |
-| `shop:catherby:1` | (2803, 3430) | Arhein Store (arheinstore) 1 | no | no | - | - |
-| `shop:catherby:2` | (2822, 3442) | Hicktons Archery Emporium. (archeryshop2) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:catherby:0` | (2800, 3439) | (2800, 3439) | x 2798-2802, z 3437-3441 | `{ x: 2800, z: 3439, radius: 6 }` | Candle Shop (candleshop) 1 | no | no | - | - |
+| `shop:catherby:1` | (2803, 3430) | (2803, 3430) | (2803, 3430) | `{ x: 2803, z: 3430, radius: 3 }` | Arhein Store (arheinstore) 1 | no | no | - | - |
+| `shop:catherby:2` | (2822, 3442) | (2822, 3442) | x 2817-2827, z 3437-3447 | `{ x: 2822, z: 3442, radius: 11 }` | Hicktons Archery Emporium. (archeryshop2) 1 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:catherby:0` | (2817, 3444) | Range 1 | no | no | - | - |
-| `range:catherby:1` | (2818, 3455) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:catherby:0` | (2817, 3444) | (2817, 3444) | `{ x: 2817, z: 3444, radius: 3 }` | Range 1 | no | no | - | - |
+| `range:catherby:1` | (2818, 3455) | (2818, 3455) | `{ x: 2818, z: 3455, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:catherby:0` | (2798, 3442) | Cooking pot 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:catherby:0` | (2798, 3442) | (2798, 3442) | `{ x: 2798, z: 3442, radius: 3 }` | Cooking pot 1 | no | no | - | - |
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:catherby:0` | (2818, 3449) | Sink 1 | no | no | - | - |
-| `water-source:catherby:1` | (2830, 3440) | Sink 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:catherby:0` | (2818, 3449) | (2818, 3449) | `{ x: 2818, z: 3449, radius: 3 }` | Sink 1 | no | no | - | - |
+| `water-source:catherby:1` | (2830, 3440) | (2830, 3440) | `{ x: 2830, z: 3440, radius: 3 }` | Sink 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:catherby:0` | (2787, 3442) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
-| `tree:catherby:1` | (2846, 3437) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:catherby:0` | (2787, 3442) | x 2779-2801, z 3426-3454 | `{ x: 2790, z: 3440, radius: 21 }` | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 8, [willow](../resources/tree/willow.md) 3 | no | no | - | - |
+| `tree:catherby:1` | (2846, 3437) | x 2840-2851, z 3434-3440 | `{ x: 2846, z: 3437, radius: 10 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:catherby:0` | (2847, 3427) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 2, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:catherby:0` | (2847, 3427) | x 2836-2859, z 3423-3431 | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md#movement), [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md#movement), [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md#movement) | [Fishing spot (memberfish)](../resources/fishing-spot/memberfish.md) 3, [Fishing spot (rarefish)](../resources/fishing-spot/rarefish.md) 2, [Fishing spot (saltfish)](../resources/fishing-spot/saltfish.md) 2 | no | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:catherby:0` | (2804, 3430) | [Man (man)](../resources/pickpocket/man.md) 2 | no | no | - | - |
-| `pickpocket:catherby:1` | (2817, 3443) | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman](../resources/pickpocket/woman2.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:catherby:0` | (2804, 3430) | x 2803-2805, z 3428-3431 | x 2798-2810, z 3423-3436 | `{ x: 2804, z: 3430, radius: 13 }` | [Man (man)](../resources/pickpocket/man.md) 2 | no | no | - | - |
+| `pickpocket:catherby:1` | (2817, 3443) | x 2816-2817, z 3442-3443 | x 2811-2822, z 3437-3448 | `{ x: 2817, z: 3443, radius: 12 }` | [Man (man3)](../resources/pickpocket/man3.md) 1, [Woman](../resources/pickpocket/woman2.md) 1 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:catherby:0` | (2807, 3454) | Ladder 1 | up (2807, 3453) L1 by Climb-up | no | no | - | - |
-| `connector:catherby:1` | (2807, 3454) L1 | Ladder 1 | down (2807, 3453) by Climb-down | no | no | - | - |
-| `connector:catherby:2` | (2808, 3423) L1 | Ship's ladder 1 | up (2808, 3424) L2 by Climb-up | no | no | - | unreached |
-| `connector:catherby:3` | (2808, 3423) L2 | Ship's ladder 1 | down (2808, 3422) L1 by Climb-down | no | no | - | unreached |
-| `connector:catherby:4` | (2810, 3419) | Ship's ladder 1 | up (2810, 3418) L1 by Climb-up | no | no | - | unreached |
-| `connector:catherby:5` | (2810, 3419) L1 | Ship's ladder 1 | down (2810, 3418) by Climb-down | no | no | - | unreached |
-| `connector:catherby:6` | (2811, 3423) L1 | Ship's ladder 1 | up (2811, 3424) L2 by Climb-up | no | no | - | unreached |
-| `connector:catherby:7` | (2811, 3423) L2 | Ship's ladder 1 | down (2811, 3422) L1 by Climb-down | no | no | - | unreached |
-| `connector:catherby:8` | (2812, 3450) | Ladder 1 | up (2812, 3451) L1 by Climb-up | no | no | - | - |
-| `connector:catherby:9` | (2812, 3450) L1 | Ladder 1 | down (2812, 3451) by Climb-down | no | no | - | - |
-| `connector:catherby:10` | (2825, 3445) | Ladder 1 | up (2824, 3445) L1 by Climb-up | no | no | - | - |
-| `connector:catherby:11` | (2825, 3445) L1 | Ladder 1 | down (2824, 3445) by Climb-down | no | no | - | - |
-| `connector:catherby:12` | (2842, 3424) | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:catherby:0` | (2807, 3454) | (2807, 3454) | `{ x: 2807, z: 3454, radius: 3 }` | Ladder 1 | up (2807, 3453) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:1` | (2807, 3454) L1 | (2807, 3454) L1 | `{ x: 2807, z: 3454, radius: 3, level: 1 }` | Ladder 1 | down (2807, 3453) by Climb-down | no | no | - | - |
+| `connector:catherby:2` | (2808, 3423) L1 | (2808, 3423) L1 | `{ x: 2808, z: 3423, radius: 3, level: 1 }` | Ship's ladder 1 | up (2808, 3424) L2 by Climb-up | no | no | - | unreached |
+| `connector:catherby:3` | (2808, 3423) L2 | (2808, 3423) L2 | `{ x: 2808, z: 3423, radius: 3, level: 2 }` | Ship's ladder 1 | down (2808, 3422) L1 by Climb-down | no | no | - | unreached |
+| `connector:catherby:4` | (2810, 3419) | (2810, 3419) | `{ x: 2810, z: 3419, radius: 3 }` | Ship's ladder 1 | up (2810, 3418) L1 by Climb-up | no | no | - | unreached |
+| `connector:catherby:5` | (2810, 3419) L1 | (2810, 3419) L1 | `{ x: 2810, z: 3419, radius: 3, level: 1 }` | Ship's ladder 1 | down (2810, 3418) by Climb-down | no | no | - | unreached |
+| `connector:catherby:6` | (2811, 3423) L1 | (2811, 3423) L1 | `{ x: 2811, z: 3423, radius: 3, level: 1 }` | Ship's ladder 1 | up (2811, 3424) L2 by Climb-up | no | no | - | unreached |
+| `connector:catherby:7` | (2811, 3423) L2 | (2811, 3423) L2 | `{ x: 2811, z: 3423, radius: 3, level: 2 }` | Ship's ladder 1 | down (2811, 3422) L1 by Climb-down | no | no | - | unreached |
+| `connector:catherby:8` | (2812, 3450) | (2812, 3450) | `{ x: 2812, z: 3450, radius: 3 }` | Ladder 1 | up (2812, 3451) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:9` | (2812, 3450) L1 | (2812, 3450) L1 | `{ x: 2812, z: 3450, radius: 3, level: 1 }` | Ladder 1 | down (2812, 3451) by Climb-down | no | no | - | - |
+| `connector:catherby:10` | (2825, 3445) | (2825, 3445) | `{ x: 2825, z: 3445, radius: 3 }` | Ladder 1 | up (2824, 3445) L1 by Climb-up | no | no | - | - |
+| `connector:catherby:11` | (2825, 3445) L1 | (2825, 3445) L1 | `{ x: 2825, z: 3445, radius: 3, level: 1 }` | Ladder 1 | down (2824, 3445) by Climb-down | no | no | - | - |
+| `connector:catherby:12` | (2842, 3424) | (2842, 3424) | `{ x: 2842, z: 3424, radius: 3 }` | Ladder 1 | down (2841, 9824) by Climb-down | no | no | - | carry Dusty key |
 
 ## Areas within
 

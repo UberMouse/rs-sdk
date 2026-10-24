@@ -7,39 +7,39 @@ The Fishing Contest town west of the Ranging Guild, from the river (x 2623) to t
 
 ## [Anvils](../services/anvil.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `anvil:hemenster:0` | (2637, 3418) | Anvil 3 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `anvil:hemenster:0` | (2637, 3418) | x 2635-2639, z 3416-3420 | `{ x: 2637, z: 3418, radius: 6 }` | Anvil 3 | no | no | - | - |
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:hemenster:0` | (2637, 3432) | Range 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:hemenster:0` | (2637, 3432) | (2637, 3432) | `{ x: 2637, z: 3432, radius: 3 }` | Range 1 | no | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:hemenster:0` | (2639, 3411) | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 3, [willow](../resources/tree/willow.md) 7 | no | yes | - | - |
-| `tree:hemenster:1` | (2633, 3432) | [willow](../resources/tree/willow.md) 1 | no | no | - | carry Fishing pass |
-| `tree:hemenster:2` | (2656, 3449) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:hemenster:0` | (2639, 3411) | x 2627-2649, z 3402-3435 | `{ x: 2638, z: 3419, radius: 24 }` | [normal](../resources/tree/normal.md) 15, [oak](../resources/tree/oak.md) 3, [willow](../resources/tree/willow.md) 7 | no | yes | - | - |
+| `tree:hemenster:1` | (2633, 3432) | (2633, 3432) | `{ x: 2633, z: 3432, radius: 3 }` | [willow](../resources/tree/willow.md) 1 | no | no | - | carry Fishing pass |
+| `tree:hemenster:2` | (2656, 3449) | x 2646-2660, z 3442-3456 | `{ x: 2653, z: 3449, radius: 13 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | yes | - | - |
 
 ## Thieving chests
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `thieving-chest:hemenster:0` | (2639, 3424) | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `thieving-chest:hemenster:0` | (2639, 3424) | (2639, 3424) | `{ x: 2639, z: 3424, radius: 3 }` | [chest_steel_arrowtips](../resources/thieving-chest/chest_steel_arrowtips.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:hemenster:0` | (2651, 3442) | Chicken 4 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:hemenster:0` | (2651, 3442) | x 2650-2651, z 3441-3442 | x 2645-2656, z 3436-3447 | `{ x: 2651, z: 3442, radius: 12 }` | Chicken 4 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:hemenster:0` | (2642, 3428) | Ladder 1 | up (2642, 3429) L1 by Climb-up | no | no | - | - |
-| `connector:hemenster:1` | (2642, 3428) L1 | Ladder 1 | down (2642, 3429) by Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:hemenster:0` | (2642, 3428) | (2642, 3428) | `{ x: 2642, z: 3428, radius: 3 }` | Ladder 1 | up (2642, 3429) L1 by Climb-up | no | no | - | - |
+| `connector:hemenster:1` | (2642, 3428) L1 | (2642, 3428) L1 | `{ x: 2642, z: 3428, radius: 3, level: 1 }` | Ladder 1 | down (2642, 3429) by Climb-down | no | no | - | - |

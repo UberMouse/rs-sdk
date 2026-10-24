@@ -24,12 +24,12 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2384, 4706) | 1 | 10 | (2374, 4696)-(2394, 4716) | 52 ticks | - | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2393, 4713) | 1 | 10 | (2383, 4703)-(2403, 4723) | 52 ticks | - | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2394, 4731) | 1 | 10 | (2384, 4721)-(2404, 4741) | 52 ticks | - | no |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2395, 4721) | 1 | 10 | (2385, 4711)-(2405, 4731) | 52 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2384, 4706) | (2384, 4706) | 1 | 10 | x 2374-2394, z 4696-4716 | 52 ticks | - | `{ x: 2384, z: 4706, radius: 18 }` | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2393, 4713) | (2393, 4713) | 1 | 10 | x 2383-2403, z 4703-4723 | 52 ticks | - | `{ x: 2393, z: 4713, radius: 18 }` | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2394, 4731) | (2394, 4731) | 1 | 10 | x 2384-2404, z 4721-4741 | 52 ticks | - | `{ x: 2394, z: 4731, radius: 18 }` | no |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2395, 4721) | (2395, 4721) | 1 | 10 | x 2385-2405, z 4711-4731 | 52 ticks | - | `{ x: 2395, z: 4721, radius: 18 }` | no |
 
 ## Drops
 

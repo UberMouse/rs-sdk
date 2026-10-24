@@ -5,20 +5,20 @@ Ladder up near Witchaven at (2696, 3282); the Family Crest gold rocks (quests/qu
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:witchaven-dungeon:0` | (2738, 9687) | [gold](../resources/rock/gold.md) 4 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:witchaven-dungeon:0` | (2738, 9687) | x 2737-2740, z 9683-9693 | `{ x: 2739, z: 9688, radius: 9 }` | [gold](../resources/rock/gold.md) 4 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:witchaven-dungeon:0` | (2697, 9689) | Hobgoblin 4 | no | no | - | - |
-| `npc:witchaven-dungeon:1` | (2721, 9669) | Ogre 2 | no | no | - | - |
-| `npc:witchaven-dungeon:2` | (2722, 9709) | Ogre 4 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:witchaven-dungeon:0` | (2697, 9689) | x 2694-2699, z 9687-9693 | x 2691-2702, z 9684-9696 | `{ x: 2697, z: 9690, radius: 12 }` | Hobgoblin 4 | no | no | - | - |
+| `npc:witchaven-dungeon:1` | (2721, 9669) | x 2719-2722, z 9668-9669 | x 2716-2725, z 9665-9672 | `{ x: 2721, z: 9669, radius: 10 }` | Ogre 2 | no | no | - | - |
+| `npc:witchaven-dungeon:2` | (2722, 9709) | x 2719-2724, z 9702-9715 | x 2716-2727, z 9699-9718 | `{ x: 2722, z: 9709, radius: 15 }` | Ogre 4 | no | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:witchaven-dungeon:0` | (2696, 9682) | Ladder 1 | up (2696, 3283) by Climb-up | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:witchaven-dungeon:0` | (2696, 9682) | (2696, 9682) | `{ x: 2696, z: 9682, radius: 3 }` | Ladder 1 | up (2696, 3283) by Climb-up | no | no | - | - |

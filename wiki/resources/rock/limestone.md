@@ -21,8 +21,8 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Misthalin](../../places/misthalin.md) | `rock:misthalin:0` | (3372, 3500) | (3371, 3500) | 8 | no | no | - | - | Varrock East bank (Varrock), 68 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `rock:tirannwn:1` | (2325, 3268) | (2324, 3268) | 14 | no | no | - | unreached | - |
-| [Arandar (Tirannwn)](../../places/arandar.md) | `rock:arandar:0` | (2326, 3273) | (2325, 3273) | 4 | no | no | - | unreached | - |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Misthalin](../../places/misthalin.md) | `rock:misthalin:0` | (3372, 3500) | (3371, 3500) | x 3369-3375, z 3497-3502 | `{ x: 3372, z: 3500, radius: 8 }` | 8 | no | no | - | - | Varrock East bank (Varrock), 68 ticks |
+| [Tirannwn](../../places/tirannwn.md) | `rock:tirannwn:1` | (2325, 3268) | (2324, 3268) | x 2317-2330, z 3265-3271 | `{ x: 2324, z: 3268, radius: 11 }` | 14 | no | no | - | unreached | - |
+| [Arandar (Tirannwn)](../../places/arandar.md) | `rock:arandar:0` | (2326, 3273) | (2325, 3273) | x 2324-2327, z 3272-3275 | `{ x: 2326, z: 3274, radius: 6 }` | 4 | no | no | - | unreached | - |

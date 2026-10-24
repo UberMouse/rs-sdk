@@ -5,15 +5,15 @@
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:desert-mining-camp:0` | (3294, 3017) | [coal](../resources/rock/coal.md) 4, [copper](../resources/rock/copper.md) 4, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:desert-mining-camp:0` | (3294, 3017) | x 3284-3302, z 3015-3025 | `{ x: 3293, z: 3020, radius: 14 }` | [coal](../resources/rock/coal.md) 4, [copper](../resources/rock/copper.md) 4, [iron](../resources/rock/iron.md) 3, [tin](../resources/rock/tin.md) 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:desert-mining-camp:0` | (3280, 3026) | Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:desert-mining-camp:1` | (3287, 3030) | Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:desert-mining-camp:2` | (3288, 3018) | Mercenary 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
-| `npc:desert-mining-camp:3` | (3298, 3022) | Mercenary 2, Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:desert-mining-camp:0` | (3280, 3026) | (3280, 3026) | x 3277-3283, z 3023-3029 | `{ x: 3280, z: 3026, radius: 8 }` | Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:desert-mining-camp:1` | (3287, 3030) | (3287, 3030) | x 3284-3290, z 3027-3033 | `{ x: 3287, z: 3030, radius: 8 }` | Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:desert-mining-camp:2` | (3288, 3018) | (3288, 3018) | x 3285-3291, z 3015-3021 | `{ x: 3288, z: 3018, radius: 8 }` | Mercenary 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |
+| `npc:desert-mining-camp:3` | (3298, 3022) | x 3296-3301, z 3018-3026 | x 3293-3304, z 3015-3029 | `{ x: 3299, z: 3022, radius: 13 }` | Mercenary 2, Rowdy Guard 1 | no | no | - | 1 Shantay pass (used up) + carry Metal key |

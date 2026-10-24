@@ -5,25 +5,25 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:keep-le-faye:0` | (2760, 3402) | [normal](../resources/tree/normal.md) 13 | no | no | - | - |
-| `tree:keep-le-faye:1` | (2774, 3408) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:keep-le-faye:0` | (2760, 3402) | x 2758-2762, z 3396-3407 | `{ x: 2760, z: 3402, radius: 10 }` | [normal](../resources/tree/normal.md) 13 | no | no | - | - |
+| `tree:keep-le-faye:1` | (2774, 3408) | (2774, 3408) | `{ x: 2774, z: 3408, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:keep-le-faye:0` | (2759, 3401) | Giant bat 1 | no | no | - | - |
-| `npc:keep-le-faye:1` | (2769, 3398) | Renegade Knight 3 | no | no | - | unreached |
-| `npc:keep-le-faye:2` | (2770, 3402) L1 | Renegade Knight 5 | no | no | - | unreached |
-| `npc:keep-le-faye:3` | (2769, 3403) L2 | Sir Mordred 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:keep-le-faye:0` | (2759, 3401) | (2759, 3401) | x 2751-2767, z 3393-3409 | `{ x: 2759, z: 3401, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:keep-le-faye:1` | (2769, 3398) | x 2766-2773, z 3397-3399 | x 2761-2778, z 3392-3404 | `{ x: 2770, z: 3398, radius: 14 }` | Renegade Knight 3 | no | no | - | unreached |
+| `npc:keep-le-faye:2` | (2770, 3402) L1 | x 2766-2774, z 3396-3406 L1 | x 2761-2779, z 3391-3411 L1 | `{ x: 2770, z: 3401, radius: 17, level: 1 }` | Renegade Knight 5 | no | no | - | unreached |
+| `npc:keep-le-faye:3` | (2769, 3403) L2 | (2769, 3403) L2 | x 2768-2770, z 3402-3404 L2 | `{ x: 2769, z: 3403, radius: 5, level: 2 }` | Sir Mordred 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:keep-le-faye:0` | (2769, 3398) L1 | Staircase 1 | up (2769, 3401) L2 by Climb-up | no | no | - | unreached |
-| `connector:keep-le-faye:1` | (2769, 3399) L2 | Staircase 1 | down (2769, 3397) L1 by Climb-down | no | no | - | unreached |
-| `connector:keep-le-faye:2` | (2769, 3404) | Staircase 1 | up (2769, 3407) L1 by Climb-up | no | no | - | unreached |
-| `connector:keep-le-faye:3` | (2769, 3405) L1 | Staircase 1 | down (2769, 3403) by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:keep-le-faye:0` | (2769, 3398) L1 | (2769, 3398) L1 | `{ x: 2769, z: 3398, radius: 3, level: 1 }` | Staircase 1 | up (2769, 3401) L2 by Climb-up | no | no | - | unreached |
+| `connector:keep-le-faye:1` | (2769, 3399) L2 | (2769, 3399) L2 | `{ x: 2769, z: 3399, radius: 3, level: 2 }` | Staircase 1 | down (2769, 3397) L1 by Climb-down | no | no | - | unreached |
+| `connector:keep-le-faye:2` | (2769, 3404) | (2769, 3404) | `{ x: 2769, z: 3404, radius: 3 }` | Staircase 1 | up (2769, 3407) L1 by Climb-up | no | no | - | unreached |
+| `connector:keep-le-faye:3` | (2769, 3405) L1 | (2769, 3405) L1 | `{ x: 2769, z: 3405, radius: 3, level: 1 }` | Staircase 1 | down (2769, 3403) by Climb-down | no | no | - | unreached |

@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Shilo Village (Karamja)](../places/shilo-village.md) | (2834, 2954) | 1 | 1 | (2833, 2953)-(2835, 2955) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Shilo Village (Karamja)](../places/shilo-village.md) | (2834, 2954) | (2834, 2954) | 1 | 1 | x 2833-2835, z 2953-2955 | 100 ticks | - | `{ x: 2834, z: 2954, radius: 5 }` | no |
 
 ## Interactions
 

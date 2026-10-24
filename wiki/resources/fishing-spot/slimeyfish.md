@@ -25,21 +25,21 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3413) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 60 ticks via Nature Spirit at stage 1 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3438, 3276) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 134 ticks via Nature Spirit at stage 1 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3483, 3439) | (3483, 3439) | 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 64 ticks via Nature Spirit at stage 1 |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3413) | x 3424-3440, z 3407-3417 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 60 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3438, 3276) | x 3437-3445, z 3271-3280 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 134 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3483, 3439) | (3483, 3439) | x 3479-3490, z 3430-3449 | [Movement](#movement) | 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 64 ticks via Nature Spirit at stage 1 |
 
 ## Movement
 
-A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The cover is a centre and a Chebyshev radius that include every tile with 3 tiles of margin; copy it as the plan's `area`.
+A spot teleports to a random tile of its movement enum that holds no other spot every 280 + random(250) ticks (skill_fishing/scripts/fishing_movement.rs2), so the spots of a shore roam over all of its tiles and a plan must stay within reach of every one. The area to copy is the centre of the tiles' box and a straight-line radius that reaches every tile with 3 tiles of margin, as a plan's `area` takes it.
 
-| Site | Cover centre | Cover radius | Tiles |
-|---|---|---|---|
-| `fishing-spot:morytania:0` | (3432, 3411) | 11 | 9 |
-| `fishing-spot:morytania:1` | (3441, 3278) | 10 | 15 |
-| `fishing-spot:morytania:2` | (3484, 3440) | 13 | 8 |
+| Site | Area to copy | Tiles |
+|---|---|---|
+| `fishing-spot:morytania:0` | `{ x: 3432, z: 3411, radius: 12 }` | 9 |
+| `fishing-spot:morytania:1` | `{ x: 3441, z: 3278, radius: 11 }` | 15 |
+| `fishing-spot:morytania:2` | `{ x: 3484, z: 3440, radius: 14 }` | 8 |
 
 `fishing-spot:morytania:0` tiles: (3424, 3409), (3425, 3407), (3425, 3410), (3427, 3406), (3429, 3405), (3431, 3415), (3432, 3405), (3434, 3417), (3440, 3410)
 

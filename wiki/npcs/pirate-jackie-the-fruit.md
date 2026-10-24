@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3192) | 1 | 1 | (2810, 3191)-(2812, 3193) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Agility Arena (Karamja)](../places/agility-arena.md) | (2811, 3192) | (2811, 3192) | 1 | 1 | x 2810-2812, z 3191-3193 | 100 ticks | - | `{ x: 2811, z: 3192, radius: 5 }` | no |
 
 ## Interactions
 

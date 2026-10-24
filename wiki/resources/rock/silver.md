@@ -19,15 +19,15 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:1` | (2941, 3283) | (2941, 3283) | 6 | yes | no | - | wear Brown apron + 40 Crafting | Falador East bank (Falador), 66 ticks |
-| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:0` | (3367, 9751) | (3366, 9751) | 3 | no | no | - | Digsite Quest at stage 6 + 10 Agility | Varrock East bank (Varrock), 114 ticks |
-| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:1` | (3367, 9815) | (3366, 9815) | 3 | no | no | - | unreached | - |
-| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:2` | (3385, 9752) | (3384, 9753) | 2 | no | no | - | Digsite Quest at stage 6 + 10 Agility | Varrock East bank (Varrock), 109 ticks |
-| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:3` | (3385, 9816) | (3385, 9816) | 2 | no | no | - | unreached | - |
-| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | 3 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
-| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
-| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 98 ticks via The Grand Tree done |
-| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | 5 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
-| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `rock:asgarnia:1` | (2941, 3283) | (2941, 3283) | x 2937-2943, z 3276-3291 | `{ x: 2940, z: 3284, radius: 12 }` | 6 | yes | no | - | wear Brown apron + 40 Crafting | Falador East bank (Falador), 66 ticks |
+| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:0` | (3367, 9751) | (3366, 9751) | x 3366-3369, z 9749-9752 | `{ x: 3368, z: 9751, radius: 6 }` | 3 | no | no | - | Digsite Quest at stage 6 + 10 Agility | Varrock East bank (Varrock), 114 ticks |
+| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:1` | (3367, 9815) | (3366, 9815) | x 3366-3369, z 9813-9816 | `{ x: 3368, z: 9815, radius: 6 }` | 3 | no | no | - | unreached | - |
+| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:2` | (3385, 9752) | (3384, 9753) | x 3385, z 9750-9753 | `{ x: 3385, z: 9752, radius: 5 }` | 2 | no | no | - | Digsite Quest at stage 6 + 10 Agility | Varrock East bank (Varrock), 109 ticks |
+| [Dig Site dungeon](../../places/dig-site-dungeon.md) | `rock:dig-site-dungeon:3` | (3385, 9816) | (3385, 9816) | x 3385, z 9814-9817 | `{ x: 3385, z: 9816, radius: 5 }` | 2 | no | no | - | unreached | - |
+| [Edgeville Dungeon](../../places/edgeville-dungeon.md) | `rock:edgeville-dungeon:0` | (3138, 9874) | (3138, 9874) | x 3134-3143, z 9868-9880 | `{ x: 3139, z: 9874, radius: 11 }` | 3 | yes | no | - | - | Edgeville bank (Edgeville), 81 ticks |
+| [Grand Tree tunnels](../../places/grand-tree-tunnels.md) | `rock:grand-tree-tunnels:0` | (2443, 9907) | (2440, 9904) | x 2435-2453, z 9898-9915 | `{ x: 2444, z: 9907, radius: 16 }` | 4 | no | no | - | The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 38 ticks via The Grand Tree done |
+| [Karamja](../../places/karamja.md) | `rock:karamja:2` | (2848, 3033) | (2847, 3033) | x 2846-2851, z 3030-3037 | `{ x: 2849, z: 3034, radius: 8 }` | 1 | no | no | - | 30 coins or The Grand Tree done | Grand Tree bank (Tree Gnome Stronghold), 98 ticks via The Grand Tree done |
+| [Al Kharid mine (Kharidian Desert)](../../places/al-kharid-mine.md) | `rock:al-kharid-mine:0` | (3300, 3309) | (3302, 3309) | x 3293-3305, z 3299-3318 | `{ x: 3299, z: 3309, radius: 15 }` | 5 | yes | no | - | - | Al Kharid bank (Al Kharid), 73 ticks |
+| [Varrock West mine (Misthalin)](../../places/varrock-west-mine.md) | `rock:varrock-west-mine:0` | (3178, 3370) | (3178, 3370) | x 3172-3183, z 3365-3377 | `{ x: 3178, z: 3371, radius: 12 }` | 3 | yes | no | - | - | Varrock West bank (Varrock), 38 ticks |

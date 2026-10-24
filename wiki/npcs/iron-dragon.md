@@ -24,20 +24,20 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2704, 9431) | 1 | 5 | (2699, 9426)-(2709, 9436) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2704, 9457) | 1 | 5 | (2699, 9452)-(2709, 9462) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2705, 9424) | 1 | 5 | (2700, 9419)-(2710, 9429) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9420) | 1 | 5 | (2709, 9415)-(2719, 9425) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9449) | 1 | 5 | (2709, 9444)-(2719, 9454) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9460) | 1 | 5 | (2709, 9455)-(2719, 9465) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2722, 9424) | 1 | 5 | (2717, 9419)-(2727, 9429) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2727, 9436) | 2 | 5 | (2719, 9430)-(2735, 9442) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2732, 9459) | 1 | 5 | (2727, 9454)-(2737, 9464) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2736, 9424) | 1 | 5 | (2731, 9419)-(2741, 9429) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2738, 9440) | 1 | 5 | (2733, 9435)-(2743, 9445) | 60 ticks | - | no |
-| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2739, 9450) | 1 | 5 | (2734, 9445)-(2744, 9455) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2704, 9431) | (2704, 9431) | 1 | 5 | x 2699-2709, z 9426-9436 | 60 ticks | - | `{ x: 2704, z: 9431, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2704, 9457) | (2704, 9457) | 1 | 5 | x 2699-2709, z 9452-9462 | 60 ticks | - | `{ x: 2704, z: 9457, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2705, 9424) | (2705, 9424) | 1 | 5 | x 2700-2710, z 9419-9429 | 60 ticks | - | `{ x: 2705, z: 9424, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9420) | (2714, 9420) | 1 | 5 | x 2709-2719, z 9415-9425 | 60 ticks | - | `{ x: 2714, z: 9420, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9449) | (2714, 9449) | 1 | 5 | x 2709-2719, z 9444-9454 | 60 ticks | - | `{ x: 2714, z: 9449, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2714, 9460) | (2714, 9460) | 1 | 5 | x 2709-2719, z 9455-9465 | 60 ticks | - | `{ x: 2714, z: 9460, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2722, 9424) | (2722, 9424) | 1 | 5 | x 2717-2727, z 9419-9429 | 60 ticks | - | `{ x: 2722, z: 9424, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2727, 9436) | x 2724-2730, z 9435-9437 | 2 | 5 | x 2719-2735, z 9430-9442 | 60 ticks | - | `{ x: 2727, z: 9436, radius: 13 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2732, 9459) | (2732, 9459) | 1 | 5 | x 2727-2737, z 9454-9464 | 60 ticks | - | `{ x: 2732, z: 9459, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2736, 9424) | (2736, 9424) | 1 | 5 | x 2731-2741, z 9419-9429 | 60 ticks | - | `{ x: 2736, z: 9424, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2738, 9440) | (2738, 9440) | 1 | 5 | x 2733-2743, z 9435-9445 | 60 ticks | - | `{ x: 2738, z: 9440, radius: 11 }` | no |
+| [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2739, 9450) | (2739, 9450) | 1 | 5 | x 2734-2744, z 9445-9455 | 60 ticks | - | `{ x: 2739, z: 9450, radius: 11 }` | no |
 
 ## Drops
 

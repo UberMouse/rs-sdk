@@ -5,58 +5,58 @@ Holy Grail (quests/quest_grail): the restored realm with King Percival (m41_73) 
 
 ## [Ranges](../services/range.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `range:fisher-realm:0` | (2630, 4731) | Range 1 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `range:fisher-realm:1` | (2758, 4731) | Range 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `range:fisher-realm:0` | (2630, 4731) | (2630, 4731) | `{ x: 2630, z: 4731, radius: 3 }` | Range 1 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `range:fisher-realm:1` | (2758, 4731) | (2758, 4731) | `{ x: 2758, z: 4731, radius: 3 }` | Range 1 | no | no | - | unreached |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:fisher-realm:0` | (2625, 4713) | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:1` | (2644, 4731) | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:2` | (2626, 4679) | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:3` | (2645, 4691) | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:4` | (2646, 4676) | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:5` | (2658, 4711) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:6` | (2660, 4673) | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
-| `tree:fisher-realm:7` | (2679, 4706) | [normal](../resources/tree/normal.md) 29, [oak](../resources/tree/oak.md) 8 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `tree:fisher-realm:8` | (2767, 4726) | [normal](../resources/tree/normal.md) 24 | no | no | - | unreached |
-| `tree:fisher-realm:9` | (2778, 4696) | [normal](../resources/tree/normal.md) 25 | no | no | - | unreached |
-| `tree:fisher-realm:10` | (2774, 4676) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:fisher-realm:11` | (2806, 4697) | [normal](../resources/tree/normal.md) 58 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:fisher-realm:0` | (2625, 4713) | x 2624-2626, z 4703-4724 | `{ x: 2625, z: 4714, radius: 15 }` | [normal](../resources/tree/normal.md) 3, [oak](../resources/tree/oak.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:1` | (2644, 4731) | x 2624-2655, z 4721-4735 | `{ x: 2640, z: 4728, radius: 21 }` | [normal](../resources/tree/normal.md) 9, [oak](../resources/tree/oak.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:2` | (2626, 4679) | x 2625-2626, z 4676-4682 | `{ x: 2626, z: 4679, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:3` | (2645, 4691) | x 2641-2648, z 4690-4692 | `{ x: 2645, z: 4691, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:4` | (2646, 4676) | x 2642-2649, z 4674-4678 | `{ x: 2646, z: 4676, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:5` | (2658, 4711) | x 2657-2660, z 4705-4717 | `{ x: 2659, z: 4711, radius: 10 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:6` | (2660, 4673) | (2660, 4673) | `{ x: 2660, z: 4673, radius: 3 }` | [oak](../resources/tree/oak.md) 1 | no | no | - | unreached |
+| `tree:fisher-realm:7` | (2679, 4706) | x 2664-2686, z 4672-4734 | `{ x: 2675, z: 4703, radius: 36 }` | [normal](../resources/tree/normal.md) 29, [oak](../resources/tree/oak.md) 8 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `tree:fisher-realm:8` | (2767, 4726) | x 2752-2783, z 4703-4735 | `{ x: 2768, z: 4719, radius: 26 }` | [normal](../resources/tree/normal.md) 24 | no | no | - | unreached |
+| `tree:fisher-realm:9` | (2778, 4696) | x 2753-2801, z 4676-4717 | `{ x: 2777, z: 4697, radius: 35 }` | [normal](../resources/tree/normal.md) 25 | no | no | - | unreached |
+| `tree:fisher-realm:10` | (2774, 4676) | x 2770-2777, z 4674-4678 | `{ x: 2774, z: 4676, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:fisher-realm:11` | (2806, 4697) | x 2788-2814, z 4672-4734 | `{ x: 2801, z: 4703, radius: 37 }` | [normal](../resources/tree/normal.md) 58 | no | no | - | unreached |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:fisher-realm:0` | (2673, 4707) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:fisher-realm:0` | (2673, 4707) | x 2668-2679, z 4702-4710 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:fisher-realm:0` | (2666, 4683) | Duck (duck) 7, Duck (duck_female) 15 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `npc:fisher-realm:1` | (2791, 4722) | Black Knight Titan 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:fisher-realm:0` | (2666, 4683) | x 2662-2670, z 4677-4688 | x 2627-2705, z 4642-4723 | `{ x: 2666, z: 4683, radius: 60 }` | Duck (duck) 7, Duck (duck_female) 15 | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `npc:fisher-realm:1` | (2791, 4722) | (2791, 4722) | (2791, 4722) | `{ x: 2791, z: 4722, radius: 3 }` | Black Knight Titan 1 | no | no | - | unreached |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:fisher-realm:0` | (2633, 4680) | Staircase 1 | up (2634, 4682) L1 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:1` | (2634, 4681) L1 | Staircase 1 | down (2635, 4681) by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:2` | (2640, 4682) L1 | Staircase 1 | up (2640, 4685) L2 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:3` | (2640, 4683) L2 | Staircase 1 | down (2640, 4681) L1 by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:4` | (2648, 4683) | Staircase 1 | up (2649, 4685) L1 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:5` | (2649, 4684) L1 | Staircase 1 | down (2650, 4684) by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:6` | (2651, 4684) L1 | Ladder 1 | up (2650, 4684) L2 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:7` | (2651, 4684) L2 | Ladder 1 | down (2650, 4684) L1 by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
-| `connector:fisher-realm:8` | (2761, 4680) | Staircase 1 | up (2762, 4682) L1 by Climb-up | no | no | - | unreached |
-| `connector:fisher-realm:9` | (2762, 4681) L1 | Staircase 1 | down (2763, 4681) by Climb-down | no | no | - | unreached |
-| `connector:fisher-realm:10` | (2768, 4682) L1 | Staircase 1 | up (2768, 4685) L2 by Walk-up | no | no | - | unreached |
-| `connector:fisher-realm:11` | (2768, 4683) L2 | Staircase 1 | down (2768, 4681) L1 by Walk-down | no | no | - | unreached |
-| `connector:fisher-realm:12` | (2776, 4683) | Staircase 1 | up (2777, 4685) L1 by Climb-up | no | no | - | unreached |
-| `connector:fisher-realm:13` | (2777, 4684) L1 | Staircase 1 | down (2778, 4684) by Climb-down | no | no | - | unreached |
-| `connector:fisher-realm:14` | (2779, 4684) L1 | Ladder 1 | up (2778, 4684) L2 by Climb-up | no | no | - | unreached |
-| `connector:fisher-realm:15` | (2779, 4684) L2 | Ladder 1 | down (2778, 4684) L1 by Climb-down | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:fisher-realm:0` | (2633, 4680) | (2633, 4680) | `{ x: 2633, z: 4680, radius: 3 }` | Staircase 1 | up (2634, 4682) L1 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:1` | (2634, 4681) L1 | (2634, 4681) L1 | `{ x: 2634, z: 4681, radius: 3, level: 1 }` | Staircase 1 | down (2635, 4681) by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:2` | (2640, 4682) L1 | (2640, 4682) L1 | `{ x: 2640, z: 4682, radius: 3, level: 1 }` | Staircase 1 | up (2640, 4685) L2 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:3` | (2640, 4683) L2 | (2640, 4683) L2 | `{ x: 2640, z: 4683, radius: 3, level: 2 }` | Staircase 1 | down (2640, 4681) L1 by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:4` | (2648, 4683) | (2648, 4683) | `{ x: 2648, z: 4683, radius: 3 }` | Staircase 1 | up (2649, 4685) L1 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:5` | (2649, 4684) L1 | (2649, 4684) L1 | `{ x: 2649, z: 4684, radius: 3, level: 1 }` | Staircase 1 | down (2650, 4684) by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:6` | (2651, 4684) L1 | (2651, 4684) L1 | `{ x: 2651, z: 4684, radius: 3, level: 1 }` | Ladder 1 | up (2650, 4684) L2 by Climb-up | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:7` | (2651, 4684) L2 | (2651, 4684) L2 | `{ x: 2651, z: 4684, radius: 3, level: 2 }` | Ladder 1 | down (2650, 4684) L1 by Climb-down | no | no | - | 30 coins + carry Magic whistle + Holy Grail done or carry Magic whistle + Holy Grail done + The Grand Tree done |
+| `connector:fisher-realm:8` | (2761, 4680) | (2761, 4680) | `{ x: 2761, z: 4680, radius: 3 }` | Staircase 1 | up (2762, 4682) L1 by Climb-up | no | no | - | unreached |
+| `connector:fisher-realm:9` | (2762, 4681) L1 | (2762, 4681) L1 | `{ x: 2762, z: 4681, radius: 3, level: 1 }` | Staircase 1 | down (2763, 4681) by Climb-down | no | no | - | unreached |
+| `connector:fisher-realm:10` | (2768, 4682) L1 | (2768, 4682) L1 | `{ x: 2768, z: 4682, radius: 3, level: 1 }` | Staircase 1 | up (2768, 4685) L2 by Walk-up | no | no | - | unreached |
+| `connector:fisher-realm:11` | (2768, 4683) L2 | (2768, 4683) L2 | `{ x: 2768, z: 4683, radius: 3, level: 2 }` | Staircase 1 | down (2768, 4681) L1 by Walk-down | no | no | - | unreached |
+| `connector:fisher-realm:12` | (2776, 4683) | (2776, 4683) | `{ x: 2776, z: 4683, radius: 3 }` | Staircase 1 | up (2777, 4685) L1 by Climb-up | no | no | - | unreached |
+| `connector:fisher-realm:13` | (2777, 4684) L1 | (2777, 4684) L1 | `{ x: 2777, z: 4684, radius: 3, level: 1 }` | Staircase 1 | down (2778, 4684) by Climb-down | no | no | - | unreached |
+| `connector:fisher-realm:14` | (2779, 4684) L1 | (2779, 4684) L1 | `{ x: 2779, z: 4684, radius: 3, level: 1 }` | Ladder 1 | up (2778, 4684) L2 by Climb-up | no | no | - | unreached |
+| `connector:fisher-realm:15` | (2779, 4684) L2 | (2779, 4684) L2 | `{ x: 2779, z: 4684, radius: 3, level: 2 }` | Ladder 1 | down (2778, 4684) L1 by Climb-down | no | no | - | unreached |

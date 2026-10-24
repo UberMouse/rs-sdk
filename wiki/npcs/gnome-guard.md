@@ -24,41 +24,41 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2460, 3506) | 2 | 5 | (2454, 3498)-(2466, 3514) | 60 ticks | - | no |
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2474, 3502) | 4 | 5 | (2463, 3492)-(2483, 3511) | 60 ticks | - | no |
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2477, 3512) | 1 | 5 | (2472, 3507)-(2482, 3517) | 60 ticks | - | no |
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2468, 3495) L1 | 3 | 5 | (2459, 3490)-(2478, 3501) | 60 ticks | - | no |
-| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2467, 3501) L2 | 5 | 5 | (2458, 3489)-(2476, 3515) | 60 ticks | - | no |
-| [Grand Tree tunnels](../places/grand-tree-tunnels.md) | (2464, 9896) | 3 | 5 | (2456, 9882)-(2481, 9904) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2392, 3454) | 1 | 5 | (2387, 3449)-(2397, 3459) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2394, 3436) | 1 | 5 | (2389, 3431)-(2399, 3441) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2408, 3452) | 1 | 5 | (2403, 3447)-(2413, 3457) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2410, 3416) | 1 | 5 | (2405, 3411)-(2415, 3421) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2420, 3435) | 1 | 5 | (2415, 3430)-(2425, 3440) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2420, 3447) | 1 | 5 | (2415, 3442)-(2425, 3452) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2424, 3412) | 2 | 5 | (2410, 3403)-(2432, 3418) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2441, 3497) | 1 | 5 | (2436, 3492)-(2446, 3502) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2442, 3489) | 1 | 5 | (2437, 3484)-(2447, 3494) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2449, 3509) | 2 | 5 | (2442, 3502)-(2456, 3515) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2451, 3414) | 1 | 5 | (2446, 3409)-(2456, 3419) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2452, 3488) | 2 | 5 | (2445, 3480)-(2458, 3495) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2459, 3438) | 1 | 5 | (2454, 3433)-(2464, 3443) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3384) | 4 | 5 | (2454, 3377)-(2468, 3390) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3394) | 4 | 5 | (2452, 3387)-(2469, 3400) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3422) | 1 | 5 | (2456, 3417)-(2466, 3427) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2466, 3468) | 6 | 5 | (2459, 3460)-(2473, 3477) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2470, 3487) | 6 | 5 | (2456, 3479)-(2486, 3495) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2482, 3501) | 1 | 5 | (2477, 3496)-(2487, 3506) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2409, 3470) L1 | 1 | 5 | (2404, 3465)-(2414, 3475) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2418, 3466) L1 | 2 | 5 | (2411, 3461)-(2425, 3471) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2445, 3429) L1 | 1 | 5 | (2440, 3424)-(2450, 3434) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2448, 3496) L2 | 2 | 5 | (2443, 3490)-(2453, 3502) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2460, 3487) L2 | 1 | 5 | (2455, 3482)-(2465, 3492) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2465, 3480) L2 | 2 | 5 | (2458, 3475)-(2471, 3485) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2483, 3496) L2 | 2 | 5 | (2478, 3490)-(2488, 3502) | 60 ticks | - | no |
-| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2415, 3471) L3 | 2 | 5 | (2407, 3466)-(2423, 3479) | 60 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2460, 3506) | x 2459-2461, z 3503-3509 | 2 | 5 | x 2454-2466, z 3498-3514 | 60 ticks | - | `{ x: 2460, z: 3506, radius: 13 }` | no |
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2474, 3502) | x 2468-2478, z 3497-3506 | 4 | 5 | x 2463-2483, z 3492-3511 | 60 ticks | - | `{ x: 2473, z: 3502, radius: 18 }` | no |
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2477, 3512) | (2477, 3512) | 1 | 5 | x 2472-2482, z 3507-3517 | 60 ticks | - | `{ x: 2477, z: 3512, radius: 11 }` | no |
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2468, 3495) L1 | x 2464-2473, z 3495-3496 L1 | 3 | 5 | x 2459-2478, z 3490-3501 L1 | 60 ticks | - | `{ x: 2469, z: 3496, radius: 15, level: 1 }` | no |
+| [Grand Tree (Tree Gnome Stronghold)](../places/grand-tree.md) | (2467, 3501) L2 | x 2463-2471, z 3494-3510 L2 | 5 | 5 | x 2458-2476, z 3489-3515 L2 | 60 ticks | - | `{ x: 2467, z: 3502, radius: 19, level: 2 }` | no |
+| [Grand Tree tunnels](../places/grand-tree-tunnels.md) | (2464, 9896) | x 2461-2476, z 9887-9899 | 3 | 5 | x 2456-2481, z 9882-9904 | 60 ticks | - | `{ x: 2469, z: 9893, radius: 21 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2392, 3454) | (2392, 3454) | 1 | 5 | x 2387-2397, z 3449-3459 | 60 ticks | - | `{ x: 2392, z: 3454, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2394, 3436) | (2394, 3436) | 1 | 5 | x 2389-2399, z 3431-3441 | 60 ticks | - | `{ x: 2394, z: 3436, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2408, 3452) | (2408, 3452) | 1 | 5 | x 2403-2413, z 3447-3457 | 60 ticks | - | `{ x: 2408, z: 3452, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2410, 3416) | (2410, 3416) | 1 | 5 | x 2405-2415, z 3411-3421 | 60 ticks | - | `{ x: 2410, z: 3416, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2420, 3435) | (2420, 3435) | 1 | 5 | x 2415-2425, z 3430-3440 | 60 ticks | - | `{ x: 2420, z: 3435, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2420, 3447) | (2420, 3447) | 1 | 5 | x 2415-2425, z 3442-3452 | 60 ticks | - | `{ x: 2420, z: 3447, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2424, 3412) | x 2415-2427, z 3408-3413 | 2 | 5 | x 2410-2432, z 3403-3418 | 60 ticks | - | `{ x: 2421, z: 3411, radius: 17 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2441, 3497) | (2441, 3497) | 1 | 5 | x 2436-2446, z 3492-3502 | 60 ticks | - | `{ x: 2441, z: 3497, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2442, 3489) | (2442, 3489) | 1 | 5 | x 2437-2447, z 3484-3494 | 60 ticks | - | `{ x: 2442, z: 3489, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2449, 3509) | x 2447-2451, z 3507-3510 | 2 | 5 | x 2442-2456, z 3502-3515 | 60 ticks | - | `{ x: 2449, z: 3509, radius: 13 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2451, 3414) | (2451, 3414) | 1 | 5 | x 2446-2456, z 3409-3419 | 60 ticks | - | `{ x: 2451, z: 3414, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2452, 3488) | x 2450-2453, z 3485-3490 | 2 | 5 | x 2445-2458, z 3480-3495 | 60 ticks | - | `{ x: 2452, z: 3488, radius: 14 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2459, 3438) | (2459, 3438) | 1 | 5 | x 2454-2464, z 3433-3443 | 60 ticks | - | `{ x: 2459, z: 3438, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3384) | x 2459-2463, z 3382-3385 | 4 | 5 | x 2454-2468, z 3377-3390 | 60 ticks | - | `{ x: 2461, z: 3384, radius: 13 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3394) | x 2457-2464, z 3392-3395 | 4 | 5 | x 2452-2469, z 3387-3400 | 60 ticks | - | `{ x: 2461, z: 3394, radius: 15 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2461, 3422) | (2461, 3422) | 1 | 5 | x 2456-2466, z 3417-3427 | 60 ticks | - | `{ x: 2461, z: 3422, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2466, 3468) | x 2464-2468, z 3465-3472 | 6 | 5 | x 2459-2473, z 3460-3477 | 60 ticks | - | `{ x: 2466, z: 3469, radius: 15 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2470, 3487) | x 2461-2481, z 3484-3490 | 6 | 5 | x 2456-2486, z 3479-3495 | 60 ticks | - | `{ x: 2471, z: 3487, radius: 20 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2482, 3501) | (2482, 3501) | 1 | 5 | x 2477-2487, z 3496-3506 | 60 ticks | - | `{ x: 2482, z: 3501, radius: 11 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2409, 3470) L1 | (2409, 3470) L1 | 1 | 5 | x 2404-2414, z 3465-3475 L1 | 60 ticks | - | `{ x: 2409, z: 3470, radius: 11, level: 1 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2418, 3466) L1 | x 2416-2420, z 3466 L1 | 2 | 5 | x 2411-2425, z 3461-3471 L1 | 60 ticks | - | `{ x: 2418, z: 3466, radius: 12, level: 1 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2445, 3429) L1 | (2445, 3429) L1 | 1 | 5 | x 2440-2450, z 3424-3434 L1 | 60 ticks | - | `{ x: 2445, z: 3429, radius: 11, level: 1 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2448, 3496) L2 | x 2448, z 3495-3497 L2 | 2 | 5 | x 2443-2453, z 3490-3502 L2 | 60 ticks | - | `{ x: 2448, z: 3496, radius: 11, level: 2 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2460, 3487) L2 | (2460, 3487) L2 | 1 | 5 | x 2455-2465, z 3482-3492 L2 | 60 ticks | - | `{ x: 2460, z: 3487, radius: 11, level: 2 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2465, 3480) L2 | x 2463-2466, z 3480 L2 | 2 | 5 | x 2458-2471, z 3475-3485 L2 | 60 ticks | - | `{ x: 2465, z: 3480, radius: 12, level: 2 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2483, 3496) L2 | x 2483, z 3495-3497 L2 | 2 | 5 | x 2478-2488, z 3490-3502 L2 | 60 ticks | - | `{ x: 2483, z: 3496, radius: 11, level: 2 }` | no |
+| [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) | (2415, 3471) L3 | x 2412-2418, z 3471-3474 L3 | 2 | 5 | x 2407-2423, z 3466-3479 L3 | 60 ticks | - | `{ x: 2415, z: 3473, radius: 14, level: 3 }` | no |
 
 ## Drops
 

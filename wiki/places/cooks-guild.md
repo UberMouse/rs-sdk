@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:cooks-guild:0` | (3136, 3436) | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:cooks-guild:0` | (3136, 3436) | x 3126-3146, z 3425-3448 | `{ x: 3136, z: 3437, radius: 19 }` | [normal](../resources/tree/normal.md) 18, [oak](../resources/tree/oak.md) 2 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:cooks-guild:0` | (3126, 3431) | Goblin 1 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:cooks-guild:0` | (3126, 3431) | (3126, 3431) | x 3111-3141, z 3416-3446 | `{ x: 3126, z: 3431, radius: 25 }` | Goblin 1 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:cooks-guild:0` | (3144, 3446) L1 | Ladder 1 | up (3144, 3447) L2 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
-| `connector:cooks-guild:1` | (3144, 3446) L2 | Ladder 1 | down (3143, 3446) L1 by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |
-| `connector:cooks-guild:2` | (3144, 3447) | Staircase 1 | up (3143, 3448) L1 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
-| `connector:cooks-guild:3` | (3144, 3448) L1 | Staircase 1 | down (3143, 3448) by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:cooks-guild:0` | (3144, 3446) L1 | (3144, 3446) L1 | `{ x: 3144, z: 3446, radius: 3, level: 1 }` | Ladder 1 | up (3144, 3447) L2 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:1` | (3144, 3446) L2 | (3144, 3446) L2 | `{ x: 3144, z: 3446, radius: 3, level: 2 }` | Ladder 1 | down (3143, 3446) L1 by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:2` | (3144, 3447) | (3144, 3447) | `{ x: 3144, z: 3447, radius: 3 }` | Staircase 1 | up (3143, 3448) L1 by Climb-up | yes | no | - | wear Chef's hat + 32 Cooking |
+| `connector:cooks-guild:3` | (3144, 3448) L1 | (3144, 3448) L1 | `{ x: 3144, z: 3448, radius: 3, level: 1 }` | Staircase 1 | down (3143, 3448) by Climb-down | yes | no | - | wear Chef's hat + 32 Cooking |

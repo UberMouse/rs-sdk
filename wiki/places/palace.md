@@ -5,30 +5,30 @@
 
 ## [Water sources](../services/water-source.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `water-source:palace:0` | (3224, 3494) | Sink 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `water-source:palace:0` | (3224, 3494) | (3224, 3494) | `{ x: 3224, z: 3494, radius: 3 }` | Sink 1 | yes | no | - | - |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:palace:0` | (3208, 3494) L1 | Altar 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:palace:0` | (3208, 3494) L1 | (3208, 3494) L1 | `{ x: 3208, z: 3494, radius: 3, level: 1 }` | Altar 1 | yes | no | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:palace:0` | (3204, 3487) | [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | yes | no | - | - |
-| `pickpocket:palace:1` | (3205, 3493) L1 | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:palace:0` | (3204, 3487) | x 3202-3205, z 3487 | x 3197-3210, z 3482-3492 | `{ x: 3204, z: 3487, radius: 12 }` | [Warrior woman](../resources/pickpocket/warrior_woman.md) 2 | yes | no | - | - |
+| `pickpocket:palace:1` | (3205, 3493) L1 | x 3204-3205, z 3491-3494 L1 | x 3202-3207, z 3489-3496 L1 | `{ x: 3205, z: 3493, radius: 8, level: 1 }` | [Guard](../resources/pickpocket/guard1.md) 2 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:palace:0` | (3202, 3472) L2 | Staircase 1 | - | yes | no | - | unreached |
-| `connector:palace:1` | (3203, 3472) L3 | Staircase 1 | - | yes | no | - | unreached |
-| `connector:palace:2` | (3212, 3473) | Staircase 1 | up (3212, 3476) L1 by Climb-up | yes | no | - | - |
-| `connector:palace:3` | (3212, 3474) L1 | Staircase 1 | down (3212, 3472) by Climb-down | yes | no | - | - |
-| `connector:palace:4` | (3221, 3472) L2 | Staircase 1 | up (3223, 3472) L3 by Climb-up | yes | no | - | - |
-| `connector:palace:5` | (3222, 3472) L3 | Staircase 1 | down (3222, 3471) L2 by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:palace:0` | (3202, 3472) L2 | (3202, 3472) L2 | `{ x: 3202, z: 3472, radius: 3, level: 2 }` | Staircase 1 | - | yes | no | - | unreached |
+| `connector:palace:1` | (3203, 3472) L3 | (3203, 3472) L3 | `{ x: 3203, z: 3472, radius: 3, level: 3 }` | Staircase 1 | - | yes | no | - | unreached |
+| `connector:palace:2` | (3212, 3473) | (3212, 3473) | `{ x: 3212, z: 3473, radius: 3 }` | Staircase 1 | up (3212, 3476) L1 by Climb-up | yes | no | - | - |
+| `connector:palace:3` | (3212, 3474) L1 | (3212, 3474) L1 | `{ x: 3212, z: 3474, radius: 3, level: 1 }` | Staircase 1 | down (3212, 3472) by Climb-down | yes | no | - | - |
+| `connector:palace:4` | (3221, 3472) L2 | (3221, 3472) L2 | `{ x: 3221, z: 3472, radius: 3, level: 2 }` | Staircase 1 | up (3223, 3472) L3 by Climb-up | yes | no | - | - |
+| `connector:palace:5` | (3222, 3472) L3 | (3222, 3472) L3 | `{ x: 3222, z: 3472, radius: 3, level: 3 }` | Staircase 1 | down (3222, 3471) L2 by Climb-down | yes | no | - | - |

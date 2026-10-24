@@ -5,13 +5,13 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:haunted-woods:0` | (3555, 3486) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:haunted-woods:1` | (3576, 3497) | [hollow](../resources/tree/hollow.md) 3 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:haunted-woods:0` | (3555, 3486) | (3555, 3486) | `{ x: 3555, z: 3486, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:haunted-woods:1` | (3576, 3497) | x 3574-3577, z 3495-3499 | `{ x: 3576, z: 3497, radius: 6 }` | [hollow](../resources/tree/hollow.md) 3 | no | no | - | Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:haunted-woods:0` | (3567, 3481) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:haunted-woods:0` | (3567, 3481) | (3567, 3481) | x 3537-3597, z 3451-3511 | `{ x: 3567, z: 3481, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |

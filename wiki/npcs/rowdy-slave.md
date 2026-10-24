@@ -11,10 +11,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3273, 9420) | 1 | 3 | (3270, 9417)-(3276, 9423) | 100 ticks | - | no |
-| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3288, 9446) | 1 | 3 | (3285, 9443)-(3291, 9449) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3273, 9420) | (3273, 9420) | 1 | 3 | x 3270-3276, z 9417-9423 | 100 ticks | - | `{ x: 3273, z: 9420, radius: 8 }` | no |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | (3288, 9446) | (3288, 9446) | 1 | 3 | x 3285-3291, z 9443-9449 | 100 ticks | - | `{ x: 3288, z: 9446, radius: 8 }` | no |
 
 ## Drops
 

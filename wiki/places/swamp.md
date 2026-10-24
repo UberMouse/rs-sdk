@@ -5,21 +5,21 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:swamp:0` | (2409, 3505) | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
-| `tree:swamp:1` | (2414, 3523) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
-| `tree:swamp:2` | (2426, 3501) | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
-| `tree:swamp:3` | (2427, 3524) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:swamp:0` | (2409, 3505) | x 2407-2413, z 3503-3509 | `{ x: 2410, z: 3506, radius: 8 }` | [normal](../resources/tree/normal.md) 2, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| `tree:swamp:1` | (2414, 3523) | x 2411-2415, z 3522-3524 | `{ x: 2413, z: 3523, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:swamp:2` | (2426, 3501) | (2426, 3501) | `{ x: 2426, z: 3501, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
+| `tree:swamp:3` | (2427, 3524) | (2427, 3524) | `{ x: 2427, z: 3524, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:swamp:0` | (2417, 3517) | [Gnome woman](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:swamp:0` | (2417, 3517) | (2417, 3517) | x 2412-2422, z 3512-3522 | `{ x: 2417, z: 3517, radius: 11 }` | [Gnome woman](../resources/pickpocket/gnomefemale.md) 1 | no | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:swamp:0` | (2409, 3507) | Gnome troop 1 | no | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:swamp:0` | (2409, 3507) | (2409, 3507) | x 2404-2414, z 3502-3512 | `{ x: 2409, z: 3507, radius: 11 }` | Gnome troop 1 | no | no | - | - |

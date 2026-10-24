@@ -23,9 +23,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Dwarven Mine](../places/dwarven-mine.md) | (2965, 9811) | 1 | 5 | (2960, 9806)-(2970, 9816) | 100 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Dwarven Mine](../places/dwarven-mine.md) | (2965, 9811) | (2965, 9811) | 1 | 5 | x 2960-2970, z 9806-9816 | 100 ticks | - | `{ x: 2965, z: 9811, radius: 11 }` | yes |
 
 ## Interactions
 

@@ -5,6 +5,6 @@
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:cairn-isle:0` | (2767, 2979) | Scorpion 2 | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:cairn-isle:0` | (2767, 2979) | x 2765-2768, z 2978-2980 | x 2753-2780, z 2966-2992 | `{ x: 2767, z: 2979, radius: 23 }` | Scorpion 2 | no | no | - | 30 coins + 15 Agility or The Grand Tree done + 15 Agility |

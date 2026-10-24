@@ -5,12 +5,12 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:isafdar:0` | (2241, 3185) | [normal](../resources/tree/normal.md) 112 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:isafdar:0` | (2241, 3185) | x 2219-2266, z 3162-3209 | `{ x: 2243, z: 3186, radius: 37 }` | [normal](../resources/tree/normal.md) 112 | no | no | - | Regicide at stage 13 + 56 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:isafdar:0` | (2239, 3165) | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:isafdar:0` | (2239, 3165) | x 2234-2242, z 3162-3169 | x 2229-2247, z 3157-3174 | `{ x: 2238, z: 3166, radius: 16 }` | Rabbit (regicide_bunny1) 2, Rabbit (regicide_bunny2) 1, Rabbit (regicide_rabbit) 3 | no | no | - | Regicide at stage 13 + 56 Agility |

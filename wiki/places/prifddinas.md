@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:prifddinas:0` | (2235, 3287) | [normal](../resources/tree/normal.md) 8 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:prifddinas:0` | (2235, 3287) | x 2216-2253, z 3285-3288 | `{ x: 2235, z: 3287, radius: 23 }` | [normal](../resources/tree/normal.md) 8 | no | no | - | unreached |

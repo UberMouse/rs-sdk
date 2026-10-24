@@ -5,20 +5,20 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:goblin-village:0` | (2956, 3505) | Fire 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:goblin-village:0` | (2956, 3505) | (2956, 3505) | `{ x: 2956, z: 3505, radius: 3 }` | Fire 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:goblin-village:0` | (2951, 3513) | [normal](../resources/tree/normal.md) 1 | yes | no | - | no stand |
-| `tree:goblin-village:1` | (2953, 3499) | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
-| `tree:goblin-village:2` | (2969, 3505) | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:goblin-village:0` | (2951, 3513) | (2951, 3513) | `{ x: 2951, z: 3513, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | no stand |
+| `tree:goblin-village:1` | (2953, 3499) | x 2953, z 3495-3503 | `{ x: 2953, z: 3499, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | - |
+| `tree:goblin-village:2` | (2969, 3505) | x 2964-2974, z 3495-3512 | `{ x: 2969, z: 3504, radius: 14 }` | [normal](../resources/tree/normal.md) 8 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:goblin-village:0` | (2956, 3502) | Goblin (goblin_greenarmour) 7, Goblin (goblin_redarmour) 8 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:goblin-village:0` | (2956, 3502) | x 2951-2964, z 3491-3511 | x 2936-2979, z 3476-3526 | `{ x: 2958, z: 3501, radius: 37 }` | Goblin (goblin_greenarmour) 7, Goblin (goblin_redarmour) 8 | yes | no | - | - |

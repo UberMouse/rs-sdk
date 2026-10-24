@@ -5,44 +5,44 @@ Entered west of West Ardougne (underground-pass-entrance); quests/quest_upass np
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:underground-pass:0` | (2454, 9682) | Furnace 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:underground-pass:0` | (2454, 9682) | (2454, 9682) | `{ x: 2454, z: 9682, radius: 3 }` | Furnace 1 | no | no | - | unreached |
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:underground-pass:0` | (2424, 9720) | Fire 1 | no | no | - | unreached |
-| `fire:underground-pass:1` | (2439, 9697) | Fire 1 | no | no | - | unreached |
-| `fire:underground-pass:2` | (2451, 9715) | Fire 1 | no | no | - | Underground Pass started with King Lathas (bit ^upass_started_bit of %ibanmulti, quests/quest_upass/scripts/quest_upass.rs2:85) and Koftik spoken to at the entrance (%upass > ^upass_not_started, quests/quest_upass/scripts/quest_upass.rs2:89) + Biohazard done |
-| `fire:underground-pass:3` | (2454, 9678) | Fire 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:underground-pass:0` | (2424, 9720) | (2424, 9720) | `{ x: 2424, z: 9720, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:underground-pass:1` | (2439, 9697) | (2439, 9697) | `{ x: 2439, z: 9697, radius: 3 }` | Fire 1 | no | no | - | unreached |
+| `fire:underground-pass:2` | (2451, 9715) | (2451, 9715) | `{ x: 2451, z: 9715, radius: 3 }` | Fire 1 | no | no | - | Underground Pass started with King Lathas (bit ^upass_started_bit of %ibanmulti, quests/quest_upass/scripts/quest_upass.rs2:85) and Koftik spoken to at the entrance (%upass > ^upass_not_started, quests/quest_upass/scripts/quest_upass.rs2:89) + Biohazard done |
+| `fire:underground-pass:3` | (2454, 9678) | (2454, 9678) | `{ x: 2454, z: 9678, radius: 3 }` | Fire 1 | no | no | - | unreached |
 
 ## [Prayer altars](../services/altar.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `altar:underground-pass:0` | (2341, 9629) | Altar 1 | no | no | - | Regicide at stage 13 + 56 Agility |
-| `altar:underground-pass:1` | (2414, 9680) | Chaos altar 1 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `altar:underground-pass:0` | (2341, 9629) | (2341, 9629) | `{ x: 2341, z: 9629, radius: 3 }` | Altar 1 | no | no | - | Regicide at stage 13 + 56 Agility |
+| `altar:underground-pass:1` | (2414, 9680) | (2414, 9680) | `{ x: 2414, z: 9680, radius: 3 }` | Chaos altar 1 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:underground-pass:0` | (2385, 9627) | Blessed Giant rat 4, Giant bat 2, Rat 20 | no | no | - | unreached |
-| `npc:underground-pass:1` | (2376, 9608) | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - | unreached |
-| `npc:underground-pass:2` | (2381, 9656) | Goblin (goblin_armed) 3 | no | no | - | unreached |
-| `npc:underground-pass:3` | (2395, 9683) | Blessed spider 4, Ogre 2 | no | no | - | unreached |
-| `npc:underground-pass:4` | (2394, 9656) | Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - | unreached |
-| `npc:underground-pass:5` | (2394, 9639) | Rat 1 | no | no | - | unreached |
-| `npc:underground-pass:6` | (2401, 9608) | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - | unreached |
-| `npc:underground-pass:7` | (2402, 9708) | Zombie 9 | no | no | - | unreached |
-| `npc:underground-pass:8` | (2406, 9628) | Rat 3 | no | no | - | unreached |
-| `npc:underground-pass:9` | (2412, 9640) | Rat 1 | no | no | - | unreached |
-| `npc:underground-pass:10` | (2421, 9633) | Giant bat 3, Rat 1 | no | no | - | unreached |
-| `npc:underground-pass:11` | (2422, 9622) | Rat 1 | no | no | - | unreached |
-| `npc:underground-pass:12` | (2432, 9722) | Blessed spider 8, Sir Carl 1, Sir Harry 1, Sir Jerro 1 | no | no | - | unreached |
-| `npc:underground-pass:13` | (2437, 9692) | Blessed spider 9, Goblin (goblin_armed) 5 | no | no | - | unreached |
-| `npc:underground-pass:14` | (2455, 9680) | Zombie 1 | no | no | - | unreached |
-| `npc:underground-pass:15` | (2470, 9695) | Giant bat 2 | no | no | - | unreached |
-| `npc:underground-pass:16` | (2489, 9703) | Giant bat 4 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:underground-pass:0` | (2385, 9627) | x 2370-2412, z 9618-9643 | x 2355-2427, z 9603-9658 | `{ x: 2391, z: 9631, radius: 49 }` | Blessed Giant rat 4, Giant bat 2, Rat 20 | no | no | - | unreached |
+| `npc:underground-pass:1` | (2376, 9608) | x 2371-2383, z 9605-9611 | x 2362-2392, z 9596-9620 | `{ x: 2377, z: 9608, radius: 23 }` | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - | unreached |
+| `npc:underground-pass:2` | (2381, 9656) | x 2377-2384, z 9655-9657 | x 2362-2399, z 9640-9672 | `{ x: 2381, z: 9656, radius: 28 }` | Goblin (goblin_armed) 3 | no | no | - | unreached |
+| `npc:underground-pass:3` | (2395, 9683) | x 2387-2402, z 9680-9685 | x 2377-2412, z 9670-9695 | `{ x: 2395, z: 9683, radius: 26 }` | Blessed spider 4, Ogre 2 | no | no | - | unreached |
+| `npc:underground-pass:4` | (2394, 9656) | x 2391-2397, z 9655-9658 | x 2376-2412, z 9640-9673 | `{ x: 2394, z: 9657, radius: 28 }` | Goblin (goblin_armed) 3, Goblin (goblin_helmet) 1 | no | no | - | unreached |
+| `npc:underground-pass:5` | (2394, 9639) | (2394, 9639) | x 2379-2409, z 9624-9654 | `{ x: 2394, z: 9639, radius: 25 }` | Rat 1 | no | no | - | unreached |
+| `npc:underground-pass:6` | (2401, 9608) | x 2396-2408, z 9605-9611 | x 2387-2417, z 9596-9620 | `{ x: 2402, z: 9608, radius: 23 }` | Skeleton (skeleton_armed) 3, Skeleton (skeleton_unarmed) 2 | no | no | - | unreached |
+| `npc:underground-pass:7` | (2402, 9708) | x 2396-2409, z 9702-9714 | x 2387-2418, z 9693-9723 | `{ x: 2403, z: 9708, radius: 25 }` | Zombie 9 | no | no | - | unreached |
+| `npc:underground-pass:8` | (2406, 9628) | x 2402-2409, z 9628-9629 | x 2387-2424, z 9613-9644 | `{ x: 2406, z: 9629, radius: 28 }` | Rat 3 | no | no | - | unreached |
+| `npc:underground-pass:9` | (2412, 9640) | (2412, 9640) | x 2397-2427, z 9625-9655 | `{ x: 2412, z: 9640, radius: 25 }` | Rat 1 | no | no | - | unreached |
+| `npc:underground-pass:10` | (2421, 9633) | x 2419-2422, z 9631-9636 | x 2404-2437, z 9616-9651 | `{ x: 2421, z: 9634, radius: 28 }` | Giant bat 3, Rat 1 | no | no | - | unreached |
+| `npc:underground-pass:11` | (2422, 9622) | (2422, 9622) | x 2407-2437, z 9607-9637 | `{ x: 2422, z: 9622, radius: 25 }` | Rat 1 | no | no | - | unreached |
+| `npc:underground-pass:12` | (2432, 9722) | x 2422-2438, z 9718-9725 | x 2412-2448, z 9708-9735 | `{ x: 2430, z: 9722, radius: 26 }` | Blessed spider 8, Sir Carl 1, Sir Harry 1, Sir Jerro 1 | no | no | - | unreached |
+| `npc:underground-pass:13` | (2437, 9692) | x 2433-2441, z 9686-9699 | x 2418-2456, z 9671-9714 | `{ x: 2437, z: 9693, radius: 33 }` | Blessed spider 9, Goblin (goblin_armed) 5 | no | no | - | unreached |
+| `npc:underground-pass:14` | (2455, 9680) | (2455, 9680) | x 2446-2464, z 9671-9689 | `{ x: 2455, z: 9680, radius: 16 }` | Zombie 1 | no | no | - | unreached |
+| `npc:underground-pass:15` | (2470, 9695) | x 2468-2471, z 9693-9696 | x 2460-2479, z 9685-9704 | `{ x: 2470, z: 9695, radius: 18 }` | Giant bat 2 | no | no | - | unreached |
+| `npc:underground-pass:16` | (2489, 9703) | x 2485-2491, z 9698-9705 | x 2477-2499, z 9690-9713 | `{ x: 2488, z: 9702, radius: 20 }` | Giant bat 4 | no | no | - | unreached |

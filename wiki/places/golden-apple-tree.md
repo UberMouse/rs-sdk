@@ -5,6 +5,6 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:golden-apple-tree:0` | (2760, 3602) | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:golden-apple-tree:0` | (2760, 3602) | x 2755-2769, z 3596-3614 | `{ x: 2762, z: 3605, radius: 15 }` | [normal](../resources/tree/normal.md) 8, [oak](../resources/tree/oak.md) 1 | no | no | - | - |

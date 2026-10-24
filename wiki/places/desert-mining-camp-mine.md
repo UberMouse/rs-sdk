@@ -5,22 +5,22 @@ Tourist Trap (quests/quest_desertrescue), below the Desert Mining Camp.
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:desert-mining-camp-mine:0` | (3288, 9439) | [copper](../resources/rock/copper.md) 4, [rock](../resources/rock/rock.md) 63 | no | no | - | unreached |
-| `rock:desert-mining-camp-mine:1` | (3309, 9466) | [adamantite](../resources/rock/adamantite.md) 6, [copper](../resources/rock/copper.md) 6, [mithril](../resources/rock/mithril.md) 6, [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
-| `rock:desert-mining-camp-mine:2` | (3296, 9413) | [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:desert-mining-camp-mine:0` | (3288, 9439) | x 3284-3306, z 9424-9453 | `{ x: 3295, z: 9439, radius: 22 }` | [copper](../resources/rock/copper.md) 4, [rock](../resources/rock/rock.md) 63 | no | no | - | unreached |
+| `rock:desert-mining-camp-mine:1` | (3309, 9466) | x 3288-3324, z 9462-9469 | `{ x: 3306, z: 9466, radius: 22 }` | [adamantite](../resources/rock/adamantite.md) 6, [copper](../resources/rock/copper.md) 6, [mithril](../resources/rock/mithril.md) 6, [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
+| `rock:desert-mining-camp-mine:2` | (3296, 9413) | x 3291-3300, z 9412-9413 | `{ x: 3296, z: 9413, radius: 9 }` | [tin](../resources/rock/tin.md) 4 | no | no | - | unreached |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:desert-mining-camp-mine:0` | (3268, 9417) | Rowdy Guard 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:1` | (3277, 9452) | Rowdy Guard 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:2` | (3279, 9415) | Mercenary (desertminingmercenary2) 2 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:3` | (3286, 9466) | Rowdy Guard 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:4` | (3287, 9415) | Mercenary (desertminingmercenary1) 1, Rowdy Guard 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:5` | (3291, 9423) | Mercenary (desertminingmercenary2) 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:6` | (3296, 9434) | Mercenary (desertminingmercenary2) 1, Rowdy Guard 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:7` | (3299, 9467) | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
-| `npc:desert-mining-camp-mine:8` | (3317, 9441) | Rowdy Guard 1 | no | no | - | unreached |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:desert-mining-camp-mine:0` | (3268, 9417) | (3268, 9417) | x 3265-3271, z 9414-9420 | `{ x: 3268, z: 9417, radius: 8 }` | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:1` | (3277, 9452) | (3277, 9452) | x 3274-3280, z 9449-9455 | `{ x: 3277, z: 9452, radius: 8 }` | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:2` | (3279, 9415) | x 3279, z 9414-9416 | x 3278-3280, z 9413-9417 | `{ x: 3279, z: 9415, radius: 6 }` | Mercenary (desertminingmercenary2) 2 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:3` | (3286, 9466) | (3286, 9466) | x 3283-3289, z 9463-9469 | `{ x: 3286, z: 9466, radius: 8 }` | Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:4` | (3287, 9415) | x 3287, z 9414-9416 | x 3284-3290, z 9411-9419 | `{ x: 3287, z: 9415, radius: 8 }` | Mercenary (desertminingmercenary1) 1, Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:5` | (3291, 9423) | (3291, 9423) | x 3290-3292, z 9422-9424 | `{ x: 3291, z: 9423, radius: 5 }` | Mercenary (desertminingmercenary2) 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:6` | (3296, 9434) | x 3293-3298, z 9432-9435 | x 3290-3301, z 9429-9438 | `{ x: 3296, z: 9434, radius: 11 }` | Mercenary (desertminingmercenary2) 1, Rowdy Guard 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:7` | (3299, 9467) | (3299, 9467) | x 3296-3302, z 9464-9470 | `{ x: 3299, z: 9467, radius: 8 }` | Mercenary (desertminingmercenary1) 1 | no | no | - | unreached |
+| `npc:desert-mining-camp-mine:8` | (3317, 9441) | (3317, 9441) | x 3314-3320, z 9438-9444 | `{ x: 3317, z: 9441, radius: 8 }` | Rowdy Guard 1 | no | no | - | unreached |

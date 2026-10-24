@@ -5,48 +5,48 @@
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:shilo-village:0` | (2870, 2972) | Fernahai's Fishing Hut. (shilofishingshop) 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:shilo-village:0` | (2870, 2972) | (2870, 2972) | x 2868-2872, z 2970-2974 | `{ x: 2870, z: 2972, radius: 6 }` | Fernahai's Fishing Hut. (shilofishingshop) 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
 
 ## [Furnaces](../services/furnace.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `furnace:shilo-village:0` | (2857, 2966) | Furnace 2 | no | no | - | 50 coins + Shilo Village done or 20 coins + The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `furnace:shilo-village:0` | (2857, 2966) | x 2856-2857, z 2966 | `{ x: 2857, z: 2966, radius: 4 }` | Furnace 2 | no | no | - | 50 coins + Shilo Village done or 20 coins + The Grand Tree done + Shilo Village done |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:shilo-village:0` | (2825, 3002) | [gems](../resources/rock/gems.md) 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:shilo-village:0` | (2825, 3002) | x 2825, z 3001-3003 | `{ x: 2825, z: 3002, radius: 4 }` | [gems](../resources/rock/gems.md) 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:shilo-village:0` | (2855, 2974) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:shilo-village:0` | (2855, 2974) | x 2855-2856, z 2973-2977 | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md#movement) | [Fishing spot (freshfish)](../resources/fishing-spot/freshfish.md) 3 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:shilo-village:0` | (2870, 2954) | Undead One 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:shilo-village:0` | (2870, 2954) | (2870, 2954) | x 2867-2873, z 2951-2957 | `{ x: 2870, z: 2954, radius: 8 }` | Undead One 1 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:shilo-village:0` | (2835, 2988) | Ladder 1 | up (2834, 2988) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:1` | (2835, 2988) L1 | Ladder 1 | down (2834, 2988) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:2` | (2844, 2954) | Ladder 1 | up (2843, 2954) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:3` | (2844, 2954) L1 | Ladder 1 | down (2843, 2954) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:4` | (2860, 2954) | Ladder 1 | up (2859, 2954) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:5` | (2860, 2954) L1 | Ladder 1 | down (2859, 2954) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:6` | (2861, 2997) | Ladder 1 | up (2860, 2997) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:7` | (2861, 2997) L1 | Ladder 1 | down (2860, 2997) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:8` | (2871, 2971) | Ladder 1 | up (2870, 2971) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
-| `connector:shilo-village:9` | (2871, 2971) L1 | Ladder 1 | down (2870, 2971) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:shilo-village:0` | (2835, 2988) | (2835, 2988) | `{ x: 2835, z: 2988, radius: 3 }` | Ladder 1 | up (2834, 2988) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:1` | (2835, 2988) L1 | (2835, 2988) L1 | `{ x: 2835, z: 2988, radius: 3, level: 1 }` | Ladder 1 | down (2834, 2988) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:2` | (2844, 2954) | (2844, 2954) | `{ x: 2844, z: 2954, radius: 3 }` | Ladder 1 | up (2843, 2954) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:3` | (2844, 2954) L1 | (2844, 2954) L1 | `{ x: 2844, z: 2954, radius: 3, level: 1 }` | Ladder 1 | down (2843, 2954) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:4` | (2860, 2954) | (2860, 2954) | `{ x: 2860, z: 2954, radius: 3 }` | Ladder 1 | up (2859, 2954) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:5` | (2860, 2954) L1 | (2860, 2954) L1 | `{ x: 2860, z: 2954, radius: 3, level: 1 }` | Ladder 1 | down (2859, 2954) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:6` | (2861, 2997) | (2861, 2997) | `{ x: 2861, z: 2997, radius: 3 }` | Ladder 1 | up (2860, 2997) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:7` | (2861, 2997) L1 | (2861, 2997) L1 | `{ x: 2861, z: 2997, radius: 3, level: 1 }` | Ladder 1 | down (2860, 2997) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:8` | (2871, 2971) | (2871, 2971) | `{ x: 2871, z: 2971, radius: 3 }` | Ladder 1 | up (2870, 2971) L1 by Climb-up | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| `connector:shilo-village:9` | (2871, 2971) L1 | (2871, 2971) L1 | `{ x: 2871, z: 2971, radius: 3, level: 1 }` | Ladder 1 | down (2870, 2971) by Climb-down | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
 
 ## Areas within
 

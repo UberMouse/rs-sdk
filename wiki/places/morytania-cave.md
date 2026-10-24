@@ -5,16 +5,16 @@ Bats and copper and tin veins; descriptive name, not settled from the data.
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:morytania-cave:0` | (3419, 9644) | [copper](../resources/rock/copper.md) 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `rock:morytania-cave:1` | (3421, 9631) | [tin](../resources/rock/tin.md) 5 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:morytania-cave:0` | (3419, 9644) | x 3416-3421, z 9642-9647 | `{ x: 3419, z: 9645, radius: 8 }` | [copper](../resources/rock/copper.md) 7 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `rock:morytania-cave:1` | (3421, 9631) | x 3419-3422, z 9628-9632 | `{ x: 3421, z: 9630, radius: 6 }` | [tin](../resources/rock/tin.md) 5 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:morytania-cave:0` | (3413, 9641) | Bat 6, Giant bat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania-cave:1` | (3414, 9620) | Giant bat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania-cave:2` | (3422, 9631) | Bat 3, Giant bat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania-cave:3` | (3434, 9637) | Bat 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:morytania-cave:0` | (3413, 9641) | x 3409-3419, z 9632-9646 | x 3379-3449, z 9602-9676 | `{ x: 3414, z: 9639, radius: 54 }` | Bat 6, Giant bat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania-cave:1` | (3414, 9620) | x 3411-3416, z 9620 | x 3403-3424, z 9612-9628 | `{ x: 3414, z: 9620, radius: 17 }` | Giant bat 2 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania-cave:2` | (3422, 9631) | x 3420-3425, z 9625-9637 | x 3390-3455, z 9595-9667 | `{ x: 3423, z: 9631, radius: 52 }` | Bat 3, Giant bat 1 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania-cave:3` | (3434, 9637) | x 3433-3436, z 9636-9638 | x 3403-3466, z 9606-9668 | `{ x: 3435, z: 9637, radius: 48 }` | Bat 3 | no | no | - | carry Crystal-mine key + Nature Spirit at stage 1 + Priest in Peril at stage 61 |

@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Chaos Temple (Asgarnia)](../places/asgarnia-chaos-temple.md) | (2926, 3536) | 1 | 5 | (2921, 3531)-(2931, 3541) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Chaos Temple (Asgarnia)](../places/asgarnia-chaos-temple.md) | (2926, 3536) | (2926, 3536) | 1 | 5 | x 2921-2931, z 3531-3541 | 50 ticks | - | `{ x: 2926, z: 3536, radius: 11 }` | no |
 
 ## Drops
 

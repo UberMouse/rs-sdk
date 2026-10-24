@@ -24,9 +24,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2569, 9606) | 1 | 5 | (2559, 9600)-(2578, 9617) | 50 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | (2569, 9606) | x 2564-2573, z 9605-9612 | 1 | 5 | x 2559-2578, z 9600-9617 | 50 ticks | - | `{ x: 2569, z: 9609, radius: 17 }` | no |
 
 ## Drops
 

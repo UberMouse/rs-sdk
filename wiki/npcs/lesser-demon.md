@@ -24,24 +24,24 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| - | (2630, 9867) | 1 | 6 | (2624, 9861)-(2636, 9873) | 60 ticks | - | no |
-| - | (2632, 9877) | 2 | 6 | (2625, 9868)-(2638, 9886) | 60 ticks | - | no |
-| - | (2837, 9605) | 3 | 6 | (2829, 9596)-(2845, 9616) | 60 ticks | - | yes |
-| - | (2837, 9623) | 1 | 6 | (2824, 9617)-(2851, 9667) | 60 ticks | - | yes |
-| - | (2845, 9612) | 1 | 6 | (2839, 9606)-(2851, 9618) | 60 ticks | - | yes |
-| - | (2936, 9650) | 1 | 6 | (2924, 9634)-(2942, 9660) | 60 ticks | - | yes |
-| [Crandor](../places/crandor.md) | (2835, 3279) | 2 | 6 | (2826, 3272)-(2843, 3286) | 60 ticks | - | yes |
-| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2838, 9559) | 6 | 6 | (2825, 9546)-(2849, 9574) | 60 ticks | - | yes |
-| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4681) | 3 | 6 | (2406, 4671)-(2422, 4690) | 60 ticks | - | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9802) | 5 | 6 | (2920, 9778)-(2944, 9816) | 60 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (3016, 3849) | 4 | 6 | (3008, 3839)-(3048, 3862) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3091, 3861) | 1 | 6 | (3085, 3855)-(3097, 3867) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3094, 3869) | 1 | 6 | (3088, 3863)-(3100, 3875) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3311, 3845) | 1 | 6 | (3305, 3839)-(3317, 3851) | 60 ticks | - | yes |
-| [Wilderness](../places/wilderness.md) | (3324, 3856) | 1 | 6 | (3318, 3850)-(3330, 3862) | 60 ticks | - | yes |
-| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L2 | 1 | 6 | (3104, 3151)-(3116, 3163) | 60 ticks | - | yes |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| - | (2630, 9867) | (2630, 9867) | 1 | 6 | x 2624-2636, z 9861-9873 | 60 ticks | - | `{ x: 2630, z: 9867, radius: 12 }` | no |
+| - | (2632, 9877) | x 2631-2632, z 9874-9880 | 2 | 6 | x 2625-2638, z 9868-9886 | 60 ticks | - | `{ x: 2632, z: 9877, radius: 15 }` | no |
+| - | (2837, 9605) | x 2835-2839, z 9602-9610 | 3 | 6 | x 2829-2845, z 9596-9616 | 60 ticks | - | `{ x: 2837, z: 9606, radius: 16 }` | yes |
+| - | (2837, 9623) | x 2830-2845, z 9623-9661 | 1 | 6 | x 2824-2851, z 9617-9667 | 60 ticks | - | `{ x: 2838, z: 9642, radius: 32 }` | yes |
+| - | (2845, 9612) | (2845, 9612) | 1 | 6 | x 2839-2851, z 9606-9618 | 60 ticks | - | `{ x: 2845, z: 9612, radius: 12 }` | yes |
+| - | (2936, 9650) | x 2930-2936, z 9640-9654 | 1 | 6 | x 2924-2942, z 9634-9660 | 60 ticks | - | `{ x: 2933, z: 9647, radius: 19 }` | yes |
+| [Crandor](../places/crandor.md) | (2835, 3279) | x 2832-2837, z 3278-3280 | 2 | 6 | x 2826-2843, z 3272-3286 | 60 ticks | - | `{ x: 2835, z: 3279, radius: 15 }` | yes |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2838, 9559) | x 2831-2843, z 9552-9568 | 6 | 6 | x 2825-2849, z 9546-9574 | 60 ticks | - | `{ x: 2837, z: 9560, radius: 22 }` | yes |
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | (2414, 4681) | x 2412-2416, z 4677-4684 | 3 | 6 | x 2406-2422, z 4671-4690 | 60 ticks | - | `{ x: 2414, z: 4681, radius: 16 }` | no |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | (2931, 9802) | x 2926-2938, z 9784-9810 | 5 | 6 | x 2920-2944, z 9778-9816 | 60 ticks | - | `{ x: 2932, z: 9797, radius: 26 }` | no |
+| [Wilderness](../places/wilderness.md) | (3016, 3849) | x 3014-3042, z 3845-3856 | 4 | 6 | x 3008-3048, z 3839-3862 | 60 ticks | - | `{ x: 3028, z: 3851, radius: 27 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3091, 3861) | (3091, 3861) | 1 | 6 | x 3085-3097, z 3855-3867 | 60 ticks | - | `{ x: 3091, z: 3861, radius: 12 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3094, 3869) | (3094, 3869) | 1 | 6 | x 3088-3100, z 3863-3875 | 60 ticks | - | `{ x: 3094, z: 3869, radius: 12 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3311, 3845) | (3311, 3845) | 1 | 6 | x 3305-3317, z 3839-3851 | 60 ticks | - | `{ x: 3311, z: 3845, radius: 12 }` | yes |
+| [Wilderness](../places/wilderness.md) | (3324, 3856) | (3324, 3856) | 1 | 6 | x 3318-3330, z 3850-3862 | 60 ticks | - | `{ x: 3324, z: 3856, radius: 12 }` | yes |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | (3110, 3157) L2 | (3110, 3157) L2 | 1 | 6 | x 3104-3116, z 3151-3163 L2 | 60 ticks | - | `{ x: 3110, z: 3157, radius: 12, level: 2 }` | yes |
 
 ## Drops
 

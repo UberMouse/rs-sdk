@@ -7,21 +7,21 @@ The world map's "Dwarven Mine" label, on Ice Mountain; the mine itself is the un
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:dwarven-mine-entrance:0` | (3006, 3444) | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
-| `tree:dwarven-mine-entrance:1` | (3015, 3442) | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:dwarven-mine-entrance:0` | (3006, 3444) | (3006, 3444) | `{ x: 3006, z: 3444, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | yes | - | - |
+| `tree:dwarven-mine-entrance:1` | (3015, 3442) | (3015, 3442) | `{ x: 3015, z: 3442, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:dwarven-mine-entrance:0` | (3008, 3436) | Dwarf (dwarf_normal) 1 | yes | no | - | - |
-| `npc:dwarven-mine-entrance:1` | (3018, 3436) | Dwarf (dwarf_normal) 2 | yes | no | - | - |
-| `npc:dwarven-mine-entrance:2` | (3018, 3448) | Dwarf (mcannonguard) 4 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:dwarven-mine-entrance:0` | (3008, 3436) | (3008, 3436) | x 2995-3021, z 3423-3449 | `{ x: 3008, z: 3436, radius: 22 }` | Dwarf (dwarf_normal) 1 | yes | no | - | - |
+| `npc:dwarven-mine-entrance:1` | (3018, 3436) | x 3015-3021, z 3435-3437 | x 3002-3034, z 3422-3450 | `{ x: 3018, z: 3436, radius: 25 }` | Dwarf (dwarf_normal) 2 | yes | no | - | - |
+| `npc:dwarven-mine-entrance:2` | (3018, 3448) | x 3016-3021, z 3447-3450 | x 3011-3026, z 3442-3455 | `{ x: 3019, z: 3449, radius: 14 }` | Dwarf (mcannonguard) 4 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:dwarven-mine-entrance:0` | (3019, 3450) | Trapdoor 1 | down (3018, 9850) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:dwarven-mine-entrance:0` | (3019, 3450) | (3019, 3450) | `{ x: 3019, z: 3450, radius: 3 }` | Trapdoor 1 | down (3018, 9850) by Climb-down | yes | no | - | - |

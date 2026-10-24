@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:shilo-village-bank:0` | (2852, 2955) | Banker 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `bank:shilo-village-bank:0` | (2852, 2955) | x 2851-2853, z 2954-2955 | x 2851-2853, z 2954-2955 | `{ x: 2852, z: 2955, radius: 5 }` | Banker 2 | no | no | - | 30 coins + Shilo Village done or The Grand Tree done + Shilo Village done |

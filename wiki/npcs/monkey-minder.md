@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2605, 3277) | 2 | 5 | (2597, 3269)-(2613, 3284) | 100 ticks | - | no |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2595, 3277) | 1 | 5 | (2590, 3272)-(2600, 3282) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Ardougne Zoo (East Ardougne)](../places/zoo.md) | (2605, 3277) | x 2602-2608, z 3274-3279 | 2 | 5 | x 2597-2613, z 3269-3284 | 100 ticks | - | `{ x: 2605, z: 3277, radius: 15 }` | no |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | (2595, 3277) | (2595, 3277) | 1 | 5 | x 2590-2600, z 3272-3282 | 100 ticks | - | `{ x: 2595, z: 3277, radius: 11 }` | no |
 
 ## Interactions
 

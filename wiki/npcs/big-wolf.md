@@ -11,9 +11,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2840, 3497) | 1 | 20 | (2820, 3477)-(2860, 3517) | 180 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [White Wolf Mountain (Asgarnia)](../places/white-wolf-mountain.md) | (2840, 3497) | (2840, 3497) | 1 | 20 | x 2820-2860, z 3477-3517 | 180 ticks | - | `{ x: 2840, z: 3497, radius: 32 }` | no |
 
 ## Drops
 

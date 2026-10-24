@@ -5,42 +5,42 @@
 
 ## [Fires](../services/fire.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fire:draynor-village:0` | (3101, 3281) | Fireplace 1 | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fire:draynor-village:0` | (3101, 3281) | (3101, 3281) | `{ x: 3101, z: 3281, radius: 3 }` | Fireplace 1 | yes | no | - | - |
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:draynor-village:0` | (3079, 3269) | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
-| `tree:draynor-village:1` | (3097, 3285) | [normal](../resources/tree/normal.md) 13, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
-| `tree:draynor-village:2` | (3119, 3240) | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 5 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:draynor-village:0` | (3079, 3269) | x 3075-3084, z 3265-3273 | `{ x: 3080, z: 3269, radius: 10 }` | [normal](../resources/tree/normal.md) 9 | yes | no | - | - |
+| `tree:draynor-village:1` | (3097, 3285) | x 3084-3106, z 3275-3290 | `{ x: 3095, z: 3283, radius: 17 }` | [normal](../resources/tree/normal.md) 13, [oak](../resources/tree/oak.md) 5 | yes | no | - | - |
+| `tree:draynor-village:2` | (3119, 3240) | x 3102-3143, z 3220-3261 | `{ x: 3123, z: 3241, radius: 33 }` | [normal](../resources/tree/normal.md) 40, [oak](../resources/tree/oak.md) 5 | yes | yes | - | - |
 
 ## Pickpocket targets
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `pickpocket:draynor-village:0` | (3097, 3269) L1 | [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
-| `pickpocket:draynor-village:1` | (3100, 3279) | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `pickpocket:draynor-village:0` | (3097, 3269) L1 | (3097, 3269) L1 | x 3092-3102, z 3264-3274 L1 | `{ x: 3097, z: 3269, radius: 11, level: 1 }` | [Woman](../resources/pickpocket/woman.md) 1 | yes | no | - | - |
+| `pickpocket:draynor-village:1` | (3100, 3279) | (3100, 3279) | x 3095-3105, z 3274-3284 | `{ x: 3100, z: 3279, radius: 11 }` | [Man](../resources/pickpocket/man.md) 1 | yes | no | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:draynor-village:0` | (3100, 3275) | Rat 2 | yes | no | - | - |
-| `npc:draynor-village:1` | (3101, 3220) | Black Knight 1 | yes | no | - | - |
-| `npc:draynor-village:2` | (3109, 3237) | Jail guard 1 | yes | yes | - | - |
-| `npc:draynor-village:3` | (3110, 3281) | Goblin (goblin_armed) 1 | yes | no | - | - |
-| `npc:draynor-village:4` | (3141, 3260) | Goblin (goblin) 3 | yes | no | - | - |
-| `npc:draynor-village:5` | (3143, 3229) | Goblin (goblin) 2 | yes | no | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:draynor-village:0` | (3100, 3275) | x 3100, z 3273-3277 | x 3085-3115, z 3258-3292 | `{ x: 3100, z: 3275, radius: 26 }` | Rat 2 | yes | no | - | - |
+| `npc:draynor-village:1` | (3101, 3220) | (3101, 3220) | x 3091-3111, z 3210-3230 | `{ x: 3101, z: 3220, radius: 18 }` | Black Knight 1 | yes | no | - | - |
+| `npc:draynor-village:2` | (3109, 3237) | (3109, 3237) | x 3104-3114, z 3232-3242 | `{ x: 3109, z: 3237, radius: 11 }` | Jail guard 1 | yes | yes | - | - |
+| `npc:draynor-village:3` | (3110, 3281) | (3110, 3281) | x 3095-3125, z 3266-3296 | `{ x: 3110, z: 3281, radius: 25 }` | Goblin (goblin_armed) 1 | yes | no | - | - |
+| `npc:draynor-village:4` | (3141, 3260) | x 3141-3142, z 3258-3261 | x 3126-3157, z 3243-3276 | `{ x: 3142, z: 3260, radius: 27 }` | Goblin (goblin) 3 | yes | no | - | - |
+| `npc:draynor-village:5` | (3143, 3229) | x 3142-3143, z 3227-3230 | x 3127-3158, z 3212-3245 | `{ x: 3143, z: 3229, radius: 27 }` | Goblin (goblin) 2 | yes | no | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:draynor-village:0` | (3099, 3266) | Staircase 1 | up (3102, 3266) L1 by Climb-up | yes | no | - | - |
-| `connector:draynor-village:1` | (3100, 3266) L1 | Staircase 1 | down (3098, 3266) by Climb-down | yes | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:draynor-village:0` | (3099, 3266) | (3099, 3266) | `{ x: 3099, z: 3266, radius: 3 }` | Staircase 1 | up (3102, 3266) L1 by Climb-up | yes | no | - | - |
+| `connector:draynor-village:1` | (3100, 3266) L1 | (3100, 3266) L1 | `{ x: 3100, z: 3266, radius: 3, level: 1 }` | Staircase 1 | down (3098, 3266) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

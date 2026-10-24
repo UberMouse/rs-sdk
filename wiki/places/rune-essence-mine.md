@@ -3,20 +3,20 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:rune-essence-mine:0` | (2893, 4840) | [normal](../resources/tree/normal.md) 3 | yes | no | - | Rune Mysteries Quest done |
-| `tree:rune-essence-mine:1` | (2893, 4820) | [normal](../resources/tree/normal.md) 1 | yes | no | - | Rune Mysteries Quest done |
-| `tree:rune-essence-mine:2` | (2896, 4855) | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
-| `tree:rune-essence-mine:3` | (2911, 4829) | [normal](../resources/tree/normal.md) 7 | yes | no | - | Rune Mysteries Quest done |
-| `tree:rune-essence-mine:4` | (2922, 4856) | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
-| `tree:rune-essence-mine:5` | (2934, 4821) | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:rune-essence-mine:0` | (2893, 4840) | x 2891-2894, z 4839-4841 | `{ x: 2893, z: 4840, radius: 6 }` | [normal](../resources/tree/normal.md) 3 | yes | no | - | Rune Mysteries Quest done |
+| `tree:rune-essence-mine:1` | (2893, 4820) | (2893, 4820) | `{ x: 2893, z: 4820, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | yes | no | - | Rune Mysteries Quest done |
+| `tree:rune-essence-mine:2` | (2896, 4855) | x 2895-2897, z 4854-4855 | `{ x: 2896, z: 4855, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
+| `tree:rune-essence-mine:3` | (2911, 4829) | x 2904-2918, z 4823-4837 | `{ x: 2911, z: 4830, radius: 13 }` | [normal](../resources/tree/normal.md) 7 | yes | no | - | Rune Mysteries Quest done |
+| `tree:rune-essence-mine:4` | (2922, 4856) | x 2921-2922, z 4855-4856 | `{ x: 2922, z: 4856, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
+| `tree:rune-essence-mine:5` | (2934, 4821) | x 2933-2934, z 4820-4822 | `{ x: 2934, z: 4821, radius: 5 }` | [normal](../resources/tree/normal.md) 2 | yes | no | - | Rune Mysteries Quest done |
 
 ## Rocks
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `rock:rune-essence-mine:0` | (2891, 4847) | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
-| `rock:rune-essence-mine:1` | (2893, 4812) | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
-| `rock:rune-essence-mine:2` | (2925, 4848) | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
-| `rock:rune-essence-mine:3` | (2927, 4814) | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `rock:rune-essence-mine:0` | (2891, 4847) | (2891, 4847) | `{ x: 2891, z: 4847, radius: 3 }` | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
+| `rock:rune-essence-mine:1` | (2893, 4812) | (2893, 4812) | `{ x: 2893, z: 4812, radius: 3 }` | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
+| `rock:rune-essence-mine:2` | (2925, 4848) | (2925, 4848) | `{ x: 2925, z: 4848, radius: 3 }` | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |
+| `rock:rune-essence-mine:3` | (2927, 4814) | (2927, 4814) | `{ x: 2927, z: 4814, radius: 3 }` | [rune stones](../resources/rock/rune-stones.md) 1 | yes | no | - | Rune Mysteries Quest done |

@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2735, 3560) | 1 | 5 | (2730, 3555)-(2740, 3565) | 100 ticks | - | no |
-| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2742, 3555) | 1 | 5 | (2737, 3550)-(2747, 3560) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2735, 3560) | (2735, 3560) | 1 | 5 | x 2730-2740, z 3555-3565 | 100 ticks | - | `{ x: 2735, z: 3560, radius: 11 }` | no |
+| [Sinclair Mansion (Kandarin)](../places/sinclair-mansion.md) | (2742, 3555) | (2742, 3555) | 1 | 5 | x 2737-2747, z 3550-3560 | 100 ticks | - | `{ x: 2742, z: 3555, radius: 11 }` | no |
 
 ## Interactions
 

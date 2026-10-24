@@ -5,36 +5,36 @@ Ladders up into Varrock at (3237, 3458) and (3230, 3504).
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:varrock-sewers:0` | (3161, 9904) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
-| `tree:varrock-sewers:1` | (3253, 9915) | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:varrock-sewers:0` | (3161, 9904) | x 3159-3162, z 9901-9906 | `{ x: 3161, z: 9904, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
+| `tree:varrock-sewers:1` | (3253, 9915) | x 3247-3257, z 9911-9917 | `{ x: 3252, z: 9914, radius: 9 }` | [normal](../resources/tree/normal.md) 3 | yes | yes | - | - |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:varrock-sewers:0` | (3158, 9903) | Moss giant 2 | yes | yes | - | - |
-| `npc:varrock-sewers:1` | (3175, 9883) | Deadly red spider 8, Moss giant 2 | yes | yes | - | - |
-| `npc:varrock-sewers:2` | (3186, 9892) | Deadly red spider 1 | yes | yes | - | - |
-| `npc:varrock-sewers:3` | (3206, 9879) | Spider 2 | yes | yes | - | - |
-| `npc:varrock-sewers:4` | (3211, 9890) | Spider 4 | yes | yes | - | - |
-| `npc:varrock-sewers:5` | (3211, 9907) | Skeleton (skeleton_armed) 2 | yes | yes | - | - |
-| `npc:varrock-sewers:6` | (3229, 9865) | Rat 15 | yes | yes | - | - |
-| `npc:varrock-sewers:7` | (3220, 9886) | Giant spider 2 | yes | yes | - | - |
-| `npc:varrock-sewers:8` | (3228, 9905) | Zombie 4 | yes | yes | - | - |
-| `npc:varrock-sewers:9` | (3248, 9913) | Ghost 3, Scorpion 2, Skeleton (skeleton_unagressive) 3 | yes | yes | - | - |
-| `npc:varrock-sewers:10` | (3242, 9894) | Rat 2 | yes | yes | - | - |
-| `npc:varrock-sewers:11` | (3244, 9875) | Rat 1 | yes | yes | - | - |
-| `npc:varrock-sewers:12` | (3244, 9886) | Rat 1 | yes | yes | - | - |
-| `npc:varrock-sewers:13` | (3252, 9893) | Rat 2 | yes | yes | - | - |
-| `npc:varrock-sewers:14` | (3259, 9869) | Rat 2, Spider 3 | yes | yes | - | - |
-| `npc:varrock-sewers:15` | (3275, 9869) | Rat 6 | yes | yes | - | - |
-| `npc:varrock-sewers:16` | (3274, 9912) | Skeleton (skeleton_unagressive) 4 | yes | yes | - | - |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:varrock-sewers:0` | (3158, 9903) | x 3157-3159, z 9900-9905 | x 3154-3162, z 9897-9908 | `{ x: 3158, z: 9903, radius: 11 }` | Moss giant 2 | yes | yes | - | - |
+| `npc:varrock-sewers:1` | (3175, 9883) | x 3163-3183, z 9878-9891 | x 3153-3193, z 9868-9901 | `{ x: 3173, z: 9885, radius: 30 }` | Deadly red spider 8, Moss giant 2 | yes | yes | - | - |
+| `npc:varrock-sewers:2` | (3186, 9892) | (3186, 9892) | x 3176-3196, z 9882-9902 | `{ x: 3186, z: 9892, radius: 18 }` | Deadly red spider 1 | yes | yes | - | - |
+| `npc:varrock-sewers:3` | (3206, 9879) | x 3205-3206, z 9877-9880 | x 3197-3214, z 9869-9888 | `{ x: 3206, z: 9879, radius: 17 }` | Spider 2 | yes | yes | - | - |
+| `npc:varrock-sewers:4` | (3211, 9890) | x 3210-3212, z 9887-9893 | x 3202-3220, z 9879-9901 | `{ x: 3211, z: 9890, radius: 18 }` | Spider 4 | yes | yes | - | - |
+| `npc:varrock-sewers:5` | (3211, 9907) | x 3210-3211, z 9906-9908 | x 3201-3220, z 9897-9917 | `{ x: 3211, z: 9907, radius: 18 }` | Skeleton (skeleton_armed) 2 | yes | yes | - | - |
+| `npc:varrock-sewers:6` | (3229, 9865) | x 3218-3246, z 9859-9872 | x 3203-3261, z 9844-9887 | `{ x: 3232, z: 9866, radius: 40 }` | Rat 15 | yes | yes | - | - |
+| `npc:varrock-sewers:7` | (3220, 9886) | x 3219-3221, z 9886 | x 3209-3231, z 9876-9896 | `{ x: 3220, z: 9886, radius: 18 }` | Giant spider 2 | yes | yes | - | - |
+| `npc:varrock-sewers:8` | (3228, 9905) | x 3224-3230, z 9903-9906 | x 3215-3239, z 9894-9915 | `{ x: 3227, z: 9905, radius: 20 }` | Zombie 4 | yes | yes | - | - |
+| `npc:varrock-sewers:9` | (3248, 9913) | x 3239-3254, z 9903-9916 | x 3227-3266, z 9891-9928 | `{ x: 3247, z: 9910, radius: 31 }` | Ghost 3, Scorpion 2, Skeleton (skeleton_unagressive) 3 | yes | yes | - | - |
+| `npc:varrock-sewers:10` | (3242, 9894) | x 3242, z 9893-9895 | x 3227-3257, z 9878-9910 | `{ x: 3242, z: 9894, radius: 25 }` | Rat 2 | yes | yes | - | - |
+| `npc:varrock-sewers:11` | (3244, 9875) | (3244, 9875) | x 3229-3259, z 9860-9890 | `{ x: 3244, z: 9875, radius: 25 }` | Rat 1 | yes | yes | - | - |
+| `npc:varrock-sewers:12` | (3244, 9886) | (3244, 9886) | x 3229-3259, z 9871-9901 | `{ x: 3244, z: 9886, radius: 25 }` | Rat 1 | yes | yes | - | - |
+| `npc:varrock-sewers:13` | (3252, 9893) | x 3251-3252, z 9892-9893 | x 3236-3267, z 9877-9908 | `{ x: 3252, z: 9893, radius: 26 }` | Rat 2 | yes | yes | - | - |
+| `npc:varrock-sewers:14` | (3259, 9869) | x 3253-3262, z 9867-9870 | x 3238-3277, z 9852-9885 | `{ x: 3258, z: 9869, radius: 30 }` | Rat 2, Spider 3 | yes | yes | - | - |
+| `npc:varrock-sewers:15` | (3275, 9869) | x 3269-3277, z 9863-9873 | x 3254-3292, z 9848-9888 | `{ x: 3273, z: 9868, radius: 31 }` | Rat 6 | yes | yes | - | - |
+| `npc:varrock-sewers:16` | (3274, 9912) | x 3270-3275, z 9909-9914 | x 3267-3278, z 9906-9917 | `{ x: 3273, z: 9912, radius: 12 }` | Skeleton (skeleton_unagressive) 4 | yes | yes | - | - |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:varrock-sewers:0` | (3230, 9904) | Ladder 1 | up (3229, 3504) by Climb-up | yes | yes | - | - |
-| `connector:varrock-sewers:1` | (3237, 9858) | Ladder 1 | up (3236, 3458) by Climb-up | yes | yes | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:varrock-sewers:0` | (3230, 9904) | (3230, 9904) | `{ x: 3230, z: 9904, radius: 3 }` | Ladder 1 | up (3229, 3504) by Climb-up | yes | yes | - | - |
+| `connector:varrock-sewers:1` | (3237, 9858) | (3237, 9858) | `{ x: 3237, z: 9858, radius: 3 }` | Ladder 1 | up (3236, 3458) by Climb-up | yes | yes | - | - |

@@ -5,18 +5,18 @@ quests/quest_zombiequeen npcs; descriptive name.
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:shilo-village-quest-dungeon:0` | (2912, 9349) | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `tree:shilo-village-quest-dungeon:1` | (2931, 9346) | [normal](../resources/tree/normal.md) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `tree:shilo-village-quest-dungeon:2` | (2932, 9355) | [normal](../resources/tree/normal.md) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:shilo-village-quest-dungeon:0` | (2912, 9349) | x 2908-2915, z 9347-9350 | `{ x: 2912, z: 9349, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `tree:shilo-village-quest-dungeon:1` | (2931, 9346) | (2931, 9346) | `{ x: 2931, z: 9346, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `tree:shilo-village-quest-dungeon:2` | (2932, 9355) | (2932, 9355) | `{ x: 2932, z: 9355, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:shilo-village-quest-dungeon:0` | (2893, 9363) | Undead One (zqskeleton_armed) 2, Undead One (zqzombie_armed) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `npc:shilo-village-quest-dungeon:1` | (2892, 9384) | Undead One (zqskeleton_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `npc:shilo-village-quest-dungeon:2` | (2901, 9355) | Undead One (zqzombie_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `npc:shilo-village-quest-dungeon:3` | (2914, 9350) | Undead One (zqskeleton_armed) 1, Undead One (zqzombie_armed) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
-| `npc:shilo-village-quest-dungeon:4` | (2928, 9354) | Undead One (zqzombie_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:shilo-village-quest-dungeon:0` | (2893, 9363) | x 2886-2898, z 9360-9366 | x 2883-2901, z 9357-9369 | `{ x: 2892, z: 9363, radius: 14 }` | Undead One (zqskeleton_armed) 2, Undead One (zqzombie_armed) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `npc:shilo-village-quest-dungeon:1` | (2892, 9384) | (2892, 9384) | x 2889-2895, z 9381-9387 | `{ x: 2892, z: 9384, radius: 8 }` | Undead One (zqskeleton_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `npc:shilo-village-quest-dungeon:2` | (2901, 9355) | (2901, 9355) | x 2898-2904, z 9352-9358 | `{ x: 2901, z: 9355, radius: 8 }` | Undead One (zqzombie_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `npc:shilo-village-quest-dungeon:3` | (2914, 9350) | x 2910-2917, z 9347-9353 | x 2907-2920, z 9344-9356 | `{ x: 2914, z: 9350, radius: 13 }` | Undead One (zqskeleton_armed) 1, Undead One (zqzombie_armed) 2 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |
+| `npc:shilo-village-quest-dungeon:4` | (2928, 9354) | (2928, 9354) | x 2925-2931, z 9351-9357 | `{ x: 2928, z: 9354, radius: 8 }` | Undead One (zqzombie_armed) 1 | no | no | - | 30 coins + Shilo Village at stage 7 + 32 Agility or The Grand Tree done + Shilo Village at stage 7 + 32 Agility |

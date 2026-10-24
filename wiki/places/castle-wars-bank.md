@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:castle-wars-bank:0` | (2444, 3083) | Bank chest 1 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:castle-wars-bank:0` | (2444, 3083) | (2444, 3083) | `{ x: 2444, z: 3083, radius: 3 }` | Bank chest 1 | no | no | - | - |

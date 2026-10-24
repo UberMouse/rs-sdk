@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2763, 3276) | 1 | 5 | (2758, 3271)-(2768, 3281) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | (2763, 3276) | (2763, 3276) | 1 | 5 | x 2758-2768, z 3271-3281 | 100 ticks | - | `{ x: 2763, z: 3276, radius: 11 }` | no |
 
 ## Interactions
 

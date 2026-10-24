@@ -3,81 +3,81 @@
 
 76 sites, 27 of them in F2P; 58 a walk from the Lumbridge spawn reaches with no requirement (Requires -; a quest that locks a site's features is a requirement), 7 it does not reach (unreached).
 
-| Area | Site | Centre | Stand | Counts | F2P | Requires |
-|---|---|---|---|---|---|---|
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:0` | (2891, 3438) | (2890, 3438) | Fountain 1 | no | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:1` | (2891, 3443) | (2890, 3443) | Fountain 1 | no | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:2` | (2922, 3560) | (2921, 3560) | Sink 1 | no | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:3` | (2929, 3567) | (2929, 3566) | Sink 1 | no | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:4` | (2933, 3279) | (2932, 3279) | Sink 1 | yes | wear Brown apron + 40 Crafting |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:5` | (3021, 3287) | (3022, 3287) | Sink 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:6` | (3026, 3262) | (3025, 3262) | Sink 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:7` | (3038, 3353) | (3037, 3353) | Fountain 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:8` | (3048, 3494) | (3047, 3494) | Fountain 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:9` | (3051, 3347) | (3050, 3347) | Sink 1 | yes | - |
-| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:10` | (3054, 3494) | (3053, 3494) | Fountain 1 | yes | - |
-| [Burthorpe (Asgarnia)](../places/burthorpe.md) | `water-source:burthorpe:0` | (2893, 3556) | (2892, 3556) | Sink 1 | no | - |
-| [Falador (Asgarnia)](../places/falador.md) | `water-source:falador:0` | (2949, 3381) | (2949, 3380) | Fountain 1 | yes | - |
-| [Monastery (Asgarnia)](../places/monastery.md) | `water-source:monastery:0` | (3048, 3486) | (3047, 3486) | Fountain 1 | yes | - |
-| [Monastery (Asgarnia)](../places/monastery.md) | `water-source:monastery:1` | (3054, 3486) | (3053, 3486) | Fountain 1 | yes | - |
-| [Rimmington (Asgarnia)](../places/rimmington.md) | `water-source:rimmington:0` | (2966, 3209) | (2965, 3209) | Sink 1 | yes | - |
-| [Entrana](../places/entrana.md) | `water-source:entrana:0` | (2818, 3347) | (2817, 3347) | Fountain 1 | no | no weapons/armour (Entrana rule) |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:0` | (2526, 3152) | (2525, 3152) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:1` | (2532, 3152) | (2531, 3152) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:2` | (2548, 3321) | (2548, 3322) | Sink 1 | no | unreached |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:3` | (2553, 3166) | (2552, 3166) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:4` | (2553, 3172) | (2552, 3172) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:5` | (2563, 3166) | (2563, 3165) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:6` | (2563, 3172) | (2563, 3171) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:7` | (2591, 3188) | (2591, 3187) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:8` | (2608, 3187) | (2607, 3187) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:9` | (2610, 3195) | (2609, 3195) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:10` | (2677, 3397) | (2676, 3397) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:11` | (2733, 3580) | (2733, 3581) | Sink 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:12` | (2747, 3563) | (2746, 3563) | Sinclair family fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:13` | (2750, 3486) | (2750, 3486) | Fountain 2 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:14` | (2761, 3479) | (2760, 3479) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:15` | (2766, 3479) | (2765, 3479) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:16` | (2766, 3486) | (2766, 3486) | Fountain 2 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:17` | (2771, 3479) | (2770, 3479) | Fountain 1 | no | - |
-| [Kandarin](../places/kandarin.md) | `water-source:kandarin:18` | (2810, 3346) | (2810, 3345) | Sink 1 | no | no weapons/armour (Entrana rule) |
-| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | `water-source:camelot-castle:0` | (2757, 3498) | (2756, 3498) | Fountain 1 | no | - |
-| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | `water-source:camelot-castle:1` | (2771, 3515) | (2770, 3515) | Fountain 1 | no | - |
-| [Castle Wars (Kandarin)](../places/castle-wars.md) | `water-source:castle-wars:0` | (2431, 3077) | (2431, 3077) | Tap 1 | no | unreached |
-| [Catherby (Kandarin)](../places/catherby.md) | `water-source:catherby:0` | (2818, 3449) | (2818, 3450) | Sink 1 | no | - |
-| [Catherby (Kandarin)](../places/catherby.md) | `water-source:catherby:1` | (2830, 3440) | (2831, 3441) | Sink 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:0` | (2617, 3325) | (2616, 3325) | Sink 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:1` | (2628, 3324) | (2627, 3324) | Sink 1 | no | the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) or Tribal Totem done |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:2` | (2629, 3311) | (2628, 3311) | Fountain 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:3` | (2640, 3311) | (2639, 3311) | Fountain 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:4` | (2658, 3273) | (2659, 3273) | Sink 1 | no | - |
-| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:5` | (2675, 3310) | (2674, 3310) | Sink 1 | no | 1 Thieving |
-| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `water-source:legends-guild:0` | (2732, 3369) | (2731, 3369) | Fountain 1 | no | Legends Quest at stage 1 |
-| [Seers' Village (Kandarin)](../places/seers-village.md) | `water-source:seers-village:0` | (2699, 3472) | (2700, 3472) | Sink 1 | no | - |
-| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:0` | (2549, 3101) | (2549, 3100) | Sink 1 | no | - |
-| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:1` | (2556, 3113) | (2555, 3113) | Fountain 1 | no | - |
-| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:2` | (2566, 3093) | (2566, 3094) | Sink 1 | no | - |
-| [Brimhaven (Karamja)](../places/brimhaven.md) | `water-source:brimhaven:0` | (2792, 3193) | (2791, 3192) | Sink 2 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 |
-| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `water-source:al-kharid:0` | (3292, 3172) | (3291, 3172) | Fountain 1 | yes | - |
-| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | `water-source:lumbridge-castle-cellar:0` | (3212, 9625) | (3212, 9624) | Sink 1 | yes | - |
-| [Misthalin](../places/misthalin.md) | `water-source:misthalin:0` | (3116, 3167) | (3115, 3167) | Fountain 1 | yes | - |
-| [Misthalin](../places/misthalin.md) | `water-source:misthalin:1` | (3146, 3451) | (3145, 3451) | Sink 1 | yes | wear Chef's hat + 32 Cooking |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:0` | (3205, 3215) | (3205, 3214) | Sink 1 | yes | - |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:1` | (3221, 3210) | (3220, 3210) | Fountain 1 | yes | - |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:2` | (3221, 3226) | (3220, 3226) | Fountain 1 | yes | - |
-| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:3` | (3230, 3206) | (3230, 3207) | Sink 1 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:0` | (3190, 3470) | (3190, 3470) | Fountain 2 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:1` | (3206, 3463) | (3205, 3463) | Fountain 1 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:2` | (3218, 3463) | (3217, 3463) | Fountain 1 | yes | - |
-| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:3` | (3238, 3434) | (3237, 3434) | Fountain 1 | yes | - |
-| [Varrock Palace (Varrock)](../places/palace.md) | `water-source:palace:0` | (3224, 3494) | (3223, 3494) | Sink 1 | yes | - |
-| [Mort'ton (Morytania)](../places/mortton.md) | `water-source:mortton:0` | (3495, 3288) | (3495, 3289) | Sink 1 | no | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | `water-source:taverley-dungeon:0` | (2925, 9708) | (2924, 9708) | Sink 2 | no | - |
-| [Tirannwn](../places/tirannwn.md) | `water-source:tirannwn:0` | (2368, 3130) | (2368, 3130) | Tap 1 | no | unreached |
-| [Tutorial Island](../places/tutorial-island.md) | `water-source:tutorial-island:0` | (3077, 3086) | (3077, 3085) | Sink 1 | yes | unreached |
-| [Tutorial Island](../places/tutorial-island.md) | `water-source:tutorial-island:1` | (3090, 3109) | (3091, 3109) | Sink 1 | yes | unreached |
-| [Watchtower quest area](../places/watchtower-quest-area.md) | `water-source:watchtower-quest-area:0` | (2933, 4701) | (2933, 4700) | Sink 1 | no | unreached |
-| [Watchtower quest area](../places/watchtower-quest-area.md) | `water-source:watchtower-quest-area:1` | (2940, 4713) | (2939, 4713) | Fountain 1 | no | unreached |
-| [Ruins (Wilderness)](../places/ruins-2.md) | `water-source:ruins-2:0` | (3168, 3734) | (3167, 3734) | Sink 1 | yes | - |
-| [Zanaris](../places/zanaris.md) | `water-source:zanaris:0` | (3178, 9562) | (3177, 9562) | Fountain 1 | no | wear Dramen staff |
-| [Zanaris](../places/zanaris.md) | `water-source:zanaris:1` | (3178, 9570) | (3177, 9570) | Fountain 1 | no | wear Dramen staff |
+| Area | Site | Centre | Stand | Box | Area to copy | Counts | F2P | Requires |
+|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:0` | (2891, 3438) | (2890, 3438) | (2891, 3438) | `{ x: 2891, z: 3438, radius: 3 }` | Fountain 1 | no | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:1` | (2891, 3443) | (2890, 3443) | (2891, 3443) | `{ x: 2891, z: 3443, radius: 3 }` | Fountain 1 | no | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:2` | (2922, 3560) | (2921, 3560) | (2922, 3560) | `{ x: 2922, z: 3560, radius: 3 }` | Sink 1 | no | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:3` | (2929, 3567) | (2929, 3566) | (2929, 3567) | `{ x: 2929, z: 3567, radius: 3 }` | Sink 1 | no | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:4` | (2933, 3279) | (2932, 3279) | (2933, 3279) | `{ x: 2933, z: 3279, radius: 3 }` | Sink 1 | yes | wear Brown apron + 40 Crafting |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:5` | (3021, 3287) | (3022, 3287) | (3021, 3287) | `{ x: 3021, z: 3287, radius: 3 }` | Sink 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:6` | (3026, 3262) | (3025, 3262) | (3026, 3262) | `{ x: 3026, z: 3262, radius: 3 }` | Sink 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:7` | (3038, 3353) | (3037, 3353) | (3038, 3353) | `{ x: 3038, z: 3353, radius: 3 }` | Fountain 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:8` | (3048, 3494) | (3047, 3494) | (3048, 3494) | `{ x: 3048, z: 3494, radius: 3 }` | Fountain 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:9` | (3051, 3347) | (3050, 3347) | (3051, 3347) | `{ x: 3051, z: 3347, radius: 3 }` | Sink 1 | yes | - |
+| [Asgarnia](../places/asgarnia.md) | `water-source:asgarnia:10` | (3054, 3494) | (3053, 3494) | (3054, 3494) | `{ x: 3054, z: 3494, radius: 3 }` | Fountain 1 | yes | - |
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | `water-source:burthorpe:0` | (2893, 3556) | (2892, 3556) | (2893, 3556) | `{ x: 2893, z: 3556, radius: 3 }` | Sink 1 | no | - |
+| [Falador (Asgarnia)](../places/falador.md) | `water-source:falador:0` | (2949, 3381) | (2949, 3380) | (2949, 3381) | `{ x: 2949, z: 3381, radius: 3 }` | Fountain 1 | yes | - |
+| [Monastery (Asgarnia)](../places/monastery.md) | `water-source:monastery:0` | (3048, 3486) | (3047, 3486) | (3048, 3486) | `{ x: 3048, z: 3486, radius: 3 }` | Fountain 1 | yes | - |
+| [Monastery (Asgarnia)](../places/monastery.md) | `water-source:monastery:1` | (3054, 3486) | (3053, 3486) | (3054, 3486) | `{ x: 3054, z: 3486, radius: 3 }` | Fountain 1 | yes | - |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | `water-source:rimmington:0` | (2966, 3209) | (2965, 3209) | (2966, 3209) | `{ x: 2966, z: 3209, radius: 3 }` | Sink 1 | yes | - |
+| [Entrana](../places/entrana.md) | `water-source:entrana:0` | (2818, 3347) | (2817, 3347) | (2818, 3347) | `{ x: 2818, z: 3347, radius: 3 }` | Fountain 1 | no | no weapons/armour (Entrana rule) |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:0` | (2526, 3152) | (2525, 3152) | (2526, 3152) | `{ x: 2526, z: 3152, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:1` | (2532, 3152) | (2531, 3152) | (2532, 3152) | `{ x: 2532, z: 3152, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:2` | (2548, 3321) | (2548, 3322) | (2548, 3321) | `{ x: 2548, z: 3321, radius: 3 }` | Sink 1 | no | unreached |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:3` | (2553, 3166) | (2552, 3166) | (2553, 3166) | `{ x: 2553, z: 3166, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:4` | (2553, 3172) | (2552, 3172) | (2553, 3172) | `{ x: 2553, z: 3172, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:5` | (2563, 3166) | (2563, 3165) | (2563, 3166) | `{ x: 2563, z: 3166, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:6` | (2563, 3172) | (2563, 3171) | (2563, 3172) | `{ x: 2563, z: 3172, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:7` | (2591, 3188) | (2591, 3187) | (2591, 3188) | `{ x: 2591, z: 3188, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:8` | (2608, 3187) | (2607, 3187) | (2608, 3187) | `{ x: 2608, z: 3187, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:9` | (2610, 3195) | (2609, 3195) | (2610, 3195) | `{ x: 2610, z: 3195, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:10` | (2677, 3397) | (2676, 3397) | (2677, 3397) | `{ x: 2677, z: 3397, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:11` | (2733, 3580) | (2733, 3581) | (2733, 3580) | `{ x: 2733, z: 3580, radius: 3 }` | Sink 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:12` | (2747, 3563) | (2746, 3563) | (2747, 3563) | `{ x: 2747, z: 3563, radius: 3 }` | Sinclair family fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:13` | (2750, 3486) | (2750, 3486) | x 2750, z 3484-3487 | `{ x: 2750, z: 3486, radius: 5 }` | Fountain 2 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:14` | (2761, 3479) | (2760, 3479) | (2761, 3479) | `{ x: 2761, z: 3479, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:15` | (2766, 3479) | (2765, 3479) | (2766, 3479) | `{ x: 2766, z: 3479, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:16` | (2766, 3486) | (2766, 3486) | x 2766, z 3484-3487 | `{ x: 2766, z: 3486, radius: 5 }` | Fountain 2 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:17` | (2771, 3479) | (2770, 3479) | (2771, 3479) | `{ x: 2771, z: 3479, radius: 3 }` | Fountain 1 | no | - |
+| [Kandarin](../places/kandarin.md) | `water-source:kandarin:18` | (2810, 3346) | (2810, 3345) | (2810, 3346) | `{ x: 2810, z: 3346, radius: 3 }` | Sink 1 | no | no weapons/armour (Entrana rule) |
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | `water-source:camelot-castle:0` | (2757, 3498) | (2756, 3498) | (2757, 3498) | `{ x: 2757, z: 3498, radius: 3 }` | Fountain 1 | no | - |
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | `water-source:camelot-castle:1` | (2771, 3515) | (2770, 3515) | (2771, 3515) | `{ x: 2771, z: 3515, radius: 3 }` | Fountain 1 | no | - |
+| [Castle Wars (Kandarin)](../places/castle-wars.md) | `water-source:castle-wars:0` | (2431, 3077) | (2431, 3077) | (2431, 3077) | `{ x: 2431, z: 3077, radius: 3 }` | Tap 1 | no | unreached |
+| [Catherby (Kandarin)](../places/catherby.md) | `water-source:catherby:0` | (2818, 3449) | (2818, 3450) | (2818, 3449) | `{ x: 2818, z: 3449, radius: 3 }` | Sink 1 | no | - |
+| [Catherby (Kandarin)](../places/catherby.md) | `water-source:catherby:1` | (2830, 3440) | (2831, 3441) | (2830, 3440) | `{ x: 2830, z: 3440, radius: 3 }` | Sink 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:0` | (2617, 3325) | (2616, 3325) | (2617, 3325) | `{ x: 2617, z: 3325, radius: 3 }` | Sink 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:1` | (2628, 3324) | (2627, 3324) | (2628, 3324) | `{ x: 2628, z: 3324, radius: 3 }` | Sink 1 | no | the tribal door's combination lock solved (bit 0 of %handelmort_traps_disabled, set at quests/quest_totem/scripts/quest_totem.rs2:41) or Tribal Totem done |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:2` | (2629, 3311) | (2628, 3311) | (2629, 3311) | `{ x: 2629, z: 3311, radius: 3 }` | Fountain 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:3` | (2640, 3311) | (2639, 3311) | (2640, 3311) | `{ x: 2640, z: 3311, radius: 3 }` | Fountain 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:4` | (2658, 3273) | (2659, 3273) | (2658, 3273) | `{ x: 2658, z: 3273, radius: 3 }` | Sink 1 | no | - |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | `water-source:east-ardougne:5` | (2675, 3310) | (2674, 3310) | (2675, 3310) | `{ x: 2675, z: 3310, radius: 3 }` | Sink 1 | no | 1 Thieving |
+| [Legends' Guild (Kandarin)](../places/legends-guild.md) | `water-source:legends-guild:0` | (2732, 3369) | (2731, 3369) | (2732, 3369) | `{ x: 2732, z: 3369, radius: 3 }` | Fountain 1 | no | Legends Quest at stage 1 |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | `water-source:seers-village:0` | (2699, 3472) | (2700, 3472) | (2699, 3472) | `{ x: 2699, z: 3472, radius: 3 }` | Sink 1 | no | - |
+| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:0` | (2549, 3101) | (2549, 3100) | (2549, 3101) | `{ x: 2549, z: 3101, radius: 3 }` | Sink 1 | no | - |
+| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:1` | (2556, 3113) | (2555, 3113) | (2556, 3113) | `{ x: 2556, z: 3113, radius: 3 }` | Fountain 1 | no | - |
+| [Yanille (Kandarin)](../places/yanille.md) | `water-source:yanille:2` | (2566, 3093) | (2566, 3094) | (2566, 3093) | `{ x: 2566, z: 3093, radius: 3 }` | Sink 1 | no | - |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | `water-source:brimhaven:0` | (2792, 3193) | (2791, 3192) | x 2790-2793, z 3193 | `{ x: 2792, z: 3193, radius: 5 }` | Sink 2 | no | 30 coins + `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + Hero's Quest at stage 3 or `%phoenixgang = ^phoenixgang_complete` (quests/quest_hero/scripts/locs/brimhaven_restaurant.rs2:2) + The Grand Tree done + Hero's Quest at stage 3 |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | `water-source:al-kharid:0` | (3292, 3172) | (3291, 3172) | (3292, 3172) | `{ x: 3292, z: 3172, radius: 3 }` | Fountain 1 | yes | - |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | `water-source:lumbridge-castle-cellar:0` | (3212, 9625) | (3212, 9624) | (3212, 9625) | `{ x: 3212, z: 9625, radius: 3 }` | Sink 1 | yes | - |
+| [Misthalin](../places/misthalin.md) | `water-source:misthalin:0` | (3116, 3167) | (3115, 3167) | (3116, 3167) | `{ x: 3116, z: 3167, radius: 3 }` | Fountain 1 | yes | - |
+| [Misthalin](../places/misthalin.md) | `water-source:misthalin:1` | (3146, 3451) | (3145, 3451) | (3146, 3451) | `{ x: 3146, z: 3451, radius: 3 }` | Sink 1 | yes | wear Chef's hat + 32 Cooking |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:0` | (3205, 3215) | (3205, 3214) | (3205, 3215) | `{ x: 3205, z: 3215, radius: 3 }` | Sink 1 | yes | - |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:1` | (3221, 3210) | (3220, 3210) | (3221, 3210) | `{ x: 3221, z: 3210, radius: 3 }` | Fountain 1 | yes | - |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:2` | (3221, 3226) | (3220, 3226) | (3221, 3226) | `{ x: 3221, z: 3226, radius: 3 }` | Fountain 1 | yes | - |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | `water-source:lumbridge:3` | (3230, 3206) | (3230, 3207) | (3230, 3206) | `{ x: 3230, z: 3206, radius: 3 }` | Sink 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:0` | (3190, 3470) | (3190, 3470) | x 3190, z 3468-3472 | `{ x: 3190, z: 3470, radius: 5 }` | Fountain 2 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:1` | (3206, 3463) | (3205, 3463) | (3206, 3463) | `{ x: 3206, z: 3463, radius: 3 }` | Fountain 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:2` | (3218, 3463) | (3217, 3463) | (3218, 3463) | `{ x: 3218, z: 3463, radius: 3 }` | Fountain 1 | yes | - |
+| [Varrock (Misthalin)](../places/varrock.md) | `water-source:varrock:3` | (3238, 3434) | (3237, 3434) | (3238, 3434) | `{ x: 3238, z: 3434, radius: 3 }` | Fountain 1 | yes | - |
+| [Varrock Palace (Varrock)](../places/palace.md) | `water-source:palace:0` | (3224, 3494) | (3223, 3494) | (3224, 3494) | `{ x: 3224, z: 3494, radius: 3 }` | Sink 1 | yes | - |
+| [Mort'ton (Morytania)](../places/mortton.md) | `water-source:mortton:0` | (3495, 3288) | (3495, 3289) | (3495, 3288) | `{ x: 3495, z: 3288, radius: 3 }` | Sink 1 | no | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| [Taverley Dungeon](../places/taverley-dungeon.md) | `water-source:taverley-dungeon:0` | (2925, 9708) | (2924, 9708) | x 2925, z 9707-9709 | `{ x: 2925, z: 9708, radius: 4 }` | Sink 2 | no | - |
+| [Tirannwn](../places/tirannwn.md) | `water-source:tirannwn:0` | (2368, 3130) | (2368, 3130) | (2368, 3130) | `{ x: 2368, z: 3130, radius: 3 }` | Tap 1 | no | unreached |
+| [Tutorial Island](../places/tutorial-island.md) | `water-source:tutorial-island:0` | (3077, 3086) | (3077, 3085) | (3077, 3086) | `{ x: 3077, z: 3086, radius: 3 }` | Sink 1 | yes | unreached |
+| [Tutorial Island](../places/tutorial-island.md) | `water-source:tutorial-island:1` | (3090, 3109) | (3091, 3109) | (3090, 3109) | `{ x: 3090, z: 3109, radius: 3 }` | Sink 1 | yes | unreached |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | `water-source:watchtower-quest-area:0` | (2933, 4701) | (2933, 4700) | (2933, 4701) | `{ x: 2933, z: 4701, radius: 3 }` | Sink 1 | no | unreached |
+| [Watchtower quest area](../places/watchtower-quest-area.md) | `water-source:watchtower-quest-area:1` | (2940, 4713) | (2939, 4713) | (2940, 4713) | `{ x: 2940, z: 4713, radius: 3 }` | Fountain 1 | no | unreached |
+| [Ruins (Wilderness)](../places/ruins-2.md) | `water-source:ruins-2:0` | (3168, 3734) | (3167, 3734) | (3168, 3734) | `{ x: 3168, z: 3734, radius: 3 }` | Sink 1 | yes | - |
+| [Zanaris](../places/zanaris.md) | `water-source:zanaris:0` | (3178, 9562) | (3177, 9562) | (3178, 9562) | `{ x: 3178, z: 9562, radius: 3 }` | Fountain 1 | no | wear Dramen staff |
+| [Zanaris](../places/zanaris.md) | `water-source:zanaris:1` | (3178, 9570) | (3177, 9570) | (3178, 9570) | `{ x: 3178, z: 9570, radius: 3 }` | Fountain 1 | no | wear Dramen staff |

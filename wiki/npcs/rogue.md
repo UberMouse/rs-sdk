@@ -24,13 +24,13 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3284, 3931) | 10 | 5 | (3271, 3919)-(3297, 3944) | 100 ticks | - | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3289, 3931) L1 | 2 | 5 | (3283, 3925)-(3294, 3936) | 100 ticks | - | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3290, 3933) L2 | 6 | 5 | (3281, 3924)-(3301, 3944) | 100 ticks | - | no |
-| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3282, 3936) L3 | 2 | 5 | (3276, 3929)-(3287, 3943) | 100 ticks | - | no |
-| [Wilderness](../places/wilderness.md) | (3078, 3913) | 2 | 5 | (3071, 3904)-(3084, 3921) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3284, 3931) | x 3276-3292, z 3924-3939 | 10 | 5 | x 3271-3297, z 3919-3944 | 100 ticks | - | `{ x: 3284, z: 3932, radius: 22 }` | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3289, 3931) L1 | x 3288-3289, z 3930-3931 L1 | 2 | 5 | x 3283-3294, z 3925-3936 L1 | 100 ticks | - | `{ x: 3289, z: 3931, radius: 12, level: 1 }` | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3290, 3933) L2 | x 3286-3296, z 3929-3939 L2 | 6 | 5 | x 3281-3301, z 3924-3944 L2 | 100 ticks | - | `{ x: 3291, z: 3934, radius: 18, level: 2 }` | no |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | (3282, 3936) L3 | x 3281-3282, z 3934-3938 L3 | 2 | 5 | x 3276-3287, z 3929-3943 L3 | 100 ticks | - | `{ x: 3282, z: 3936, radius: 13, level: 3 }` | no |
+| [Wilderness](../places/wilderness.md) | (3078, 3913) | x 3076-3079, z 3909-3916 | 2 | 5 | x 3071-3084, z 3904-3921 | 100 ticks | - | `{ x: 3078, z: 3913, radius: 15 }` | no |
 
 ## Drops
 

@@ -3,95 +3,95 @@
 
 ## Trees
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `tree:morytania:0` | (3396, 3344) | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
-| `tree:morytania:1` | (3397, 3374) | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
-| `tree:morytania:2` | (3410, 3472) | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
-| `tree:morytania:3` | (3430, 3523) | [normal](../resources/tree/normal.md) 7 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:4` | (3422, 3459) | [normal](../resources/tree/normal.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:5` | (3437, 3492) | [normal](../resources/tree/normal.md) 4 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:6` | (3437, 3475) | [normal](../resources/tree/normal.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:7` | (3441, 3461) | [normal](../resources/tree/normal.md) 6 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:8` | (3463, 3314) | [normal](../resources/tree/normal.md) 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `tree:morytania:9` | (3478, 3317) | [normal](../resources/tree/normal.md) 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `tree:morytania:10` | (3516, 3288) | [normal](../resources/tree/normal.md) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `tree:morytania:11` | (3527, 3482) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:12` | (3535, 3265) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:morytania:13` | (3537, 3467) | [hollow](../resources/tree/hollow.md) 6 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:14` | (3539, 3291) | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
-| `tree:morytania:15` | (3540, 3308) | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
-| `tree:morytania:16` | (3553, 3502) | [hollow](../resources/tree/hollow.md) 6 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:17` | (3550, 3483) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:18` | (3569, 3503) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:19` | (3584, 3475) | [hollow](../resources/tree/hollow.md) 21 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:20` | (3604, 3501) | [hollow](../resources/tree/hollow.md) 7 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:21` | (3619, 3479) | [hollow](../resources/tree/hollow.md) 19 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:22` | (3623, 3502) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:23` | (3635, 3505) | [hollow](../resources/tree/hollow.md) 9 | no | no | - | Priest in Peril at stage 61 |
-| `tree:morytania:24` | (3636, 3488) | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `tree:morytania:0` | (3396, 3344) | x 3395-3399, z 3342-3347 | `{ x: 3397, z: 3345, radius: 7 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | unreached |
+| `tree:morytania:1` | (3397, 3374) | (3397, 3374) | `{ x: 3397, z: 3374, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | unreached |
+| `tree:morytania:2` | (3410, 3472) | x 3406-3415, z 3465-3477 | `{ x: 3411, z: 3471, radius: 11 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | - |
+| `tree:morytania:3` | (3430, 3523) | x 3415-3444, z 3521-3526 | `{ x: 3430, z: 3524, radius: 19 }` | [normal](../resources/tree/normal.md) 7 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:4` | (3422, 3459) | (3422, 3459) | `{ x: 3422, z: 3459, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:5` | (3437, 3492) | x 3433-3440, z 3487-3495 | `{ x: 3437, z: 3491, radius: 9 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:6` | (3437, 3475) | (3437, 3475) | `{ x: 3437, z: 3475, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:7` | (3441, 3461) | x 3439-3443, z 3457-3466 | `{ x: 3441, z: 3462, radius: 9 }` | [normal](../resources/tree/normal.md) 6 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:8` | (3463, 3314) | x 3459-3467, z 3311-3318 | `{ x: 3463, z: 3315, radius: 9 }` | [normal](../resources/tree/normal.md) 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:morytania:9` | (3478, 3317) | x 3476-3481, z 3313-3319 | `{ x: 3479, z: 3316, radius: 8 }` | [normal](../resources/tree/normal.md) 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:morytania:10` | (3516, 3288) | (3516, 3288) | `{ x: 3516, z: 3288, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `tree:morytania:11` | (3527, 3482) | (3527, 3482) | `{ x: 3527, z: 3482, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:12` | (3535, 3265) | x 3532-3538, z 3264-3266 | `{ x: 3535, z: 3265, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:morytania:13` | (3537, 3467) | x 3534-3540, z 3465-3470 | `{ x: 3537, z: 3468, radius: 8 }` | [hollow](../resources/tree/hollow.md) 6 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:14` | (3539, 3291) | x 3535-3544, z 3284-3297 | `{ x: 3540, z: 3291, radius: 12 }` | [normal](../resources/tree/normal.md) 4 | no | no | - | unreached |
+| `tree:morytania:15` | (3540, 3308) | x 3537-3543, z 3306-3309 | `{ x: 3540, z: 3308, radius: 7 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | unreached |
+| `tree:morytania:16` | (3553, 3502) | x 3549-3555, z 3492-3508 | `{ x: 3552, z: 3500, radius: 12 }` | [hollow](../resources/tree/hollow.md) 6 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:17` | (3550, 3483) | (3550, 3483) | `{ x: 3550, z: 3483, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:18` | (3569, 3503) | (3569, 3503) | `{ x: 3569, z: 3503, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:19` | (3584, 3475) | x 3571-3597, z 3461-3496 | `{ x: 3584, z: 3479, radius: 26 }` | [hollow](../resources/tree/hollow.md) 21 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:20` | (3604, 3501) | x 3600-3607, z 3498-3506 | `{ x: 3604, z: 3502, radius: 9 }` | [hollow](../resources/tree/hollow.md) 7 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:21` | (3619, 3479) | x 3612-3632, z 3467-3493 | `{ x: 3622, z: 3480, radius: 20 }` | [hollow](../resources/tree/hollow.md) 19 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:22` | (3623, 3502) | (3623, 3502) | `{ x: 3623, z: 3502, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:23` | (3635, 3505) | x 3630-3641, z 3498-3511 | `{ x: 3636, z: 3505, radius: 13 }` | [hollow](../resources/tree/hollow.md) 9 | no | no | - | Priest in Peril at stage 61 |
+| `tree:morytania:24` | (3636, 3488) | (3636, 3488) | `{ x: 3636, z: 3488, radius: 3 }` | [hollow](../resources/tree/hollow.md) 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Fishing spots
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `fishing-spot:morytania:0` | (3430, 3411) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `fishing-spot:morytania:1` | (3441, 3274) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `fishing-spot:morytania:2` | (3483, 3439) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `fishing-spot:morytania:0` | (3430, 3411) | x 3424-3440, z 3407-3417 | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md#movement) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `fishing-spot:morytania:1` | (3441, 3274) | x 3437-3445, z 3271-3280 | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md#movement) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `fishing-spot:morytania:2` | (3483, 3439) | x 3479-3490, z 3430-3449 | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md#movement) | [Fishing spot (slimeyfish)](../resources/fishing-spot/slimeyfish.md) 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
 
 ## Monsters
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `npc:morytania:0` | (3410, 3389) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:1` | (3413, 3359) | Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:2` | (3413, 3410) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:3` | (3421, 3291) | Myre Blamish Snail (mmsnailpoint_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:4` | (3422, 3408) | Myre Blamish Snail (mmsnailround_swamp) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:5` | (3426, 3299) | Myre Blamish Snail (mmsnailpoint_swamp) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:6` | (3425, 3426) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:7` | (3426, 3277) | Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:8` | (3428, 3312) | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:9` | (3434, 3290) | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:10` | (3441, 3307) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 3, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:11` | (3440, 3354) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:12` | (3447, 3286) | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:13` | (3447, 3268) | Bark Blamish Snail 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:14` | (3452, 3308) | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:15` | (3458, 3419) | Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:16` | (3468, 3346) | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:17` | (3462, 3432) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:18` | (3463, 3357) | Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:19` | (3471, 3410) | Myre Blamish Snail (mmsnailpoint_swamp) 5, Ochre Blamish Snail (mmsnailpoint_yellow) 3, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:20` | (3466, 3364) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:21` | (3469, 3432) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:22` | (3478, 3367) | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:23` | (3483, 3442) | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
-| `npc:morytania:24` | (3487, 3378) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
-| `npc:morytania:25` | (3501, 3421) | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailround_swamp) 4, Ochre Blamish Snail (mmsnailround_yellow) 3 | no | no | - | unreached |
-| `npc:morytania:26` | (3496, 3444) | Blood Blamish Snail (mmsnailpoint_red+black) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:27` | (3504, 3404) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
-| `npc:morytania:28` | (3508, 3434) | Bark Blamish Snail 2 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:29` | (3516, 3409) | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
-| `npc:morytania:30` | (3518, 3438) | Blood Blamish Snail (mmsnailround_red+black) 1, Bruise Blamish Snail (mmsnailround_blue) 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:31` | (3565, 3503) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:32` | (3580, 3491) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:33` | (3588, 3472) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:34` | (3598, 3509) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:35` | (3599, 3486) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:36` | (3607, 3462) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:37` | (3611, 3499) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:38` | (3613, 3482) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:39` | (3627, 3511) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:40` | (3628, 3473) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:41` | (3636, 3466) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
-| `npc:morytania:42` | (3639, 3510) | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `npc:morytania:0` | (3410, 3389) | x 3409-3411, z 3387-3391 | x 3384-3436, z 3362-3416 | `{ x: 3410, z: 3389, radius: 41 }` | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:1` | (3413, 3359) | x 3411-3414, z 3357-3361 | x 3391-3434, z 3337-3381 | `{ x: 3413, z: 3359, radius: 35 }` | Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:2` | (3413, 3410) | (3413, 3410) | x 3393-3433, z 3390-3430 | `{ x: 3413, z: 3410, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:3` | (3421, 3291) | (3421, 3291) | x 3411-3431, z 3281-3301 | `{ x: 3421, z: 3291, radius: 18 }` | Myre Blamish Snail (mmsnailpoint_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:4` | (3422, 3408) | x 3421-3423, z 3408 | x 3401-3443, z 3388-3428 | `{ x: 3422, z: 3408, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:5` | (3426, 3299) | x 3423-3429, z 3299 | x 3413-3439, z 3289-3309 | `{ x: 3426, z: 3299, radius: 20 }` | Myre Blamish Snail (mmsnailpoint_swamp) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:6` | (3425, 3426) | x 3424-3425, z 3424-3427 | x 3404-3445, z 3404-3447 | `{ x: 3425, z: 3426, radius: 34 }` | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:7` | (3426, 3277) | x 3425-3426, z 3275-3278 | x 3400-3451, z 3250-3303 | `{ x: 3426, z: 3277, radius: 41 }` | Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:8` | (3428, 3312) | x 3425-3431, z 3308-3319 | x 3395-3461, z 3278-3349 | `{ x: 3428, z: 3314, radius: 52 }` | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:9` | (3434, 3290) | x 3430-3438, z 3286-3294 | x 3410-3458, z 3266-3314 | `{ x: 3434, z: 3290, radius: 37 }` | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:10` | (3441, 3307) | x 3437-3448, z 3300-3312 | x 3407-3478, z 3270-3342 | `{ x: 3443, z: 3306, radius: 54 }` | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 3, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:11` | (3440, 3354) | x 3439-3441, z 3353-3355 | x 3409-3471, z 3323-3385 | `{ x: 3440, z: 3354, radius: 47 }` | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:12` | (3447, 3286) | x 3445-3451, z 3284-3291 | x 3425-3471, z 3264-3311 | `{ x: 3448, z: 3288, radius: 37 }` | Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 2, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:13` | (3447, 3268) | x 3447-3448, z 3267-3269 | x 3417-3478, z 3237-3299 | `{ x: 3448, z: 3268, radius: 47 }` | Bark Blamish Snail 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:14` | (3452, 3308) | x 3450-3454, z 3307-3309 | x 3420-3484, z 3277-3339 | `{ x: 3452, z: 3308, radius: 48 }` | Bark Blamish Snail 1, Myre Blamish Snail (mmsnailpoint_swamp) 1, Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:15` | (3458, 3419) | x 3456-3460, z 3417-3424 | x 3436-3480, z 3397-3444 | `{ x: 3458, z: 3421, radius: 36 }` | Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailround_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:16` | (3468, 3346) | x 3458-3474, z 3345-3348 | x 3408-3524, z 3295-3398 | `{ x: 3466, z: 3347, radius: 81 }` | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:17` | (3462, 3432) | (3462, 3432) | x 3442-3482, z 3412-3452 | `{ x: 3462, z: 3432, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:18` | (3463, 3357) | (3463, 3357) | x 3438-3488, z 3332-3382 | `{ x: 3463, z: 3357, radius: 39 }` | Ochre Blamish Snail (mmsnailpoint_yellow) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:19` | (3471, 3410) | x 3463-3480, z 3399-3424 | x 3438-3505, z 3374-3449 | `{ x: 3472, z: 3412, radius: 54 }` | Myre Blamish Snail (mmsnailpoint_swamp) 5, Ochre Blamish Snail (mmsnailpoint_yellow) 3, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:20` | (3466, 3364) | (3466, 3364) | x 3446-3486, z 3344-3384 | `{ x: 3466, z: 3364, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:21` | (3469, 3432) | (3469, 3432) | x 3449-3489, z 3412-3452 | `{ x: 3469, z: 3432, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:22` | (3478, 3367) | x 3477-3480, z 3363-3371 | x 3452-3505, z 3338-3396 | `{ x: 3479, z: 3367, radius: 43 }` | Myre Blamish Snail (mmsnailround_swamp) 1, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:23` | (3483, 3442) | x 3481-3486, z 3439-3445 | x 3431-3536, z 3389-3495 | `{ x: 3484, z: 3442, radius: 78 }` | Blood Blamish Snail (mmsnailpoint_red+black) 1, Bruise Blamish Snail (mmsnailpoint_blue) 1, Bruise Blamish Snail (mmsnailround_blue) 1, Myre Blamish Snail (mmsnailpoint_swamp) 2, Myre Blamish Snail (mmsnailround_swamp) 3, Ochre Blamish Snail (mmsnailpoint_yellow) 1, Ochre Blamish Snail (mmsnailround_yellow) 2 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 |
+| `npc:morytania:24` | (3487, 3378) | (3487, 3378) | x 3467-3507, z 3358-3398 | `{ x: 3487, z: 3378, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
+| `npc:morytania:25` | (3501, 3421) | x 3495-3506, z 3418-3425 | x 3465-3536, z 3388-3455 | `{ x: 3501, z: 3422, radius: 53 }` | Bark Blamish Snail 2, Myre Blamish Snail (mmsnailround_swamp) 4, Ochre Blamish Snail (mmsnailround_yellow) 3 | no | no | - | unreached |
+| `npc:morytania:26` | (3496, 3444) | (3496, 3444) | x 3456-3536, z 3404-3484 | `{ x: 3496, z: 3444, radius: 60 }` | Blood Blamish Snail (mmsnailpoint_red+black) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:27` | (3504, 3404) | (3504, 3404) | x 3484-3524, z 3384-3424 | `{ x: 3504, z: 3404, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
+| `npc:morytania:28` | (3508, 3434) | x 3505-3510, z 3433-3435 | x 3475-3540, z 3403-3465 | `{ x: 3508, z: 3434, radius: 49 }` | Bark Blamish Snail 2 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:29` | (3516, 3409) | (3516, 3409) | x 3496-3536, z 3389-3429 | `{ x: 3516, z: 3409, radius: 32 }` | Myre Blamish Snail (mmsnailround_swamp) 1 | no | no | - | unreached |
+| `npc:morytania:30` | (3518, 3438) | x 3517-3519, z 3437-3439 | x 3457-3579, z 3377-3499 | `{ x: 3518, z: 3438, radius: 90 }` | Blood Blamish Snail (mmsnailround_red+black) 1, Bruise Blamish Snail (mmsnailround_blue) 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:31` | (3565, 3503) | (3565, 3503) | x 3535-3595, z 3473-3533 | `{ x: 3565, z: 3503, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:32` | (3580, 3491) | (3580, 3491) | x 3550-3610, z 3461-3521 | `{ x: 3580, z: 3491, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:33` | (3588, 3472) | (3588, 3472) | x 3558-3618, z 3442-3502 | `{ x: 3588, z: 3472, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:34` | (3598, 3509) | (3598, 3509) | x 3568-3628, z 3479-3539 | `{ x: 3598, z: 3509, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:35` | (3599, 3486) | (3599, 3486) | x 3569-3629, z 3456-3516 | `{ x: 3599, z: 3486, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:36` | (3607, 3462) | (3607, 3462) | x 3577-3637, z 3432-3492 | `{ x: 3607, z: 3462, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:37` | (3611, 3499) | (3611, 3499) | x 3581-3641, z 3469-3529 | `{ x: 3611, z: 3499, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:38` | (3613, 3482) | (3613, 3482) | x 3583-3643, z 3452-3512 | `{ x: 3613, z: 3482, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:39` | (3627, 3511) | (3627, 3511) | x 3597-3657, z 3481-3541 | `{ x: 3627, z: 3511, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:40` | (3628, 3473) | (3628, 3473) | x 3598-3658, z 3443-3503 | `{ x: 3628, z: 3473, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:41` | (3636, 3466) | (3636, 3466) | x 3606-3666, z 3436-3496 | `{ x: 3636, z: 3466, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
+| `npc:morytania:42` | (3639, 3510) | (3639, 3510) | x 3609-3669, z 3480-3540 | `{ x: 3639, z: 3510, radius: 46 }` | Bat 1 | no | no | - | Priest in Peril at stage 61 |
 
 ## Ladders and stairs
 
-| Site | Centre | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|---|
-| `connector:morytania:0` | (3405, 3507) | Trapdoor 1 | down (3405, 9906) by Open, then Climb-down | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | Leads to | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `connector:morytania:0` | (3405, 3507) | (3405, 3507) | `{ x: 3405, z: 3507, radius: 3 }` | Trapdoor 1 | down (3405, 9906) by Open, then Climb-down | no | no | - | - |
 
 ## Areas within
 

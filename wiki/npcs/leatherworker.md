@@ -10,9 +10,9 @@
 
 ## Location
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2678, 3434) | 1 | 2 | (2676, 3432)-(2680, 3436) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | (2678, 3434) | (2678, 3434) | 1 | 2 | x 2676-2680, z 3432-3436 | 100 ticks | - | `{ x: 2678, z: 3434, radius: 6 }` | no |
 
 ## Interactions
 

@@ -31,52 +31,52 @@ Respawn is the base in game ticks (0.4 s on this server, learnings/local-server.
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:8` | (2905, 3372) | (2905, 3372) | 19 | no | no | - | - | Falador West bank (Falador), 88 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | 14 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2922, 3406) | (2922, 3407) | 13 | no | no | - | - | Falador West bank (Falador), 74 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:22` | (2996, 3191) | (2995, 3190) | 13 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
-| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:24` | (3023, 3172) | (3023, 3172) | 3 | yes | no | - | - | Draynor bank (Draynor Village), 78 ticks |
-| [Rimmington (Asgarnia)](../../places/rimmington.md) | `tree:rimmington:1` | (2975, 3200) | (2975, 3201) | 9 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
-| [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2842, 3372) | (2840, 3369) | 16 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 89 ticks |
-| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:13` | (2606, 3057) | (2606, 3057) | 3 | no | no | - | - | Yanille bank (Yanille), 37 ticks |
-| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:15` | (2649, 2955) | (2649, 2956) | 4 | no | no | - | - | Yanille bank (Yanille), 110 ticks |
-| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:16` | (2649, 2997) | (2648, 2997) | 1 | no | no | - | - | Yanille bank (Yanille), 109 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:0` | (2470, 3236) | (2473, 3249) | 38 | no | yes | - | - | Castle Wars bank chest (Castle Wars), 92 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:6` | (2376, 3446) | (2375, 3446) | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 46 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:23` | (2475, 3535) | (2477, 3536) | 8 | no | no | - | unreached | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:27` | (2521, 3561) | (2520, 3561) | 9 | no | no | - | - | Ardougne North bank (East Ardougne), 122 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:28` | (2504, 3487) | (2502, 3488) | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 126 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:31` | (2549, 3365) | (2549, 3365) | 7 | no | no | - | - | Ardougne North bank (East Ardougne), 57 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:36` | (2565, 3447) | (2564, 3447) | 9 | no | no | - | - | Ardougne North bank (East Ardougne), 59 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:46` | (2566, 3512) | (2566, 3511) | 2 | no | no | - | unreached | - |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | 30 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2672, 3227) | (2672, 3228) | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 42 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2708, 3513) | (2707, 3513) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 19 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:72` | (2741, 3353) | (2742, 3352) | 3 | no | no | - | - | Catherby bank (Catherby), 60 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2747, 3568) | (2746, 3568) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 49 ticks |
-| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | 2 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
-| [Castle Wars (Kandarin)](../../places/castle-wars.md) | `tree:castle-wars:0` | (2447, 3118) | (2448, 3118) | 2 | no | no | - | - | Castle Wars bank chest (Castle Wars), 21 ticks |
-| [Catherby (Kandarin)](../../places/catherby.md) | `tree:catherby:0` | (2787, 3442) | (2787, 3442) | 3 | no | no | - | - | Catherby bank (Catherby), 14 ticks |
-| [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:0` | (2590, 3498) | (2589, 3498) | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 85 ticks |
-| [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:2` | (2606, 3497) | (2606, 3497) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 67 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `tree:east-ardougne:6` | (2601, 3317) | (2601, 3317) | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 18 ticks |
-| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `tree:east-ardougne:9` | (2632, 3273) | (2636, 3262) | 2 | no | no | - | - | Ardougne South bank (East Ardougne), 17 ticks |
-| [Hemenster (Kandarin)](../../places/hemenster.md) | `tree:hemenster:0` | (2639, 3411) | (2639, 3410) | 7 | no | yes | - | - | Ardougne North bank (East Ardougne), 39 ticks |
-| [Hemenster (Kandarin)](../../places/hemenster.md) | `tree:hemenster:1` | (2633, 3432) | (2633, 3431) | 1 | no | no | - | carry Fishing pass | Seers' Village bank (Seers' Village), 54 ticks |
-| [Legends' Guild (Kandarin)](../../places/legends-guild.md) | `tree:legends-guild:0` | (2742, 3375) | (2742, 3375) | 4 | no | no | - | - | Catherby bank (Catherby), 49 ticks |
-| [Necromancer (Kandarin)](../../places/necromancer.md) | `tree:necromancer:0` | (2665, 3237) | (2665, 3235) | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 39 ticks |
-| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | 5 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
-| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | 11 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
-| [Yanille (Kandarin)](../../places/yanille.md) | `tree:yanille:5` | (2604, 3066) | (2606, 3068) | 2 | no | no | - | - | Yanille bank (Yanille), 35 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | 7 | yes | no | - | - | Draynor bank (Draynor Village), 33 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | 2 | yes | no | - | - | Varrock East bank (Varrock), 76 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:23` | (3219, 3303) | (3220, 3304) | 3 | yes | no | - | - | Varrock West bank (Varrock), 72 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:24` | (3217, 3289) | (3221, 3289) | 1 | yes | no | - | - | Varrock West bank (Varrock), 79 ticks |
-| [Misthalin](../../places/misthalin.md) | `tree:misthalin:41` | (3384, 3386) | (3382, 3384) | 1 | no | no | - | - | Varrock East bank (Varrock), 104 ticks |
-| [Champions' Guild (Misthalin)](../../places/champions-guild.md) | `tree:champions-guild:1` | (3204, 3361) | (3204, 3361) | 2 | yes | no | - | - | Varrock West bank (Varrock), 45 ticks |
-| [Draynor willows (Draynor Village)](../../places/draynor-willows.md) | `tree:draynor-willows:0` | (3086, 3233) | (3086, 3232) | 5 | yes | no | - | - | Draynor bank (Draynor Village), 12 ticks |
-| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:5` | (3118, 3490) | (3118, 3488) | 2 | yes | no | - | - | Edgeville bank (Edgeville), 39 ticks |
-| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `tree:lumbridge:1` | (3243, 3244) | (3243, 3243) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 88 ticks |
-| [River Lum (Misthalin)](../../places/river-lum.md) | `tree:river-lum:1` | (3168, 3347) | (3165, 3343) | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |
+| Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:8` | (2905, 3372) | (2905, 3372) | x 2882-2933, z 3328-3411 | `{ x: 2908, z: 3370, radius: 53 }` | 19 | no | no | - | - | Falador West bank (Falador), 88 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:10` | (2988, 3275) | (2988, 3276) | x 2911-3063, z 3225-3317 | `{ x: 2987, z: 3271, radius: 92 }` | 14 | yes | yes | - | - | Falador East bank (Falador), 44 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:13` | (2922, 3406) | (2922, 3407) | x 2918-2929, z 3399-3419 | `{ x: 2924, z: 3409, radius: 15 }` | 13 | no | no | - | - | Falador West bank (Falador), 74 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:22` | (2996, 3191) | (2995, 3190) | x 2985-3019, z 3162-3221 | `{ x: 3002, z: 3192, radius: 38 }` | 13 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `tree:asgarnia:24` | (3023, 3172) | (3023, 3172) | x 3013-3031, z 3165-3185 | `{ x: 3022, z: 3175, radius: 17 }` | 3 | yes | no | - | - | Draynor bank (Draynor Village), 78 ticks |
+| [Rimmington (Asgarnia)](../../places/rimmington.md) | `tree:rimmington:1` | (2975, 3200) | (2975, 3201) | x 2954-2990, z 3191-3216 | `{ x: 2972, z: 3204, radius: 26 }` | 9 | yes | no | - | - | Draynor bank (Draynor Village), 70 ticks |
+| [Entrana](../../places/entrana.md) | `tree:entrana:0` | (2842, 3372) | (2840, 3369) | x 2816-2866, z 3338-3388 | `{ x: 2841, z: 3363, radius: 39 }` | 16 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 89 ticks |
+| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:13` | (2606, 3057) | (2606, 3057) | x 2604-2607, z 3054-3059 | `{ x: 2606, z: 3057, radius: 7 }` | 3 | no | no | - | - | Yanille bank (Yanille), 37 ticks |
+| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:15` | (2649, 2955) | (2649, 2956) | x 2647-2652, z 2952-2960 | `{ x: 2650, z: 2956, radius: 8 }` | 4 | no | no | - | - | Yanille bank (Yanille), 110 ticks |
+| [Feldip Hills](../../places/feldip-hills.md) | `tree:feldip-hills:16` | (2649, 2997) | (2648, 2997) | (2649, 2997) | `{ x: 2649, z: 2997, radius: 3 }` | 1 | no | no | - | - | Yanille bank (Yanille), 109 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:0` | (2470, 3236) | (2473, 3249) | x 2373-2659, z 3074-3386 | `{ x: 2516, z: 3230, radius: 215 }` | 38 | no | yes | - | - | Castle Wars bank chest (Castle Wars), 92 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:6` | (2376, 3446) | (2375, 3446) | (2376, 3446) | `{ x: 2376, z: 3446, radius: 3 }` | 1 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 46 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:23` | (2475, 3535) | (2477, 3536) | x 2459-2487, z 3529-3543 | `{ x: 2473, z: 3536, radius: 19 }` | 8 | no | no | - | unreached | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:27` | (2521, 3561) | (2520, 3561) | x 2496-2551, z 3529-3585 | `{ x: 2524, z: 3557, radius: 43 }` | 9 | no | no | - | - | Ardougne North bank (East Ardougne), 122 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:28` | (2504, 3487) | (2502, 3488) | x 2501-2507, z 3484-3489 | `{ x: 2504, z: 3487, radius: 8 }` | 1 | no | no | - | - | Ardougne North bank (East Ardougne), 126 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:31` | (2549, 3365) | (2549, 3365) | x 2512-2580, z 3332-3399 | `{ x: 2546, z: 3366, radius: 52 }` | 7 | no | no | - | - | Ardougne North bank (East Ardougne), 57 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:36` | (2565, 3447) | (2564, 3447) | x 2529-2605, z 3394-3503 | `{ x: 2567, z: 3449, radius: 70 }` | 9 | no | no | - | - | Ardougne North bank (East Ardougne), 59 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:46` | (2566, 3512) | (2566, 3511) | x 2565-2567, z 3511-3512 | `{ x: 2566, z: 3512, radius: 5 }` | 2 | no | no | - | unreached | - |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:60` | (2687, 3491) | (2687, 3492) | x 2608-2763, z 3291-3702 | `{ x: 2686, z: 3497, radius: 224 }` | 30 | no | yes | - | - | Seers' Village bank (Seers' Village), 24 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:70` | (2672, 3227) | (2672, 3228) | x 2670-2674, z 3226-3228 | `{ x: 2672, z: 3227, radius: 6 }` | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 42 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:71` | (2708, 3513) | (2707, 3513) | (2708, 3513) | `{ x: 2708, z: 3513, radius: 3 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 19 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:72` | (2741, 3353) | (2742, 3352) | x 2736-2743, z 3345-3358 | `{ x: 2740, z: 3352, radius: 12 }` | 3 | no | no | - | - | Catherby bank (Catherby), 60 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:74` | (2747, 3568) | (2746, 3568) | (2747, 3568) | `{ x: 2747, z: 3568, radius: 3 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 49 ticks |
+| [Kandarin](../../places/kandarin.md) | `tree:kandarin:79` | (2764, 3427) | (2764, 3427) | x 2755-2771, z 3426-3430 | `{ x: 2763, z: 3428, radius: 12 }` | 2 | no | no | - | - | Catherby bank (Catherby), 25 ticks |
+| [Castle Wars (Kandarin)](../../places/castle-wars.md) | `tree:castle-wars:0` | (2447, 3118) | (2448, 3118) | x 2443-2449, z 3117-3120 | `{ x: 2446, z: 3119, radius: 7 }` | 2 | no | no | - | - | Castle Wars bank chest (Castle Wars), 21 ticks |
+| [Catherby (Kandarin)](../../places/catherby.md) | `tree:catherby:0` | (2787, 3442) | (2787, 3442) | x 2779-2801, z 3426-3454 | `{ x: 2790, z: 3440, radius: 21 }` | 3 | no | no | - | - | Catherby bank (Catherby), 14 ticks |
+| [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:0` | (2590, 3498) | (2589, 3498) | x 2588-2592, z 3496-3501 | `{ x: 2590, z: 3499, radius: 7 }` | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 85 ticks |
+| [Coal Trucks (Kandarin)](../../places/coal-trucks.md) | `tree:coal-trucks:2` | (2606, 3497) | (2606, 3497) | x 2603-2610, z 3493-3502 | `{ x: 2607, z: 3498, radius: 10 }` | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 67 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `tree:east-ardougne:6` | (2601, 3317) | (2601, 3317) | x 2588-2605, z 3302-3327 | `{ x: 2597, z: 3315, radius: 19 }` | 3 | no | no | - | - | Ardougne North bank (East Ardougne), 18 ticks |
+| [East Ardougne (Kandarin)](../../places/east-ardougne.md) | `tree:east-ardougne:9` | (2632, 3273) | (2636, 3262) | x 2618-2640, z 3257-3286 | `{ x: 2629, z: 3272, radius: 22 }` | 2 | no | no | - | - | Ardougne South bank (East Ardougne), 17 ticks |
+| [Hemenster (Kandarin)](../../places/hemenster.md) | `tree:hemenster:0` | (2639, 3411) | (2639, 3410) | x 2627-2649, z 3402-3435 | `{ x: 2638, z: 3419, radius: 24 }` | 7 | no | yes | - | - | Ardougne North bank (East Ardougne), 39 ticks |
+| [Hemenster (Kandarin)](../../places/hemenster.md) | `tree:hemenster:1` | (2633, 3432) | (2633, 3431) | (2633, 3432) | `{ x: 2633, z: 3432, radius: 3 }` | 1 | no | no | - | carry Fishing pass | Seers' Village bank (Seers' Village), 54 ticks |
+| [Legends' Guild (Kandarin)](../../places/legends-guild.md) | `tree:legends-guild:0` | (2742, 3375) | (2742, 3375) | x 2732-2746, z 3365-3384 | `{ x: 2739, z: 3375, radius: 16 }` | 4 | no | no | - | - | Catherby bank (Catherby), 49 ticks |
+| [Necromancer (Kandarin)](../../places/necromancer.md) | `tree:necromancer:0` | (2665, 3237) | (2665, 3235) | x 2657-2675, z 3231-3250 | `{ x: 2666, z: 3241, radius: 17 }` | 3 | no | yes | - | - | Ardougne South bank (East Ardougne), 39 ticks |
+| [Seers' Village (Kandarin)](../../places/seers-village.md) | `tree:seers-village:1` | (2723, 3487) | (2721, 3484) | x 2704-2741, z 3461-3512 | `{ x: 2723, z: 3487, radius: 36 }` | 5 | no | no | - | - | Seers' Village bank (Seers' Village), 6 ticks |
+| [Tree Gnome Stronghold (Kandarin)](../../places/tree-gnome-stronghold.md) | `tree:tree-gnome-stronghold:0` | (2427, 3422) | (2427, 3422) | x 2378-2499, z 3380-3498 | `{ x: 2439, z: 3439, radius: 88 }` | 11 | no | no | - | - | Gnome Stronghold south bank (Tree Gnome Stronghold), 15 ticks |
+| [Yanille (Kandarin)](../../places/yanille.md) | `tree:yanille:5` | (2604, 3066) | (2606, 3068) | x 2592-2615, z 3061-3070 | `{ x: 2604, z: 3066, radius: 16 }` | 2 | no | no | - | - | Yanille bank (Yanille), 35 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:12` | (3152, 3233) | (3152, 3233) | x 3123-3181, z 3200-3284 | `{ x: 3152, z: 3242, radius: 55 }` | 7 | yes | no | - | - | Draynor bank (Draynor Village), 33 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:20` | (3295, 3398) | (3297, 3398) | x 3193-3375, z 3331-3495 | `{ x: 3284, z: 3413, radius: 126 }` | 2 | yes | no | - | - | Varrock East bank (Varrock), 76 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:23` | (3219, 3303) | (3220, 3304) | x 3212-3222, z 3297-3308 | `{ x: 3217, z: 3303, radius: 11 }` | 3 | yes | no | - | - | Varrock West bank (Varrock), 72 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:24` | (3217, 3289) | (3221, 3289) | x 3213-3221, z 3287-3290 | `{ x: 3217, z: 3289, radius: 8 }` | 1 | yes | no | - | - | Varrock West bank (Varrock), 79 ticks |
+| [Misthalin](../../places/misthalin.md) | `tree:misthalin:41` | (3384, 3386) | (3382, 3384) | x 3381-3386, z 3382-3389 | `{ x: 3384, z: 3386, radius: 8 }` | 1 | no | no | - | - | Varrock East bank (Varrock), 104 ticks |
+| [Champions' Guild (Misthalin)](../../places/champions-guild.md) | `tree:champions-guild:1` | (3204, 3361) | (3204, 3361) | x 3197-3212, z 3356-3364 | `{ x: 3205, z: 3360, radius: 12 }` | 2 | yes | no | - | - | Varrock West bank (Varrock), 45 ticks |
+| [Draynor willows (Draynor Village)](../../places/draynor-willows.md) | `tree:draynor-willows:0` | (3086, 3233) | (3086, 3232) | x 3082-3088, z 3227-3237 | `{ x: 3085, z: 3232, radius: 9 }` | 5 | yes | no | - | - | Draynor bank (Draynor Village), 12 ticks |
+| [Edgeville (Misthalin)](../../places/edgeville.md) | `tree:edgeville:5` | (3118, 3490) | (3118, 3488) | x 3111-3121, z 3473-3506 | `{ x: 3116, z: 3490, radius: 21 }` | 2 | yes | no | - | - | Edgeville bank (Edgeville), 39 ticks |
+| [Lumbridge (Misthalin)](../../places/lumbridge.md) | `tree:lumbridge:1` | (3243, 3244) | (3243, 3243) | x 3212-3262, z 3230-3259 | `{ x: 3237, z: 3245, radius: 33 }` | 2 | yes | no | - | - | Draynor bank (Draynor Village), 88 ticks |
+| [River Lum (Misthalin)](../../places/river-lum.md) | `tree:river-lum:1` | (3168, 3347) | (3165, 3343) | x 3165-3171, z 3341-3350 | `{ x: 3168, z: 3346, radius: 9 }` | 1 | yes | no | - | - | Draynor bank (Draynor Village), 69 ticks |

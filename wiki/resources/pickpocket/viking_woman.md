@@ -17,6 +17,6 @@ Low and high are the stat_random bounds: an attempt succeeds with chance (low + 
 
 ## Sites
 
-| Area | Site | Centre | Stand | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
-|---|---|---|---|---|---|---|---|---|---|
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `pickpocket:rellekka:5` | (2667, 3702) | (2667, 3702) | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 139 ticks |
+| Area | Site | Centre | Stand | Box | Roam | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `pickpocket:rellekka:5` | (2667, 3702) | (2667, 3702) | (2667, 3702) | x 2655-2679, z 3690-3714 | `{ x: 2667, z: 3702, radius: 20 }` | 1 | no | no | - | - | Seers' Village bank (Seers' Village), 139 ticks |

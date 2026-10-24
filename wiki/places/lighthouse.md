@@ -7,6 +7,6 @@ Past the broken bridge (oploc1,horror_broken_bridge_left_spot, quests/quest_horr
 
 ## [Shops](../services/shop.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `shop:lighthouse:0` | (2509, 3639) L1 | The Lighthouse Store (lighthouseshop) 1 | no | no | - | Horror from the Deep done |
+| Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|---|
+| `shop:lighthouse:0` | (2509, 3639) L1 | (2509, 3639) L1 | x 2504-2514, z 3634-3644 L1 | `{ x: 2509, z: 3639, radius: 11, level: 1 }` | The Lighthouse Store (lighthouseshop) 1 | no | no | - | Horror from the Deep done |

@@ -10,10 +10,10 @@
 
 ## Locations
 
-| Area | Centre | Spawns | Wander | Roam | Respawn | Moves | F2P |
-|------|--------|--------|--------|------|---------|-------|-----|
-| [Miscellania and Etceteria](../places/miscellania.md) | (2518, 3866) | 1 | 2 | (2514, 3862)-(2520, 3868) | 100 ticks | - | no |
-| [Miscellania and Etceteria](../places/miscellania.md) | (2605, 3876) | 1 | 2 | (2600, 3874)-(2607, 3878) | 100 ticks | - | no |
+| Area | Centre | Box | Spawns | Wander | Roam | Respawn | Moves | Area to copy | F2P |
+|------|--------|-----|--------|--------|------|---------|-------|--------------|-----|
+| [Miscellania and Etceteria](../places/miscellania.md) | (2518, 3866) | x 2516-2518, z 3864-3866 | 1 | 2 | x 2514-2520, z 3862-3868 | 100 ticks | - | `{ x: 2517, z: 3865, radius: 8 }` | no |
+| [Miscellania and Etceteria](../places/miscellania.md) | (2605, 3876) | x 2602-2605, z 3876 | 1 | 2 | x 2600-2607, z 3874-3878 | 100 ticks | - | `{ x: 2604, z: 3876, radius: 8 }` | no |
 
 ## Interactions
 

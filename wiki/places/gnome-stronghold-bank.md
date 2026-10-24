@@ -5,6 +5,6 @@
 
 ## [Banks](../services/bank.md)
 
-| Site | Centre | Counts | F2P | Multiway | Wilderness | Requires |
-|---|---|---|---|---|---|---|
-| `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | Bank booth 4, Gnome banker 5 | no | no | - | - |
+| Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
+|---|---|---|---|---|---|---|---|---|
+| `bank:gnome-stronghold-bank:0` | (2445, 3425) L1 | x 2443-2448, z 3423-3427 L1 | `{ x: 2446, z: 3425, radius: 7, level: 1 }` | Bank booth 4, Gnome banker 5 | no | no | - | - |
