@@ -23,6 +23,7 @@ import {
     TileSchema,
     walkToSpotStep,
 } from '../lib/spot';
+import { isLevelUp, isUnlockPage } from '../lib/interrupts';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
@@ -145,7 +146,7 @@ function findLoc(ctx: Ctx): NearbyLoc | undefined {
 export default defineTask({
     name: 'talk',
     description:
-        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open; also starts while the bot is under attack, since the open dialog is the way out of the fight) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?,met?} ' +
+        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open; also starts while the bot is under attack, since the open dialog is the way out of the fight, and then the low-HP eat waits until the dialog is answered, above the HP floor) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?,met?} ' +
         '(walked to first, across floors and through doors; `met` [tokens] are the requirements the walk may plan through, as `travel`), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
         '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
         'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
@@ -161,6 +162,11 @@ export default defineTask({
     stuckAfterMs: STUCK_AFTER_MS,
     // An open dialog is the way out of a fight (a kill can open one); the engine's refusal would strand it.
     startInCombat: (p, s) => p.continue && s.dialog.isOpen,
+    // Under attack the low-hp eat would close the dialog `continue` answers (combat `stopOnDialog` leaves Morgan Le
+    // Faye's choice open under Sir Mordred's attack), so the eat waits until it is answered. A level-up or unlock
+    // page is not one: the dialog guard clicks it away, and an eat closing it costs nothing.
+    holdsDialog: (p, s) =>
+        p.continue && s.dialog.isOpen && !!s.player?.combat.inCombat && !isLevelUp(s) && !isUnlockPage(s),
 
     preflight(ctx) {
         const { at } = ctx.params;

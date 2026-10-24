@@ -234,10 +234,12 @@ describe('combat: an NPC already attacking the bot', () => {
         expect(attacked(r)[0]).toBe(6);
     });
 
-    test('without a recent hit the attacker is left to others and the free NPC is chosen', async () => {
+    test('without a recent hit, with another player in view, the attacker is left to others and the free NPC is chosen', async () => {
         const r = await simulate(combat, {
             params: PARAMS,
-            timeline: two(base).series(8, (w, i) => (i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w)),
+            timeline: two(base.otherPlayer('Bob')).series(8, (w, i) =>
+                i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w,
+            ),
             stops: xp(25),
         });
         expect(attacked(r)[0]).toBe(7);
@@ -248,6 +250,51 @@ const attackedBy = (name: string, index: number, level: number, hp = 10) =>
     base
         .player({ inCombat: true, lastDamageTick: 0, hp })
         .npc(name, COOP.x + 1, COOP.z, { index, options: ['Attack'], attacking: true, combatLevel: level });
+
+describe('combat: an NPC facing the bot before its first hit', () => {
+    // Elvarg targets the bot long before she hits: the bot is not hit, and the NPC is already inCombat.
+    const facing = base
+        .npc('Chicken', COOP.x + 1, COOP.z, { index: 20, options: ['Attack'], attacking: true, inCombat: true })
+        .npc('Chicken', COOP.x + 2, COOP.z, { index: 21, options: ['Attack'] });
+
+    test('is a valid target when no other player is in view', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: killOf(facing, 20), stops: xp(25) });
+        expect(attacked(r)[0]).toBe(20);
+    });
+
+    test('is refused when it may be fighting another player in view (no hit on the bot yet)', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: facing
+                .otherPlayer('Bob')
+                .series(8, (w, i) => (i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w)),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(21);
+    });
+
+    test('is a valid target beside another player once it has hit the bot', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: killOf(facing.otherPlayer('Bob').player({ lastDamageTick: 0 }), 20),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(20);
+    });
+});
+
+describe('combat: an NPC fighting a listed player', () => {
+    test('is refused even after a hit on the bot; the NPC attacking the bot is taken', async () => {
+        // Bob (index 1) is the target of chicken 20; chicken 21 faces the unlisted bot.
+        const fightWorld = base
+            .player({ lastDamageTick: 0 })
+            .otherPlayer('Bob', 1)
+            .npc('Chicken', COOP.x + 1, COOP.z, { index: 20, options: ['Attack'], attacking: true })
+            .npc('Chicken', COOP.x + 2, COOP.z, { index: 21, options: ['Attack'] });
+        const r = await simulate(combat, { params: PARAMS, timeline: killOf(fightWorld, 21), stops: xp(25) });
+        expect(attacked(r)[0]).toBe(21);
+    });
+});
 
 describe('combat: starting in a fight', () => {
     test('starts when the attacker is one of its targets, and fights it first', async () => {
@@ -1198,6 +1245,80 @@ describe('combat: stopOnDialog', () => {
         expect(r.sends).toEqual([ATTACK]);
         expect(r.driver.state().dialog.isOpen).toBe(true);
         expect(r.result.stepRuns['interrupt:dialog']).toBeUndefined();
+    });
+
+    /** Mordred's "death": the dialog opens with food held, and the fight is still on (he is healed). */
+    const stillFightingAt = (hp: number) =>
+        coop
+            .inv('Shrimps', 3)
+            .player({ maxHp: 40, hp: 40 })
+            .series(40, (w, i) =>
+                i >= 6
+                    ? w.fighting(CHICKEN).player({ hp }).dialog({ options: choice })
+                    : i >= 2
+                      ? w.fighting(CHICKEN)
+                      : w,
+            );
+
+    // maxHp 40: the eat window is below 20, the hold's floor is 10 (HOLD_HP_FLOOR_FRACTION).
+    test('just above the HP floor with the fight still on: no eat, no settle wait, the dialog is still open', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(11),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.result.reason).not.toMatch(/settled|still in combat/);
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeUndefined();
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+        expect(r.driver.state().tick).toBeLessThan(12);
+    });
+
+    test('at the HP floor the dialog does not hold: the guard eats', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(10),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('below the HP floor the end-of-run settle and eat run even with the dialog open', async () => {
+        // The dialog opens at tick 6 and ends the run; the fight goes on, so finish() settles and eats.
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(5),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('low HP in a fight with no dialog open still eats', async () => {
+        const noDialog = coop
+            .inv('Shrimps', 3)
+            .series(40, (w, i) => (i >= 2 ? w.fighting(CHICKEN).player({ hp: 3 }) : w));
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: noDialog,
+            stops: xp(25),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('the fight ending a tick or two before the dialog shows does not send a second attack', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(12, (w, i) =>
+                i >= 8
+                    ? w.fighting(false).dialog({ options: choice })
+                    : i >= 6
+                      ? w.fighting(false)
+                      : i >= 2
+                        ? w.fighting(CHICKEN)
+                        : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.driver.state().dialog.isOpen).toBe(true);
     });
 
     test('without it the dialog guard declines the choice nobody took (the decline that kills Mordred)', async () => {

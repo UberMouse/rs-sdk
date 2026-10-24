@@ -311,6 +311,17 @@ function strongest(npcs: BotWorldState['nearbyNpcs']): BotWorldState['nearbyNpcs
     return [...npcs].sort((a, b) => b.combatLevel - a.combatLevel)[0];
 }
 
+const dialogWords = (s: BotWorldState) =>
+    [s.dialog.text ?? '', ...(s.dialog.allComponents ?? []).map(c => c.text)].join(' ');
+/** The level-up box (levelup.dbrow: "Congratulations, you just advanced an attack level."): not a quest dialog. */
+export const isLevelUp = (s: BotWorldState) => /you just advanced an? \w+ level/i.test(dialogWords(s));
+/**
+ * The page a level-up opens after its click (levelup_unlocks_*.rs2 objbox: "You can now wield Steel Weaponry!",
+ * "Members can now cook ...", "You are now qualified to enter ..."). The words alone also fit other text, so a
+ * caller with a click to anchor on takes it as one only right after that click.
+ */
+export const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords(s));
+
 /** Took a hit (a 0 splat counts) within RECENT_HIT_TICKS. */
 export const recentlyHit = (s: BotWorldState): boolean => {
     const at = s.player?.combat.lastDamageTick ?? -1;

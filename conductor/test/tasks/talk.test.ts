@@ -159,6 +159,26 @@ describe('talk: continue an open dialog', () => {
         expect(r.result.reason).toStartWith('continue-dialog: continued the open dialog, 2 choices made');
     });
 
+    // maxHp 40: the eat window is below 20, the hold's floor is 10.
+    const lowHp = (hp: number) =>
+        simulate(talk, {
+            params: { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] },
+            timeline: underAttack(open.inv('Shrimps', 3).player({ hp, maxHp: 40 })).series(40),
+            react: dialogScript(CRATE_PAGES, () => false, 1).react,
+        });
+
+    test('at low HP above the floor under attack the open dialog is answered, not closed by an eat', async () => {
+        const r = await lowHp(15);
+        // The eat waits until the dialog is answered (it closes after the last page).
+        expect(r.sends.slice(0, CRATE_PAGES.length - 1).filter(s => s.startsWith('Eat'))).toEqual([]);
+        expect(clicks(r)).toHaveLength(CRATE_PAGES.length - 1);
+    });
+
+    test('at the HP floor under attack the guard eats first', async () => {
+        const r = await lowHp(10);
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
     test('continue with no dialog open is still refused while attacked', async () => {
         const r = await simulate(talk, {
             params: { continue: true },

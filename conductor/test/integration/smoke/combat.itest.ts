@@ -193,7 +193,8 @@ test(
                 const talk = await runTask(
                     name,
                     'talk',
-                    { npc: 'Morgan Le Faye', choices: ['Tell me how to untrap Merlin', 'OK I will go do all that'] },
+                    // The run returned at once, still under Mordred's attack: the open dialog is answered with `continue`.
+                    { continue: true, choices: ['Tell me how to untrap Merlin', 'OK I will go do all that'] },
                     ['minutes:2'],
                 );
                 const talked = `${JSON.stringify(talk.result)}\n${talk.stderr}`;

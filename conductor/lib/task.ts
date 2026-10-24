@@ -134,6 +134,15 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     keepGoingWithoutFood?(params: z.infer<S>): boolean;
     /**
+     * The state holds a dialog this task's run keeps open for the next phase (combat with `stopOnDialog`: Morgan
+     * Le Faye's choice at Sir Mordred's death). While it holds, the low-hp guard does not eat (the eat would close
+     * the dialog), and a `done` run ending on it skips the fight settle and the eat before leaving, so the next
+     * `talk` finds the dialog open. Not a level-up page, which the task clicks away itself. The hold applies only to
+     * a `done` end (the settle and eat before leaving) and only above the engine's HP floor
+     * (`HOLD_HP_FLOOR_MIN` / `HOLD_HP_FLOOR_FRACTION`); at or below it the guard eats even if that closes the dialog.
+     */
+    holdsDialog?(params: z.infer<S>, state: BotWorldState): boolean;
+    /**
      * Best-effort cleanup once as the run ends, whatever ended it (done, fail, a stop, the watchdog), after any
      * fight has settled and the low-HP eat before leaving has run: for state the task changed that would outlast
      * it (combat's prayers). An op like a step's, under no guards and no stops; it should cost a few ticks and

@@ -9,7 +9,7 @@ import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { attackers, recentlyHit } from '../lib/interrupts';
+import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
 import { squareReachesWilderness } from '../lib/wilderness';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
@@ -92,6 +92,8 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Ground items further than this are not worth leaving the fight spot for. */
 const LOOT_RADIUS = 6;
 const EAT_FAIL_LIMIT = 3;
+/** Ticks the dialog may trail the end of the fight that opens it (the client's state packets and the interface update are separate). */
+const DIALOG_LAG_TICKS = 3;
 const STEP_TIMEOUT_MS = 300_000;
 /** Without food, preflight refuses NPCs above this combat level (chickens are 1, cows 2). */
 const NO_FOOD_MAX_NPC_LEVEL = 5;
@@ -310,15 +312,12 @@ const dialogPage = (s: BotWorldState) =>
         s.dialog.options.map(o => o.text),
         s.dialog.allComponents?.map(c => c.text),
     ]);
-const dialogWords = (s: BotWorldState) =>
-    [s.dialog.text ?? '', ...(s.dialog.allComponents ?? []).map(c => c.text)].join(' ');
-/** The level-up box (levelup.dbrow: "Congratulations, you just advanced an attack level."): not a quest dialog. */
-const isLevelUp = (s: BotWorldState) => /you just advanced an? \w+ level/i.test(dialogWords(s));
 /**
- * The page a level-up opens after its click (levelup_unlocks_*.rs2 objbox: "You can now wield Steel Weaponry!",
- * "Members can now cook ...", "You are now qualified to enter ..."); only taken as one right after a level-up click.
+ * A dialog `stopOnDialog` leaves for the next phase: open, and neither a level-up box nor (`unlock`) the unlock page
+ * after one's click. The step passes whether it is within UNLOCK_PAGE_TICKS of its click; the engine's hook has no
+ * click memory and takes any unlock-looking page as one, the safe side (an eat may then close it).
  */
-const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords(s));
+const keptDialog = (s: BotWorldState, unlock: boolean) => s.dialog.isOpen && !isLevelUp(s) && !unlock;
 /** How long after a level-up click an unlock page still counts as part of it. */
 const UNLOCK_PAGE_TICKS = LEVEL_UP_WAIT_TICKS + 2;
 
@@ -354,9 +353,20 @@ function wantedGroundItems(ctx: Ctx) {
  */
 function pickTarget(state: BotWorldState, p: CombatParams) {
     const limit = levelLimit(state, p);
-    // `attackers` cannot tell the bot's attacker from an NPC fighting another player; a recent hit on the bot can.
-    const attacker = (recentlyHit(state) ? attackers(state) : []).find(
+    // `attackers` cannot tell the bot's attacker from an NPC fighting another player; a recent hit on the bot can,
+    // and so can having no listed player (Elvarg faces the bot long before its first hit; a player the client does
+    // not list cannot be seen, so this is a heuristic). Whatever the hit, an NPC facing a listed player, or one a
+    // listed player targets, is that player's fight.
+    const mine = recentlyHit(state) || state.nearbyPlayers.length === 0;
+    const othersFight = (n: BotWorldState['nearbyNpcs'][number]) =>
+        state.nearbyPlayers.some(
+            pl =>
+                n.targetIndex - PLAYER_TARGET_OFFSET === pl.index ||
+                (pl.combatTargetType === 'npc' && pl.combatTargetIndex === n.index),
+        );
+    const attacker = (mine ? attackers(state) : []).find(
         n =>
+            !othersFight(n) &&
             matches(n, p) &&
             n.reachable !== false &&
             n.combatLevel <= limit &&
@@ -405,6 +415,10 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
     );
     // The fight being timed is over; a later fight starts a fresh clock.
     if (!fighting(w.state)) ctx.memory.fightStartedAtTick = null;
+    // The fight's end (Sir Mordred's scripted death) reaches the bot a tick or so before the dialog it opens; an attack
+    // sent in that gap closes the dialog before the plan's `talk` can answer it. Give the dialog a moment to show.
+    if (stopOnDialog && !fighting(w.state) && !w.state.dialog.isOpen)
+        yield* wait('dialog after the fight', st => st.dialog.isOpen, DIALOG_LAG_TICKS);
 }
 
 /** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
@@ -508,7 +522,7 @@ export default defineTask({
         'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
         'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, failing when the prayer points run out; ' +
         "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
-        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
+        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; the open dialog is also kept from the low-HP eat and the end-of-run settle and eat (above the HP floor, the larger of 8 and a quarter of max HP); a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
@@ -524,6 +538,9 @@ export default defineTask({
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
     startInCombat: startsInCombat,
+    // The dialog is kept open past the end of the run, so neither the low-hp eat nor the engine's fight settle and
+    // eat before leaving may close it (the engine only holds above its HP floor).
+    holdsDialog: (p, s) => p.stopOnDialog && keptDialog(s, isUnlockPage(s)),
     // With `stopOnDialog` the run ends when a dialog opens and leaves it for the next phase: the shared dialog
     // guard would click through it or answer a choice with its decline pattern ("No. He deserves to die.").
     allowGuards: p => (p.stopOnDialog ? ['dialog'] : []),
@@ -540,7 +557,7 @@ export default defineTask({
         if (on.length === 0) return;
         const clicked = ctx.memory.levelUpClickedAtTick;
         const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
-        if (ctx.params.stopOnDialog && s.dialog.isOpen && !isLevelUp(s) && !unlock) {
+        if (ctx.params.stopOnDialog && keptDialog(s, unlock)) {
             yield* log(`dialog open, leaving prayers on: ${on.join(', ')}`);
             return;
         }
@@ -587,7 +604,7 @@ export default defineTask({
                 // the unlock page that follows its click.
                 const clicked = ctx.memory.levelUpClickedAtTick;
                 const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
-                if (!isLevelUp(s) && !unlock) {
+                if (keptDialog(s, unlock)) {
                     if (!ctx.memory.fought) return { fail: `dialog open before any fight: ${dialogText(s)}` };
                     const left = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
                     return {
