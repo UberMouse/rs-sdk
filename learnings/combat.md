@@ -21,7 +21,7 @@ if (npc && attackOpt) {
 }
 ```
 
-The `combat` task's `target` is a plain NPC name (`'Giant rat'`, `'Elvarg'`), not a regex. [v 2026-10-24 questw1 local]
+The `combat` task's `target` is a plain NPC name (`'Giant rat'`, `'Elvarg'`), not a regex. `eatBelow` is a fraction 0.1-0.9 of max HP, not hit points; `prayers: ['Protect from Melee']` turns a prayer on for the fight. [v 2026-10-24 questw1 local]
 
 ## Combat Style Cycling
 
