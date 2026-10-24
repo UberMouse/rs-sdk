@@ -20,7 +20,7 @@ import talk from '@conductor/tasks/talk';
 import travel from '@conductor/tasks/travel';
 
 const ID = 'arthur';
-const FOOD = ['Lobster'];
+const FOOD = ['Swordfish', 'Lobster'];
 
 const px = (v: PlanView) => v.state.player?.worldX ?? 0;
 const pz = (v: PlanView) => v.state.player?.worldZ ?? 0;

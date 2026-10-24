@@ -252,7 +252,7 @@ export default definePlan({
                 target: 'Black Knight Titan',
                 area: { x: 2791, z: 4722, radius: 6 },
                 weapon: 'Excalibur',
-                food: ['Lobster'],
+                food: ['Swordfish', 'Lobster'],
                 maxLevelGap: 40,
                 prayers: ['Protect from Melee'],
             },
@@ -270,7 +270,7 @@ export default definePlan({
                 target: 'Black Knight Titan',
                 area: { x: 2791, z: 4722, radius: 6 },
                 weapon: 'Excalibur',
-                food: ['Lobster'],
+                food: ['Swordfish', 'Lobster'],
                 maxLevelGap: 40,
             },
             {
