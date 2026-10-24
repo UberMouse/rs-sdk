@@ -247,24 +247,24 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
 | 5 Read | `interact` `{"target":"item","name":"^Book on baxtorian$","option":"^Read$"}` | yes; the book interface stays open |
 | 6 Cellar | `travel` to (2533, 3157); `interact` `{"target":"loc","name":"^Ladder$","option":"^Climb-down$","at":{"x":2533,"z":3156}}` | yes (not `travel`: gap 5) |
 | 6 Golrie's crate | `interact` `{"target":"loc","name":"^Crate$","option":"^Search$","at":{"x":2548,"z":9566,"tolerance":1},"expect":"large key"}` | yes, with a tie risk (gap 3) |
-| 7 Key on gate | `talk` `use` `{"items":["^A key$"],"onLoc":"^Door$"}` at (2515, 9575) | **no** (gap 2) |
+| 7 Key on gate | `talk` `use` `{"items":["^A key$"],"onLoc":"^Door$"}` at (2515, 9575) | yes (a teleporting use counts as its effect) |
 | 7 Golrie | `talk` `{"npc":"^Golrie$"}` | yes |
 | 7 Out of the cell | `interact` `{"target":"loc","name":"^Door$","option":"^Open$"}`; then `interact` Ladder `^Climb-up$` at (2533, 9556) | yes |
 | 8 Strip for the tomb | `bank` deposits carried items | **no** for worn gear (gap 4) |
-| 8 Pebble on tombstone | `talk` `use` `{"items":["^Glarial's pebble$"],"onLoc":"^Tombstone of glarial$"}` | **no** (gap 2) |
+| 8 Pebble on tombstone | `talk` `use` `{"items":["^Glarial's pebble$"],"onLoc":"^Tombstone of glarial$"}` | yes (a teleporting use counts as its effect) |
 | 8 Chest, tomb | `interact` `{"target":"loc","name":"^Closed chest$","option":"^Open$","at":{"x":2530,"z":9845}}`, `interact` `^Open chest$` `^Search$`, `interact` `{"target":"loc","name":"^Tomb of glarial$","option":"^Search$","at":{"x":2541,"z":9811}}` | yes |
 | 8 Tomb ladder | `interact` `{"target":"loc","name":"^Ladder$","option":"^Climb-up$","at":{"x":2555,"z":9844}}` | yes (not `travel`: gap 5) |
 | 9 Gear up | `interact` `{"target":"item","name":"...","option":"^(Wield|Wear)$"}` per piece | yes |
 | 9 Raft to the island | `travel` `{"to":{"x":2512,"z":3476},"tolerance":1}` | yes |
 | 9 Rope on Rock | none | **no** (gap 1) |
-| 9 Rope on Dead tree | `talk` `use` `{"items":["^Rope$"],"onLoc":"^Dead tree$"}` at (2512, 3466) | **no** (gap 2) |
+| 9 Rope on Dead tree | `talk` `use` `{"items":["^Rope$"],"onLoc":"^Dead tree$"}` at (2512, 3466) | yes (a move of the player counts as the effect; not run here) |
 | 9 Ledge door | `travel` `{"to":{"x":2575,"z":9861}}` from the ledge, amulet held | yes (by tile, through `actions/cross.ts`) |
 | 10 Dungeon crate | `interact` `{"target":"loc","name":"^Crate$","option":"^Search$","at":{"x":2588,"z":9888,"tolerance":1},"expect":"large key"}` | yes, with a tie risk (gap 3) |
-| 11 Key on Doors | `talk` `use` key on `^Door$` at (2568, 9893), then at (2566, 9901) | **no** (gap 2) |
+| 11 Key on Doors | `talk` `use` key on `^Door$` at (2568, 9893), then at (2566, 9901) | yes (a move of the player counts as the effect; not run here) |
 | 12 Pillars | `talk` `use` `{"items":["^Air rune$","^Earth rune$","^Water rune$"],"onLoc":"^Pillar$"}` at each stand tile, six runs | partly: the uses register (the rune leaves the inventory), but the nearest Pillar is picked by distance (gap 3) and a repeated rune times out |
 | 13 Statue | `talk` `use` `{"items":["^Glarial's amulet$"],"onLoc":"^Statue of Glarial$"}` at (2565, 9915) | yes, but the boulder (runes missing) also reads as success (an animation); check the amulet is gone and the bot is at (2603, 9914) |
 | 14 Chalice | `talk` `use` `{"items":["^Glarial's urn$"],"onLoc":"^Chalice of eternity$"}` at (2603, 9912) | yes |
-| 15 Out | `travel` to (2566, 9901) (the Door (2604, 9900) crossing); key on Door (2568, 9893) (gap 2); `travel` to Ardougne North (entry Door and Barrel crossings) | partly |
+| 15 Out | `travel` to (2566, 9901) (the Door (2604, 9900) crossing); key on Door (2568, 9893); `travel` to Ardougne North (entry Door and Barrel crossings) | partly |
 
 ### Gaps, most important first
 
@@ -276,13 +276,12 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
    `ClientInteraction.test.ts:682-728`). Needed: an `interact` param that names the loc by tile (gap 3) and sends the
    op even when unrouted, from a stand tile the plan gives ((2512, 3476)); its effect is the player moving
    (swim: to (2527, 3413)) or an animation (rope: `human_throwrope`), then a landing at (2513, 3468).
-2. **Use an item on a loc whose effect is a move.** `talk` `use` waits for an inventory change, a dialog or
-   interface, an animation or a refusal (`conductor/actions/use.ts` `used`). The pebble on the tombstone, the rope on
+2. **Fixed: use an item on a loc whose effect is a move.** `talk` `use` used to wait for an inventory change, a dialog or
+   interface, an animation or a refusal, and now also for the game to move the player (`conductor/actions/use.ts` `used`, `movement.ts`). The pebble on the tombstone, the rope on
    the Dead tree, the key on Golrie's gate and on the dungeon Doors only move the player and print messages (nothing
-   is used up), so each times out after 10 s and is retried; on a key door the retry runs from the far side and walks
+   is used up), so each timed out after 10 s and was retried; on a key door the retry runs from the far side and walks
    the bot back through (`quest_waterfall.rs2:357-367`, `:392-407`), and after the rope the retry finds the other
-   Dead tree (2510, 3463) beside the ledge. Needed: item-on-loc in `interact` (an inventory item regex), with its
-   effect model (position change, loc change, `expect` on a message), sent once.
+   Dead tree (2510, 3463) beside the ledge. `interact` also takes an item on a loc (`use`), sent once.
 3. **Pick a loc by tile.** Both tasks pick the nearest loc of that name; a tie goes to the one scanned first, smaller
    x then smaller z (`server/webclient/src/bot/StateCollector.ts:1117-1124`, stable sort at `:1272`), and `at` only
    gets the bot within its tolerance (min 1). Wrong picks within one tile of a stand tile: the six Pillars (each must
@@ -299,7 +298,7 @@ tie goes to Golrie's), the dungeon key Crate vs `crate` (2586, 9887) from (2587,
    `UNDERGROUND_AREAS`, `leftOut`). `interact` climbs them; adding the cellar (m39_149) and the tomb (m39_153) as
    areas would let `travel` route through.
 6. **Walker moves for use-item gates.** `moveRefusal` refuses every `oplocu`/`aplocu` trigger
-   (`walk-graph.ts:108-114`). With gap 2's act, `actions/cross.ts` could make the rope, pebble and key moves, and one
+   (`walk-graph.ts:108-114`). With gap 2 fixed, `actions/cross.ts` could make the rope, pebble and key moves, and one
    `travel` would go from Almera's bank to the dungeon entry; the rock's row also needs its landing (2513, 3468)
    derived (roadmap: "approach-op gates used from range").
 
@@ -334,10 +333,10 @@ Draft `conductor/runs/questw2/plans/waterfall-quest.ts` (worker questw2), a full
   - The bookcase gives the Book on Baxtorian only at stage >= 2.
   - Hadley's house -> Tree Gnome Village ladder has no path: see `learnings/walking.md`.
   - Searching the crate in Golrie's cellar draws Zombies and Giant bats.
-  - The use-items step (pebble on tombstone) reports Timeout (150 s) although the teleport worked; check position, not the result.
+  - The use-items step (pebble on tombstone) reported Timeout (150 s) although the teleport worked; fixed: a position or floor jump after a use is its effect. [v 2026-10-24 itest-fixture local]
   - The plan view is stale for a tick after a search; guard reads with `v.last`.
 - Tomb protocol that survived [v 2026-10-23 questw2 local]: from `lib:waterfall-tomb` (Att/Str/Def 45, HP 50, Prayer 43, Agility 52, no gear, 20 swordfish) tomb chest -> urn -> exit ladder took about 90 s with 2 flees: eat on the surface, `travel` to the exit ladder (2555, 9844) whenever in combat, eat inside the tomb. (A combat-35 account, HP 33, little food, died on the chest -> urn leg: 33/33 -> 12 -> dead, auto-retaliation about 25 HP/min.) Combat's `prayers` param turns prayers on only during a fight and off at run end; there is no standalone prayer task.
-- Re-entering the tomb: the pebble on the tombstone works at any stage. `talk` use-items reports "Timeout using X on Y" after the successful teleport (burned 475 s of retries until the phase got `onFail` continue); check position instead.
+- Re-entering the tomb: the pebble on the tombstone works at any stage. `talk` use-items used to report "Timeout using X on Y" after the successful teleport (burned 475 s of retries until the phase got `onFail` continue); a position or floor jump now counts as the use's effect. [v 2026-10-24 itest-fixture local]
 - Hudon: Talk-to works from the island (`interact` is unreachable); the bookcase gives the book only after the Hudon talk (stage 2).
 - Completed once on questw2 from `lib:waterfall-tomb` (tomb, rope throws, key crate, door1/door2, pillars 1-6, chalice); the statue phase failed on a walk but the quest still completed. Phase times: tomb ~90 s, bank-runes walk Catherby -> Ardougne 160 s, Betty runes 110 s, Almera 57 s, to-cellar 106 s. [v 2026-10-23 questw2 local]
 - From-start proof (`lib:waterfall-start`) died at the falls-dungeon key crate (2588, 9888): the three Skeletons (45) kept the unarmed-or-lightly-geared bot in combat (dungeon-fight 286 s, +27,300 Attack XP) until the food ran out; then combat refused ("above the limit 5 ... capped at 5 without food"), door1 failed "in combat" repeatedly and the bot died (respawn Lumbridge). Fire giants (86) stand by door1. Only Glarial's tomb forbids gear; the falls dungeon does not, so bank weapon and armour before the tomb and withdraw them at the Ardougne bank after it, then wear them with 25+ food for the dungeon. Gear-after-tomb is the chosen fix, unproven. [v 2026-10-23 questw2 local]

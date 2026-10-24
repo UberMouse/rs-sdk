@@ -622,3 +622,20 @@ describe('talk: travels', () => {
         expect(r.result.reason).toBe('talk: talked to Captain Tobias, 1 choice made');
     });
 });
+
+describe('talk: a use that teleports the player', () => {
+    // Glarial's pebble on her tombstone: the game moves the bot into the tomb, with no message and no inventory change.
+    const stone = base.player({ at: { x: 2560, z: 3446 } }).inv("Glarial's pebble", 1, { id: 294 });
+    const timeline = stone
+        .loc("Glarial's Tombstone", 2560, 3445, { options: ['Read'], reachable: true })
+        .series(30, (w, i) => (i < 3 ? w : w.player({ at: { x: 2554, z: 9844 } })));
+
+    test('the position jump is the effect: the use counts and the task is done', async () => {
+        const r = await simulate(talk, {
+            params: { use: { items: ["^Glarial's pebble$"], onLoc: "^Glarial's Tombstone$" } },
+            timeline,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe("finish: used 1 item on ^Glarial's Tombstone$");
+    });
+});

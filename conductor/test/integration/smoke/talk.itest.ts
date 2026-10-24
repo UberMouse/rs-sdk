@@ -91,3 +91,32 @@ test(
     },
     itestTimeout({ taskMinutes: 4 }),
 );
+
+// Glarial's pebble on her tombstone (quest_waterfall.rs2) teleports the bot into the tomb with no inventory change
+// and no animation: the position jump is the use's effect, not a timeout.
+test(
+    'talk counts the teleport of a use (Glarial pebble on the tombstone) as its effect',
+    async () => {
+        await withFixtureBot(
+            {
+                position: { x: 2560, z: 3444 },
+                skills: { Attack: 45, Strength: 45, Defence: 45, Hitpoints: 50 },
+                inventory: [{ id: 294, count: 1 }],
+                varps: { 65: 3 },
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'talk',
+                    { use: { items: ["^Glarial's pebble$"], onLoc: 'tombstone' } },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.finalPos, detail).toMatchObject({ x: 2554, z: 9844 });
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);

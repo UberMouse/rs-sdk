@@ -12,6 +12,14 @@ test(
         await withFixtureBot(
             { position: COURTYARD },
             async ({ name }) => {
+                // The coffin is one loc on the shared server: an earlier run leaves it open (Close | Search). Closing
+                // a closed one fails harmlessly with no result read.
+                await runTask(
+                    name,
+                    'interact',
+                    { target: 'loc', name: '^coffin$', option: '^close$', at: { x: 3248, z: 3195, tolerance: 2 } },
+                    ['minutes:3'],
+                );
                 const run = await runTask(
                     name,
                     'interact',
@@ -273,4 +281,30 @@ test(
         );
     },
     itestTimeout({ taskMinutes: 3 }),
+);
+
+// The Grail bell (quest_grail.rs2 opheld1): within 4 tiles of a Grail Maiden at the Fisher King's castle it shows
+// a message box, a chat line and teleports the bot to (2761, 4692) (the maidens stand at (2763, 4690) and (2760, 4688)). With no `expect` the first box (the dialog
+// guard clicks it away) is the effect; with `expect` naming the later one the run waits through the guard
+// and ends once the castle line has been shown, the bot teleported.
+test(
+    'interact counts the bell teleport as the effect although the dialog guard handled the message box',
+    async () => {
+        await withFixtureBot(
+            { position: { x: 2764, z: 4689 }, inventory: [{ id: 17, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    { target: 'item', name: '^Grail bell$', option: '^Ring$', expect: 'inside the castle' },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.finalPos, detail).toMatchObject({ x: 2761, z: 4692 });
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
 );

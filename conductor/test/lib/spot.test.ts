@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { AtSchema } from '../../lib/spot';
 import interact from '../../tasks/interact';
+import talk from '../../tasks/talk';
 import { walking } from '../react';
 import { simulate } from '../simulate';
 import { world } from '../world';
@@ -37,6 +38,30 @@ describe('the shared `at`: met', () => {
             react: walking(),
         });
         // The scripted world has no staircase in sight, so the climb fails; the walk to its stand tile was planned.
+        expect(r.sends[0]).toBe('walk to (3417, 3486)');
+        expect(r.result.reason).not.toMatch(/No connector/);
+    });
+});
+
+const talkParams = (met?: string[]) => ({
+    npc: '^Drezel$',
+    at: { x: 3416, z: 3487, level: 1, ...(met ? { met } : {}) },
+});
+
+describe('the shared `at`: met on talk', () => {
+    const OUTSIDE = world().player({ at: { x: 3400, z: 3489 } });
+    test('without met the talk walk does not plan through the stage-gated door', async () => {
+        const r = await simulate(talk, { params: talkParams(), timeline: OUTSIDE.series(1), react: walking() });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/can't walk to .*No connector/);
+    });
+
+    test('with met the talk walk is planned through the door', async () => {
+        const r = await simulate(talk, {
+            params: talkParams(['quest:priestperil>=4']),
+            timeline: OUTSIDE.series(1),
+            react: walking(),
+        });
         expect(r.sends[0]).toBe('walk to (3417, 3486)');
         expect(r.result.reason).not.toMatch(/No connector/);
     });

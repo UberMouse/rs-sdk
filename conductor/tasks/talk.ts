@@ -145,8 +145,8 @@ function findLoc(ctx: Ctx): NearbyLoc | undefined {
 export default defineTask({
     name: 'talk',
     description:
-        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open; also starts while the bot is under attack, since the open dialog is the way out of the fight) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?} ' +
-        '(walked to first, across floors and through doors), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
+        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open; also starts while the bot is under attack, since the open dialog is the way out of the fight) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?,met?} ' +
+        '(walked to first, across floors and through doors; `met` [tokens] are the requirements the walk may plan through, as `travel`), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
         '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
         'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
         "Done once the dialog has closed after the last choice. Fails with the dialog's options when an expected option is missing or an unexpected choice appears, " +
