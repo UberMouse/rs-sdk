@@ -17,7 +17,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Requires**: Reach: none. Levels: Woodcutting 1, Firemaking 1, each with the other skills at 99; every skill at once: 1. Tools: best axe (wielded), Tinderbox.
   - **Sink**: firemaking at (3230, 3240, 0), then keep; legs 24 + 24 run ticks.
   - **Supplies/hr** at 99: none.
-- `oak-draynor-drop`: Oaks south of Draynor, dropped. The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest the spawn. No promoted plan; unmeasured.
+- `oak-draynor-drop`: Oaks south of Draynor, dropped. Plans: oak-draynor-drop. The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest the spawn. The plan chops the normal trees of the same cluster to 15 first, area (3112,3240) r16. First run (conductor3 2026-10-24, steel axe): the oaks phase took WC 15-50 in 143.6 s, ~775k/h, no idle waits; the whole run (axe walk, normals from 1) is 360k/h, so it is left out of measured.
   - **Requires**: Reach: none. Levels: Woodcutting 15. Tools: best axe (wielded).
   - **Sink**: drop.
   - **Supplies/hr** at 99: none.

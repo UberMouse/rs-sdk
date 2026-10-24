@@ -679,9 +679,12 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 3102, z: 3242 },
         params: { tree: 'oak' },
         sink: { mode: 'drop' },
+        plans: ['oak-draynor-drop'],
         notes:
             'The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest ' +
-            'the spawn. No promoted plan; unmeasured.',
+            'the spawn. The plan chops the normal trees of the same cluster to 15 first, area (3112,3240) r16. First run ' +
+            '(conductor3 2026-10-24, steel axe): the oaks phase took WC 15-50 in 143.6 s, ~775k/h, no idle waits; the ' +
+            'whole run (axe walk, normals from 1) is 360k/h, so it is left out of measured.',
         source: 'research-gathering 2026-10-23: every tree site rated with resolveMethods',
     },
     {
