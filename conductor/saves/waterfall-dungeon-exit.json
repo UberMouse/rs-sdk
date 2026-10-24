@@ -1,0 +1,57 @@
+{
+    "name": "waterfall-dungeon-exit",
+    "purpose": "Waterfall dungeon pillar room (stage 8, placed amulet) at (2563,9912) holding the A key (dungeon key, 298), nothing else, Att/Str/Def 60 HP 70. Tests walks out of the dungeon (key on the Doors, entry Door, Barrel) with travel.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2563,
+                "z": 9912
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 298,
+                    "count": 1
+                }
+            ],
+            "varps": {
+                "65": 8
+            }
+        }
+    },
+    "sha1": "2eb99d55068400ab951e85c854710a76d5a40096",
+    "createdAt": "2026-10-24T04:05:33.556Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2563,
+            "z": 9912,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 70
+        },
+        "inventory": [
+            {
+                "id": 298,
+                "name": "baxtorian_key_waterfall_quest",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "65": 8,
+            "281": 1000
+        }
+    }
+}

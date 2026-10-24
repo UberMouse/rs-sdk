@@ -264,7 +264,7 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
 | 12 Pillars | `talk` `use` `{"items":["^Air rune$","^Earth rune$","^Water rune$"],"onLoc":"^Pillar$"}` at each stand tile, six runs | partly: the uses register (the rune leaves the inventory), but the nearest Pillar is picked by distance (gap 3) and a repeated rune times out |
 | 13 Statue | `talk` `use` `{"items":["^Glarial's amulet$"],"onLoc":"^Statue of Glarial$"}` at (2565, 9915) | yes, but the boulder (runes missing) also reads as success (an animation); check the amulet is gone and the bot is at (2603, 9914) |
 | 14 Chalice | `talk` `use` `{"items":["^Glarial's urn$"],"onLoc":"^Chalice of eternity$"}` at (2603, 9912) | yes |
-| 15 Out | `travel` to (2566, 9901) (the Door (2604, 9900) crossing); key on Door (2568, 9893); `travel` to Ardougne North (entry Door and Barrel crossings) | partly |
+| 15 Out | one `travel` from the chalice room or the pillar room to the mainland, A key held (`met: ["quest:waterfall>=8"]` for the key on the Door (2566, 9901), which the quest tab cannot show): Open Door (2604, 9900), key on Door (2568, 9893), entry Door, Barrel | yes [v 2026-10-24 conductor3w2 local: pillar room (2563, 9912) to Falador West bank, 178 s] |
 
 ### Gaps, most important first
 

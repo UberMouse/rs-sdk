@@ -470,6 +470,27 @@ export const CURATED_CROSSINGS: readonly CuratedCrossing[] = [
         requires: [[]],
         source: 'ladders+stairs/scripts/stairs.rs2:515',
     },
+    // Waterfall Quest: the Door (2566, 9901) between the pillar room and the corridor. The dungeon key used on it,
+    // once the amulet is on the statue (%waterfall_quest >= ^waterfall_placed_amulet), moves the player to the raised
+    // room's door (2604, 9901) in the chalice room (quest_waterfall.rs2:399-401), from either side [2026-10-24
+    // conductor3w2 local: used from the pillar room side at stage 8, landed on (2604, 9901)]. The script tests the
+    // door by `loc_coord = 0_40_154_6_46`, a tile north of where the map places it (0_40_154_6_45), and the move
+    // happened all the same, so the entry names the placed tile. The way back is the derived Open of the Door
+    // (2604, 9900) (:389).
+    {
+        via: 'scripted',
+        trigger: 'oplocu,baxtorian_door_2_waterfall_quest',
+        act: { kind: 'item-on-loc', obj: 'baxtorian_key_waterfall_quest', loc: 'baxtorian_door_2_waterfall_quest' },
+        where: {
+            placed: {
+                tiles: ['0_40_154_6_45'],
+                at: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:399',
+            },
+        },
+        to: ['0_40_154_44_45'],
+        requires: [['item:baxtorian_key_waterfall_quest:held', 'quest:waterfall>=8']],
+        source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:401',
+    },
 ];
 
 /**

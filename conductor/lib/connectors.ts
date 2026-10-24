@@ -77,7 +77,7 @@ const UNDERGROUND_AREAS: readonly {
     // Waterfall Quest: Golrie's cellar under the Tree Gnome Village (flood fill x 2508..2552, z 9552..9584 from the
     // ladder's landing (2533, 9556)), Glarial's tomb (x 2526..2557, z 9809..9848 from the ladder (2556, 9844)) and the
     // Waterfall dungeon (x 2561..2595, z 9861..9917 from its entry (2575, 9861); the chalice room x 2599..2608,
-    // z 9890..9916 is a separate pocket, its own area: only scripted moves (the statue and the Door (2604, 9900)) join it to the dungeon).
+    // z 9890..9916 is a separate pocket, its own area: only scripted moves (the statue, the Door (2604, 9900) and, from quest stage 8, the dungeon key on the Door (2566, 9901)) join it to the dungeon).
     { id: 'gnome-cellar', minX: 2506, maxX: 2554, minZ: 9550, maxZ: 9586 },
     { id: 'glarial-tomb', minX: 2524, maxX: 2559, minZ: 9807, maxZ: 9850 },
     { id: 'waterfall', minX: 2559, maxX: 2597, minZ: 9859, maxZ: 9919 },

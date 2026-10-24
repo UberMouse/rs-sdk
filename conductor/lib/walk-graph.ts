@@ -85,6 +85,23 @@ export const NOT_WALKER_DOORS: ReadonlyMap<string, string> = new Map([
 ]);
 
 /**
+ * Key doors the walker crosses by using the key on them (an `oplocu` trigger, which no `Open` reaches), as
+ * `<loc config>@<x>,<z>`: those whose script opens the door and walks the player through to its other side. A key door
+ * that moves the player elsewhere is a crossing row (wiki/world/gates.ts CURATED_CROSSINGS), not listed here. The
+ * waterfall dungeon's Door (2568, 9893), south of the pillar room's corridor, is a plain pass
+ * (quest_waterfall.rs2:393-407; walked through with the A key on the worker conductor3w2, 2026-10-24, landing on the
+ * door's own tile when used from the north). Only that north-to-south use was observed in play; the script has no
+ * side check, so the reverse edge follows from it. Its other Doors move the player (:389, :401, :405).
+ */
+const KEY_DOORS: ReadonlySet<string> = new Set(['baxtorian_door_2_waterfall_quest@2568,9893']);
+/** The one obj a gate row asks to be held, when that is all it asks. */
+const keyOf = (g: Gate): string | undefined => {
+    const [only, ...rest] = g.requires;
+    const held = only?.length === 1 ? /^item:([a-z0-9_]+):held$/.exec(only[0]!) : null;
+    return rest.length ? undefined : held?.[1];
+};
+
+/**
  * Why a walk does not cross a gated door row (World.gates, a wall with no `to`) by opening it, or undefined when it
  * does: the walker sends Open (actions/walk.ts openDoorAt) and pays only the Al Kharid toll (actions/toll.ts).
  * `opName` is the loc config's name for an op (`op1=Open`). A door it does not open may still be a move
@@ -225,6 +242,25 @@ export function walkGraph(input: {
         if (g.kind !== 'gate') continue;
         const door = WALL_SHAPES.has(g.shape) && !g.to;
         const gated = sigOf(g.requires);
+        const key = door && KEY_DOORS.has(`${g.loc}@${g.tile.x},${g.tile.z}`) ? keyOf(g) : undefined;
+        if (key) {
+            // The key used on the door walks the player through: an edge each way; as with an ordinary door, the edges carry the row's
+            // requirement (the key held) on the checked side and none on the other.
+            const tiles = wallTiles(g);
+            if (!tiles) continue;
+            const act: Act = { kind: 'item-on-loc', obj: key, loc: g.loc };
+            const cross = (landing: Tile): Move => ({
+                via: 'gate',
+                act,
+                at: g.tile,
+                landings: [landing],
+                source: g.source,
+            });
+            const sigs = new Set([gated, '']);
+            addMove(tiles[0], tiles[1], sigs, cross(tiles[1]));
+            addMove(tiles[1], tiles[0], sigs, cross(tiles[0]));
+            continue;
+        }
         if (door && !g.roll && !doorRefusal(g, opName)) {
             const tiles = wallTiles(g);
             if (!tiles) continue;

@@ -134,6 +134,11 @@ const GLIDER: CuratedCrossing = {
     source: lineOf('p_teleport(map_findsquare'),
 };
 const tiles = (ls: { tile: Tile }[]) => ls.map(l => l.tile);
+/** The stairs entry kept to the placed locs on some tiles. */
+const stairsAt = (...literals: string[]): CuratedCrossing => ({
+    ...STAIRS_DOWN,
+    where: { placed: { tiles: literals, at: STAIRS_DOWN.source } },
+});
 const fails = (e: CuratedCrossing, why: RegExp) => expect(() => derive([e])).toThrow(why);
 
 describe('deriveCuratedCrossings', () => {
@@ -206,6 +211,16 @@ describe('deriveCuratedCrossings: what the scripts refute', () => {
         fails({ ...NORTH, to: ['0_50_50_15_31'], source: EAST.source }, /finds no move to 0_50_50_15_31/));
     test('requirements not written canonically', () =>
         fails({ ...EAST, requires: [['quest:test'], ['quest:test', 'members']] }, /write requires as/));
+});
+
+describe('deriveCuratedCrossings: placements kept by tile', () => {
+    test('a loc op is done at the placed loc on a listed tile', () => {
+        const { crossings } = derive([stairsAt('0_50_50_10_20')]);
+        expect(crossings.map(c => c.at)).toEqual([STAIRS]);
+    });
+
+    test('a tile where the loc is not placed is refused', () =>
+        fails(stairsAt('0_50_50_11_20'), /stairs is not placed at 0_50_50_11_20/));
 });
 
 describe('refuseDerivedTwins', () => {
