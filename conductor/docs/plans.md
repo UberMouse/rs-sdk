@@ -187,6 +187,7 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
 - **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]
+- **Stale view after a cast, jump or pickup.** The next phase selection can read the pre-action inventory or loc view and re-pick the same phase (a spell cast wastes a 25-tick bloom; repeated jumps). Guard such a phase with `v.last` plus a short walking settle phase. An `items drop` of several named items fails preflight if one is absent: one phase per junk item. A `pickup` can fail "attacked while picking up" near monsters: two identical phases with `onFail: 'continue'`. [v 2026-10-24 questw1 local]
 - **Predicate errors.** A `when` or `until` that throws ends the plan `error`, naming the phase.
 - **Combat between phases.** `executeTask` refuses to start in combat. A stop or `until` that lands
   in a fight (the bot attacked, or still fighting its own target) ends the phase after the engine
