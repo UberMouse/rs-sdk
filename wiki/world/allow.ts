@@ -271,3 +271,190 @@ export const SPLIT_ALLOW: readonly Allowed[] = [
         source: 'areas/area_falador/scripts/mining_guild.rs2:11',
     },
 ];
+
+/** Where the stand rework is planned: a reason ending "<this> moves the stand" waits on that work. */
+const RESTAND = 'conductor/docs/world-index-data-audit.md §2.4';
+
+/** Sites, by a feature's tile, sharing one reason and one source. */
+const all = (reason: string, source: string, keys: readonly SiteKey[]): Allowed[] =>
+    keys.map(key => ({ keys: [key], reason, source }));
+
+/** The stand's free walk is shut off from most of its members by `by`, a crossing that needs something. */
+const shutOff = (by: string): string =>
+    `the stand's free walk is shut off from most of its members by ${by}: ${RESTAND} moves the stand`;
+
+/** The only way out of the place is `what`, a rolled crossing the distances could not price. */
+const unpriced = (what: string): string =>
+    `the only way out of here is ${what}, rolled, and the build could not price its failure's way back ` +
+    `(distance.ts crossingTicks), so no stand here gets a nearest bank: nothing a stand fixes; pricing that way back does`;
+
+/** The graph has no way out of the pocket the site is in, which `what` leads into. */
+const closed = (what: string): string =>
+    `the graph has no way out of the pocket ${what} leads into, so neither the stand nor any member gets a nearest ` +
+    `bank: nothing a stand fixes; a way out the sources miss does`;
+
+/** Check 4: stands cut off from most of their members, or from a bank a member's own way in does not reach. */
+export const STAND_ALLOW: readonly Allowed[] = [
+    // Members cut off: the stand is on the wrong side of a crossing that needs something.
+    {
+        keys: [siteAt('npc', 2546, 3560)],
+        reason: shutOff("the Barbarian Outpost's gate (Alfred Grimhand's Barcrawl), the stand outside it"),
+        source: 'areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2',
+    },
+    {
+        keys: [siteAt('npc', 3196, 3352)],
+        reason: shutOff("the Champions' Guild door (32 quest points)"),
+        source: 'areas/area_varrock/scripts/champions_guild.rs2:1',
+    },
+    {
+        keys: [siteAt('npc', 2525, 3334)],
+        reason: shutOff("Rehnison's door (Plague City), the stand in a 39-tile pocket behind it"),
+        source: 'quests/quest_elena/scripts/doors.rs2:97',
+    },
+    {
+        keys: [siteAt('npc', 2923, 3251)],
+        reason: shutOff("Melzar's Maze's door (Melzar's key)"),
+        source: 'quests/quest_dragon/scripts/melzars_maze.rs2:14',
+    },
+    {
+        keys: [siteAt('npc', 2659, 3438)],
+        reason: shutOff("the Ranging Guild's door (40 Ranged)"),
+        source: 'minigames/game_ranging/scripts/ranging_guild_door.rs2:17',
+    },
+    {
+        keys: [siteAt('npc', 2930, 9699)],
+        reason: shutOff("Taverley Dungeon's jail doors (the jail key)"),
+        source: 'areas/area_taverly/dungeon/scripts/jail_doors.rs2:3',
+    },
+    {
+        keys: [siteAt('npc', 2576, 9501)],
+        reason: shutOff('a locked door (82 Thieving and a lockpick), the stand in a 24-tile pocket behind it'),
+        source: 'skill_thieving/scripts/doors/locked_door.rs2:154',
+    },
+    {
+        keys: [siteAt('npc', 3173, 3478)],
+        reason: shutOff("Lucien's door (Temple of Ikov), the stand in front of it"),
+        source: 'quests/quest_ikov/scripts/quest_ikov.rs2:2',
+    },
+    {
+        keys: [siteAt('npc', 3187, 3959)],
+        reason: shutOff('locked doors (23 Thieving and a lockpick)'),
+        source: 'skill_thieving/scripts/doors/locked_door.rs2:154',
+    },
+    {
+        keys: [siteAt('pickpocket', 2572, 3292, 1)],
+        reason: shutOff('locked doors (61 Thieving)'),
+        source: 'skill_thieving/scripts/doors/locked_door.rs2:154',
+    },
+    {
+        keys: [siteAt('pickpocket', 2612, 3316)],
+        reason: shutOff('a locked door (13 Thieving)'),
+        source: 'skill_thieving/scripts/doors/locked_door.rs2:154',
+    },
+    {
+        keys: [siteAt('tree', 2577, 3086)],
+        reason: shutOff("the Wizards' Guild doors (66 Magic)"),
+        source: 'areas/area_yanille/scripts/magic_guild.rs2:11',
+    },
+    {
+        keys: [siteAt('tree', 2759, 3854)],
+        reason: shutOff(
+            "Trollweiss's slopes: the stand is on the toboggan run (a waxed toboggan worn), the summit's trees up the 15 Agility climb",
+        ),
+        source: 'quests/quest_troll_love/scripts/quest_troll_love.rs2:10',
+    },
+    // A forest chained whole (audit E2) across Tirannwn's Regicide crossings.
+    ...all(
+        shutOff("Tirannwn's Regicide crossings (stage 8 and 56 Agility)"),
+        'quests/quest_regicide/scripts/quest_regicide.rs2:389',
+        [siteAt('tree', 2154, 3111), siteAt('tree', 2242, 3211)],
+    ),
+    // Sites spanning West Ardougne's wall: their members inside it ask Biohazard, the stand is outside.
+    ...all(
+        shutOff("West Ardougne's wall (Biohazard), whose doors lie past the walk's bound"),
+        'areas/area_ardougne_west/scripts/doors.rs2:26',
+        [siteAt('npc', 2454, 3301), siteAt('tree', 2433, 3308)],
+    ),
+    {
+        keys: [siteAt('npc', 3430, 3291)],
+        reason:
+            "Mort Myre's snails wander 20 tiles, and the free walk from the stand to three of them leaves the bbox grown by twice the npc radius the check walks: " +
+            `the walk round is that long, so ${RESTAND} moves the stand`,
+        source: 'maps/m53_51.jm2:5813',
+    },
+    // No bank: the way out is a rolled crossing the build could not price.
+    ...all(unpriced("Edgeville Dungeon's monkey bars (15 Agility)"), 'skill_agility/scripts/shortcuts.rs2:153', [
+        siteAt('npc', 3116, 9992),
+        siteAt('npc', 3118, 9974),
+    ]),
+    ...all(
+        unpriced("the climb up the Shilo Village cavern's waterfall rocks"),
+        'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1043',
+        [
+            siteAt('npc', 2886, 9360),
+            siteAt('npc', 2892, 9384),
+            siteAt('npc', 2901, 9355),
+            siteAt('npc', 2910, 9349),
+            siteAt('npc', 2928, 9354),
+            siteAt('npc', 2886, 9293),
+            siteAt('npc', 2892, 9312),
+            siteAt('npc', 2897, 9321),
+            siteAt('npc', 2917, 9304),
+            siteAt('npc', 2924, 9292),
+            siteAt('npc', 2934, 9285),
+            siteAt('npc', 2934, 9309),
+            siteAt('npc', 2934, 9317),
+            siteAt('npc', 2937, 9301),
+            siteAt('tree', 2908, 9350),
+            siteAt('tree', 2931, 9346),
+            siteAt('tree', 2932, 9355),
+        ],
+    ),
+    ...all(
+        unpriced("the Yanille Agility Dungeon's balancing ledge (40 Agility) or monkey bars (57)"),
+        'areas/area_yanille/scripts/agility_dungeon.rs2:31',
+        [siteAt('npc', 2562, 9506)],
+    ),
+    // No bank: a pocket the graph has no way out of.
+    ...all(
+        closed("the Black Knights' Fortress's secret wall, whose crossing row goes one way,"),
+        'quests/quest_blackknight/scripts/quest_blackknight.rs2:88',
+        [
+            siteAt('npc', 3014, 3516, 2),
+            siteAt('npc', 3015, 3515, 1),
+            siteAt('npc', 3023, 3512, 1),
+            siteAt('npc', 3023, 3514, 2),
+            siteAt('npc', 3026, 3507, 2),
+        ],
+    ),
+    ...all(closed('the rope swing at (2705, 3209) (10 Agility)'), 'skill_agility/scripts/shortcuts.rs2:121', [
+        siteAt('npc', 2691, 3215),
+    ]),
+    ...all(closed("Ape Atoll's hole under the crate"), 'quests/quest_mm/scripts/quest_mm.rs2:978', [
+        siteAt('npc', 2767, 9163),
+        siteAt('npc', 2776, 9163),
+        siteAt('npc', 2800, 9162),
+    ]),
+    ...all(closed("the Haunted Mine's dark stairs"), 'quests/quest_hauntedmine/scripts/hauntedmine_darkstairs.rs2:50', [
+        siteAt('rock', 2717, 4434),
+        siteAt('rock', 2747, 4441),
+        siteAt('rock', 2763, 4438),
+        siteAt('rock', 2771, 4426),
+        siteAt('rock', 2783, 4436),
+        siteAt('rock', 2798, 4449),
+    ]),
+    {
+        keys: [siteAt('tree', 3415, 3522)],
+        reason: closed(
+            'a one-way step (the collision lets (3456, 3519) step to (3455, 3520) and not back) north of the holy barrier',
+        ),
+        source: 'maps/m53_55.jm2:14016',
+    },
+    {
+        keys: [siteAt('npc', 2509, 3087)],
+        reason:
+            "the way in is the Watchtower's rope swing with a rope tied on (consumed), the way out the swing back, which asks 10 Agility: " +
+            'distance.ts takes no way asking more than the way in, so the stand has no nearest bank; nothing a stand fixes',
+        source: 'quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:290',
+    },
+];

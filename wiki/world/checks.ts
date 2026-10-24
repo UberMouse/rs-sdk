@@ -2,12 +2,15 @@
 // §2.2): each check returns findings that name their sites by SiteKey, a curated allowlist (allow.ts) leaves out the
 // ones known and explained, and build.ts fails on what is left, and on an allowlist entry naming no site (invalid) or
 // matching no finding (stale), as it does for EXPECTED_UNREACHED.
-import { SITE_RADIUS } from './place';
+import { SINKS } from './distance';
+import { besideCluster, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
+import { coord, STEPS, type Reach, type ReachGraph } from './reach';
+import { dominates, minimalSets } from './requirements';
 import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
 import type { Area, Feature, FeatureKind, Rect, Site, Tile } from './types';
 
 /** The checks, by the id their report lines carry. */
-export type CheckId = 'near-miss' | 'split';
+export type CheckId = 'near-miss' | 'split' | 'stand';
 
 /** What one check found: the site or sites it is about, by id and by key, and what is wrong with them. */
 export interface Finding {
@@ -61,7 +64,7 @@ const rectName = (r: Rect): string => `x ${r.x1}-${r.x2}, z ${r.z1}-${r.z2}`;
  * A key for each site: its first feature whose tile no other site of its kind holds, so the key resolves back to it.
  * A site with no such feature gets its first feature's, and an entry naming it with that key is invalid.
  */
-function keyOf(world: SiteKeyWorld): (site: CheckWorld['sites'][number]) => SiteKey {
+function keyOf(world: SiteKeyWorld): (site: Pick<Site, 'kind' | 'features'>) => SiteKey {
     const matches = siteKeyMatches(world);
     return site => {
         const keys = site.features.map(i => ({ kind: site.kind, at: world.features[i]!.tile }));
@@ -184,4 +187,155 @@ export function applyAllow(findings: readonly Finding[], allow: readonly Allowed
     }
     const unused = [...named.keys()].filter(e => !used.has(e)).map(name);
     return { left, allowed, invalid, stale: [...unused, ...dupes] };
+}
+
+/** What the stand check reads: the placed sites with their stands, reach, nearest sinks and fishing movement. */
+export interface StandWorld extends SiteKeyWorld {
+    sites: readonly Pick<
+        Site,
+        'id' | 'kind' | 'features' | 'bbox' | 'stand' | 'reach' | 'nearest' | 'wander' | 'movement'
+    >[];
+    features: readonly Pick<Feature, 'source' | 'config' | 'tile' | 'shape' | 'rotation' | 'subtype'>[];
+}
+
+/** What the stand check walks: the reach graph and the collision it was built from, and the fill over it. */
+export interface StandInput {
+    graph: ReachGraph;
+    collision: StepCollision;
+    size: SiteOptions['size'];
+    /** The fill over `graph` from the Lumbridge spawn. */
+    reach: Pick<Reach, 'setsAny' | 'reached'>;
+    /** What using a site asks, as alternatives (build.ts useSets); absent, nothing. */
+    use?: (s: Pick<Site, 'features'>) => string[][];
+    /** A reach set widened into the context its nearest sinks were searched under (distance.ts NearestOptions.context). */
+    context?: (set: readonly string[]) => string[];
+}
+
+const tileRect = (t: Tile, grow = 0): Rect => ({ x1: t.x - grow, z1: t.z - grow, x2: t.x + grow, z2: t.z + grow });
+
+/**
+ * The tiles each of a site's features is used from: a loc's reachTiles; an npc's walkable tiles beside where it
+ * walks (besideCluster, its roam the site's wander round its spawn); a fishing spot's, the tiles beside each tile its
+ * subtype's spots can stand on (Site.movement), as a spot moves to any of them.
+ */
+function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: StandInput): Tile[][] {
+    const { collision, size } = input;
+    const beside = (t: Tile, wander: number): Tile[] =>
+        besideCluster({ bbox: tileRect(t), roam: tileRect(t, wander), centre: t }, collision).filter(u =>
+            collision.walkable(u.level, u.x, u.z),
+        );
+    const bySubtype = new Map<string, Tile[]>();
+    return site.features.map(i => {
+        const f = world.features[i]!;
+        if (f.source === 'loc') return reachTiles(f, collision, size);
+        const spots = site.kind === 'fishing-spot' ? site.movement?.[f.subtype]?.tiles : undefined;
+        if (!spots) return beside(f.tile, site.wander ?? 0);
+        let tiles = bySubtype.get(f.subtype);
+        if (!tiles) bySubtype.set(f.subtype, (tiles = spots.flatMap(t => beside(t, 0))));
+        return tiles;
+    });
+}
+
+/**
+ * The tiles a walk from tile `start` gets to by steps and by crossings that need nothing (an edge or opened loc
+ * whose alternatives hold the empty set), inside `bound` (x and z, any level), as tile indexes, handing each to
+ * `done` as it is reached; the walk stops once `done` returns true. Read inside `graph.within`, as stepMask is.
+ */
+function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: number) => boolean): void {
+    const { index, sets, edgeFrom, openAlts, stepMask } = graph;
+    const free = (alts: readonly number[]): boolean => alts.some(a => sets.size(a) === 0);
+    const inside = (i: number): boolean => {
+        const [x, z] = [index.x(i), index.z(i)];
+        return x >= bound.x1 && x <= bound.x2 && z >= bound.z1 && z <= bound.z2;
+    };
+    const seen = new Set([start]);
+    const queue = [start];
+    let stop = done(start);
+    const visit = (i: number): void => {
+        if (stop || i < 0 || seen.has(i) || !inside(i)) return;
+        const alts = openAlts.get(i);
+        if (alts && !free(alts)) return;
+        seen.add(i);
+        queue.push(i);
+        stop = done(i);
+    };
+    while (queue.length) {
+        if (stop) return;
+        const i = queue.pop()!;
+        const m = stepMask(i);
+        const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
+        for (let bit = 0; bit < 8; bit++)
+            if (m & (1 << bit)) visit(index.of(level, x + STEPS[bit]![0], z + STEPS[bit]![1]));
+        for (const e of edgeFrom.get(i) ?? []) if (free(e.alts)) visit(e.to);
+    }
+}
+
+/**
+ * Check 4, stand connectivity (audit E4): a site with a stand some set reaches whose stand's free walk component
+ * (freeComponent, bounded to the bbox grown by twice the kind's SITE_RADIUS) holds a use tile (useTiles) of fewer
+ * than half its members, or, for a kind that takes its products to a bank (distance.ts SINKS), whose stand has no
+ * nearest bank or one whose way asks more than any member's own way in does: place.ts standTile takes the
+ * walkable candidate nearest the centre, which can be a pocket the members are not in. A member is a feature with
+ * a use tile some walk gets to: one used from nowhere (a duck mid-pond, a banker behind the counter) is no stand's
+ * to reach. A member's way in is the sets of its use tiles joined with what using the site asks, in the context its
+ * nearest sinks were searched under, as the site's reach is the stand's (build.ts addReach). One finding per site.
+ */
+export function standConnectivity(world: StandWorld, input: StandInput): Finding[] {
+    const { graph, collision, reach } = input;
+    const key = keyOf(world);
+    const sites = world.sites.filter(s => s.stand && s.reach.length > 0);
+    const walled = collision.walled ?? (<T>(f: () => T): T => f());
+    const uses = walled(() =>
+        sites.map(s => useTiles(s, world, input).flatMap(ts => (ts.some(reach.reached) ? [ts] : []))),
+    );
+    /** The sets of the members' ways in. */
+    const waysIn = (site: StandWorld['sites'][number], tiles: readonly Tile[][]): string[][] => {
+        const gated = input.use?.(site) ?? [[]];
+        const context = input.context ?? ((set: readonly string[]) => [...set]);
+        return tiles.flatMap(ts =>
+            minimalSets(
+                reach.setsAny(ts).flatMap(w => gated.map(g => [...w, ...g])),
+                graph.quests,
+            ).map(context),
+        );
+    };
+    return graph.within(() =>
+        sites.flatMap((site, n) => {
+            const stand = site.stand!;
+            const start = graph.index.of(stand.level, stand.x, stand.z);
+            const tiles = uses[n]!;
+            if (start < 0 || !tiles.length) return [];
+            const grow = 2 * SITE_RADIUS[site.kind];
+            const { x1, z1, x2, z2 } = site.bbox;
+            // The members each tile is a use tile of; the walk stops once half are usable, so a passing site's
+            // flood is the few tiles to them, and a failing one's the whole bounded component, its count exact.
+            const membersAt = new Map<number, number[]>();
+            tiles.forEach((ts, m) => {
+                for (const t of ts) {
+                    const i = graph.index.of(t.level, t.x, t.z);
+                    membersAt.set(i, [...(membersAt.get(i) ?? []), m]);
+                }
+            });
+            const usableSet = new Set<number>();
+            freeComponent(graph, start, { x1: x1 - grow, z1: z1 - grow, x2: x2 + grow, z2: z2 + grow }, i => {
+                for (const m of membersAt.get(i) ?? []) usableSet.add(m);
+                return usableSet.size * 2 >= tiles.length;
+            });
+            const usable = usableSet.size;
+            const wrong: string[] = [];
+            if (usable * 2 < tiles.length) wrong.push(`${usable} of ${tiles.length} members usable from the stand`);
+            if (SINKS[site.kind]?.includes('bank')) {
+                const bank = site.nearest?.bank;
+                if (!bank) wrong.push('no bank from the stand');
+                else if (!waysIn(site, tiles).some(w => dominates(bank.requires, w, graph.quests)))
+                    wrong.push(
+                        `its nearest bank ${bank.site} needs [${bank.requires.join(', ')}], more than any member's way in`,
+                    );
+            }
+            if (!wrong.length) return [];
+            return [
+                { ids: [site.id], keys: [key(site)], detail: `${site.id} stand ${coord(stand)}: ${wrong.join('; ')}` },
+            ];
+        }),
+    );
 }

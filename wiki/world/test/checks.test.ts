@@ -1,7 +1,22 @@
 import { describe, expect, test } from 'bun:test';
-import { applyAllow, nearMissAreas, rectGap, splitResources, type CheckWorld, type Finding } from '../checks';
+import {
+    applyAllow,
+    nearMissAreas,
+    rectGap,
+    splitResources,
+    standConnectivity,
+    type CheckWorld,
+    type Finding,
+    type StandInput,
+    type StandWorld,
+} from '../checks';
+import { locSizes } from '../place';
+import { fillReach, reachGraph } from '../reach';
 import { siteAt } from '../site-key';
-import type { FeatureKind, Rect } from '../types';
+import type { FeatureKind, Gate, Rect, Tile } from '../types';
+import { at, Grid } from './grid';
+
+const size = locSizes(new Map());
 
 const COVERED = new Set<FeatureKind>(['shop', 'tree', 'rock', 'anvil']);
 
@@ -259,4 +274,117 @@ describe('applyAllow', () => {
             invalid: [],
             stale: ['shop (28, 15, 0) (maps/m0_0.jm2:2): a duplicate of shop (28, 15, 0) (maps/m0_0.jm2:1)'],
         }));
+});
+
+const KEY = 'item:dusty_key:held';
+/** A shop at (3220-3224, 3220-3224), walled round but for a door in its west wall at z 3222. */
+const shop = (): Grid => {
+    const g = new Grid();
+    for (let x = 3220; x <= 3224; x++) g.wall(at(0, x, 3220), 0, -1).wall(at(0, x, 3224), 0, 1);
+    for (let z = 3220; z <= 3224; z++) {
+        g.wall(at(0, 3224, z), 1, 0);
+        if (z !== 3222) g.wall(at(0, 3220, z), -1, 0);
+    }
+    return g;
+};
+const door = (requires: string[][]): Gate => ({
+    trigger: 'oploc1,door',
+    kind: 'gate',
+    loc: 'door',
+    tile: at(0, 3220, 3222),
+    shape: 0,
+    angle: 0,
+    requires,
+    source: 't.rs2:1',
+});
+/** Two fishing spots on water south-west of the shop, which their spots can also move to (3214, 3210). */
+const SPOTS = [at(0, 3205, 3210), at(0, 3208, 3210)];
+const WATER = [...SPOTS, at(0, 3214, 3210)];
+const spot = (tile: Tile): StandWorld['features'][number] => ({
+    source: 'npc',
+    config: 'spot',
+    tile,
+    subtype: 'net',
+});
+/** The spots' site: its stand and reach, and the nearest bank's way given as `bank` (undefined, none). */
+const site = (stand: Tile, reach: string[][], bank: string[] | undefined): StandWorld['sites'][number] => ({
+    id: 'fishing-spot:shore:0',
+    kind: 'fishing-spot',
+    features: [0, 1],
+    bbox: { x1: 3205, z1: 3210, x2: 3208, z2: 3210, level: 0 },
+    stand,
+    reach,
+    nearest: bank ? { bank: { site: 'bank:town:0', runTicks: 10, requires: bank } } : {},
+    movement: { net: { tiles: WATER, centre: at(0, 3209, 3210), radius: 6 } },
+});
+const run = (
+    grid: Grid,
+    gates: Gate[],
+    sites: StandWorld['sites'][number][],
+    features: StandWorld['features'][number][] = SPOTS.map(spot),
+    more: Partial<StandInput> = {},
+): Finding[] => {
+    grid.block(...WATER);
+    const input = { world: { features: [], connectors: [], gates, transports: [] }, collision: grid, size };
+    const graph = reachGraph(input);
+    const reach = fillReach({ ...input, start: at(0, 3200, 3200) }, graph);
+    return standConnectivity({ sites, features }, { graph, collision: grid, size, reach, ...more });
+};
+const IN_SHOP = at(0, 3222, 3222);
+const SHORE = at(0, 3206, 3211);
+/** The shop, and a pond round (3211, 3215) whose middle no walkable tile is beside. */
+const pond = () => shop().block(...[3210, 3211, 3212].flatMap(x => [3214, 3215, 3216].map(z => at(0, x, z))));
+
+describe('standConnectivity', () => {
+    test('finds the Catherby case: a stand in a shop behind a locked door, its spots outside on the shore and free', () =>
+        expect(run(shop(), [door([[KEY]])], [site(IN_SHOP, [[KEY]], [KEY])]).map(f => f.detail)).toEqual([
+            `fishing-spot:shore:0 stand (3222, 3222): 0 of 2 members usable from the stand; its nearest bank bank:town:0 needs [${KEY}], more than any member's way in`,
+        ]));
+
+    test('a stand on the shore beside the spots passes', () =>
+        expect(run(shop(), [door([[KEY]])], [site(SHORE, [[]], [])])).toEqual([]));
+
+    test('a crossing that needs nothing joins the walk, so the shop stand sees the spots through an open door', () =>
+        expect(run(shop(), [door([[]])], [site(IN_SHOP, [[]], [])])).toEqual([]));
+
+    test('a spot is used from beside any tile it can move to', () => {
+        // The spots can move to a pool inside the locked shop, (3222, 3221), beside the stand there.
+        const pool = at(0, 3222, 3221);
+        const inShop = {
+            ...site(IN_SHOP, [[KEY]], []),
+            movement: { net: { tiles: [...SPOTS, pool], centre: at(0, 3213, 3215), radius: 12 } },
+        };
+        expect(run(shop().block(pool), [door([[KEY]])], [inShop])).toEqual([]);
+    });
+
+    test('names a kind that banks with no nearest bank', () =>
+        expect(run(shop(), [], [site(SHORE, [[]], undefined)]).map(f => f.detail)).toEqual([
+            'fishing-spot:shore:0 stand (3206, 3211): no bank from the stand',
+        ]));
+
+    test("a bank way asking no more than a member's own way in passes: coins summed, use gates joined", () => {
+        // The shore asks 30 coins at the door; the bank way's 20 coins is within them, a key is not.
+        const grid = new Grid().wallColumn(3204, 3200, 3231, [3215]);
+        const toll = { ...door([['coins:30']]), tile: at(0, 3204, 3215) };
+        const way = (bank: string[]) => run(grid, [toll], [site(SHORE, [['coins:30']], bank)]);
+        expect(way(['coins:20'])).toEqual([]);
+        expect(way([KEY]).map(f => f.detail)).toEqual([
+            `fishing-spot:shore:0 stand (3206, 3211): its nearest bank bank:town:0 needs [${KEY}], more than any member's way in`,
+        ]);
+        // A use gate the site's features ask is part of each member's way in, as it is of the site's reach.
+        expect(run(grid, [toll], [site(SHORE, [['coins:30', KEY]], [KEY])], undefined, { use: () => [[KEY]] })).toEqual(
+            [],
+        );
+    });
+
+    test('counts only members some walk gets beside, and skips a site with none', () => {
+        // Two spots of a subtype that does not move, mid-pond (3211, 3215), used from nowhere: with one net spot,
+        // 1 of 3 is usable, and of the members counted 1 of 1. A site of them alone has no bank, and is not named.
+        const bait = { ...spot(at(0, 3211, 3215)), subtype: 'bait' };
+        const features = [...SPOTS.map(spot), bait, bait];
+        const near = { ...site(SHORE, [[]], []), features: [0, 2, 3] };
+        expect(run(pond(), [], [near], features)).toEqual([]);
+        const alone = { ...site(SHORE, [[]], undefined), features: [2, 3] };
+        expect(run(pond(), [], [alone], features)).toEqual([]);
+    });
 });

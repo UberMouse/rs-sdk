@@ -786,6 +786,7 @@ describe('formatReport', () => {
         checks: {
             'near-miss': { left: [], allowed: 2, invalid: [], stale: [] },
             split: { left: [], allowed: 0, invalid: [], stale: [] },
+            stand: { left: [], allowed: 0, invalid: [], stale: [] },
         },
     };
     const gatesLine =
@@ -989,6 +990,7 @@ describe('formatReport', () => {
         expect(formatChecks(report.checks)).toEqual([
             'checks: near-miss: 2 sites 1-3 tiles outside a leaf area not their own, 2 allowed by allow.ts NEAR_MISS_ALLOW',
             'checks: split: 0 same-config site pairs split across leaf areas with features within their SITE_RADIUS, 0 allowed by allow.ts SPLIT_ALLOW',
+            'checks: stand: 0 stands cut off from most of their members or from a bank, 0 allowed by allow.ts STAND_ALLOW',
         ]);
         expect(failed(report)).toBe(false);
         const bad = {
@@ -1011,6 +1013,7 @@ describe('formatReport', () => {
             '  rock (9, 9, 0) (maps/m0_0.jm2:1): rock (9, 9, 0): no site holds it',
             'ERROR split: 1 allow.ts SPLIT_ALLOW entries no finding matches (fixed now, or gone):',
             '  rock (5, 6, 0) (maps/m0_0.jm2:2)',
+            'checks: stand: 0 stands cut off from most of their members or from a bank, 0 allowed by allow.ts STAND_ALLOW',
         ]);
         for (const one of [
             { left: bad.checks.split.left, invalid: [], stale: [] },

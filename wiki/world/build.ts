@@ -23,9 +23,17 @@ import { itemPages } from '../generate-items';
 import { npcPages } from '../generate-npcs';
 import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
-import { NEAR_MISS_ALLOW, SPLIT_ALLOW } from './allow';
+import { NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW } from './allow';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
-import { applyAllow, NEAR_MISS_GAP, nearMissAreas, splitResources, type CheckId, type CheckResult } from './checks';
+import {
+    applyAllow,
+    NEAR_MISS_GAP,
+    nearMissAreas,
+    splitResources,
+    standConnectivity,
+    type CheckId,
+    type CheckResult,
+} from './checks';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { minimalSets, questFacts, type QuestFacts } from './requirements';
@@ -1032,19 +1040,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     }).sort((a, b) => cmp(a.id, b.id));
     // The doors walled once for every cluster's beside tiles (place.ts besideCluster), not once per cluster.
     const walled = collision.walled ?? (<T>(f: () => T): T => f());
+    const use = useSets(features, USE_GATES);
     const reached = walled(() =>
         addReach({ sites: placedSites, npcSpawns: placedSpawns }, fill, c => besideCluster(c, collision), {
-            sets: useSets(features, USE_GATES),
+            sets: use,
             quests: graph.quests,
         }),
     );
     const { npcSpawns, unreached } = reached;
     // Each resource and processor site's nearest bank and processors, by run ticks from its stand (distance.ts).
     // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).
-    const distance = nearestSinks(graph, reached.sites, {
-        reached: fill.reachedAt,
-        context: cameFromContext(reachInput.world.crossings),
-    });
+    const context = cameFromContext(reachInput.world.crossings);
+    const distance = nearestSinks(graph, reached.sites, { reached: fill.reachedAt, context });
     const movementEnums = readConfigs('enum');
     const sites = reached.sites.map(s => {
         const withNearest = SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s;
@@ -1092,6 +1099,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const checks: Record<CheckId, CheckResult> = {
         'near-miss': applyAllow(nearMissAreas(checkWorld, COVERED), NEAR_MISS_ALLOW, checkWorld),
         split: applyAllow(splitResources(checkWorld, COVERED), SPLIT_ALLOW, checkWorld),
+        stand: applyAllow(
+            standConnectivity(checkWorld, { graph, collision, size: locSizes(locConfigs), reach: fill, use, context }),
+            STAND_ALLOW,
+            checkWorld,
+        ),
     };
     const expected = expectedUnreached(unreached, EXPECTED_UNREACHED, {
         areas: new Set(areas.map(a => a.id)),
@@ -1498,6 +1510,10 @@ const CHECKS: Record<CheckId, { finds: string; table: string }> = {
     split: {
         finds: 'same-config site pairs split across leaf areas with features within their SITE_RADIUS',
         table: 'SPLIT_ALLOW',
+    },
+    stand: {
+        finds: 'stands cut off from most of their members or from a bank',
+        table: 'STAND_ALLOW',
     },
 };
 

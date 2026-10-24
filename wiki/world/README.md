@@ -282,8 +282,9 @@ the findings known and explained, each entry `{ keys, reason, source }`: the key
 wrong and what fixes it, and a map line (`maps/mX_Z.jm2:line`) of a feature or the script line of the op that
 settles it. `bun run world` and `--check` print a `checks:` line per check and fail with `ERROR <check>:` lines on
 a finding no entry allows, an entry whose key names no one site (invalid), and an entry no finding matches (stale:
-the rect it waited on was refitted, or the site is gone; or it repeats an earlier entry's match), so an entry goes when its fix lands. Both checks look at
-the COVERED kinds but trees, whose sites chain whole forests.
+the rect it waited on was refitted, or the site is gone; or it repeats an earlier entry's match), so an entry goes when its fix lands. `near-miss` and
+`split` look at the COVERED kinds but trees, whose sites chain whole forests; `stand` at every site with a stand
+some walk reaches.
 
 - **`near-miss`** (`NEAR_MISS_ALLOW`): a site whose bbox lies outside every rect of a leaf area (one no area is the
   parent of) on its level, but 1-3 tiles (Chebyshev) from one, while its own leaf area is another: usually a rect
@@ -294,6 +295,15 @@ the COVERED kinds but trees, whose sites chain whole forests.
   with a feature of each within the kind's `SITE_RADIUS` of the other on one level: `place.ts` links any two
   features of a kind that close, but only within one leaf area, so they are one place clustered as two because an
   area edge cuts it. An entry names both sites.
+- **`stand`** (`STAND_ALLOW`): a site whose stand is cut off from it (audit E4). Its stand's free walk (steps, and
+  crossings that need nothing, within the bbox grown by twice the kind's `SITE_RADIUS`) gets to a use tile of fewer
+  than half its members: a loc's `reachTiles`, the walkable tiles beside an npc's roam (`besideCluster`), and for a
+  fishing spot those beside any tile of its subtype's `movement`. A member no walk gets to a use tile of (a duck
+  mid-pond, a banker behind the counter) is left out of the count. Or the kind takes its products to a bank
+  (`distance.ts` `SINKS`) and the stand has no nearest bank, or one whose way asks more (`requirements.ts`
+  `dominates`) than every member's own way in: its use tiles' sets joined with what using the site asks, as the
+  site's reach joins them. A stand in the wrong pocket waits on the stand rework (audit §2.4); a place the graph
+  has no priced way out of has no nearest bank from any stand, and its entry says what is missing.
 
 ## Methods
 
@@ -401,6 +411,7 @@ Adding a method:
 | A page's layout or wording | `wiki/world/render/` |
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
 | A site just outside the area it is named after, or one place split into two sites at an area edge (`ERROR near-miss`, `ERROR split`) | the area's rects in `wiki/world/areas.ts`; a pair that is right as it is (a leaf round one thing, two places side by side) is an entry in `NEAR_MISS_ALLOW` or `SPLIT_ALLOW` in `wiki/world/allow.ts` saying why |
+| A stand cut off from most of its site's members or from a bank (`ERROR stand`) | how stands are chosen (`place.ts` `standTile`), or a missing or unpriced way out in the sources; until then an entry in `STAND_ALLOW` in `wiki/world/allow.ts` saying what cuts it off |
 | A site whose use (not the walk there) needs a quest: a Requires cell missing it | `USE_GATES` in `wiki/world/gates.ts` |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |
 | A teleport or move from npc dialogue, a menu, an item op or an interface (Monkey Madness's rides, spirit trees, gliders, the Fisher Realm's whistle) | `CURATED_CROSSINGS` in `wiki/world/gates.ts` (`sources/curated-crossings.ts`) |

@@ -1,15 +1,33 @@
 // The build checks against the committed world.json, before allow.ts is applied: they find the audit's examples
 // (conductor/docs/world-index-data-audit.md §1.4, §1.5), and the allowlists leave nothing and match every entry.
 import { describe, expect, test } from 'bun:test';
-import { NEAR_MISS_ALLOW, SPLIT_ALLOW } from '../allow';
-import { COVERED } from '../build';
-import { applyAllow, nearMissAreas, splitResources } from '../checks';
+import { NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW } from '../allow';
+import { COVERED, useSets } from '../build';
+import { applyAllow, nearMissAreas, splitResources, standConnectivity, type Finding } from '../checks';
+import { reachCollision } from '../collision';
+import { USE_GATES } from '../gates';
 import { loadWorld } from '../load';
-import { resolveSiteKeys, siteAt } from '../site-key';
+import { locSizes } from '../place';
+import { fillReach, reachGraph } from '../reach';
+import { resolveSiteKeys, siteAt, type SiteKey } from '../site-key';
+import { readConfigs } from '../sources/configs';
+import { cameFromContext } from '../sources/npc-teleports';
 
 const world = loadWorld();
 const near = nearMissAreas(world, COVERED);
 const split = splitResources(world, COVERED);
+// As the build walks it: the graph over world.json's rows and the collision the SDK bundles, the fill from the
+// Lumbridge spawn, the use gates and the essence mine's came-from context.
+const size = locSizes(readConfigs('loc'));
+const graph = reachGraph({ world, collision: reachCollision, size });
+const stand = standConnectivity(world, {
+    graph,
+    collision: reachCollision,
+    size,
+    reach: fillReach({ world, collision: reachCollision, size }, graph),
+    use: useSets(world.features, USE_GATES),
+    context: cameFromContext(world.crossings),
+});
 
 describe('near-miss areas', () => {
     test("finds Port Sarim's fireplace a tile north of its rect", () =>
@@ -60,6 +78,54 @@ describe('split resources', () => {
     });
 });
 
+/** The stand finding naming the site a key names, or undefined. */
+const of = (key: SiteKey): Finding | undefined => {
+    const { ids, invalid } = resolveSiteKeys([key], world);
+    expect(invalid).toEqual([]);
+    return stand.find(f => f.ids[0] === ids.get(key));
+};
+
+describe('stand connectivity', () => {
+    test("audit E4's fishing examples are gone: the cut-off spots are used from nowhere, or move to the stand's walk", () => {
+        // fishing-spot:kandarin:1's seven others are loc_2027s no tile uses, so no stand's to reach;
+        // fishing-spot:tirannwn:1's four spots move over one enum, beside a tile of which the stand's free walk gets.
+        expect(of(siteAt('fishing-spot', 2504, 3498))).toBeUndefined();
+        expect(of(siteAt('fishing-spot', 2210, 3237))).toBeUndefined();
+        expect(stand.filter(f => f.keys[0]!.kind === 'fishing-spot')).toEqual([]);
+    });
+
+    test("Catherby's shore stand, out of Harry's shop since main's fix, sees its spots and a bank", () =>
+        expect(of(siteAt('fishing-spot', 2836, 3431))).toBeUndefined());
+
+    test('the tree stands with no bank: a Mort Myre pocket and the Shilo Village cavern', () =>
+        expect(
+            stand
+                .filter(f => f.keys[0]!.kind === 'tree' && f.detail.includes('no bank'))
+                .map(f => f.ids[0])
+                .sort(),
+        ).toEqual([
+            'tree:morytania:3',
+            'tree:shilo-village-quest-dungeon:0',
+            'tree:shilo-village-quest-dungeon:1',
+            'tree:shilo-village-quest-dungeon:2',
+        ]));
+
+    test('finds stands on the wrong side of a gated door from their members', () => {
+        expect(of(siteAt('npc', 2546, 3560))?.detail).toBe(
+            'npc:barbarian-outpost:0 stand (2554, 3559): 0 of 8 members usable from the stand',
+        );
+        expect(of(siteAt('tree', 2577, 3086))?.detail).toBe(
+            'tree:wizards-guild:1 stand (2589, 3076): 8 of 17 members usable from the stand',
+        );
+    });
+
+    test('by kind: npc 38, rock 6, tree 9, pickpocket 2', () => {
+        const kinds = new Map<string, number>();
+        for (const f of stand) kinds.set(f.keys[0]!.kind, (kinds.get(f.keys[0]!.kind) ?? 0) + 1);
+        expect(Object.fromEntries(kinds)).toEqual({ npc: 38, pickpocket: 2, rock: 6, tree: 9 });
+    });
+});
+
 describe('allow.ts', () => {
     test('allows every finding, and each entry names its sites and matches one', () => {
         expect(applyAllow(near, NEAR_MISS_ALLOW, world)).toEqual({
@@ -74,10 +140,16 @@ describe('allow.ts', () => {
             invalid: [],
             stale: [],
         });
+        expect(applyAllow(stand, STAND_ALLOW, world)).toEqual({
+            left: [],
+            allowed: stand.length,
+            invalid: [],
+            stale: [],
+        });
     });
 
     test('has a reason and a script or map line on every entry', () => {
-        for (const e of [...NEAR_MISS_ALLOW, ...SPLIT_ALLOW]) {
+        for (const e of [...NEAR_MISS_ALLOW, ...SPLIT_ALLOW, ...STAND_ALLOW]) {
             expect(e.reason.length).toBeGreaterThan(0);
             expect(e.source).toMatch(/^(maps\/m\d+_\d+\.jm2|[\w/]+\.rs2):\d+$/);
         }
