@@ -5,6 +5,7 @@ import { NEAR_MISS_ALLOW, SPLIT_ALLOW } from '../allow';
 import { COVERED } from '../build';
 import { applyAllow, nearMissAreas, splitResources } from '../checks';
 import { loadWorld } from '../load';
+import { resolveSiteKeys, siteAt } from '../site-key';
 
 const world = loadWorld();
 const near = nearMissAreas(world, COVERED);
@@ -17,17 +18,17 @@ describe('near-miss areas', () => {
         ]));
 
     test("Port Sarim's shops west of its rect lie past the near-miss gap (audit D1), so it does not find them", () => {
-        const shops = world.sites.filter(
-            s => s.kind === 'shop' && s.bbox.x1 >= 3012 && s.bbox.x2 <= 3028 && s.bbox.z1 >= 3204 && s.bbox.z2 <= 3259,
-        );
-        expect(shops.map(s => s.id)).toEqual([
-            'shop:asgarnia:4',
-            'shop:asgarnia:5',
-            'shop:asgarnia:6',
-            'shop:asgarnia:7',
-            'shop:asgarnia:8',
-        ]);
-        expect(near.filter(f => shops.some(s => f.ids.includes(s.id)))).toEqual([]);
+        // Betty, Gerrant, Grum, Wydin and Brian.
+        const shops = [
+            siteAt('shop', 3012, 3259),
+            siteAt('shop', 3013, 3225),
+            siteAt('shop', 3013, 3248),
+            siteAt('shop', 3014, 3204),
+            siteAt('shop', 3028, 3250),
+        ];
+        const { ids, invalid } = resolveSiteKeys(shops, world);
+        expect(invalid).toEqual([]);
+        expect(near.filter(f => f.ids.some(id => [...ids.values()].includes(id)))).toEqual([]);
     });
 
     test("finds the Crafting Guild's interior east of its rect (audit D2)", () =>
@@ -41,20 +42,21 @@ describe('near-miss areas', () => {
 
 describe('split resources', () => {
     test('finds the Coal Trucks mine split at its rect', () =>
-        expect(split.find(f => f.ids.includes('rock:coal-trucks:0'))?.detail).toBe(
-            'rock:coal-trucks:0 and rock:kandarin:2, 0 tiles apart, both hold coalrock1',
-        ));
-
-    test('finds the Rellekka flax split at its rect', () =>
-        expect(split.find(f => f.ids.includes('flax:rellekka:0'))?.ids).toEqual([
-            'flax:kandarin:0',
-            'flax:rellekka:0',
+        expect(split.find(f => f.detail.includes('coal-trucks'))?.keys).toEqual([
+            siteAt('rock', 2588, 3481),
+            siteAt('rock', 2574, 3480),
         ]));
 
-    test('pairs by kind: rock 6, pickpocket 12, anvil 1, flax 1', () => {
+    test('finds the Rellekka flax split at its rect', () =>
+        expect(split.find(f => f.detail.includes('rellekka'))?.keys).toEqual([
+            siteAt('flax', 2614, 3635),
+            siteAt('flax', 2616, 3646),
+        ]));
+
+    test('pairs by kind: rock 6, pickpocket 10, anvil 1, flax 1', () => {
         const byKind: Record<string, number> = {};
         for (const f of split) byKind[f.keys[0]!.kind] = (byKind[f.keys[0]!.kind] ?? 0) + 1;
-        expect(byKind).toEqual({ anvil: 1, flax: 1, pickpocket: 12, rock: 6 });
+        expect(byKind).toEqual({ anvil: 1, flax: 1, pickpocket: 10, rock: 6 });
     });
 });
 

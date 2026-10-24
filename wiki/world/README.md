@@ -282,7 +282,7 @@ the findings known and explained, each entry `{ keys, reason, source }`: the key
 wrong and what fixes it, and a map line (`maps/mX_Z.jm2:line`) of a feature or the script line of the op that
 settles it. `bun run world` and `--check` print a `checks:` line per check and fail with `ERROR <check>:` lines on
 a finding no entry allows, an entry whose key names no one site (invalid), and an entry no finding matches (stale:
-the rect it waited on was refitted, or the site is gone), so an entry goes when its fix lands. Both checks look at
+the rect it waited on was refitted, or the site is gone; or it repeats an earlier entry's match), so an entry goes when its fix lands. Both checks look at
 the COVERED kinds but trees, whose sites chain whole forests.
 
 - **`near-miss`** (`NEAR_MISS_ALLOW`): a site whose bbox lies outside every rect of a leaf area (one no area is the
@@ -290,9 +290,10 @@ the COVERED kinds but trees, whose sites chain whole forests.
   drawn as a label square and never fitted to the place, with the site filed under the parent instead. A leaf drawn
   round one thing (a bank's booths, a resource, a course) beside a site of the town around it is a near miss by
   design; its entry says so.
-- **`split`** (`SPLIT_ALLOW`): two sites of one kind holding a feature of the same config, on one level, whose bboxes
-  lie within the kind's `SITE_RADIUS` (the gap `place.ts` links features by) in different leaf areas: one place
-  clustered as two because an area edge cuts it. An entry names both sites.
+- **`split`** (`SPLIT_ALLOW`): two sites of one kind holding a feature of the same config, in different leaf areas,
+  with a feature of each within the kind's `SITE_RADIUS` of the other on one level: `place.ts` links any two
+  features of a kind that close, but only within one leaf area, so they are one place clustered as two because an
+  area edge cuts it. An entry names both sites.
 
 ## Methods
 

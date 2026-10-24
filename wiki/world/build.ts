@@ -25,7 +25,7 @@ import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
 import { NEAR_MISS_ALLOW, SPLIT_ALLOW } from './allow';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
-import { applyAllow, nearMissAreas, splitResources, type CheckId, type CheckResult } from './checks';
+import { applyAllow, NEAR_MISS_GAP, nearMissAreas, splitResources, type CheckId, type CheckResult } from './checks';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
 import { minimalSets, questFacts, type QuestFacts } from './requirements';
@@ -1491,8 +1491,14 @@ export function formatReport(report: BuildReport): string[] {
 
 /** What each check finds, as its ERROR lines name it, and the allow.ts table it is curated in. */
 const CHECKS: Record<CheckId, { finds: string; table: string }> = {
-    'near-miss': { finds: 'sites 1-3 tiles outside a leaf area not their own', table: 'NEAR_MISS_ALLOW' },
-    split: { finds: 'same-config site pairs split across leaf areas within their radius', table: 'SPLIT_ALLOW' },
+    'near-miss': {
+        finds: `sites 1-${NEAR_MISS_GAP} tiles outside a leaf area not their own`,
+        table: 'NEAR_MISS_ALLOW',
+    },
+    split: {
+        finds: 'same-config site pairs split across leaf areas with features within their SITE_RADIUS',
+        table: 'SPLIT_ALLOW',
+    },
 };
 
 /** Each check's count found and allowed, then its findings left, invalid entries and stale ones: all errors. */

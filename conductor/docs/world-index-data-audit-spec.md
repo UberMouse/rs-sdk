@@ -218,6 +218,9 @@ matching into the shared helper only if it stays readable, else keep them separa
 (on its level, or the rect's every-level) but within 3 tiles of one (Chebyshev gap between rects, 1-3), and whose
 leaf area is a different area. Port Sarim's shops (`shop:asgarnia:4-8` at the audit) are the doc's D1 example.
 
+**Decision (user, 2026-10-24):** check 2 keeps the 3-tile gap. Port Sarim's shops lie 6-15 tiles off its rect, so
+they are not a check-2 finding: they go to 2.5's refit list, and the real test pins the Port Sarim fireplace instead.
+
 **Check 3, split resource (E1).** Two covered sites, not trees, of the same kind holding a feature of the same
 config, whose bboxes lie within `SITE_RADIUS[kind]` of each other (the gap clustering links by) and whose leaf
 areas differ. The Coal Trucks mine (rock), the Rellekka flax and the doc's anvil and shop pairs are its examples.

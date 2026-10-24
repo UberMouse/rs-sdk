@@ -139,7 +139,7 @@ describe('splitResources', () => {
         ]);
     });
 
-    test('takes the gap between bboxes, by the radius of their kind', () => {
+    test('takes the gap between the nearest features, by the radius of their kind', () => {
         const w = world([
             [
                 'anvil',
@@ -149,7 +149,16 @@ describe('splitResources', () => {
                     [26, 40, 'anvil'],
                 ],
             ],
-            ['anvil', 'port', [[30, 40, 'anvil']]], // 4 from the bbox's east edge: the anvil radius
+            ['anvil', 'port', [[30, 40, 'anvil']]], // 4 from the east anvil: the anvil radius
+            [
+                'anvil',
+                'kingdom',
+                [
+                    [10, 60, 'anvil'],
+                    [26, 66, 'anvil'],
+                ],
+            ],
+            ['anvil', 'port', [[30, 60, 'anvil']]], // 4 from that bbox's east edge, but 6 from its nearest anvil
             ['shop', 'kingdom', [[10, 50, 'gerrant']]],
             ['shop', 'port', [[17, 50, 'gerrant']]], // 7: past the shop radius, 6
         ]);
@@ -231,5 +240,23 @@ describe('applyAllow', () => {
                 'rock (24, 15, 0) and rock (31, 15, 0) (maps/m0_0.jm2:1): rock (31, 15, 0): no site holds it',
             ],
             stale: ['rock (30, 15, 0) (maps/m0_0.jm2:1)'],
+        }));
+
+    test('an entry matching a finding an earlier entry matches is stale, as its duplicate', () =>
+        expect(
+            applyAllow(
+                near,
+                [
+                    { keys: [siteAt('shop', 28, 15)], ...why },
+                    { keys: [siteAt('shop', 28, 15)], reason: 'again', source: 'maps/m0_0.jm2:2' },
+                    { keys: [siteAt('shop', 43, 15)], ...why },
+                ],
+                w,
+            ),
+        ).toEqual({
+            left: [],
+            allowed: 2,
+            invalid: [],
+            stale: ['shop (28, 15, 0) (maps/m0_0.jm2:2): a duplicate of shop (28, 15, 0) (maps/m0_0.jm2:1)'],
         }));
 });

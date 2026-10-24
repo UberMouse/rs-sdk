@@ -988,7 +988,7 @@ describe('formatReport', () => {
     test('the checks section: found and allowed by check, then what is left, invalid and stale, all errors', () => {
         expect(formatChecks(report.checks)).toEqual([
             'checks: near-miss: 2 sites 1-3 tiles outside a leaf area not their own, 2 allowed by allow.ts NEAR_MISS_ALLOW',
-            'checks: split: 0 same-config site pairs split across leaf areas within their radius, 0 allowed by allow.ts SPLIT_ALLOW',
+            'checks: split: 0 same-config site pairs split across leaf areas with features within their SITE_RADIUS, 0 allowed by allow.ts SPLIT_ALLOW',
         ]);
         expect(failed(report)).toBe(false);
         const bad = {
@@ -1004,8 +1004,8 @@ describe('formatReport', () => {
             },
         };
         expect(formatChecks(bad.checks).slice(1)).toEqual([
-            'checks: split: 1 same-config site pairs split across leaf areas within their radius, 0 allowed by allow.ts SPLIT_ALLOW',
-            'ERROR split: 1 same-config site pairs split across leaf areas within their radius that allow.ts SPLIT_ALLOW does not allow:',
+            'checks: split: 1 same-config site pairs split across leaf areas with features within their SITE_RADIUS, 0 allowed by allow.ts SPLIT_ALLOW',
+            'ERROR split: 1 same-config site pairs split across leaf areas with features within their SITE_RADIUS that allow.ts SPLIT_ALLOW does not allow:',
             '  rock (1, 2, 0) and rock (3, 4, 0): rock:a:0 and rock:b:0, 2 tiles apart, both hold coal',
             'ERROR split: 1 allow.ts SPLIT_ALLOW entries with a site key no site or several sites hold (a typo?):',
             '  rock (9, 9, 0) (maps/m0_0.jm2:1): rock (9, 9, 0): no site holds it',

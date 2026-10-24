@@ -3,8 +3,8 @@
 // ones known and explained, and build.ts fails on what is left, and on an allowlist entry naming no site (invalid) or
 // matching no finding (stale), as it does for EXPECTED_UNREACHED.
 import { SITE_RADIUS } from './place';
-import { siteKeyMatches, siteKeyName, unresolved, type SiteKey, type SiteKeyWorld } from './site-key';
-import type { Area, Feature, FeatureKind, Rect, Site } from './types';
+import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
+import type { Area, Feature, FeatureKind, Rect, Site, Tile } from './types';
 
 /** The checks, by the id their report lines carry. */
 export type CheckId = 'near-miss' | 'split';
@@ -33,7 +33,7 @@ export interface CheckResult {
     allowed: number;
     /** Entries with a key naming no one site: errors. */
     invalid: string[];
-    /** Valid entries no finding matches (fixed now, or gone): errors. */
+    /** Valid entries no finding matches (fixed now, or gone), or that duplicate an earlier one's match: errors. */
     stale: string[];
 }
 
@@ -47,8 +47,8 @@ export interface CheckWorld extends SiteKeyWorld {
 const keysName = (keys: readonly SiteKey[]): string => keys.map(siteKeyName).join(' and ');
 
 /**
- * The tiles between two rects, Chebyshev (0 when they overlap), or Infinity when they share no level: a rect with no
- * level holds every level.
+ * The Chebyshev distance between the nearest tiles of two rects (adjacent rects 1, overlapping ones 0), or Infinity
+ * when they share no level: a rect with no level holds every level.
  */
 export function rectGap(a: Rect, b: Rect): number {
     if (a.level !== undefined && b.level !== undefined && a.level !== b.level) return Infinity;
@@ -105,15 +105,19 @@ export function nearMissAreas(world: CheckWorld, covered: ReadonlySet<FeatureKin
     });
 }
 
+const cheb = (a: Tile, b: Tile): number => Math.max(Math.abs(a.x - b.x), Math.abs(a.z - b.z));
+
 /**
- * Check 3, split resource (audit E1): two sites of one kind holding a feature of the same config, whose bboxes lie
- * within the kind's SITE_RADIUS (the gap place.ts buildSites links features by) on one level, and whose leaf areas
- * differ: one place clustered as two because an area edge runs through it. One finding per pair.
+ * Check 3, split resource (audit E1): two sites of one kind holding a feature of the same config, with a feature of
+ * one within the kind's SITE_RADIUS of a feature of the other on its level, and whose leaf areas differ: place.ts
+ * buildSites links any two features of a kind that close (Chebyshev, feature to feature, any config) but only within
+ * one leaf area, so they are one place clustered as two because an area edge runs through it. One finding per pair.
  */
 export function splitResources(world: CheckWorld, covered: ReadonlySet<FeatureKind>): Finding[] {
     const key = keyOf(world);
     const sites = looked(world, covered).map(s => ({
         site: s,
+        tiles: s.features.map(i => world.features[i]!.tile),
         configs: new Set(s.features.map(i => world.features[i]!.config)),
     }));
     const out: Finding[] = [];
@@ -122,8 +126,13 @@ export function splitResources(world: CheckWorld, covered: ReadonlySet<FeatureKi
             const a = sites[i]!;
             const b = sites[j]!;
             if (a.site.kind !== b.site.kind || a.site.areaPath.at(-1) === b.site.areaPath.at(-1)) continue;
-            const gap = rectGap(a.site.bbox, b.site.bbox);
-            if (gap > SITE_RADIUS[a.site.kind]) continue;
+            const radius = SITE_RADIUS[a.site.kind];
+            // Bboxes further apart than the radius hold no two features within it.
+            if (rectGap(a.site.bbox, b.site.bbox) > radius) continue;
+            const gap = Math.min(
+                ...a.tiles.flatMap(s => b.tiles.map(t => (s.level === t.level ? cheb(s, t) : Infinity))),
+            );
+            if (gap > radius) continue;
             const shared = [...a.configs].filter(c => b.configs.has(c));
             if (!shared.length) continue;
             out.push({
@@ -137,41 +146,43 @@ export function splitResources(world: CheckWorld, covered: ReadonlySet<FeatureKi
 
 /**
  * `findings` less those an `allow` entry matches (one whose keys resolve, in `world`, to the finding's sites in any
- * order), with the entries whose keys name no one site (invalid) and the valid ones no finding matches (stale).
+ * order), with the entries whose keys name no one site (invalid) and the valid ones no finding matches (stale). An
+ * entry matching a finding an earlier entry matches is stale too, as a duplicate of that one.
  */
 export function applyAllow(findings: readonly Finding[], allow: readonly Allowed[], world: SiteKeyWorld): CheckResult {
-    const matches = siteKeyMatches(world);
     const named = new Map<Allowed, string>();
     const invalid: string[] = [];
     for (const e of allow) {
-        const bad = e.keys.flatMap(k => {
-            const ids = matches(k);
-            return ids.length === 1 ? [] : [`${siteKeyName(k)}: ${unresolved(ids)}`];
-        });
+        const { ids, invalid: bad } = resolveSiteKeys(e.keys, world);
         if (bad.length) invalid.push(`${keysName(e.keys)} (${e.source}): ${bad.join('; ')}`);
         else
             named.set(
                 e,
                 e.keys
-                    .map(k => matches(k)[0]!)
+                    .map(k => ids.get(k)!)
                     .sort()
                     .join(' '),
             );
     }
+    const name = (e: Allowed): string => `${keysName(e.keys)} (${e.source})`;
     const used = new Set<Allowed>();
+    const dupes: string[] = [];
     const left: string[] = [];
     let allowed = 0;
     for (const f of findings) {
         const ids = [...f.ids].sort().join(' ');
-        const hits = [...named].filter(([, n]) => n === ids).map(([e]) => e);
-        for (const e of hits) used.add(e);
-        if (hits.length) allowed++;
-        else left.push(`${keysName(f.keys)}: ${f.detail}`);
+        const [first, ...rest] = [...named].filter(([, n]) => n === ids).map(([e]) => e);
+        if (!first) {
+            left.push(`${keysName(f.keys)}: ${f.detail}`);
+            continue;
+        }
+        allowed++;
+        used.add(first);
+        for (const e of rest) {
+            used.add(e);
+            dupes.push(`${name(e)}: a duplicate of ${name(first)}`);
+        }
     }
-    return {
-        left,
-        allowed,
-        invalid,
-        stale: [...named.keys()].filter(e => !used.has(e)).map(e => `${keysName(e.keys)} (${e.source})`),
-    };
+    const unused = [...named.keys()].filter(e => !used.has(e)).map(name);
+    return { left, allowed, invalid, stale: [...unused, ...dupes] };
 }
