@@ -31,6 +31,34 @@ test(
 );
 
 test(
+    'combat targetRange visible kills chickens in view beyond a tiny area',
+    async () => {
+        await withFixtureBot(
+            { position: COOP },
+            async ({ name }) => {
+                // Radius 2 around the coop's west end: most of the coop's chickens stand outside it.
+                const run = await runTask(
+                    name,
+                    'combat',
+                    {
+                        target: 'Chicken',
+                        skill: 'Attack',
+                        targetRange: 'visible',
+                        area: { x: COOP.x - 3, z: COOP.z, radius: 2 },
+                    },
+                    ['xp:Attack:100', 'minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.xpGained.Attack, detail).toBeGreaterThan(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
+
+test(
     'combat task shoots chickens with a wielded bow and arrows until the Ranged XP target',
     async () => {
         await withFixtureBot(

@@ -657,6 +657,132 @@ describe('combat: return to area', () => {
     });
 });
 
+describe('combat: targetRange visible', () => {
+    const VISIBLE = { ...PARAMS, targetRange: 'visible' };
+    /** The bot stands in the coop; the only chicken is 12 tiles away, beyond the area (radius 8). */
+    const outside = chickenAt(base, COOP.x + 12, COOP.z);
+
+    test('a chicken in view beyond the area is attacked; the default mode ignores it', async () => {
+        const seen = await simulate(combat, {
+            params: VISIBLE,
+            timeline: kill(outside),
+            react: walking(),
+            stops: xp(25),
+        });
+        expect(seen.result.reason).toBe('reached +25 Attack xp');
+        expect(seen.sends).toEqual([`walk to (${COOP.x + 12}, ${COOP.z})`, ATTACK]);
+        const ignored = await simulate(combat, { params: PARAMS, timeline: outside.series(1) });
+        expect(ignored.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(ignored.sends).toEqual([]);
+    });
+
+    test('the nearest visible target wins, in or out of the area', async () => {
+        const w = outside.npc('Chicken', COOP.x - 4, COOP.z, { index: 11, options: ['Attack'] });
+        const r = await simulate(combat, { params: VISIBLE, timeline: kill(w), react: walking(), stops: xp(25) });
+        const targets = r.driver.commands.flatMap(c =>
+            c.type === 'send' && c.action.type === 'interactNpc' ? [c.action.npcIndex] : [],
+        );
+        expect(targets).toEqual([11]);
+    });
+
+    test('still free and reachable only', async () => {
+        const w = base
+            .npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true })
+            .npc('Chicken', COOP.x + 13, COOP.z, { index: 10, options: ['Attack'], reachable: false });
+        const r = await simulate(combat, { params: VISIBLE, timeline: w.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+        expect(r.sends).toEqual([]);
+    });
+
+    describe('the Wilderness', () => {
+        const EDGE = { x: 3100, z: 3490 };
+        const edgeParams = { target: 'Chicken', targetRange: 'visible', area: { ...EDGE, radius: 4 } };
+        const edge = world().player({ at: EDGE }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('a target inside it, or within three tiles of it, is never picked', async () => {
+            for (const z of [3522, 3518]) {
+                const w = edge.npc('Chicken', EDGE.x, z, { index: CHICKEN, options: ['Attack'] });
+                const r = await simulate(combat, { params: edgeParams, timeline: w.series(1), react: walking() });
+                expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+                expect(r.sends).toEqual([]);
+            }
+        });
+
+        test('a target further from it is picked', async () => {
+            const w = edge.npc('Chicken', EDGE.x, 3512, { index: CHICKEN, options: ['Attack'] });
+            const r = await simulate(combat, {
+                params: edgeParams,
+                timeline: w.series(1),
+                react: walking(),
+                respond: a => (a.type === 'interactNpc' ? { success: false, message: 'stop' } : undefined),
+            });
+            expect(r.sends[0]).toBe(`walk to (${EDGE.x}, 3512)`);
+        });
+
+        test('an attacker beside it is still fought back, while a free one there is refused', async () => {
+            const z = 3518;
+            const npcs = (w: World) =>
+                w
+                    .npc('Chicken', EDGE.x, z, { index: 7, options: ['Attack'] })
+                    .npc('Chicken', EDGE.x + 1, z, { index: 6, options: ['Attack'], attacking: true, inCombat: true });
+            const r = await simulate(combat, {
+                params: { ...edgeParams, area: { ...EDGE, z: 3512, radius: 4 } },
+                // Hit on tick 0 but not yet in combat, as the engine requires to start.
+                timeline: npcs(edge.player({ at: { x: EDGE.x, z: 3516 }, lastDamageTick: 0 })).series(8),
+                react: walking(),
+                respond: a => (a.type === 'interactNpc' ? { success: false, message: 'stop' } : undefined),
+            });
+            expect(attacked(r)[0]).toBe(6);
+        });
+
+        test('loot beside it is not picked up', async () => {
+            const w = edge.ground('Feather', EDGE.x, 3519, 1, { id: FEATHER });
+            const r = await simulate(combat, { params: { ...edgeParams, loot: ['Feather'] }, timeline: w.series(1) });
+            expect(r.sends).toEqual([]);
+        });
+    });
+
+    describe('return to area', () => {
+        const FAR = { x: COOP.x + 40, z: COOP.z };
+        const away = world().player({ at: FAR }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('walks back when no target is in view', async () => {
+            const r = await simulate(combat, {
+                params: VISIBLE,
+                timeline: away.series(3),
+                pathfinder: noRoute,
+            });
+            expect(r.steps[0]).toBe('return-to-area');
+        });
+
+        test('does not walk back while a target is in view; the default mode does', async () => {
+            const w = chickenAt(away, FAR.x + 6, FAR.z);
+            const visible = await simulate(combat, { params: VISIBLE, timeline: w.series(3), pathfinder: noRoute });
+            expect(visible.steps[0]).toBe('fight');
+            const area = await simulate(combat, { params: PARAMS, timeline: w.series(3), pathfinder: noRoute });
+            expect(area.steps[0]).toBe('return-to-area');
+        });
+
+        test('loot outside the area is picked up in visible mode only', async () => {
+            const w = away.ground('Feather', FAR.x + 2, FAR.z, 1, { id: FEATHER });
+            const params = { ...VISIBLE, loot: ['Feather'] };
+            const visible = await simulate(combat, {
+                params,
+                timeline: w.series(2),
+                respond: a => (a.type === 'pickupItem' ? { success: false, message: 'stop here' } : undefined),
+            });
+            expect(visible.steps[0]).toBe('loot');
+            expect(visible.sends[0]).toBe('take Feather');
+            const area = await simulate(combat, {
+                params: { ...PARAMS, loot: ['Feather'] },
+                timeline: w.series(2),
+                pathfinder: noRoute,
+            });
+            expect(area.steps[0]).toBe('return-to-area');
+        });
+    });
+});
+
 describe('combat: the step budget', () => {
     test('the fight step fits its longest walk, the attack and the retry wait', () => {
         expect(AFTER_WALK_TICKS).toBe(1 + ATTACK_WAIT_TICKS + ATTACK_RETRY_TICKS);

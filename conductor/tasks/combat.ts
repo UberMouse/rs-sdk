@@ -10,8 +10,9 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { attackers, recentlyHit } from '../lib/interrupts';
+import { squareReachesWilderness } from '../lib/wilderness';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
-import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
@@ -114,6 +115,13 @@ const Params = z
         skill: z.enum(SKILLS).default('Attack'),
         /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
         area: AreaSchema,
+        /**
+         * Which NPCs are targets. "area" (default): only those inside `area`. "visible": the nearest free reachable
+         * matching NPC anywhere in view, for targets that roam, flee or teleport (imps); `area` then only anchors the
+         * run: the bot walks back to it when no target is in view (and no wanted loot lies near). Loot is picked up
+         * wherever it lies near the bot. Free targets, and loot, within WILDERNESS_MARGIN tiles of the Wilderness are never taken (an attacker is still fought).
+         */
+        targetRange: z.enum(['area', 'visible']).default('area'),
         /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
         weapon: z.string().trim().optional(),
         shield: z.string().trim().optional(),
@@ -314,6 +322,17 @@ const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords
 /** How long after a level-up click an unlock page still counts as part of it. */
 const UNLOCK_PAGE_TICKS = LEVEL_UP_WAIT_TICKS + 2;
 
+/** How close to the Wilderness a "visible" target or loot may stand: the bot walks to within two tiles of it. */
+const WILDERNESS_MARGIN = ATTACK_WALK_BEYOND + 1;
+
+/** `visible` mode only (Wilderness coordinates apply on the surface, hence `level === 0`): the point is on the surface within WILDERNESS_MARGIN of the Wilderness, where the bot must not go. */
+const nearWilderness = (state: BotWorldState, p: CombatParams, at: { x: number; z: number }) =>
+    p.targetRange === 'visible' && state.player?.level === 0 && squareReachesWilderness(at.x, at.z, WILDERNESS_MARGIN);
+
+/** A target or loot at `at` is allowed by the range mode: inside the area, or (visible) anywhere safe in view. */
+const inRange = (state: BotWorldState, p: CombatParams, at: { x: number; z: number }) =>
+    p.targetRange === 'visible' ? !nearWilderness(state, p, at) : inArea(p.area, at);
+
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
 /** Reachable wanted ground items near the fight spot, nearest first. */
@@ -323,7 +342,7 @@ function wantedGroundItems(ctx: Ctx) {
     return ctx
         .state()
         .groundItems.filter(i => names.some(n => exactName(n).test(i.name)))
-        .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inArea(ctx.params.area, i))
+        .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inRange(ctx.state(), ctx.params, i))
         .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
 }
@@ -351,7 +370,7 @@ function pickTarget(state: BotWorldState, p: CombatParams) {
             !n.inCombat &&
             levelWanted(n, p) &&
             n.options.some(o => ATTACK_OPTION.test(o)) &&
-            inArea(p.area, n),
+            inRange(state, p, n),
     );
     const target = candidates.filter(n => n.combatLevel <= limit).sort((a, b) => a.distance - b.distance)[0];
     return { target, tooStrong: candidates.find(n => n.combatLevel > limit), limit };
@@ -419,7 +438,11 @@ function* chooseTarget(ctx: Ctx, engaged?: NearbyNpc): Op<{ target: NearbyNpc } 
         };
     const lookLimit = Math.max(NO_TARGET_LIMIT, Math.ceil(ctx.params.respawnWaitTicks / NO_TARGET_WAIT_TICKS));
     if (noTarget.add() >= lookLimit)
-        return { outcome: { fail: `no free reachable ${targetLabel(ctx.params)} in the area` } };
+        return {
+            outcome: {
+                fail: `no free reachable ${targetLabel(ctx.params)} ${ctx.params.targetRange === 'visible' ? 'in view' : 'in the area'}`,
+            },
+        };
     yield* ticks(NO_TARGET_WAIT_TICKS);
     return { outcome: undefined };
 }
@@ -453,10 +476,26 @@ export function startsInCombat(p: CombatParams, state: BotWorldState): boolean {
     return foes.some(n => matches(n, p)) || foes.every(n => n.combatLevel <= me.combatLevel);
 }
 
+const returnToAreaBase = returnToAreaStep<CombatParams>(params => params.area);
+/**
+ * The walk back to the area. In `visible` mode the bot may have chased targets out of it: it keeps going
+ * after what it sees (a target, or loot to pick up) and walks back only when there is none.
+ */
+const returnToArea: Step<CombatParams, CombatMemory> = {
+    ...returnToAreaBase,
+    when: (ctx: Ctx) =>
+        returnToAreaBase.when(ctx) &&
+        (ctx.params.targetRange === 'area' ||
+            (!fighting(ctx.state()) &&
+                attackers(ctx.state()).length === 0 &&
+                !pickTarget(ctx.state(), ctx.params).target &&
+                wantedGroundItems(ctx).length === 0)),
+};
+
 export default defineTask({
     name: 'combat',
     description:
-        'Train a combat skill on one kind of NPC inside an area (starts even while under attack when an attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run): wields the given weapon/shield, sets the attack ' +
+        `Train a combat skill on one kind of NPC inside an area (starts even while under attack when an attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run), or with \`targetRange: "visible"\` on any matching NPC in view (imps and other roamers; \`area\` then only anchors the run; the bot walks back to it only when no target or loot is in view). Targets and loot within ${WILDERNESS_MARGIN} tiles of the Wilderness are never taken. Wields the given weapon/shield, sets the attack ` +
         'style for `skill` (Attack/Strength/Defence/Ranged), attacks the nearest reachable matching NPC that is not ' +
         'fighting someone else, waits for the kill, repeats. Ranged: `weapon` is a bow and `ammo` its arrows (wielded; ' +
         'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +
@@ -649,7 +688,7 @@ export default defineTask({
                 }
             },
         },
-        returnToAreaStep<CombatParams>(params => params.area),
+        returnToArea,
         {
             name: 'out-of-prayer',
             // An empty prayer tab mid-fight leaves the bot unprotected: end the run, not the fight.
