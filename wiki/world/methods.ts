@@ -674,17 +674,19 @@ export const METHODS: MethodDef[] = [
     },
     {
         id: 'oak-draynor-drop',
-        name: 'Oaks south of Draynor, dropped',
+        name: 'Oaks north of Draynor, dropped',
         family: 'woodcutting',
-        at: { level: 0, x: 3102, z: 3242 },
+        at: { level: 0, x: 3097, z: 3285 },
         params: { tree: 'oak' },
         sink: { mode: 'drop' },
         plans: ['oak-draynor-drop'],
         notes:
-            'The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest ' +
-            'the spawn. The plan chops the normal trees of the same cluster to 15 first, area (3112,3240) r16. First run ' +
-            '(conductor3 2026-10-24, steel axe): the oaks phase took WC 15-50 in 143.6 s, ~775k/h, no idle waits; the ' +
-            'whole run (axe walk, normals from 1) is 360k/h, so it is left out of measured.',
+            'The five oaks of tree:draynor-village:1, each log dropped as cut. Every oak site ties on a drop sink (no ' +
+            'legs); this one is near the spawn. The plan chops the normal trees of the same cluster to 15 first, area ' +
+            '(3095,3283) r16 (bbox 3084-3106 x 3275-3290 plus margin). The south cluster (tree:draynor-village:2) is ' +
+            'out: the jail guards attack through the fence there (learnings/hazards.md). Runs: conductor3 2026-10-24, ' +
+            'south site, steel axe, WC 15-50 in 143.6 s, ~775k/h; conductor3w1 2026-10-24, north site, adamant axe, ' +
+            'WC 68-74, ~1.1M/h chopping (984k/h with the walk in), no attacks. Started above level 1, so left out of measured.',
         source: 'research-gathering 2026-10-23: every tree site rated with resolveMethods',
     },
     {

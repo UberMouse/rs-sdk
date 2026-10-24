@@ -1,10 +1,10 @@
-// Woodcutting 1 -> 50: buy a steel axe at Bob's (Lumbridge), chop normal trees by Draynor to 15, then the Draynor oaks;
-// every log dropped as cut. Method: oak-draynor-drop (wiki/world/methods.ts).
+// Woodcutting 1 -> 50: buy a steel axe at Bob's (Lumbridge), chop normal trees north of Draynor to 15, then the oaks
+// there; every log dropped as cut. Site tree:draynor-village:1, clear of the jail guards. Method: oak-draynor-drop.
 import { definePlan, phase } from '@conductor/lib/plan';
 import shop from '@conductor/tasks/shop';
 import woodcutting from '@conductor/tasks/woodcutting';
 
-const area = { x: 3112, z: 3240, radius: 16 };
+const area = { x: 3095, z: 3283, radius: 16 };
 
 export default definePlan({
     name: 'oak-draynor-drop',
