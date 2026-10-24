@@ -1,0 +1,306 @@
+{
+    "name": "waterfall-start",
+    "purpose": "Waterfall Quest start (stage 0) at Catherby bank (2809,3441): Att/Str/Def 45 HP 50 Prayer 43, 20 swordfish inventory, bank 30 swordfish + 10 tuna + rune scimitar + adamant full helm/platebody/platelegs/kiteshield (worn after the tomb), 500 coins for rope and runes (questw2)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2809,
+                "z": 3441
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50,
+                "Prayer": 43,
+                "Agility": 52,
+                "Fishing": 79,
+                "Cooking": 81,
+                "Thieving": 72
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "bank": [
+                {
+                    "id": 373,
+                    "count": 30
+                },
+                {
+                    "id": 361,
+                    "count": 10
+                },
+                {
+                    "id": 1333,
+                    "count": 1
+                },
+                {
+                    "id": 1161,
+                    "count": 1
+                },
+                {
+                    "id": 1123,
+                    "count": 1
+                },
+                {
+                    "id": 1073,
+                    "count": 1
+                },
+                {
+                    "id": 1199,
+                    "count": 1
+                }
+            ],
+            "coins": 500
+        }
+    },
+    "sha1": "2bcd4df772d3b2db09f4c3dd1408d9c8938ce46a",
+    "createdAt": "2026-10-23T23:40:23.081Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2809,
+            "z": 3441,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50,
+            "Prayer": 43,
+            "Cooking": 81,
+            "Fishing": 79,
+            "Agility": 52,
+            "Thieving": 72
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 30
+            },
+            {
+                "id": 361,
+                "name": "tuna",
+                "count": 10
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1161,
+                "name": "adamant_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1123,
+                "name": "adamant_platebody",
+                "count": 1
+            },
+            {
+                "id": 1073,
+                "name": "adamant_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1199,
+                "name": "adamant_kiteshield",
+                "count": 1
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
