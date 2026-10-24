@@ -222,9 +222,12 @@ leaf area is a different area. Port Sarim's shops (`shop:asgarnia:4-8` at the au
 they are not a check-2 finding: they go to 2.5's refit list, and the real test pins the Port Sarim fireplace instead.
 
 **Check 3, split resource (E1).** Two covered sites, not trees, of the same kind holding a feature of the same
-config, whose bboxes lie within `SITE_RADIUS[kind]` of each other (the gap clustering links by) and whose leaf
-areas differ. The Coal Trucks mine (rock), the Rellekka flax and the doc's anvil and shop pairs are its examples.
-An allowlist entry names both sites of a pair.
+config, with a feature of each within `SITE_RADIUS[kind]` (Chebyshev, same level) of the other: the gap `place.ts`
+`cluster()` links by. Their leaf areas differ. The Coal Trucks mine (rock), the Rellekka flax and the doc's anvil
+and shop pairs are its examples. An allowlist entry names both sites of a pair.
+
+**Amended (round-1 review):** the measure was the gap between the sites' bboxes, which is looser than clustering
+(it links feature to feature), so a finding did not mean clustering would have linked the pair but for the area edge.
 
 Allowlist the current findings with reasons that say what is wrong and what fixes it (most: "rect not fitted to
 the place; 2.5 refits it"), citing the map line of a feature or the script of the op. Group entries by place where

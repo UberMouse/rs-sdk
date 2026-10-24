@@ -171,7 +171,7 @@ export const SPLIT_ALLOW: readonly Allowed[] = [
         siteAt('pickpocket', 2525, 3221),
         siteAt('pickpocket', 2508, 3209),
         'maps/m39_50.jm2:5736',
-        'gnomes just south and east of the rect',
+        'gnomes south and east of the rect, the nearest just south',
     ),
     split(
         'edgeville',

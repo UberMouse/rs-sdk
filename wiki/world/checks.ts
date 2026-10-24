@@ -129,9 +129,8 @@ export function splitResources(world: CheckWorld, covered: ReadonlySet<FeatureKi
             const radius = SITE_RADIUS[a.site.kind];
             // Bboxes further apart than the radius hold no two features within it.
             if (rectGap(a.site.bbox, b.site.bbox) > radius) continue;
-            const gap = Math.min(
-                ...a.tiles.flatMap(s => b.tiles.map(t => (s.level === t.level ? cheb(s, t) : Infinity))),
-            );
+            let gap = Infinity;
+            for (const s of a.tiles) for (const t of b.tiles) if (s.level === t.level) gap = Math.min(gap, cheb(s, t));
             if (gap > radius) continue;
             const shared = [...a.configs].filter(c => b.configs.has(c));
             if (!shared.length) continue;
