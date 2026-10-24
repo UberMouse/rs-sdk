@@ -9,8 +9,8 @@
 | Members | yes (all quest objs `members=yes`, `configs/waterfall.obj`) |
 | Skill or quest requirements | none |
 
-Most of this page is from the server scripts, map files and the world index [server data]; one run finished the quest
-from `lib:waterfall-tomb` (Plan status below), the from-start proof has not yet. Script paths are under `server/content/scripts/`; a bare
+Most of this page is from the server scripts, map files and the world index [server data]; the promoted plan
+`conductor/plans/waterfall-quest.ts` finishes the quest from `lib:waterfall-start` in one run (Plan status below). Script paths are under `server/content/scripts/`; a bare
 `quest_waterfall.rs2:N` (and `almera.rs2`, `hudon.rs2`, `golrie.rs2`, `baxtorian_book.rs2`, `waterfall_pillars.rs2`,
 `waterfall_journal.rs2`) is in `quests/quest_waterfall/scripts/`. Tiles are (x, z, level) from the map files
 (`server/content/maps/m39_53`, `m39_54`, `m39_149`, `m39_153`, `m40_154`).
@@ -268,6 +268,10 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
 
 ### Gaps, most important first
 
+These were task gaps found when the catalog was audited; the promoted plan (Plan status) completes the quest
+regardless, using `interact` with `unreachable` / `use`, `onFail: continue` and banking worn gear before the tomb
+[v 2026-10-24 questw2 local]. Read them as why a plan is shaped that way, not as blockers.
+
 1. **Approach ops on an unreachable loc.** `interact` and `talk` `use` take only locs whose `reachable` is not false
    (`conductor/tasks/interact.ts` `candidates`, `talk.ts:90-96` `findLoc`), and nothing on the island is reachable
    except the island. So no task gets the bot off the island (swim or rope), and the quest stops at stage 2 whatever
@@ -317,28 +321,45 @@ Format as `conductor/saves/*.json` (`source.spec`: `position`, `skills`, `invent
   inventory Rope, Glarial's amulet (295), Glarial's urn (296), 6 each Air, Earth, Water rune, 15 Lobster; varp 65 = 4
   (the ledge door moves the stage only from 4), varp 66 = 0.
 
-## Plan status (in progress)
+## Plan status
 
-Draft `conductor/runs/questw2/plans/waterfall-quest.ts` (worker questw2), a full state machine, not promoted.
+Promoted: `conductor/plans/waterfall-quest.ts`. A fresh load of `lib:waterfall-start` to quest done in one run, 1223 s
+(run `2026-10-24T01-56-32-174Z-plan-waterfall-quest`, questw2). [v 2026-10-24 questw2 local]
 
-- Proven in game: bank-start at Catherby, buy the Rope from Arhein (Catherby), buy 6 each Air, Earth and Water runes
-  from Betty (Port Sarim; 72 gp for the 18); the Catherby -> Betty -> Arhein errands took about 4 min of walking
-  (prices: the generated shop pages). [v 2026-10-23 questw2 local]
-- A walk from the Catherby bank to the Ardougne North bank worked in run 1. Walks from Port Sarim or Falador to the
-  Ardougne North bank looped through the Wizards' Tower and the essence-mine portal until the walk fix (main
-  9e3d23f41). [v 2026-10-23 questw2 local]
-- Proven in game on questw2 (plan runs 4-8, start from a copy of conductor3, combat 33): start, bank-runes (Catherby -> Ardougne North bank 160 s, no loop with the essence-mine walk fix), Almera (60 s), raft, Hudon, swim, Hadley's bookcase (Book on Baxtorian), read, to-cellar travel (110 s), cellar down, key crate, Golrie, door, pebble, then the pebble on the tombstone, which teleports the bot into the tomb at (2554, 9844) (exit ladder at (2555, 9844)), and the chest (amulet). Not proven: urn, tomb exit, rope throws, falls dungeon, pillars, statue, chalice. Prices: rope 23 gp, runes 72 gp. [v 2026-10-23 questw2 local]
-- Gotchas from those runs [v 2026-10-23 questw2 local]:
-  - The forced Hudon dialog on landing never sets stage 2 (the dialog guard closes it); talk to Hudon from the island instead. `interact` Talk-to on Hudon was unreachable at (2512, 3478); use `talk`.
-  - The bookcase gives the Book on Baxtorian only at stage >= 2.
-  - Hadley's house -> Tree Gnome Village ladder has no path: see `learnings/walking.md`.
-  - Searching the crate in Golrie's cellar draws Zombies and Giant bats.
-  - The use-items step (pebble on tombstone) reported Timeout (150 s) although the teleport worked; fixed: a position or floor jump after a use is its effect. [v 2026-10-24 itest-fixture local]
-  - The plan view is stale for a tick after a search; guard reads with `v.last`.
-- Tomb protocol that survived [v 2026-10-23 questw2 local]: from `lib:waterfall-tomb` (Att/Str/Def 45, HP 50, Prayer 43, Agility 52, no gear, 20 swordfish) tomb chest -> urn -> exit ladder took about 90 s with 2 flees: eat on the surface, `travel` to the exit ladder (2555, 9844) whenever in combat, eat inside the tomb. (A combat-35 account, HP 33, little food, died on the chest -> urn leg: 33/33 -> 12 -> dead, auto-retaliation about 25 HP/min.) Combat's `prayers` param turns prayers on only during a fight and off at run end; there is no standalone prayer task.
-- Re-entering the tomb: the pebble on the tombstone works at any stage. `talk` use-items used to report "Timeout using X on Y" after the successful teleport (burned 475 s of retries until the phase got `onFail` continue); a position or floor jump now counts as the use's effect. [v 2026-10-24 itest-fixture local]
-- Hudon: Talk-to works from the island (`interact` is unreachable); the bookcase gives the book only after the Hudon talk (stage 2).
-- Completed once on questw2 from `lib:waterfall-tomb` (tomb, rope throws, key crate, door1/door2, pillars 1-6, chalice); the statue phase failed on a walk but the quest still completed. Phase times: tomb ~90 s, bank-runes walk Catherby -> Ardougne 160 s, Betty runes 110 s, Almera 57 s, to-cellar 106 s. [v 2026-10-23 questw2 local]
-- From-start proof (`lib:waterfall-start`) died at the falls-dungeon key crate (2588, 9888): the three Skeletons (45) kept the unarmed-or-lightly-geared bot in combat (dungeon-fight 286 s, +27,300 Attack XP) until the food ran out; then combat refused ("above the limit 5 ... capped at 5 without food"), door1 failed "in combat" repeatedly and the bot died (respawn Lumbridge). Fire giants (86) stand by door1. Only Glarial's tomb forbids gear; the falls dungeon does not, so bank weapon and armour before the tomb and withdraw them at the Ardougne bank after it, then wear them with 25+ food for the dungeon. Gear-after-tomb is the chosen fix, unproven. [v 2026-10-23 questw2 local]
-- Saves (`conductor/saves/`): `waterfall-tomb` (stage 3, pebble + rope + 20 swordfish, bank runes 6 each + 20 swordfish, 1000 coins, at the tombstone (2560, 3445), no gear); `waterfall-start` (stage 0, at Catherby bank (2809, 3441), 500 coins, bank 20 swordfish + 10 tuna; being regenerated with gear and 30 swordfish).
-- Unproven: the from-start run through the dungeon with gear.
+- Start save `waterfall-start`: stage 0, Catherby bank (2809, 3441), Att/Str/Def 45, HP 50, Prayer 43, Agility 52,
+  Fishing 79, Cooking 81, Thieving 72; inventory 20 swordfish + 500 coins; bank 30 swordfish, 10 tuna, rune scimitar,
+  adamant full helm, platebody, platelegs, kiteshield; nothing worn. `waterfall-tomb`: stage 3, at the tombstone
+  (2560, 3445), pebble + rope + 20 swordfish. (The "Suggested library saves" above are the original sketches.)
+- Minimum proven: no harpoon, rope or runes owned at the start. The plan buys the rope at Arhein (Catherby, 23 gp)
+  and the 18 runes at Betty (Port Sarim, 72 gp), so 100+ coins and 20+ food suffice. Combat below 45 is untested.
+- Stage comes from held items (book, pebble, amulet, urn, key), position regions and the quest tab. `v.last` only
+  rotates the settle phases after a search or climb, because the view is one tick stale.
+- Phase seconds: buy-runes (Port Sarim) 111; bank-runes walk Catherby -> Ardougne North 161 (no loop); Almera 57;
+  to-cellar 106; tomb about 150 (tombstone 108 with fights, chest 53, flee 42, urn 11, exit 1); bank-gear 40;
+  to-island-2 59; key-crate + dungeon fight/wait 160; door1 54; door2 42; pillars 6 x 3; statue 13; chalice 2.
+  Idle time: waiting out Skeleton fights at the key crate (~100 s) and door use-items timeouts (~100 s).
+- Hudon: Talk-to works from the island with `interact` `unreachable` at (2512, 3478); the bookcase gives the book
+  only after that talk. The forced dialog on landing does not set stage 2.
+
+Gotchas the plan works around [v 2026-10-24 questw2 local]:
+
+- Pebble on the tombstone: `talk` `use` walks back to its `at` tile after the teleport, i.e. out of the tomb via the
+  ladder (earlier successes depended on that use timing out). The plan uses `interact` with `use` {item pebble} on
+  the Tombstone instead. Re-entering works at any stage.
+- Pack slots: the chalice refuses the reward with fewer than 5 free slots (the plan drops 6 swordfish first,
+  make-room); the key crate search fails silently with a full pack (bank-gear takes 14 swordfish and bank-food 5, 19
+  in all, so the key fits).
+- Fights: no task starts under attack, so the dungeon waits fights out with `travel` flee to the crate or door 1,
+  eating held food, auto-retaliating with rune scimitar + adamant. Two alternating phases per fight, so a failed wait
+  never ends the plan. Skeletons (45) x3 and Skeleton Mages attack at the key crate; Fire giants (86) are by door 1;
+  survivable at Attack 60 with rune scimitar + adamant by waiting the fight out.
+- Door 1, door 2 and the key crate use `onFail` continue / maxFails 10-12, because use-items reports a Timeout
+  although the key works.
+- Tomb: no combat phase; flee to the ladder (2555, 9844) whenever attacked, eat on the surface and inside. Only the
+  tomb forbids gear: bank weapon and armour before the tombstone, withdraw them at Ardougne North after, wear them
+  for the dungeon with 20+ food. Going into the dungeon geared-light with little food died at the key crate (three
+  Skeletons held the bot in a 286 s fight until the food ran out).
+- Not done: Protect from Melee (combat `prayers` only toggles during a combat run, which cannot start in the tomb).
+- Searching the crate in Golrie's cellar draws Zombies and Giant bats. Hadley's house -> Tree Gnome Village ladder has
+  no path: see `learnings/walking.md`.
+- A combat-35 account (HP 33, little food) died on the tomb chest -> urn leg (auto-retaliation about 25 HP/min).
