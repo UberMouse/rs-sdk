@@ -23,6 +23,7 @@ tile at a given moment is a separate matter (next section).
 - The Wizards' Tower top floor (Mizgog's floor) has a lesser demon (level 82, `huntmode=cowardly`) at (3110, 3157)
   level 2 (`learnings/hazards.md`). The SDK pathfinder finds no route from its spawn to the stairs landing (3104, 3161)
   or to Mizgog's spawn: it is shut in. [server data: collision probe 2026-10-23]
+- Leaving the top floor with an `interact` task takes two `Climb-down` on Staircase: the first at (3104, 3160) level 2, the second at about (3103, 3159) level 1. Each `at` must carry the level of the floor the bot is on; an `at` with level 2 used from level 1 made the phase run twice and ended a plan "done" early. [v 2026-10-24 conductor3 local]
 - Leaving the tower: a `walk` from the top floor (level 2) to a far destination fails `No path ... path ends 531 tiles
   away at (3103,3162)`. Walk to the ground floor (3109, 3168, 0) first, then make the long trip (then 230 s to Yanille).
   Mizgog's talk and start dialog from the top floor worked ("2 choices made"). [v 2026-10-23 questw6 local]
