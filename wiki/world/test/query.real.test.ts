@@ -27,7 +27,14 @@ test('at Mining 60 with an adamant pickaxe the iron methods rank, the seeds firs
         // record is unmeasured.
         expect(r.measured.map(x => x.xpPerHour < x.floor)).toEqual(r.method.def.measured ? [true] : []);
     }
-    expect(bestMethods('mining', profile)).toEqual(ranked);
+    // The default query also ranks the methods with requirements (the Mining Guild's coal, the Dwarven Mine's
+    // adamantite), so the iron seeds are compared by id.
+    const seeds = new Set(ranked.map(r => r.method.def.id));
+    expect(
+        bestMethods('mining', profile)
+            .filter(r => seeds.has(r.method.def.id))
+            .map(r => r.method.def.id),
+    ).toEqual(ranked.map(r => r.method.def.id));
 });
 
 test('no pickaxe, no mining method', () => {
