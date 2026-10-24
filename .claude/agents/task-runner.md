@@ -59,6 +59,10 @@ script walked the bot under attack and it died, 2026-10-11).
    Every wake re-reads your whole context, so a turn that only says you are waiting is pure
    cost: you are woken only by the run's completion, the one check-in, and a conductor message
    (the user, 2026-10-23: runners "waste a lot of tokens on pointless turns").
+   A change that only swaps a param (food, item name, a tile) is not a new draft: rerun it with no
+   check-in. Never `sleep 1` or re-poll the output file after a completion notification: the
+   notification is the result (retro #5: one runner spent ~28 wait-only turns and 9 `sleep; tail`
+   check-ins over 45 min).
 5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`. A RESULT `warnings` entry (e.g. `seenOutsideArea`) is advice to act on: widen the
