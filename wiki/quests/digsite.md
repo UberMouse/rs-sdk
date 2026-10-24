@@ -75,6 +75,7 @@ Tinderbox and chisel (Falador general store), vial and pestle and mortar (Jatix,
 - Workman steals pile up spare Specimen brushes (7 at once), which block steal phases needing 4 free slots: drop the extras. The Panning tray can be dropped once certificate 3 is held. [v 2026-10-24 questw7 local]
 - Panning tray: the only source is a ground spawn on a Table at (3369,3378) (map m52_52, obj 677); the state lists it `[UNREACHABLE]` (blocked tile). `pickup {area:{x:3369,z:3379,radius:4}, items:[{item:"Panning tray",count:1}]}` takes it from the adjacent (3369,3379) (items on blocked tiles: `learnings/walking.md`). [v 2026-10-24 questw7 local]
 - The `thieving` task refuses "Digsite workman" ("no pickpocket config"); the draft steals with `interact` "Steal-from". A failed or empty steal leaves the state unchanged, so the plan idle rail ends the plan "nothing left to do"; the draft alternates two steal phases at east and west anchors. [v 2026-10-23 questw1 local]
+- The `grind` phase can end "combine: Nothing interesting happens." although the Ground charcoal was made; a rerun resumes from the held item and passes (plan:digsite failed at 17.6 min, rerun done in 3.1 min). [v 2026-10-24 conductor3 local]
 
 ## Key NPCs & Locations
 

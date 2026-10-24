@@ -62,7 +62,18 @@ Quest varp `%squire` stages: 1 started, 2 spoken to Reldo, 3 pie given, 4 spoken
 - `interact` Mine on the blurite rock without `expect` ends "done" on "You swing your pick at the rock." with no ore; use `expect: 'manage to mine'` to wait for the ore. [v 2026-10-23 questw4 local]
 - Phase times (plan run): squire-start 113 s, stash-bars 22 s, reldo-approach 91 s, reldo 17 s, thurgo-pie 124 s, enter-dungeon ~10 s, mine-blurite 4-25 s, exit-dungeon 26 s, thurgo-ask 18 s, squire-report 15-75 s, cupboard open/search 10-22 s each, castle-down 11 s, bars-withdraw 23 s, thurgo-portrait 61 s, thurgo-sword 7 s, squire-finish 74 s. [v 2026-10-23 questw4 local]
 
+## Pie prep (plan `ks-prep`)
+
+`conductor/plans/ks-prep.ts` takes Smithing 1 to the quest start kit (redberry pie, 2 iron bars; 13 bronze bars banked) in ~10 min, 58 s on a rerun. [v 2026-10-24 conductor3 local]
+
+- Wydin's food store, Port Sarim (3014,3204), sells Pot of flour (10 gp) and Redberries (3 gp): no Frenita/Yanille or berry-bush trip needed. [v 2026-10-24 conductor3 local]
+- Pie dish: `crafting` product 'pie dish' with `fire:true` at the Barbarian Village potter's wheel (3086,3410), from 1 clay + a filled bucket or jug. Frenita (Yanille) is the only shop that sells one. [v 2026-10-24 conductor3 local]
+- Pot of flour used on a bucket/jug of water opens a Bread/Pastry/Pizza/Pitta dough menu. The `items` task leaves it open and the next phase fails ("clear-dialog: a dialog is open and could not be cleared: a choice is open"); answer it with a `talk` phase `{continue:true, choices:['Pastry dough']}`. [v 2026-10-24 conductor3 local]
+- Rimmington mine (2980,3240) has tin, copper, iron and clay; the general store sells bucket and jug; sink (2966,3209); bronze bars from there take Smithing 1 to 20 ([smithing](../../learnings/smithing.md#xp-rates)). The Falador range at (3039,3366) cooked the pie. [v 2026-10-24 conductor3 local]
+
 ## Plan status
+
+Measured safe start: the plan also finished from Smithing 20 at combat ~60 (Strength 59, HP 50) with 20 swordfish in 706 s. The ice dungeon fight was not lethal: HP 38/50 at check-in, 45/50 at the end, 18/20 swordfish left, and the flee-to-ladder phase fired once. So the minimum start lies between combat 55 (died) and combat ~60 with 20 swordfish. [v 2026-10-24 conductor3 local]
 
 Plan `conductor/plans/knights-sword.ts` (promoted) runs from a fresh load of `lib:knights-sword-strong` to quest done in 761 s with no edits mid-run; the plain walk Falador -> Reldo takes 97 s (no waypoint since the walk door-stop fix). No ice monster attacked the strong start on any visit and none of its 20 swordfish were eaten, so its `defend`/flee path is untested and the real minimum start lies between it and the combat-55 start that died. `mine-blurite` with `onFail: continue` does not wait for a depleted rock: a run that finds it depleted ends "no phase applies" and a rerun after the respawn passes. [v 2026-10-24 questw4 local]
 
