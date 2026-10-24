@@ -239,3 +239,6 @@ function isInAlKharid() {
 - Hazards at the landings (Falador mine scorpions, Wizards' Tower lesser demon): `learnings/hazards.md`; a combat-20 worker was not attacked on its Falador mine trips (safe level still unverified).
 - Draynor Manor: the whistle room (south of the door at (3106,3361) L2) and the upper floors have no walker exit. Hand steps: `interact` Door Open (tile 3106,3361) swings the player north; Staircase Climb-down (3105,3363) L2 -> L1; Staircase Walk-down (3108,3364) L1 -> ground; then `travel`/`talk` walks work. See [Holy Grail](../wiki/quests/holy-grail.md). [v 2026-10-24 questw5 local]
 - Merlin's workshop (Camelot L1, door (2764,3503)): a `talk`'s own walk does not carry `met` tokens, so after Merlin the next long walk fails "No path ... ends 541 tiles away at (2768,3498)". Run a `travel` with `met:["quest:grail>=1"]` to (2760,3512) first. [v 2026-10-24 questw5 local]
+
+### Gnome Stronghold exits and the Zeke leg
+- Stronghold bank (2445, 3425) level 1 works as a bank area. The Staircase Climb-down at (2475, 3401) level 1 lands at (2474, 3400) level 0 (11.6 s in plan `melee40`). Stronghold -> Zeke's shop (Al Kharid) takes 270 s, crossing stiles by loc-op; Zeke -> Falador farm (3027, 3307) 82 s. [v 2026-10-24 conductor3 local]

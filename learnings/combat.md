@@ -239,3 +239,6 @@ This pattern enabled balanced 60+ in all melee stats.
 - The engine's low-HP guard runs ahead of every other step and, with no food, only regenerates in place: an `interact` Climb-up errand at the foot of a ladder at 16/49 HP ran 60 guard steps through its 2-minute stop without climbing. Get HP back up (eat, rest) before an errand that follows a flee. [v 2026-10-23 questw4 local]
 
 - Protect from Melee with 43 Prayer points lasts about 100 s of fighting. Against the Black Knight Titan (142 HP) it ran out with the Titan at 7 HP, so plan melee plus food to finish (Prayer 70 would cover the whole fight). [v 2026-10-24 questw5 local]
+
+## combat `targetRange: "visible"`
+- Works for cows at the Falador farm (area (3027, 3307) radius 22): the cows were not thin, the first fight settled in 17 ticks, and two phases (Attack 79 s, Defence 115 s) had no "no free", wait or walk-back lines. [v 2026-10-24 conductor3 local]
