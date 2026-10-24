@@ -1,6 +1,6 @@
 {
     "name": "dragon-slayer-ship-repair",
-    "purpose": "Dragon Slayer on the Lady Lumbridge deck (3047,3207 L1) with the ship bought (dragonquest 3): 3 planks, 12 nails, hammer, 12 swordfish, Maze key, Map part 2 and 3 in the pack; the hole is still open. 32 QP quest varps.",
+    "purpose": "Dragon Slayer on the Lady Lumbridge deck (3047,3207 L1), ship bought (dragonquest 3): 3 planks, 12 nails, hammer, 18 swordfish, Maze key, Map part 2 and 3; Hole open.",
     "source": {
         "kind": "generated",
         "spec": {
@@ -13,7 +13,8 @@
                 "Attack": 70,
                 "Strength": 70,
                 "Defence": 70,
-                "Hitpoints": 70
+                "Hitpoints": 70,
+                "Prayer": 43
             },
             "inventory": [
                 {
@@ -34,6 +35,30 @@
                 },
                 {
                     "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
                     "count": 1
                 },
                 {
@@ -152,8 +177,8 @@
             }
         }
     },
-    "sha1": "c04602a27851496f35b485227c3219d6eaf80465",
-    "createdAt": "2026-10-24T01:27:07.785Z",
+    "sha1": "1eceb4abaccd18e6f9e715670038756a3b22ef13",
+    "createdAt": "2026-10-24T02:12:41.076Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -165,7 +190,8 @@
             "Attack": 70,
             "Defence": 70,
             "Strength": 70,
-            "Hitpoints": 70
+            "Hitpoints": 70,
+            "Prayer": 43
         },
         "inventory": [
             {
@@ -191,6 +217,36 @@
             {
                 "id": 2347,
                 "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
                 "count": 1
             },
             {

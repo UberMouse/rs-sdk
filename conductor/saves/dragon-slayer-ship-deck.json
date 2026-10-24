@@ -1,6 +1,6 @@
 {
     "name": "dragon-slayer-ship-deck",
-    "purpose": "Dragon Slayer on the Lady Lumbridge deck (3047,3207 L1), map given to Ned (dragonquest 8, Ned hired), Dragonfire shield worn, 12 swordfish: the sail, Crandor and Elvarg remain. 32 QP quest varps.",
+    "purpose": "Dragon Slayer on the Lady Lumbridge deck (3047,3207 L1), map given to Ned (dragonquest 8), shield worn, Prayer 43, 25 swordfish.",
     "source": {
         "kind": "generated",
         "spec": {
@@ -13,7 +13,8 @@
                 "Attack": 70,
                 "Strength": 70,
                 "Defence": 70,
-                "Hitpoints": 70
+                "Hitpoints": 70,
+                "Prayer": 43
             },
             "inventory": [
                 {
@@ -65,7 +66,55 @@
                     "count": 1
                 },
                 {
-                    "id": 1542,
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
                     "count": 1
                 }
             ],
@@ -131,8 +180,8 @@
             }
         }
     },
-    "sha1": "d23555a2d39eb602eeef1939ec3aa02cb7bda0a1",
-    "createdAt": "2026-10-24T01:52:34.282Z",
+    "sha1": "e3a7c471650f7c29489403a2e9292d60dfdb1326",
+    "createdAt": "2026-10-24T02:12:41.745Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -144,7 +193,8 @@
             "Attack": 70,
             "Defence": 70,
             "Strength": 70,
-            "Hitpoints": 70
+            "Hitpoints": 70,
+            "Prayer": 43
         },
         "inventory": [
             {
@@ -208,8 +258,68 @@
                 "count": 1
             },
             {
-                "id": 1542,
-                "name": "melzarkey",
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
                 "count": 1
             }
         ],

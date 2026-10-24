@@ -1,6 +1,6 @@
 {
     "name": "dragon-slayer-start",
-    "purpose": "Dragon Slayer from the start at the Champions' Guild, Varrock (3193,3351): 32 real QP (Romeo and Juliet, Goblin Diplomacy, Ernest, Druidic Ritual, Merlin's Crystal, Demon Slayer, Cook's Assistant, Prince Ali Rescue, Doric's varps: qp is recounted at login, so a bare qp varp is overwritten), Att/Str/Def/HP 70, rune full helm/chainbody/platelegs/scimitar, amulet of strength, gloves, boots worn (shield slot empty for the Dragonfire shield), pack: silk, unfired bowl, lobster pot, wizard's mind bomb, 3 planks, 12 nails, hammer, 12 swordfish, 12000 coins (10000 Wormbrain + 2000 Klarense).",
+    "purpose": "Dragon Slayer from the start at the Champions' Guild, Varrock (3193,3351): 32 real QP, Att/Str/Def/HP 70, Prayer 43, rune set worn (shield slot empty), pack (26 slots, room for the Maze key): silk, unfired bowl, lobster pot, wizard's mind bomb, 3 planks, 12 nails, hammer, 16 swordfish (separate slots), 12000 coins.",
     "source": {
         "kind": "generated",
         "spec": {
@@ -13,7 +13,8 @@
                 "Attack": 70,
                 "Strength": 70,
                 "Defence": 70,
-                "Hitpoints": 70
+                "Hitpoints": 70,
+                "Prayer": 43
             },
             "inventory": [
                 {
@@ -50,6 +51,22 @@
                 },
                 {
                     "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
                     "count": 1
                 },
                 {
@@ -153,8 +170,8 @@
             }
         }
     },
-    "sha1": "c870794bd3d1fd81151c67658fbb56ae40708558",
-    "createdAt": "2026-10-24T01:27:07.395Z",
+    "sha1": "f3f39395094ac33734bf2f0d8ac5400d7ac378a3",
+    "createdAt": "2026-10-24T02:18:32.596Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -166,7 +183,8 @@
             "Attack": 70,
             "Defence": 70,
             "Strength": 70,
-            "Hitpoints": 70
+            "Hitpoints": 70,
+            "Prayer": 43
         },
         "inventory": [
             {
@@ -217,6 +235,26 @@
             {
                 "id": 2347,
                 "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
                 "count": 1
             },
             {
