@@ -18,6 +18,7 @@ import { type Op, send, wait } from '../core/op';
 import { configId } from '../lib/packs';
 import type { ActionContext } from './context';
 import { messageCursor, messageSince } from './messages';
+import { interfaceTexts } from './press';
 import { closeModalUntil, type ModalOps, withModal } from './modal';
 
 /** Wheels on the lock. */
@@ -72,19 +73,12 @@ function componentId(interfaceId: number, n: number): number {
     return id;
 }
 
-const DUMP_LINE = /^\s*#(\d+) type=-?\d+ btn=-?\d+ text=("(?:[^"\\]|\\.)*")/;
-
 /**
  * The four letters the open lock shows, as 0-25, or undefined for a wheel it shows nothing readable on (no
  * component dump in the state, or a label that is not one capital letter).
  */
 export function readWheels(s: BotWorldState): (number | undefined)[] {
-    const dump = s.interface.debugInfo ?? [];
-    const texts = new Map<number, string>();
-    for (const line of dump) {
-        const m = DUMP_LINE.exec(line);
-        if (m) texts.set(Number(m[1]), JSON.parse(m[2]!) as string);
-    }
+    const texts = interfaceTexts(s);
     return LAYOUT.letters.map(n => {
         const text = texts.get(componentId(s.interface.interfaceId, n));
         return text !== undefined && /^[A-Z]$/.test(text) ? text.charCodeAt(0) - 65 : undefined;

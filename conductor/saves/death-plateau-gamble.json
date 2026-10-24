@@ -1,0 +1,60 @@
+{
+    "name": "death-plateau-gamble",
+    "purpose": "Death Plateau in Harold's bedroom (upstairs in the Toad and Chicken inn, Burthorpe; Harold at 2905,3539 level 1; the room door is at 2906,3543, which knocks with a dialog): death_equiproom 50 (Harold given the ale, gamble open), Harold's gold 100 (death_bits), 5000 coins, Att 40 Str 54 Def 40 HP 47. Tests the talk task's amount + press (dice) until the IOU is won.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2906,
+                "z": 3541,
+                "level": 1
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 5000
+                }
+            ],
+            "varps": {
+                "314": 50,
+                "316": 51200
+            }
+        }
+    },
+    "sha1": "afe0e97de2caabaad22f7e0ec1445b39ec5d9125",
+    "createdAt": "2026-10-24T02:42:38.375Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2906,
+            "z": 3541,
+            "level": 1
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 5000
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "314": 50,
+            "316": 51200
+        }
+    }
+}
