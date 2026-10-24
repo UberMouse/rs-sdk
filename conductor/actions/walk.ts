@@ -142,6 +142,9 @@ export type WalkResult =
           advancing?: boolean;
       };
 
+/** Matches the `no-path` message of a walk refused by `WalkOptions.maxRouteTiles`. */
+export const ROUTE_TOO_LONG = /tiles, over the \d+ allowed$/;
+
 export interface WalkOptions {
     /**
      * The destination's level. Default: the bot's own level (so a bot on an upper floor walking to a tile
@@ -164,6 +167,12 @@ export interface WalkOptions {
      * asks one is planned only with it (lib/account.ts).
      */
     met?: Iterable<string>;
+    /**
+     * Refuse (`no-path`, message matching `ROUTE_TOO_LONG`) a walk whose first direct route on the plane is longer than
+     * this many tiles, before taking a step: for a short hop toward a spot that is near as the crow flies but far round
+     * (across a pond, past a cliff). A walk planned through graph hops (connectors) is not limited. Default: no limit.
+     */
+    maxRouteTiles?: number;
 }
 
 /**
@@ -562,6 +571,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                 const last = yield* walkOnPlane(ctx, dest.x, dest.z, tolerance, {
                     maxTicks: deadline - s.tick,
                     reserveTicks: reserve,
+                    ...(opts.maxRouteTiles === undefined ? {} : { maxRouteTiles: opts.maxRouteTiles }),
                 });
                 if (last.ok) {
                     hopHistory.delete(ctx);
@@ -816,6 +826,15 @@ function* walkOnPlane(
                 reason: 'no-path',
                 message: `Route to (${x}, ${z}) crosses the Wilderness at (${wild.x}, ${wild.z}); not walking it`,
             };
+        if (!budgeted && opts.maxRouteTiles !== undefined) {
+            const tiles = routeTiles(pos, waypoints, target);
+            if (tiles > opts.maxRouteTiles)
+                return {
+                    ok: false,
+                    reason: 'no-path',
+                    message: `Route to (${x}, ${z}) from (${pos.x}, ${pos.z}) is ${tiles} tiles, over the ${opts.maxRouteTiles} allowed`,
+                };
+        }
         if (!budgeted) {
             w.deadline = w.startTick + walkBudgetTicks(routeTiles(pos, waypoints, target), maxTicks);
             budgeted = true;
