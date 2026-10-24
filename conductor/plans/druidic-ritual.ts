@@ -3,6 +3,7 @@
 // Phases are chosen from the held items and the quest tab. Needs ~3 food (Salmon/Trout/Lobster/Tuna/Swordfish).
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
 import { QUEST_TAB_REQUIRED } from '@conductor/lib/quests';
+import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
 import talk from '@conductor/tasks/talk';
 
@@ -40,6 +41,11 @@ export default definePlan({
         'Druidic Ritual: four raw meats (Lumbridge chickens, cows, giant rats; Taverley bears), Kaqemeex, Sanfew, Cauldron of Thunder, Sanfew, Kaqemeex.',
     requires: { ...QUEST_TAB_REQUIRED },
     phases: [
+        phase(
+            bank,
+            { withdraw: [{ item: 'Swordfish', count: 8, upTo: true }] },
+            { name: 'bank-food', when: v => v.runs('bank-food') === 0 && food(v) < 3 },
+        ),
         // The animated suit at the cauldron door: fight it before anything else underground.
         phase(
             combat,
