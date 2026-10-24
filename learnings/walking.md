@@ -143,6 +143,11 @@ const BANK_TO_MINE = [
 
 After `interact` Open on a cupboard (Morgan's, (3096,3268) level 1) the client's loc list kept offering only "Open" for ~10 s, so an immediate Search failed "offers: Open" and a second Search 10 s later succeeded. Gate the follow-up on the game message ("You open the cupboard.") and give the phase a retry rather than treating the first failure as final. [v 2026-10-24 questw1 local]
 
+### `talk` and fenced areas
+
+- `talk` does not walk when the NPC is already in reach (nearer than its approach distance by Chebyshev), even if a wall or counter is in the way, so it can fail "unreachable". Put a `travel` phase first to stand where the NPC is really reachable (plague-city's Clerk). [v 2026-10-24 questw7 local]
+- McGrubor's Wood (Seers' Village, north of the Ardougne road) is fenced at x=2662 (z 3494-3501). The south gate (2649/2650, 3469) is permanently locked (Forester: "Hey! You can't come through here!") and traps `walk`. The way in is the Loose Railing (2662, 3500), op "Squeeze-through"; `travel` with waypoints (2650,3300), (2725,3485) and target (2668,3492) crosses it. [v 2026-10-24 questw7 local]
+
 `bot.walkTo()` attempts to open doors and gates on its route. If a route fails,
 inspect nearby objects and open the specific obstacle before retrying:
 

@@ -34,7 +34,7 @@ Plan: promoted, `conductor/plans/tree-gnome-village.ts`, fresh load of `lib:tree
 9. **Warlord (90 s).** Khazard warlord at (2457,3302), area radius 14. Only at stage 7 does he drop the Orbs of protection (id 588), via a mesbox; otherwise bones. The chest "chestopen_khazard" at (2468,3314) is unused.
 10. **Finish (96 s).** Talk to Bolren; the finish talk has no choices (cutscene).
 
-All of the above [v 2026-10-23 questw6 local]. Plan restart caveat: two gates read dialog-history markers (10 pages); after a restart that lost them, the wall phase retries once from the south and fails harmlessly.
+All of the above [v 2026-10-23 questw6 local]. Plan restart caveat: two gates read dialog-history markers (the history keeps about 20 pages, `learnings/dialogs.md`); after a restart that lost them, the wall phase retries once from the south and fails harmlessly.
 
 ## Key NPCs & Locations
 

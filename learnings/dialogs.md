@@ -66,7 +66,9 @@ for (let i = 0; i < 20; i++) {
 
 ## Dialog text as evidence
 
-- `state.recentDialogs` holds the last 10 dialog pages, so a plan predicate can test text a step left behind (e.g. a quest line) when the quest varp is not visible. Priest in Peril's plan tested "find the key to your cell" after the cell talk and advanced on it [v 2026-10-23 questw5 local]. Drezel's stage-61 line ("keep it equipped whenever I fight werewolves") did not show up in the proof run, so do not gate on it (`wiki/quests/priest-in-peril.md`).
+- `state.recentDialogs` holds the last ~20 dialog pages [v 2026-10-24 questw7 local], so a plan predicate can test text a step left behind (e.g. a quest line) when the quest varp is not visible. Priest in Peril's plan tested "find the key to your cell" after the cell talk and advanced on it [v 2026-10-23 questw5 local]. Drezel's stage-61 line ("keep it equipped whenever I fight werewolves") did not show up in the proof run, so do not gate on it (`wiki/quests/priest-in-peril.md`).
+- Mesbox text ("You pour...", item-use messages) is often not recorded in the history, so gate on a game message or an inventory change instead (the plague-city pour and dig gates use the fill message and the bucket count; early gates use held/worn items and position). [v 2026-10-24 questw7 local]
+- `interact`'s `expect` does not match a mesbox that the dialog guard closed first (the bucket pour at the mud patch); give such an interact no `expect` and let the inventory change show it worked. [v 2026-10-24 questw7 local]
 - Dialog history entries are single pages with wrapped lines, so match a short phrase, not a whole sentence. [v 2026-10-23 questw3 local]
 - Stale inventory after a `talk` use phase: right after a `talk` phase with `use` ends, the plan's next phase selection can still read the old inventory, so the same use phase is chosen again and fails `use-items: no item matching #<id> in the inventory to use on <loc>` (seen on fill at the Well and pour at the Coffin, each repeated once, ~10 s lost). Give such phases `onFail: 'continue'`; the plan moves on. [v 2026-10-23 questw5 local]
 
