@@ -13,6 +13,7 @@ import {
     type PhaseRun,
     type PlanDef,
     planParams,
+    PLAN_SETTLE_TICKS,
     type PlanResult,
     type Predicate,
 } from '../../lib/plan';
@@ -1176,7 +1177,8 @@ describe('the view', () => {
 describe('the result and the plan log', () => {
     test('totals run from the first state to the last, by phase, with a compact summary', async () => {
         const r = await sim(chopBurn(v => v.runs('chop') >= 2));
-        const ticks = r.driver.state().tick;
+        // The plan's duration ends where it ended, not after the ticks it then reads for late XP.
+        const ticks = r.driver.state().tick - PLAN_SETTLE_TICKS;
         expect(r.result).toEqual({
             task: 'plan:test-plan',
             bot: 'tester',
@@ -1395,5 +1397,64 @@ describe('recordReads', () => {
         rv.inv('item 0');
         expect(Object.keys(reads)).toHaveLength(12);
         expect(reads["inv('item 19')"]).toBeUndefined();
+    });
+});
+
+/** Quest done at tick `doneAt`, the Smithing lump (and its level) `lumpAt`, as a quest reward reaches the client. */
+const reward = (doneAt: number, lumpAt: number) =>
+    BASE.skill('Smithing', 1, 0).series(40, (w, i) => {
+        const withQuest = i >= doneAt ? w.quests({ imp: 'done' }) : w;
+        return i >= lumpAt ? withQuest.skill('Smithing', 40, 12725) : withQuest;
+    });
+
+const questPlan = (until: Predicate) => plan([phase(watch, {})], until);
+
+describe('reward lumps outside a phase', () => {
+    test('a lump a few ticks after the plan until holds is in the result, not in the phase', async () => {
+        const r = await sim(
+            questPlan(v => v.questDone('imp')),
+            { timeline: reward(3, 5) },
+        );
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(r.result.xpGained).toEqual({ Smithing: 12725 });
+        expect(r.result.levelsGained).toEqual({ Smithing: { from: 1, to: 40 } });
+        expect(r.runs[0]!.result.xpGained).toEqual({});
+        expect(r.result.phases.map(p => p.xpGained)).toEqual([{}]);
+    });
+
+    test('a lump one tick after the quest flip is counted', async () => {
+        const r = await sim(
+            questPlan(v => v.questDone('imp')),
+            { timeline: reward(3, 4) },
+        );
+        expect(r.result.xpGained).toEqual({ Smithing: 12725 });
+    });
+
+    test('a lump past the settle is not waited for', async () => {
+        const r = await sim(
+            questPlan(v => v.questDone('imp')),
+            { timeline: reward(3, 3 + PLAN_SETTLE_TICKS + 10) },
+        );
+        expect(r.result.xpGained).toEqual({});
+    });
+
+    test('a lump in a later phase window counts once, in the total and that phase', async () => {
+        // train gains Woodcutting in its own window; the Smithing lump lands in the next phase window (the sim has no gap between phases).
+        const r = await sim(
+            plan([phase(train, {}, { when: v => v.runs('train') < 1 }), phase(watch, {})], v => v.questDone('imp')),
+            { timeline: reward(8, 4) },
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.xpGained.Smithing).toBe(12725);
+        expect(r.result.xpGained.Woodcutting).toBe(10);
+        const phased = r.result.phases.reduce((n, p) => n + (p.xpGained.Smithing ?? 0), 0);
+        expect(r.result.phases.map(p => p.xpGained.Smithing ?? 0)).toEqual([0, 12725]);
+        expect(phased).toBe(12725);
+    });
+
+    test('a plan that fails does not wait for late XP', async () => {
+        const r = await sim(plan([phase(failing('f'), {})]), { timeline: reward(1, 2) });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.xpGained).toEqual({});
     });
 });

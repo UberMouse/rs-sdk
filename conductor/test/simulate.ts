@@ -146,6 +146,7 @@ export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Pr
         stops: opts.stops ?? [],
         pathfinder: straightPaths(),
         state: () => driver.state(),
+        nextTick: () => driver.nextTick(),
         newPhaseRun: (phase, index) => {
             const runId = `phase-${index}-${phase.name}`;
             const log: Record<string, unknown>[] = [];

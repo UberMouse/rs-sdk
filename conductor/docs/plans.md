@@ -226,6 +226,9 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
 lastReason }`, `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`, and
   `bankDelta`, the bank as last seen open less as first seen open (the bank changes only while
   open, so that is the plan's change to it; absent when the plan never saw the bank open).
+  A plan that ends done after at least one phase reads `PLAN_SETTLE_TICKS` more states (`runPlan`'s optional
+  `nextTick`) before building the result, so reward XP published after the `until` holds (a quest's lump)
+  appears in the plan total but in no phase's `xpGained`.
   The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.

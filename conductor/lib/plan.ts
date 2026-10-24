@@ -84,6 +84,8 @@ const PLAN_BRAND = Symbol.for('conductor.plan');
 
 const PHASE_UNTIL = 'until met';
 const PLAN_UNTIL = 'plan until met';
+/** States a plan that ended done reads on for XP the client publishes a state late (a quest reward lump), see `settleXp`. */
+export const PLAN_SETTLE_TICKS = 4;
 
 /** A phase of `task`; `params` are type-checked against the task's schema input. */
 export function phase<S extends z.ZodType, M extends object>(
@@ -228,6 +230,8 @@ export interface RunPlanOptions {
     pathfinder?: Pathfinder;
     /** Reads the world between phases. */
     state(): BotWorldState;
+    /** Resolves with the next published state; the plan reads a few after it ends done, for late reward XP. */
+    nextTick?(): Promise<BotWorldState>;
     /**
      * A new phase run; `index` counts the plan's phase runs from 0. `inputs.bank` is the bank record it starts with
      * (ExecuteOptions.bank), for the run's recorded inputs.
@@ -490,6 +494,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         }
     };
 
+    /** The clock when the plan ended, set by `finish` before the XP settle. */
+    let endedAt: number | null = null;
+
     /** The plan's result from its runs so far (by default the ones added up) and the world now. */
     const build = (
         status: TaskStatus,
@@ -517,7 +524,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             status,
             reason,
             params,
-            durationMs: now() - startedAt,
+            durationMs: (endedAt ?? now()) - startedAt,
             loops,
             stepRuns,
             lastStep: runs.lastStep,
@@ -536,7 +543,32 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         };
     };
 
-    const finish = (status: TaskStatus, reason: string): PlanResult => {
+    /**
+     * Reads PLAN_SETTLE_TICKS more states before a plan that ended done builds its result: a reward lump (a quest's
+     * XP) is granted in the server tick that flips the quest varp, but the client publishes the stat in a state after
+     * the one carrying the varp, so it can land after the predicate that ended the plan holds, and the result is
+     * the first-to-final difference. No fight to wait out and no guard: the bot is
+     * idle once the plan is done, and a failing or erroring plan reports the world as it is.
+     */
+    const settleXp = async (): Promise<void> => {
+        // No phase ran (loops === 0): there is no baseline state to settle against.
+        if (!opts.nextTick || loops === 0) return;
+        for (let i = 0; i < PLAN_SETTLE_TICKS; i++) {
+            let s: BotWorldState;
+            try {
+                s = await opts.nextTick();
+            } catch {
+                // A client that stopped publishing: the result reads the last state seen.
+                return;
+            }
+            observe(s);
+        }
+    };
+
+    const finish = async (status: TaskStatus, reason: string): Promise<PlanResult> => {
+        // The plan's duration is up to its end; the settle's ticks are not the plan's work.
+        endedAt = now();
+        if (status === 'done') await settleXp();
         const result = build(status, reason);
         emit({ type: 'result', ...result });
         say(`${status}: ${reason}`);
