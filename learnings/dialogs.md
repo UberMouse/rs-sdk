@@ -4,7 +4,7 @@ Successful patterns for handling game dialogs and interfaces.
 
 ## Dismissing Level-Up Dialogs
 
-Level-up dialogs block all actions. Dismiss them immediately:
+Level-up dialogs block all actions (a level-up page left open makes the next `talk` fail "Failed to click dialog option"; send `talk {continue:true}` when a dialog is open). [v 2026-10-24 questw3 local] Dismiss them immediately:
 
 ```typescript
 if (sdk.getState()?.dialog.isOpen) {
