@@ -850,8 +850,10 @@ export const METHODS: MethodDef[] = [
             bank: { level: 1, x: 2445, z: 3425 },
         },
         notes:
-            "The Seers flax-spin method's Stronghold twin, a higher floor. No run has checked the flax field, the " +
-            'wheel or the walk between; no promoted plan; unmeasured.',
+            "The Seers flax-spin method's Stronghold twin, a higher floor. Run 2026-10-24 by conductor3 as the flax " +
+            'stage of plan crafting80 (Crafting 10-80): ~332k XP/h over the loop phases (68% of the floor), time split ' +
+            'spin 42%, pick 33%, bank 14%, walk down to the field 11%. That plan also shears and spins wool, so it ' +
+            'names no method; a flax-only plan would carry the measured entry.',
         source: 'research-artisan 2026-10-23',
     },
     {
