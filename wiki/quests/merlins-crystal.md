@@ -63,7 +63,7 @@ Each step: who or what (config display name), where, the exact dialog choices, i
    Table!". Stage 0 -> 1.
 2. **Sir Gawain** (2763, 3506), Camelot ground floor. Choices: "Do you know how Merlin got trapped?", then "Thank you
    for the information." (or "Any idea how to get into Morgan Le Faye's stronghold?", which only says he is
-   stumped). Stage 1 -> 2.
+   stumped). Stage 1 -> 2. Gawain can wander into the garden behind the Door (2766,3504), where `talk` fails "no reachable Sir Gawain" (2 runs); an `interact` Open on that Door from (2766,3505) with `tile` (2766,3504) also failed "no reachable loc", so the way in is not established. [v 2026-10-24 conductor3 local]
 3. **Sir Lancelot** (2759, 3515) L1, Camelot first floor; staircase (2750, 3510) up to (2750, 3513) L1. Choices: "Any
    ideas on how to get into Morgan Le Faye's stronghold?" (option 3 of 3). Stage 2 -> 3.
 4. **Crate** (`merlincrate_empty`, op "Hide-in") at (2801, 3442), Catherby, south-west of the bank. Works from stage

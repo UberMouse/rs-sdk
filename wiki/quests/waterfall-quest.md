@@ -189,7 +189,7 @@ collision). Display names are the config `name=`.
 15. **Out.** Open the Door (2604, 9900) from (2604, 9901): moved to (2566, 9901) (`:380-390`). Use A key on the Door
     (2568, 9893) from the north (stand (2568, 9894)) to get south of it. Walk to the entry (2575, 9861); Open the Door
     `baxtorian_door_waterfall_quest` there: moved to the ledge (2511, 3463) (`:287-289`); Get in the Barrel (2512,
-    3463): (2527, 3413) (`:291-297`).
+    3463): (2527, 3413) (`:291-297`). Keep the A key until you are out: walks inside the dungeon failed "No connector from level 0 (2566,9901) to (2604,9901)" and "No path to (2575,9861) from (2511,3463)" (`grail-exit-prep`, 2 of 4 runs), so do these steps by `interact`. [v 2026-10-24 conductor3 local]
 
 After stage 8, the key on the Door (2566, 9901) moves the player straight to the chalice room door (2604, 9901)
 (`:399-401`).
