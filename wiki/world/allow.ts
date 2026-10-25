@@ -453,6 +453,18 @@ export const STAND_ALLOW: readonly Allowed[] = [
     },
 ];
 
+/**
+ * Check 5: a fishing movement enum feeding several sites, or a fishing site whose spots move out of its leaf area.
+ * No enum feeds several sites today (place.ts joinShores merges each within its area and level).
+ */
+export const MOVING_ALLOW: readonly Allowed[] = [
+    {
+        keys: [siteAt('fishing-spot', 2855, 2973)],
+        reason: `the shilo-village enum's first tile (2822, 2969) is 3 tiles west of the rect (x1 2825), in karamja, its parent, and no other leaf area: ${REFIT} refits the rect`,
+        source: 'skill_fishing/configs/fishing_movement.enum:145',
+    },
+];
+
 /** Configs sharing a reason, with the line of one's trigger. */
 const configs = (reason: string, source: string, keys: readonly ConfigKey[]): ConfigAllowed => ({
     configs: [...keys],

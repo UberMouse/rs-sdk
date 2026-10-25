@@ -11,10 +11,10 @@ import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKe
 import { first, type Config } from './sources/configs';
 import type { Trigger } from './sources/triggers';
 import type { Area, Feature, FeatureKind, Rect, Site, Tile, World } from './types';
-import { cmp } from './util';
+import { cmp, uniqueTiles } from './util';
 
 /** The checks, by the id their report lines carry. */
-export type CheckId = 'unclaimed' | 'near-miss' | 'split' | 'stand';
+export type CheckId = 'unclaimed' | 'near-miss' | 'split' | 'stand' | 'moving';
 
 /** What one check found: the site or sites it is about, by id and by key, and what is wrong with them. */
 export interface Finding {
@@ -393,6 +393,58 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             ];
         }),
     );
+}
+
+/** What check 5 reads: the placed sites with their spots' movement, the features and the curated areas. */
+export interface MovingWorld extends SiteKeyWorld {
+    sites: readonly Pick<Site, 'id' | 'kind' | 'features' | 'areaPath' | 'movement'>[];
+    features: readonly Pick<Feature, 'tile' | 'config'>[];
+    areas: readonly Pick<Area, 'id' | 'rects'>[];
+}
+
+/**
+ * Check 5, moving feature outside its site (audit A1, A2): a fishing spot's movement enum (`enumOf` its config,
+ * sources/fishing-movement.ts movementEnum) feeding the features of two or more sites, one finding per enum naming
+ * them; and a fishing site some of whose spots' tiles (Site.movement) lie in no rect of its leaf area, on their
+ * level, one finding per site. place.ts joinShores merges the spots of one enum only within one leaf area and level,
+ * so an enum crossing an area edge is split into sites, and a spot spawned in one area moves into the next. A site in
+ * no area is left out: it has no rects to be outside of.
+ */
+export function movingFeatures(world: MovingWorld, enumOf: (config: string) => string | undefined): Finding[] {
+    const key = keyOf(world);
+    const fishing = world.sites.filter(s => s.kind === 'fishing-spot');
+    const byEnum = new Map<string, MovingWorld['sites'][number][]>();
+    for (const s of fishing)
+        for (const name of new Set(s.features.flatMap(i => enumOf(world.features[i]!.config) ?? [])))
+            byEnum.set(name, [...(byEnum.get(name) ?? []), s]);
+    const shared = [...byEnum]
+        .filter(([, sites]) => sites.length > 1)
+        .sort(([a], [b]) => cmp(a, b))
+        .map(([name, sites]) => ({
+            ids: sites.map(s => s.id),
+            keys: sites.map(key),
+            detail: `enum ${name} feeds ${sites.map(s => s.id).join(', ')}`,
+        }));
+    const rects = new Map(world.areas.map(a => [a.id, a.rects]));
+    const outside = fishing.flatMap(s => {
+        const leaf = s.areaPath.at(-1);
+        if (leaf === undefined) return [];
+        const own = rects.get(leaf) ?? [];
+        const out = uniqueTiles(Object.values(s.movement ?? {}).flatMap(m => m.tiles)).filter(
+            t => !own.some(r => rectGap({ ...tileRect(t), level: t.level }, r) === 0),
+        );
+        if (!out.length) return [];
+        const shown = out.slice(0, NAMED_AT).map(coord);
+        const more = out.length > NAMED_AT ? ` and ${out.length - NAMED_AT} more` : '';
+        return [
+            {
+                ids: [s.id],
+                keys: [key(s)],
+                detail: `${s.id}: ${out.length} spot tiles outside ${leaf} (${shown.join(', ')}${more})`,
+            },
+        ];
+    });
+    return [...shared, ...outside];
 }
 
 /** A placed loc or npc config, as `loc <config>` or `npc <config>`: what check 1's findings and entries name. */

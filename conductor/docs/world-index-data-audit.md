@@ -34,8 +34,8 @@ checked against the game.
 
 | # | Finding | Evidence | Scale |
 |---|---|---|---|
-| A1 | Fishing spot positions are spawn tiles; spots teleport among their `fishing_movement_enum` tiles every 280-530 ticks from tick 1 | `S/skill_fishing/configs/fishing.npc` (`timer=1`, `param=fishing_movement_enum`), `fishing_movement.enum`, `fishing_movement.rs2:1-12` | 40 of 52 fishing sites; 271 enum tiles vs 132 spawns; 17 sites have enum tiles >10 tiles outside the site bbox. **In progress in the other session** (pages now list `tiles`) |
-| A2 | One movement pool split into several sites | 8 enums over 17 sites (`0_34_50` feeds 3 Tirannwn sites; Entrana, Baxtorian Falls, Rimmington, Al Kharid, Barbarian Village, slimy eel east, `0_33_51` 2 each) | 17 sites |
+| A1 | Fishing spot positions are spawn tiles; spots teleport among their `fishing_movement_enum` tiles every 280-530 ticks from tick 1 | `S/skill_fishing/configs/fishing.npc` (`timer=1`, `param=fishing_movement_enum`), `fishing_movement.enum`, `fishing_movement.rs2:1-12` | 40 of 52 fishing sites; 271 enum tiles vs 132 spawns; 17 sites have enum tiles >10 tiles outside the site bbox. **Done**: main's 8bdc4b697 gave fishing sites their spots' tiles and a cover (`Site.movement`, the pages' Movement); Task 8 stands them from the pool (`place.ts` `standTile` with `SiteOptions.moves`: beside any tile a spot moves to, nearest the tiles' cover centre; 23 of 43 stands moved, Catherby's still on the shore) and its check 5 (`moving`) finds a pool moving out of its leaf area. At the merged HEAD 34 of 43 fishing sites move |
+| A2 | One movement pool split into several sites | 8 enums over 17 sites (`0_34_50` feeds 3 Tirannwn sites; Entrana, Baxtorian Falls, Rimmington, Al Kharid, Barbarian Village, slimy eel east, `0_33_51` 2 each) | 17 sites. **Done**: main's 8bdc4b697 joins an enum's spots into one site within a leaf area and level (`place.ts` `joinShores`), which merged all 8: re-derived at the merged HEAD, no enum feeds two sites (`0_34_50` is `fishing-spot:tirannwn:1` alone). Check 5 (`moving`, `MOVING_ALLOW`, Task 8) keeps it so, and finds the one pool moving past its area's rects: Shilo Village's enum's west tile (2822, 2969), 3 tiles past the rect, allowlisted for the 2.5 refit |
 | A3 | Npc wander range ignored: clusters are the spawn tiles' bbox | `E/.../NpcType.ts:101` (wanderrange 5, maxrange +2), `Npc.ts:702-735`; nothing in `W/` reads it | 92.5% (4198) of 4537 npc clusters wander past their bbox (re-derived in Task 2; the audit had ~74%); 133 of 150 pickpocket sites roam ≥5 (`knight_of_ardougne` 15 round one tile) |
 | A4 | Respawn time not on sites or `npcSpawns` (the combat model has it: `W/model/npcs.ts:126`) | `NpcOps.ts:117` `respawnrate`, default 100 | rats 4 ticks ×410, blessed spiders 600 ×52 |
 | A5 | Fishing pages show option names only, not level, tool, bait, catch, XP; `readSpots` already parses them for methods | `fishing.struct` (`productexp`, `success_low/high`), op scripts (`memberfish.rs2:14` shark 76 harpoon, `rarefish.rs2:23` lobster 40, `:128` tuna/swordfish 35) | every fishing page |
@@ -153,13 +153,20 @@ Make these `--check` failures with a reviewed allowlist (each entry with a reaso
 4. **Stand connectivity** (E4): a stand whose free walk component holds a use tile of fewer than half the site's
    members, or with no way to a bank that asks no more than the members' own ways in.
 5. **Moving feature outside its site** (A1, A2): an enum tile outside its site's tiles, or one enum feeding two sites.
+   Built (`W/checks.ts` `movingFeatures`, Task 8): an enum feeding the features of two or more fishing sites, and a
+   fishing site with a spot tile in no rect of its leaf area (since 8bdc4b697 a site's tiles hold its enums' tiles, so
+   an enum tile outside them can't happen; one outside the area can). At the merged HEAD: 0 enums over several sites, 1 pool out of its area (Shilo Village).
 
 Files: `W/build.ts` (or `W/test/*.real.test.ts`), `W/classify.ts` for 1.
 
 ### 2.3 Engine reads (A)
 
 - **Fishing pools**: one site per movement enum (A2); site `tiles` = the enum's tiles (A1, landing in the other
-  session); stand and `nearest` from the pool. Coordinate with that session before starting.
+  session); stand and `nearest` from the pool. Coordinate with that session before starting. **Done**: main's
+  8bdc4b697 made one site per enum within a leaf area and level (`joinShores`) and gave sites the enum's tiles
+  (`Site.movement`); Task 8 stands each fishing site beside its spots' tiles, nearest their cover's centre, prices
+  `nearest` from there, and adds check 5. An enum crossing an area edge would still split: clustering across leaf
+  areas is 2.4's.
 - **Wander and respawn** (A3, A4): `wander` (effective `wanderrange`, 0 for `nomove`/no-wander modes) and
   `respawnTicks` on `NpcSpawn` and npc-kind sites, and a `roam` rect beside `bbox` (`bbox` grown by wander;
   `bbox` itself unchanged, user decision), which `besideCluster` builds from. Read in `W/sources/npc-movement.ts`.

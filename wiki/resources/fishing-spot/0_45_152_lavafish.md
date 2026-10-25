@@ -25,7 +25,7 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2890, 9767) | x 2889-2891, z 9766 | [Movement](#movement) | 3 | no | no | - | carry Dusty key | Falador West bank (Falador), 223 ticks via carry Dusty key |
+| [Taverley Dungeon](../../places/taverley-dungeon.md) | `fishing-spot:taverley-dungeon:0` | (2890, 9766) | (2889, 9767) | x 2889-2891, z 9766 | [Movement](#movement) | 3 | no | no | - | carry Dusty key | Falador West bank (Falador), 223 ticks via carry Dusty key |
 
 ## Movement
 

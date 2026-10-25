@@ -24,7 +24,10 @@ one of those seven folders. The build also deletes pages it no longer renders fr
 aside in the last three).
 
 A site's stand tile is the first candidate a walk reaches with no requirement, else the first it reaches at all
-(`SiteOptions.free`): a sandbar behind a key is no stand when a free tile exists.
+(`SiteOptions.free`): a sandbar behind a key is no stand when a free tile exists. A fishing site's candidates are
+the walkable tiles beside any tile its spots move to (its enum's tiles and the spawns, `SiteOptions.moves`), nearest
+the centre of their cover, so a pool spawned at one end of its enum stands by the middle; its nearest sinks are
+priced from that stand.
 
 A site is a cluster of same-kind features (locs or npc spawns) in one area: its id is
 `kind:area:n`, its centre the mean tile, its stand tile a walkable tile beside it, a walk's first.
@@ -325,6 +328,11 @@ some walk reaches.
   `dominates`) than every member's own way in: its use tiles' sets joined with what using the site asks, as the
   site's reach joins them. A stand in the wrong pocket waits on the stand rework (audit §2.4); a place the graph
   has no priced way out of has no nearest bank from any stand, and its entry says what is missing.
+- **`moving`** (`MOVING_ALLOW`): a fishing spot's movement enum feeding the features of two or more sites (one
+  finding per enum, naming them), or a fishing site some of whose spots' tiles (`Site.movement`) lie in no rect of
+  its leaf area on their level (one per site; a site in no area is left out), audit A1, A2. The shore join merges an
+  enum's spots only within one leaf area and level, so an enum crossing an area edge is split, and an enum tile past
+  the rect is a pool roaming out. Clustering across leaf areas (audit §2.4) or a rect refit (§2.5) removes one.
 
 ## Methods
 
@@ -433,6 +441,7 @@ Adding a method:
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
 | A site just outside the area it is named after, or one place split into two sites at an area edge (`ERROR near-miss`, `ERROR split`) | the area's rects in `wiki/world/areas.ts`; a pair that is right as it is (a leaf round one thing, two places side by side) is an entry in `NEAR_MISS_ALLOW` or `SPLIT_ALLOW` in `wiki/world/allow.ts` saying why |
 | A placed loc or npc whose gather or processing trigger no rule claims (`ERROR unclaimed`) | the rule in `wiki/world/classify.ts`, or a new kind (plan 2.6); a config that is no feature (a quest one-off, a minigame) is an entry in `UNCLAIMED_ALLOW` in `wiki/world/allow.ts` saying why, and one waiting on 2.6 an entry naming the kind |
+| A fishing enum split over several sites, or a pool moving out of its area (`ERROR moving`) | the area's rects in `wiki/world/areas.ts`, or the shore join (`place.ts` `joinShores`); until then an entry in `MOVING_ALLOW` in `wiki/world/allow.ts` saying why, with the enum line as its source |
 | A stand cut off from most of its site's members or from a bank (`ERROR stand`) | how stands are chosen (`place.ts` `standTile`), or a missing or unpriced way out in the sources; until then an entry in `STAND_ALLOW` in `wiki/world/allow.ts` saying what cuts it off |
 | A site whose use (not the walk there) needs a quest: a Requires cell missing it | `USE_GATES` in `wiki/world/gates.ts` |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |

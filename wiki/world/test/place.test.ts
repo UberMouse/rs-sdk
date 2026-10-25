@@ -497,6 +497,19 @@ describe('shores', () => {
         });
         expect(out[0]!.stand!.x).not.toBe(0);
     });
+
+    test("a pool spawned at one end of its enum stands on the shore beside the enum's middle", () => {
+        // The enum runs along water at z 0 from x 0 to 40, land only to the north; both spawns sit at its west end.
+        const water = Array.from({ length: 41 }, (_, x) => ({ level: 0, x, z: 0 }));
+        const south = Array.from({ length: 43 }, (_, x) => ({ level: 0, x: x - 1, z: -1 }));
+        const collision = stubCollision([...water, ...south]);
+        const fs = [spot('a1', 0, 0), spot('a2', 1, 0)];
+        const opts = { ...quiet, shore };
+        const [fixed] = buildSites(fs, oneArea, noZones, collision, opts);
+        expect(fixed!.stand).toEqual({ level: 0, x: 1, z: 1 });
+        const [pool] = buildSites(fs, oneArea, noZones, collision, { ...opts, moves: () => water });
+        expect(pool!.stand).toEqual({ level: 0, x: 20, z: 1 });
+    });
 });
 
 /** Collision with one wall, between x `west` and `west + 1`, and the entity test from a tile sharing an edge. */

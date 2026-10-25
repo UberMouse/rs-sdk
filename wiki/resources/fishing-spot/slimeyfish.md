@@ -27,9 +27,9 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3413) | x 3424-3440, z 3407-3417 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 60 ticks via Nature Spirit at stage 1 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3438, 3276) | x 3437-3445, z 3271-3280 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 134 ticks via Nature Spirit at stage 1 |
-| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3483, 3439) | (3483, 3439) | x 3479-3490, z 3430-3449 | [Movement](#movement) | 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 64 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:0` | (3430, 3411) | (3430, 3414) | x 3424-3440, z 3407-3417 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 59 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:1` | (3441, 3274) | (3439, 3278) | x 3437-3445, z 3271-3280 | [Movement](#movement) | 6 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 135 ticks via Nature Spirit at stage 1 |
+| [Morytania](../../places/morytania.md) | `fishing-spot:morytania:2` | (3483, 3439) | (3484, 3439) | x 3479-3490, z 3430-3449 | [Movement](#movement) | 5 | no | no | - | Nature Spirit at stage 1 + Priest in Peril at stage 61 | Canifis bank (Canifis), 65 ticks via Nature Spirit at stage 1 |
 
 ## Movement
 

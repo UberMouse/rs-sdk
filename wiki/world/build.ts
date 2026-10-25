@@ -23,12 +23,13 @@ import { itemPages } from '../generate-items';
 import { npcPages } from '../generate-npcs';
 import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
-import { NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW, UNCLAIMED_ALLOW } from './allow';
+import { MOVING_ALLOW, NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW, UNCLAIMED_ALLOW } from './allow';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import {
     applyAllow,
     applyConfigAllow,
     crossedConfigs,
+    movingFeatures,
     NEAR_MISS_GAP,
     nearMissAreas,
     placedConfigs,
@@ -73,7 +74,7 @@ import {
     type ReachReport,
 } from './reach';
 import { first, readConfigs, type Config } from './sources/configs';
-import { movementEnum, siteMovement } from './sources/fishing-movement';
+import { enumTiles, movementEnum, siteMovement } from './sources/fishing-movement';
 import { deriveConnectors, WAY_BACK, type Underived } from './sources/connectors';
 import { readCourses, stepAt } from './sources/courses';
 import { deriveCuratedCrossings, refuseDerivedTwins, type CuratedCrossings } from './sources/curated-crossings';
@@ -1021,6 +1022,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     // Sites after the fill, so a stand is a tile a walk gets to where one can be (place.ts standTile).
     const log: string[] = [];
     const apRange = approachRange(triggers);
+    const movementEnums = readConfigs('enum');
     const placedSites = buildSites(features, resolve, zones, collision, {
         size: locSizes(locConfigs),
         log: line => log.push(line),
@@ -1033,6 +1035,10 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         courses: { defs: courses, step: courseStep },
         shore: f => (f.kind === 'fishing-spot' ? movementEnum(npcConfigs.get(f.config)) : undefined),
         movement,
+        moves: f => {
+            const name = f.kind === 'fishing-spot' ? movementEnum(npcConfigs.get(f.config)) : undefined;
+            return name ? enumTiles(name, movementEnums) : undefined;
+        },
     }).sort((a, b) => cmp(a.id, b.id));
     // The doors walled once for every cluster's beside tiles (place.ts besideCluster), not once per cluster.
     const walled = collision.walled ?? (<T>(f: () => T): T => f());
@@ -1048,7 +1054,6 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     // A way out by a portal of the essence mine returns to the wizard it came in by (sources/npc-teleports.ts).
     const context = cameFromContext(reachInput.world.crossings);
     const distance = nearestSinks(graph, reached.sites, { reached: fill.reachedAt, context });
-    const movementEnums = readConfigs('enum');
     const sites = reached.sites.map(s => {
         const withNearest = SINKS[s.kind] ? { ...s, nearest: distance.nearest.get(s.id) ?? {} } : s;
         return s.kind === 'fishing-spot'
@@ -1110,6 +1115,11 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         stand: applyAllow(
             standConnectivity(checkWorld, { graph, collision, size: locSizes(locConfigs), reach: fill, use, context }),
             STAND_ALLOW,
+            checkWorld,
+        ),
+        moving: applyAllow(
+            movingFeatures(checkWorld, config => movementEnum(npcConfigs.get(config))),
+            MOVING_ALLOW,
             checkWorld,
         ),
     };
@@ -1530,6 +1540,10 @@ const CHECKS: Record<CheckId, { finds: string; table: string; invalid?: string }
     stand: {
         finds: 'stands cut off from most of their members or from a bank',
         table: 'STAND_ALLOW',
+    },
+    moving: {
+        finds: 'fishing movement enums feeding several sites, or fishing sites whose spots move out of their area',
+        table: 'MOVING_ALLOW',
     },
 };
 

@@ -1,6 +1,6 @@
 // Fishing spots over the committed world.json and the real game data: where a shore's spots can move to, the area
-// that covers them, the Catherby shore's region, the shark catch beside tuna and swordfish, and what each page says
-// every option catches.
+// that covers them, the Catherby shore's region and stand, check 5's findings, the shark catch beside tuna and
+// swordfish, and what each page says every option catches.
 import { describe, expect, test } from 'bun:test';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
@@ -18,6 +18,9 @@ import { reachGraph } from '../reach';
 import { questFacts } from '../requirements';
 import { readConfigs } from '../sources/configs';
 import { COVER_MARGIN } from '../cover';
+import { movingFeatures } from '../checks';
+import { siteAt } from '../site-key';
+import { movementEnum } from '../sources/fishing-movement';
 
 const world = loadWorld();
 const data = readGameData();
@@ -59,6 +62,35 @@ describe('Catherby shore', () => {
         }
         expect(catherby.movement!.rarefish!.centre).toEqual({ level: 0, x: 2848, z: 3427 });
         expect(catherby.movement!.rarefish!.radius).toBe(16);
+    });
+    test('stands on the shore, beside a tile its spots move to, needing nothing, with Catherby bank nearest', () => {
+        const stand = catherby.stand!;
+        const tiles = Object.values(catherby.movement!).flatMap(m => m.tiles);
+        expect(tiles.some(t => Math.max(Math.abs(t.x - stand.x), Math.abs(t.z - stand.z)) === 1)).toBe(true);
+        expect(catherby.reach).toContainEqual([]);
+        expect(catherby.nearest!.bank!.site).toBe('bank:catherby-bank:0');
+    });
+});
+
+describe('check 5, moving feature outside its site', () => {
+    const npcs = readConfigs('npc');
+    const found = movingFeatures(world, c => movementEnum(npcs.get(c)));
+    test("no enum feeds two sites: the audit's A2 enums are each one site now", () => {
+        expect(found.filter(f => f.ids.length > 1)).toEqual([]);
+        // The audit had fishing_movement_0_34_50_enum over 3 Tirannwn sites; place.ts joinShores made them one.
+        const fed = spots.filter(s =>
+            s.features.some(i => movementEnum(npcs.get(world.features[i]!.config)) === 'fishing_movement_0_34_50_enum'),
+        );
+        expect(fed.map(s => s.id)).toEqual(['fishing-spot:tirannwn:1']);
+    });
+    test("Shilo Village's pool is the one moving out of its area, past the rect's west edge", () => {
+        expect(found).toEqual([
+            {
+                ids: ['fishing-spot:shilo-village:0'],
+                keys: [siteAt('fishing-spot', 2855, 2973)],
+                detail: 'fishing-spot:shilo-village:0: 1 spot tiles outside shilo-village ((2822, 2969))',
+            },
+        ]);
     });
 });
 

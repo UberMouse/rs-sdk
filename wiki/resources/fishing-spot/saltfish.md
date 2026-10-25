@@ -38,13 +38,13 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 
 | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:0` | (2991, 3167) | (2991, 3167) | x 2986-2996, z 3158-3176 | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 82 ticks |
-| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:1` | (2876, 3337) | (2876, 3337) | x 2875-2877, z 3331-3342 | [Movement](#movement) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 77 ticks |
-| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2792, 3277) | (2792, 3277) | x 2789-2795, z 3273-3283 | [Movement](#movement) | 4 | no | no | - | unreached | - |
-| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2849, 3427) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 2 | no | no | - | - | Catherby bank (Catherby), 23 ticks |
+| [Asgarnia](../../places/asgarnia.md) | `fishing-spot:asgarnia:0` | (2991, 3167) | (2991, 3168) | x 2986-2996, z 3158-3176 | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 81 ticks |
+| [Entrana](../../places/entrana.md) | `fishing-spot:entrana:1` | (2876, 3337) | (2878, 3337) | x 2875-2877, z 3331-3342 | [Movement](#movement) | 4 | no | no | - | no weapons/armour (Entrana rule) | Draynor bank (Draynor Village), 78 ticks |
+| [Kandarin](../../places/kandarin.md) | `fishing-spot:kandarin:6` | (2792, 3277) | (2792, 3278) | x 2789-2795, z 3273-3283 | [Movement](#movement) | 4 | no | no | - | unreached | - |
+| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2847, 3430) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 2 | no | no | - | - | Catherby bank (Catherby), 21 ticks |
 | [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:0` | (2637, 3694) | (2640, 3694) | x 2633-2642, z 3687-3699 | [Movement](#movement) | 3 | no | no | - | - | Seers' Village bank (Seers' Village), 134 ticks |
-| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2925, 3180) | x 2923-2926, z 3179-3181 | [Movement](#movement) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
-| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3272, 3144) | (3272, 3144) | x 3267-3276, z 3140-3148 | [Movement](#movement) | 2 | yes | yes | - | - | Al Kharid bank (Al Kharid), 13 ticks |
+| [Karamja](../../places/karamja.md) | `fishing-spot:karamja:5` | (2925, 3180) | (2924, 3179) | x 2923-2926, z 3179-3181 | [Movement](#movement) | 3 | yes | no | - | 30 coins or The Grand Tree done | Draynor bank (Draynor Village), 99 ticks via 30 coins |
+| [Al Kharid river (Al Kharid)](../../places/al-kharid-river.md) | `fishing-spot:al-kharid-river:0` | (3272, 3144) | (3275, 3141) | x 3267-3276, z 3140-3148 | [Movement](#movement) | 2 | yes | yes | - | - | Al Kharid bank (Al Kharid), 14 ticks |
 | [Draynor fishing (Draynor Village)](../../places/draynor-fishing.md) | `fishing-spot:draynor-fishing:0` | (3086, 3229) | (3086, 3230) | x 3085-3086, z 3227-3230 | [Movement](#movement) | 2 | yes | no | - | - | Draynor bank (Draynor Village), 13 ticks |
 | [Wilderness](../../places/wilderness.md) | `fishing-spot:wilderness:0` | (3050, 3704) | (3050, 3705) | (3050, 3704) | [Movement](#movement) | 1 | yes | yes | 24 | - | Edgeville bank (Edgeville), 110 ticks |
 

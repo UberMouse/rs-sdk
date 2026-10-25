@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import {
     applyAllow,
     applyConfigAllow,
+    movingFeatures,
     nearMissAreas,
     rectGap,
     splitResources,
@@ -11,10 +12,12 @@ import {
     type ConfigFinding,
     type ConfigKey,
     type Finding,
+    type MovingWorld,
     type StandInput,
     type StandWorld,
 } from '../checks';
 import { classification } from '../classify';
+import { coverOf } from '../cover';
 import { locSizes } from '../place';
 import { fillReach, reachGraph } from '../reach';
 import { siteAt } from '../site-key';
@@ -208,6 +211,63 @@ describe('splitResources', () => {
                 COVERED,
             ),
         ).toEqual([]));
+});
+
+/** The world's sites with each site's spots moving over its own tiles and `extra`. */
+const moving = (w: CheckWorld, extra: Record<string, Tile[]>): MovingWorld => ({
+    ...w,
+    sites: w.sites.map(s => {
+        const tiles = [...s.features.map(i => w.features[i]!.tile), ...(extra[s.id] ?? [])];
+        return { ...s, movement: { spot: { tiles, ...coverOf(tiles) } } };
+    }),
+});
+
+describe('movingFeatures', () => {
+    const ENUMS: Record<string, string> = { east: 'shore_enum', west: 'shore_enum', river: 'river_enum' };
+
+    test('finds an enum feeding two sites, and a site whose spots move past its leaf rects, on their level', () => {
+        const w = world([
+            ['fishing-spot', 'town', [[10, 10, 'west']]],
+            ['fishing-spot', 'port', [[35, 15, 'east']]],
+            ['fishing-spot', 'port', [[32, 12, 'river']]],
+            ['tree', 'town', [[5, 5, 'west']]], // not a fishing spot: left out
+        ]);
+        const found = movingFeatures(
+            moving(w, {
+                'fishing-spot:town:0': [
+                    { level: 0, x: 18, z: 10 },
+                    { level: 0, x: 25, z: 10 },
+                ],
+                'fishing-spot:port:1': [{ level: 0, x: 40, z: 20 }],
+            }),
+            c => ENUMS[c],
+        );
+        expect(found).toEqual([
+            {
+                ids: ['fishing-spot:town:0', 'fishing-spot:port:0'],
+                keys: [siteAt('fishing-spot', 10, 10), siteAt('fishing-spot', 35, 15)],
+                detail: 'enum shore_enum feeds fishing-spot:town:0, fishing-spot:port:0',
+            },
+            {
+                ids: ['fishing-spot:town:0'],
+                keys: [siteAt('fishing-spot', 10, 10)],
+                detail: 'fishing-spot:town:0: 1 spot tiles outside town ((25, 10))',
+            },
+        ]);
+    });
+
+    test("a tile on another level than the leaf's rects is outside it", () => {
+        const w = world([['fishing-spot', 'port', [[35, 15, 'river']]]]);
+        const leveled = {
+            ...w,
+            areas: w.areas.map(a => (a.id === 'port' ? { ...a, rects: [{ ...a.rects[0]!, level: 0 }] } : a)),
+        };
+        const found = movingFeatures(
+            moving(leveled, { 'fishing-spot:port:0': [{ level: 1, x: 36, z: 15 }] }),
+            c => ENUMS[c],
+        );
+        expect(found.map(f => f.detail)).toEqual(['fishing-spot:port:0: 1 spot tiles outside port ((36, 15, 1))']);
+    });
 });
 
 describe('applyAllow', () => {
