@@ -53,6 +53,14 @@ export function readMovementDefaults(): MovementDefaults {
     };
 }
 
+/** A config's whole-number line, or `fallback` when it has none, as model/npcs.ts configInt reads one. */
+function configInt(cfg: Config | undefined, key: string, fallback: number, config: string): number {
+    const v = first(cfg, key);
+    if (v === undefined) return fallback;
+    if (!/^-?\d+$/.test(v)) throw new Error(`Unreadable ${key} ${v} for npc ${config}`);
+    return Number(v);
+}
+
 /**
  * A `patrol<n>=<level>_<mx>_<mz>_<lx>_<lz>,<delay>` line's tile, as the packer splits it
  * (server/engine/tools/pack/config/NpcConfig.ts:237-250); the coord may be a constant (`^trawler_start_patrol1`).
@@ -72,6 +80,7 @@ function patrolTile(value: string, constants: ReadonlyMap<string, Constant>): { 
  * Npc.ts:713-715); `patrol` walks the patrol coords (patrolMode, Npc.ts:738-772).
  */
 function walk(
+    name: string,
     cfg: Config | undefined,
     defaults: MovementDefaults,
     constants: ReadonlyMap<string, Constant>,
@@ -95,7 +104,7 @@ function walk(
     }
     const restrict = first(cfg, 'moverestrict') ?? defaults.moveRestrict;
     if (mode !== 'wander' || restrict === 'nomove') return { wander: 0 };
-    return { wander: Number(first(cfg, 'wanderrange') ?? defaults.wanderRange.value) };
+    return { wander: configInt(cfg, 'wanderrange', defaults.wanderRange.value, name) };
 }
 
 // An npc's ai triggers: `[ai_<trigger>,<config>]`, or `[ai_<trigger>,_<category>]` for a category's.
@@ -172,8 +181,8 @@ export function npcMovements(
         });
         const move = moves.find(m => m.how === 'teleports') ?? moves[0];
         out.set(name, {
-            ...walk(cfg, defaults, constants),
-            respawnTicks: Number(first(cfg, 'respawnrate') ?? defaults.respawnRate.value),
+            ...walk(name, cfg, defaults, constants),
+            respawnTicks: configInt(cfg, 'respawnrate', defaults.respawnRate.value, name),
             ...(move ? { moves: move } : {}),
         });
     }

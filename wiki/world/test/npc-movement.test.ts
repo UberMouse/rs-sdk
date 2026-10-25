@@ -69,6 +69,8 @@ npc_changetype(npc_param(next_npc_type), 500);
 
 const constants = parseConstants('guard.constant', '^guard_corner = 0_50_50_8_22\n');
 const read = () => npcMovements(configs, scripts, defaults, constants);
+/** Reading a config `odd` of the one line `line`. */
+const bad = (line: string) => () => npcMovements(parseConfigs(`[odd]\n${line}\n`), [], defaults);
 
 describe('npcMovements', () => {
     test("wander is the engine's default range, or the config's own", () => {
@@ -94,6 +96,11 @@ describe('npcMovements', () => {
     test("respawnTicks is the engine's default, or the config's respawnrate", () => {
         expect(read().get('man')!.respawnTicks).toBe(100);
         expect(read().get('knight')!.respawnTicks).toBe(50);
+    });
+
+    test('a wanderrange or respawnrate that is no whole number throws, naming the config', () => {
+        expect(bad('wanderrange=far')).toThrow('Unreadable wanderrange far for npc odd');
+        expect(bad('respawnrate=1.5')).toThrow('Unreadable respawnrate 1.5 for npc odd');
     });
 
     test('a teleport in a proc its own ai trigger calls, or a category trigger changing its type, is a move', () => {
