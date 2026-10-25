@@ -1,0 +1,50 @@
+{
+    "name": "beggar-door-started",
+    "purpose": "Merlin's Crystal stage 4, Lady test started (bit 2), 1 bread, at the Port Sarim jeweller door: tests interact choices with the Beggar",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3015,
+                "z": 3246
+            },
+            "inventory": [
+                {
+                    "id": 2309,
+                    "count": 1
+                }
+            ],
+            "varps": {
+                "14": 4,
+                "15": 4
+            }
+        }
+    },
+    "sha1": "9c56c30c849c835737400001e54ade4bb7100231",
+    "createdAt": "2026-10-23T23:08:31.090Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3015,
+            "z": 3246,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "14": 4,
+            "15": 4,
+            "281": 1000
+        }
+    }
+}

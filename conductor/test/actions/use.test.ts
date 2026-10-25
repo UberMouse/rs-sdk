@@ -99,3 +99,61 @@ describe('useItemOnLoc', () => {
         expect(result).toEqual({ ok: false, reason: 'cant-reach', message: 'Cannot reach Fountain' });
     });
 });
+
+describe('a use that moves the player', () => {
+    const tomb = world().inv("Glarial's pebble", 1, { id: 294 }).loc("Glarial's tombstone", 2560, 3445).tick(1);
+    const pebble = tomb.build().inventory[0]!;
+    const stone = tomb.build().nearbyLocs[0]!;
+    const jumped = (n: number, at: { x: number; z: number; level?: number }) =>
+        Array.from({ length: n }, (_, i) =>
+            tomb
+                .tick(2 + i)
+                .player({ at })
+                .build(),
+        );
+
+    test('a teleport onto the tomb floor is the effect of a use on a loc', async () => {
+        const { result } = await runOp([tomb.build(), ...jumped(3, { x: 2554, z: 9844 })], ctx =>
+            useItemOnLoc(ctx, pebble, stone),
+        );
+        expect(result).toEqual({ ok: true });
+    });
+
+    test('a change of floor alone is an effect', async () => {
+        const { result } = await runOp([tomb.build(), ...jumped(3, { x: 2560, z: 3446, level: 1 })], ctx =>
+            useItemOnLoc(ctx, pebble, stone),
+        );
+        expect(result).toEqual({ ok: true });
+    });
+
+    test('a teleport is also the effect of an item used on an item, and one step is too', async () => {
+        const [a, b] = world()
+            .inv('Feather', 1, { id: FEATHER })
+            .inv('Arrow shaft', 1, { id: SHAFT })
+            .tick(1)
+            .build().inventory;
+        const start = world().inv('Feather', 1, { id: FEATHER }).inv('Arrow shaft', 1, { id: SHAFT }).tick(1);
+        for (const dest of [
+            { x: 3300, z: 3200 },
+            { x: 3201, z: 3200 },
+        ]) {
+            const states = [
+                start.player({ at: { x: 3200, z: 3200 } }).build(),
+                start.tick(2).player({ at: dest }).build(),
+            ];
+            const { result } = await runOp(states, ctx => useItemOnItem(ctx, a!, b!));
+            expect(result).toEqual({ ok: true });
+        }
+    });
+
+    test('a bot running toward the loc is a walk, so the use times out', async () => {
+        const walking = Array.from({ length: USE_WAIT_TICKS + 2 }, (_, i) =>
+            tomb
+                .tick(2 + i)
+                .player({ at: { x: 3222 + 2 * (i + 1), z: 3218 } })
+                .build(),
+        );
+        const { result } = await runOp([tomb.build(), ...walking], ctx => useItemOnLoc(ctx, pebble, stone));
+        expect(result).toMatchObject({ ok: false, reason: 'timeout' });
+    });
+});

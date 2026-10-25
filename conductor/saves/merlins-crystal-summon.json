@@ -1,0 +1,175 @@
+{
+    "name": "merlins-crystal-summon",
+    "purpose": "Merlin's Crystal steps 11-13: stage 4, altar words read, lit black candle, bat bones, Excalibur, 5 lobster, near the magic symbol",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2780,
+                "z": 3512
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 45
+            },
+            "inventory": [
+                {
+                    "id": 32,
+                    "count": 1
+                },
+                {
+                    "id": 530,
+                    "count": 1
+                },
+                {
+                    "id": 35,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1153,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1428,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1115,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1191,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1067,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "14": 4,
+                "15": 1
+            }
+        }
+    },
+    "sha1": "d52990ee2f25de0ae134d5de9ae91019d8b50012",
+    "createdAt": "2026-10-24T01:27:09.480Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2780,
+            "z": 3512,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 45
+        },
+        "inventory": [
+            {
+                "id": 32,
+                "name": "lit_black_candle",
+                "count": 1
+            },
+            {
+                "id": 530,
+                "name": "bat_bones",
+                "count": 1
+            },
+            {
+                "id": 35,
+                "name": "excalibur",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1153,
+                "name": "iron_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1428,
+                "name": "mithril_mace",
+                "count": 1
+            },
+            {
+                "id": 1115,
+                "name": "iron_platebody",
+                "count": 1
+            },
+            {
+                "id": 1191,
+                "name": "iron_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1067,
+                "name": "iron_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "14": 4,
+            "15": 1,
+            "281": 1000
+        }
+    }
+}

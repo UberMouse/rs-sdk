@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction } from '../../../sdk/types';
-import { INTERACT_WAIT_TICKS } from '../../actions/interaction';
+import { INTERACT_WAIT_TICKS, SETTLE_MAX_TICKS } from '../../actions/interaction';
+import { CONVERSE_MAX_TICKS } from '../../actions/talk';
 import { WALK_MAX_TICKS } from '../../actions/walk';
 import { stepBudgetTicks } from '../../lib/task';
 import interact from '../../tasks/interact';
+import { type Page, dialogScript } from '../dialog-script';
 import { fakePaths } from '../paths';
 import { walking } from '../react';
 import { simulate } from '../simulate';
@@ -244,10 +246,11 @@ describe('interact: guards and params', () => {
         expect(r.result.status).toBe('error');
     });
 
-    test('the step budget covers a walk and the longest wait after it', () => {
-        expect(stepBudgetTicks(interact.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(
-            WALK_MAX_TICKS + INTERACT_WAIT_TICKS,
-        );
+    test('the step budget covers a walk, and the interaction wait, its settle and a whole conversation', () => {
+        const budget = stepBudgetTicks(interact.stepTimeoutMs ?? 0);
+        expect(budget).toBeGreaterThanOrEqual(WALK_MAX_TICKS + INTERACT_WAIT_TICKS);
+        // The walk is a step of its own: the interact step holds the wait, the settle and the dialog answers.
+        expect(budget).toBeGreaterThanOrEqual(INTERACT_WAIT_TICKS + SETTLE_MAX_TICKS + CONVERSE_MAX_TICKS);
     });
 });
 
@@ -709,6 +712,88 @@ describe('interact: an item used on an NPC', () => {
     });
 });
 
+describe('interact: npcId filter and shorn sheep', () => {
+    const field = world()
+        .player({ at: { x: 2647, z: 3373 } })
+        .inv('Shears', 1, { id: 1735 })
+        .npc('Sheep', 2647, 3374, { index: 3, id: 42, options: ['Attack'] })
+        .npc('Sheep', 2650, 3372, { index: 4, id: 43, options: ['Attack'] });
+    const params = { target: 'npc', name: '^Sheep$', npcId: 43, use: { item: '^Shears$' } };
+    const sheared = (a: BotAction) =>
+        a.type === 'useItemOnNpc'
+            ? (s: ReturnType<typeof field.build>) => world(s).inv('Wool', 1, { id: 1737 }).build()
+            : undefined;
+
+    test('picks the woolly sheep over a nearer shorn one', async () => {
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params,
+            timeline: field.series(60),
+            react: a => {
+                sent.push(a);
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.filter(a => a.type === 'useItemOnNpc')).toEqual([
+            expect.objectContaining({ type: 'useItemOnNpc', npcIndex: 4 }),
+        ]);
+    });
+
+    test('a list of ids matches any of them', async () => {
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params: { ...params, npcId: [42, 43] },
+            timeline: field.series(60),
+            react: a => {
+                sent.push(a);
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.filter(a => a.type === 'useItemOnNpc')).toEqual([expect.objectContaining({ npcIndex: 3 })]);
+    });
+
+    test('no id match reports none in sight', async () => {
+        const r = await simulate(interact, {
+            params: { ...params, npcId: 99 },
+            timeline: field.series(30),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no reachable npc');
+    });
+
+    test('npcId needs target npc', async () => {
+        const r = await simulate(interact, {
+            params: { target: 'loc', name: 'x', option: 'y', npcId: 43 },
+            timeline: field.series(3),
+        });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('npcId');
+    });
+
+    test('"already been shorn" moves on to another sheep without waiting', async () => {
+        const two = world()
+            .player({ at: { x: 2647, z: 3373 } })
+            .inv('Shears', 1, { id: 1735 })
+            .npc('Sheep', 2647, 3374, { index: 3, id: 43, options: ['Attack'] })
+            .npc('Sheep', 2650, 3372, { index: 4, id: 43, options: ['Attack'] });
+        const sent: BotAction[] = [];
+        const r = await simulate(interact, {
+            params,
+            timeline: two.series(80),
+            react: a => {
+                if (a.type !== 'useItemOnNpc') return undefined;
+                sent.push(a);
+                if (sent.length === 1) return s => world(s).message('This sheep has already been shorn.').build();
+                return sheared(a);
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(sent.map(a => (a.type === 'useItemOnNpc' ? a.npcIndex : -1))).toEqual([3, 4]);
+    });
+});
+
 describe('interact: the Wilderness opt-in', () => {
     const altar = world()
         .player({ at: { x: 3239, z: 3600 } })
@@ -771,5 +856,152 @@ describe('interact: the Wilderness opt-in', () => {
             react: checked,
         });
         expect(enough.result.status).toBe('done');
+    });
+});
+
+const opensDialog = (a: BotAction) => a.type === 'interactLoc';
+
+const clicked = (r: Awaited<ReturnType<typeof simulate>>) =>
+    r.driver.commands.filter(c => c.type === 'send' && c.action.type === 'clickDialogOption');
+
+describe('interact: a dialog the interaction opens', () => {
+    const doorWorld = world().loc('Door', 3016, 3246, { options: ['Open'] });
+    const doorParams = { target: 'loc', name: '^Door$', option: '^Open$' };
+    const BEGGAR: Page[] = [[], ['Yes certainly', "No I don't have any bread with me"], [], [], null];
+
+    test('`choices` answers it in order and is done when it closes; the guard is off', async () => {
+        const script = dialogScript(BEGGAR, opensDialog);
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: ['Yes certainly'] },
+            timeline: doorWorld.series(60),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('interact: ^Open$ on ^Door$: a dialog opened; 1 choice made');
+        expect(r.sends[0]).toBe('Open Door');
+        expect(clicked(r)).toHaveLength(BEGGAR.length - 1);
+        expect(script.shown).toBe(BEGGAR.length);
+        expect(interact.allowGuards?.({ ...doorParams, choices: ['x'] } as never)).toEqual(['dialog']);
+    });
+
+    test('an option the dialog lacks fails with its options and closes it', async () => {
+        const script = dialogScript(BEGGAR, opensDialog);
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: ['Take the lamp'] },
+            timeline: doorWorld.series(60),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('no option matching /Take the lamp/i');
+        expect(r.driver.commands.some(c => c.type === 'send' && c.action.type === 'closeModal')).toBe(true);
+    });
+
+    test('without `choices` the task answers no choice: it ends on the dialog opening, the guard clicks only continue pages', async () => {
+        const script = dialogScript(BEGGAR, opensDialog);
+        const r = await simulate(interact, {
+            params: doorParams,
+            timeline: doorWorld.series(120),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(interact.allowGuards?.({ ...doorParams, choices: [] } as never)).toEqual([]);
+        expect(r.sends.some(s => /Yes certainly/.test(s))).toBe(false);
+    });
+
+    test('a message box the op opens is the effect, even when the guard clicks it away', async () => {
+        const altar = world().loc('Chaos altar', 3239, 3206, { options: ['Check'] });
+        const r = await simulate(interact, {
+            params: { target: 'loc', name: '^Chaos altar$', option: '^Check$' },
+            timeline: altar.series(60),
+            react: a =>
+                a.type === 'interactLoc'
+                    ? s =>
+                          world(s)
+                              .dialog({ text: 'Snarthon Candtrick Termanto', options: [] })
+                              .recentDialog(['Snarthon Candtrick Termanto'])
+                              .build()
+                    : a.type === 'clickDialogOption'
+                      ? s => world(s).dialog(false).build()
+                      : undefined,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toContain('Snarthon Candtrick Termanto');
+    });
+
+    test('an unrelated multi-option page fails with the options shown and closes it', async () => {
+        const script = dialogScript([['Buy a drink', 'Leave'], null], opensDialog);
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: [] as string[] },
+            timeline: doorWorld.series(60),
+            react: script.react,
+        });
+        // No choices: the run is done on the dialog opening, nothing is answered.
+        expect(r.result.status).toBe('done');
+        const stray = dialogScript([['Buy a drink', 'Leave'], null], opensDialog);
+        const f = await simulate(interact, {
+            params: { ...doorParams, choices: ['Yes certainly'] },
+            timeline: doorWorld.series(60),
+            react: stray.react,
+        });
+        expect(f.result.status).toBe('failed');
+        expect(f.result.reason).toContain('no option matching /Yes certainly/i');
+        expect(f.result.reason).toContain('"Buy a drink" | "Leave"');
+        expect(f.driver.commands.some(c => c.type === 'send' && c.action.type === 'closeModal')).toBe(true);
+    });
+
+    test('choices on an interaction that opens no dialog fail saying it opened none', async () => {
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: ['Yes certainly'] },
+            timeline: doorWorld.series(60),
+            react: a => (a.type === 'interactLoc' ? s => world(s).message('The door opens.').build() : undefined),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('it opened no dialog to answer with `choices`');
+        expect(r.result.reason).toContain('game message "The door opens."');
+        expect(r.sends.filter(x => x === 'Open Door')).toHaveLength(1);
+    });
+
+    test('a level-up page before the beggar pages is passed like any continue page', async () => {
+        const script = dialogScript([[], [], ['Yes certainly', 'No'], [], null], opensDialog);
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: ['Yes certainly'] },
+            timeline: doorWorld.series(60),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toContain('1 choice made');
+        expect(script.shown).toBe(5);
+    });
+
+    test('a step cut off mid-conversation resumes the dialog without sending the door again', async () => {
+        const script = dialogScript(BEGGAR, opensDialog);
+        const r = await simulate(interact, {
+            params: { ...doorParams, choices: ['Yes certainly'] },
+            timeline: doorWorld.inv('Shrimps', 1).series(80, (x, i) => x.player({ hp: i >= 3 && i < 7 ? 3 : 10 })),
+            react: script.react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+        expect(r.sends.filter(x => x === 'Open Door')).toHaveLength(1);
+        expect(r.result.reason).toContain('1 choice made');
+    });
+
+    test('a cut-off resume keeps working when the used item was consumed', async () => {
+        const keyDoor = world()
+            .loc('Door', 3016, 3246, { options: ['Open'] })
+            .inv('Door key', 1, { id: 2418 });
+        const script = dialogScript(BEGGAR, a => a.type === 'useItemOnLoc');
+        const r = await simulate(interact, {
+            params: { target: 'loc', name: '^Door$', use: { item: '^Door key$' }, choices: ['Yes certainly'] },
+            timeline: keyDoor.inv('Shrimps', 1).series(80, (x, i) => x.player({ hp: i >= 3 && i < 7 ? 3 : 10 })),
+            react: (a, st) => {
+                const e = script.react(a, st);
+                // The key is used up by the door.
+                return a.type === 'useItemOnLoc' && e ? s => world(e(s)).inv('Door key', 0).build() : e;
+            },
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeGreaterThan(0);
+        expect(r.sends.filter(x => x === 'use Door key on Door')).toHaveLength(1);
     });
 });

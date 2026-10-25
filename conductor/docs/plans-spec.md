@@ -116,7 +116,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
   `stops: StopCondition[]`, `now?`, `pathfinder?`, `state(): BotWorldState` (reads the world between
   phases), and `newPhaseRun(phase, index) => { driver, sinks, runId, logFile, close?() }` (each phase
   run gets its own driver, log and recording; the CLI builds live ones, tests timeline ones).
-  `maxIdlePhases` (default 3).
+  `maxIdlePhases` (default 3). `nextTick?()` reads the next state: a plan that ends done after at least one
+  phase reads `PLAN_SETTLE_TICKS` more states with it, so reward XP published after the `until` holds
+  (a quest's lump) appears in the plan total but in no phase's `xpGained`.
 - **Loop**: build the view from `state()`; pick the first phase whose `when` holds (default true)
   and whose `until` does not already hold, skipping a phase that just failed with `continue`. None:
   the plan ends `failed` with reason `no phase applies` (the plan log's selection event carries

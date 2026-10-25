@@ -80,7 +80,8 @@ test(
                 skills: { Smithing: 1 },
                 inventory: [
                     { id: Items.HAMMER, count: 1 },
-                    { id: Items.BRONZE_BAR, count: 2 },
+                    { id: Items.BRONZE_BAR, count: 1 },
+                    { id: Items.BRONZE_BAR, count: 1 },
                 ],
             },
             async ({ name }) => {

@@ -1,0 +1,192 @@
+{
+    "name": "mordred-weak",
+    "purpose": "Merlin's Crystal stage 3 (varp 14 = 3) at combat ~70-free low level: Att/Str/Def/HP 45, mithril mace + iron armour, 10 lobsters, on Keep Le Faye L2 (2769,3401) next to Sir Mordred. Tests combat stopOnDialog at low HP then talk continue.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2769,
+                "z": 3401,
+                "level": 2
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 45
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1153,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1428,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1115,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1191,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1067,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "14": 3
+            }
+        }
+    },
+    "sha1": "37d2c71f4474117cc3e41f8f5e7ff2ef9c08bae6",
+    "createdAt": "2026-10-24T00:36:36.820Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2769,
+            "z": 3401,
+            "level": 2
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 45
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1153,
+                "name": "iron_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1428,
+                "name": "mithril_mace",
+                "count": 1
+            },
+            {
+                "id": 1115,
+                "name": "iron_platebody",
+                "count": 1
+            },
+            {
+                "id": 1191,
+                "name": "iron_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1067,
+                "name": "iron_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "14": 3,
+            "281": 1000
+        }
+    }
+}

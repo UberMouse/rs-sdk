@@ -94,7 +94,10 @@ upstream would own); then add it to `## Review follow-ups` in `conductor/roadmap
 
 ## 3. Fix
 
-Dispatch `task-author` with every fix finding (inline, or in a brief file for many):
+Dispatch `task-author` with every fix finding (inline, or in a brief file for many). Whoever runs this loop never edits
+the task files itself: every fix goes through a `task-author` (retro #3: a review delegate committed its own fixes,
+4778e2480). While a dispatched agent runs, end the turn and wait for its notification; never poll it with Monitor or
+sleep loops (retro #3: one delegate spent 39.8 M cache reads on 267 such polls).
 
 ```
 Fix review findings in <files>, smoke-testing on worker <worker> from save <save>

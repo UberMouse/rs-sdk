@@ -134,6 +134,15 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     keepGoingWithoutFood?(params: z.infer<S>): boolean;
     /**
+     * The state holds a dialog this task's run keeps open for the next phase (combat with `stopOnDialog`: Morgan
+     * Le Faye's choice at Sir Mordred's death). While it holds, the low-hp guard does not eat (the eat would close
+     * the dialog), and a `done` run ending on it skips the fight settle and the eat before leaving, so the next
+     * `talk` finds the dialog open. Not a level-up page, which the task clicks away itself. The hold applies only to
+     * a `done` end (the settle and eat before leaving) and only above the engine's HP floor
+     * (`HOLD_HP_FLOOR_MIN` / `HOLD_HP_FLOOR_FRACTION`); at or below it the guard eats even if that closes the dialog.
+     */
+    holdsDialog?(params: z.infer<S>, state: BotWorldState): boolean;
+    /**
      * Best-effort cleanup once as the run ends, whatever ended it (done, fail, a stop, the watchdog), after any
      * fight has settled and the low-HP eat before leaving has run: for state the task changed that would outlast
      * it (combat's prayers). An op like a step's, under no guards and no stops; it should cost a few ticks and
@@ -141,6 +150,12 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * Never fails the run: a throw is logged.
      */
     onEnd?(ctx: TaskContext<z.infer<S>, M>): Op<void>;
+    /**
+     * Counts and warnings for the result (`TaskResult.diagnostics` / `warnings`), read once as the run ends: what
+     * the run saw that its decisions did not use (targets in view outside the area, lib/area-watch.ts). Never
+     * changes the run's status; a throw is logged. Return empty parts when there is nothing to say.
+     */
+    diagnostics?(ctx: TaskContext<z.infer<S>, M>): { diagnostics?: Record<string, unknown>; warnings?: string[] };
     /** Checked once before the loop; return a reason to refuse to start. */
     preflight?(ctx: TaskContext<z.infer<S>, M>): string | null;
     steps: Step<z.infer<S>, M>[];
@@ -193,6 +208,10 @@ export interface TaskResult {
     inCombat: boolean | null;
     screenshots: string[];
     logFile: string;
+    /** Task-specific counts from the task's `diagnostics` hook (area tasks: idleTicks, seenOutsideAreaTicks, nearestOutsideArea); absent when empty. */
+    diagnostics?: Record<string, unknown>;
+    /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
+    warnings?: string[];
     /** A nudge run-task adds for the runner reading the RESULT (a chain of plain runs); absent normally. */
     hint?: string;
 }

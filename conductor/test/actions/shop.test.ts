@@ -92,6 +92,51 @@ describe('openShop', () => {
         });
     });
 
+    test('among same-named NPCs the one offering Trade is used, even when farther', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .npc('Dwarf', KEEPER.x + 1, KEEPER.z, { index: 7, options: ['Talk-to'] })
+            .npc('Dwarf', KEEPER.x + 3, KEEPER.z, { index: 8, options: ['Talk-to', 'Trade'] });
+        const { sends } = await runOp([w.build(), opened.tick(1).build()], ctx => openShop(ctx, 'Dwarf'));
+        expect(sends[0]).toMatchObject({ npcIndex: 8, reason: 'Trade Dwarf' });
+    });
+
+    test('among same-named traders a reachable one is used, even when an unreachable one is nearer', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .npc('Dwarf', KEEPER.x + 1, KEEPER.z, { index: 7, options: ['Talk-to', 'Trade'], reachable: false })
+            .npc('Dwarf', KEEPER.x + 3, KEEPER.z, { index: 8, options: ['Talk-to', 'Trade'] });
+        const { sends } = await runOp([w.build(), opened.tick(1).build()], ctx => openShop(ctx, 'Dwarf'));
+        expect(sends[0]).toMatchObject({ npcIndex: 8 });
+    });
+
+    test('an unreachable trader is still used when it is the only one', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .npc('Dwarf', KEEPER.x + 1, KEEPER.z, { index: 7, options: ['Talk-to', 'Trade'], reachable: false });
+        const { sends } = await runOp([w.build(), opened.tick(1).build()], ctx => openShop(ctx, 'Dwarf'));
+        expect(sends[0]).toMatchObject({ npcIndex: 7 });
+    });
+
+    test('with no target, a reachable trading NPC beats a nearer unreachable one', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .npc('Bob', KEEPER.x + 1, KEEPER.z, { index: 7, options: ['Trade'], reachable: false })
+            .npc('Aubury', KEEPER.x + 3, KEEPER.z, { index: 8, options: ['Trade'] });
+        const { sends } = await runOp([w.build(), opened.tick(1).build()], ctx => openShop(ctx));
+        expect(sends[0]).toMatchObject({ npcIndex: 8 });
+    });
+
+    test('same-named NPCs with no Trade option among them are no-trade-option, nothing sent', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .npc('Dwarf', KEEPER.x + 1, KEEPER.z, { index: 7, options: ['Talk-to'] })
+            .npc('Dwarf', KEEPER.x + 3, KEEPER.z, { index: 8, options: ['Talk-to'] });
+        const { result, sends } = await runOp(w.series(1), ctx => openShop(ctx, 'Dwarf'));
+        expect(result).toEqual({ ok: false, reason: 'no-trade-option', message: 'No trade option on NPC' });
+        expect(sends).toEqual([]);
+    });
+
     test('a shopkeeper with no Trade option is no-trade-option and nothing is sent', async () => {
         const talkOnly = world().npc('Shop keeper', KEEPER.x, KEEPER.z, { options: ['Talk-to'] });
         const { result, sends } = await runOp(talkOnly.series(1), openShop);

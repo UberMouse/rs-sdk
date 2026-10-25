@@ -31,6 +31,60 @@ test(
 );
 
 test(
+    'combat targetRange visible kills chickens in view beyond a tiny area',
+    async () => {
+        await withFixtureBot(
+            { position: COOP },
+            async ({ name }) => {
+                // Radius 2 around the coop's west end: most of the coop's chickens stand outside it.
+                const run = await runTask(
+                    name,
+                    'combat',
+                    {
+                        target: 'Chicken',
+                        skill: 'Attack',
+                        targetRange: 'visible',
+                        area: { x: COOP.x - 3, z: COOP.z, radius: 2 },
+                    },
+                    ['xp:Attack:100', 'minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.xpGained.Attack, detail).toBeGreaterThan(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
+
+test(
+    'combat with chickens in view outside a tiny area idles and warns, naming the nearest one',
+    async () => {
+        await withFixtureBot(
+            { position: COOP },
+            async ({ name }) => {
+                // Radius 2 at the coop's west fence: the coop's chickens stand in view, mostly beyond it. One may wander in
+                // and be killed, so the run ends done at the stop or failed after twenty empty looks, either way idle first.
+                const run = await runTask(
+                    name,
+                    'combat',
+                    { target: 'Chicken', skill: 'Attack', area: { x: COOP.x - 6, z: COOP.z, radius: 2 } },
+                    ['minutes:1'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(['done', 'failed'], detail).toContain(run.result.status);
+                expect(run.result.diagnostics?.idleTicks, detail).toBeGreaterThan(0);
+                expect(run.result.diagnostics?.seenOutsideAreaTicks, detail).toBeGreaterThan(0);
+                expect(run.result.warnings?.[0], detail).toContain('seenOutsideArea');
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
+
+test(
     'combat task shoots chickens with a wielded bow and arrows until the Ranged XP target',
     async () => {
         await withFixtureBot(
@@ -165,7 +219,8 @@ test(
                 const talk = await runTask(
                     name,
                     'talk',
-                    { npc: 'Morgan Le Faye', choices: ['Tell me how to untrap Merlin', 'OK I will go do all that'] },
+                    // The run returned at once, still under Mordred's attack: the open dialog is answered with `continue`.
+                    { continue: true, choices: ['Tell me how to untrap Merlin', 'OK I will go do all that'] },
                     ['minutes:2'],
                 );
                 const talked = `${JSON.stringify(talk.result)}\n${talk.stderr}`;

@@ -1,0 +1,54 @@
+{
+    "name": "varrock-aubury",
+    "purpose": "Combat ~50 with a Lobster beside Aubury in the Varrock rune shop (3253,3401), where the essence mine drops the bot: a fresh login with the client scene's north edge at z 3455. Walk to the palace (King Roald 3222,3476).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3253,
+                "z": 3401,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "e6d200721925cb9a6e2056dd3473fad2f6c828f2",
+    "createdAt": "2026-10-23T22:27:43.450Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3253,
+            "z": 3401,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

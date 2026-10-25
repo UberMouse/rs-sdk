@@ -1,0 +1,232 @@
+{
+    "name": "knights-sword-start",
+    "purpose": "Knight's Sword start: Att 40 Str 47 Def 40 HP 48 Prayer 43 Mining 10, steel scimitar worn, bronze pickaxe, redberry pie, 2 iron bars, 15 lobsters (separate slots), no coins, Lumbridge (3222,3218).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 43,
+                "Mining": 10
+            },
+            "inventory": [
+                {
+                    "id": 1265,
+                    "count": 1
+                },
+                {
+                    "id": 2325,
+                    "count": 1
+                },
+                {
+                    "id": 2351,
+                    "count": 1
+                },
+                {
+                    "id": 2351,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ]
+        }
+    },
+    "sha1": "5c4da5ddb5bea61a048bd7b7d568d610348e0ce8",
+    "createdAt": "2026-10-23T09:03:37.004Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 43,
+            "Mining": 10
+        },
+        "inventory": [
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 2325,
+                "name": "redberry_pie",
+                "count": 1
+            },
+            {
+                "id": 2351,
+                "name": "iron_bar",
+                "count": 1
+            },
+            {
+                "id": 2351,
+                "name": "iron_bar",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

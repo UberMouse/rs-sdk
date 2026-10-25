@@ -233,8 +233,8 @@ export function isPlayerChat(type: number): boolean {
 }
 
 export interface DialogEntry {
-    text: string[];      // Lines of text in the dialog
-    tick: number;        // Game tick when captured
+    text: string[]; // Lines of text in the dialog
+    tick: number; // Game tick when captured
     /** Monotonic publication revision when this dialog first became agent-visible. */
     observationId?: number;
     interfaceId: number; // Interface ID of the dialog
@@ -269,6 +269,8 @@ export interface InterfaceState {
     isOpen: boolean;
     interfaceId: number;
     options: InterfaceOption[];
+    /** The client's component dump of the open interface (one line per component: id, type, button, text). */
+    debugInfo?: string[];
 }
 
 /** A clickable viewport-interface option as published in world state. */
@@ -410,8 +412,17 @@ export interface TradeResult {
     gave: TradeItem[];
     /** Items added to your inventory (by the completed trade). */
     received: TradeItem[];
-    reason?: 'player_not_found' | 'no_response' | 'declined' | 'busy' | 'offer_failed'
-        | 'want_not_met' | 'no_space' | 'not_open' | 'timeout' | 'error';
+    reason?:
+        | 'player_not_found'
+        | 'no_response'
+        | 'declined'
+        | 'busy'
+        | 'offer_failed'
+        | 'want_not_met'
+        | 'no_space'
+        | 'not_open'
+        | 'timeout'
+        | 'error';
     /** Items from the partner's final offer that did not reach the inventory (dropped on the ground on overflow). */
     possiblyDropped?: TradeItem[];
 }
@@ -489,35 +500,75 @@ export interface CombatEvent {
 // ============ Prayer Types ============
 
 export type PrayerName =
-    | 'thick_skin' | 'burst_of_strength' | 'clarity_of_thought'
-    | 'rock_skin' | 'superhuman_strength' | 'improved_reflexes'
-    | 'rapid_restore' | 'rapid_heal' | 'protect_items'
-    | 'steel_skin' | 'ultimate_strength' | 'incredible_reflexes'
-    | 'protect_from_magic' | 'protect_from_missiles' | 'protect_from_melee';
+    | 'thick_skin'
+    | 'burst_of_strength'
+    | 'clarity_of_thought'
+    | 'rock_skin'
+    | 'superhuman_strength'
+    | 'improved_reflexes'
+    | 'rapid_restore'
+    | 'rapid_heal'
+    | 'protect_items'
+    | 'steel_skin'
+    | 'ultimate_strength'
+    | 'incredible_reflexes'
+    | 'protect_from_magic'
+    | 'protect_from_missiles'
+    | 'protect_from_melee';
 
 export const PRAYER_NAMES: PrayerName[] = [
-    'thick_skin', 'burst_of_strength', 'clarity_of_thought',
-    'rock_skin', 'superhuman_strength', 'improved_reflexes',
-    'rapid_restore', 'rapid_heal', 'protect_items',
-    'steel_skin', 'ultimate_strength', 'incredible_reflexes',
-    'protect_from_magic', 'protect_from_missiles', 'protect_from_melee',
+    'thick_skin',
+    'burst_of_strength',
+    'clarity_of_thought',
+    'rock_skin',
+    'superhuman_strength',
+    'improved_reflexes',
+    'rapid_restore',
+    'rapid_heal',
+    'protect_items',
+    'steel_skin',
+    'ultimate_strength',
+    'incredible_reflexes',
+    'protect_from_magic',
+    'protect_from_missiles',
+    'protect_from_melee',
 ];
 
 export const PRAYER_INDICES: Record<PrayerName, number> = {
-    'thick_skin': 0, 'burst_of_strength': 1, 'clarity_of_thought': 2,
-    'rock_skin': 3, 'superhuman_strength': 4, 'improved_reflexes': 5,
-    'rapid_restore': 6, 'rapid_heal': 7, 'protect_items': 8,
-    'steel_skin': 9, 'ultimate_strength': 10, 'incredible_reflexes': 11,
-    'protect_from_magic': 12, 'protect_from_missiles': 13, 'protect_from_melee': 14,
+    thick_skin: 0,
+    burst_of_strength: 1,
+    clarity_of_thought: 2,
+    rock_skin: 3,
+    superhuman_strength: 4,
+    improved_reflexes: 5,
+    rapid_restore: 6,
+    rapid_heal: 7,
+    protect_items: 8,
+    steel_skin: 9,
+    ultimate_strength: 10,
+    incredible_reflexes: 11,
+    protect_from_magic: 12,
+    protect_from_missiles: 13,
+    protect_from_melee: 14,
 };
 
 /** Required prayer level for each prayer (indexed 0-14) */
 export const PRAYER_LEVELS: number[] = [
-    1, 4, 7,    // thick_skin, burst_of_strength, clarity_of_thought
-    10, 13, 16, // rock_skin, superhuman_strength, improved_reflexes
-    19, 22, 25, // rapid_restore, rapid_heal, protect_items
-    28, 31, 34, // steel_skin, ultimate_strength, incredible_reflexes
-    37, 40, 43, // protect_from_magic, protect_from_missiles, protect_from_melee
+    1,
+    4,
+    7, // thick_skin, burst_of_strength, clarity_of_thought
+    10,
+    13,
+    16, // rock_skin, superhuman_strength, improved_reflexes
+    19,
+    22,
+    25, // rapid_restore, rapid_heal, protect_items
+    28,
+    31,
+    34, // steel_skin, ultimate_strength, incredible_reflexes
+    37,
+    40,
+    43, // protect_from_magic, protect_from_missiles, protect_from_melee
 ];
 
 /** One entry of the quest tab: the quest's name and its text colour (red not started, yellow started, green complete). */
@@ -538,7 +589,13 @@ export interface PrayerState {
 export interface PrayerResult {
     success: boolean;
     message: string;
-    reason?: 'invalid_prayer' | 'no_prayer_points' | 'level_too_low' | 'already_active' | 'already_inactive' | 'timeout';
+    reason?:
+        | 'invalid_prayer'
+        | 'no_prayer_points'
+        | 'level_too_low'
+        | 'already_active'
+        | 'already_inactive'
+        | 'timeout';
 }
 
 /**
@@ -615,7 +672,12 @@ export type BotAction =
     | { type: 'talkToNpc'; npcIndex: number; reason: string }
     | { type: 'interactNpc'; npcIndex: number; optionIndex: number; reason: string }
     | { type: 'interactPlayer'; playerIndex: number; optionIndex: number; reason: string }
-    | { type: 'clickDialogOption'; optionIndex: number; reason: string; guard?: { pageId: string; componentId: number } }
+    | {
+          type: 'clickDialogOption';
+          optionIndex: number;
+          reason: string;
+          guard?: { pageId: string; componentId: number };
+      }
     // clickComponent: IF_BUTTON packet - for simple buttons, spellcasting, etc.
     | { type: 'clickComponent'; componentId: number; reason: string }
     // clickComponentWithOption: INV_BUTTON packet - for components with inventory operations (smithing, crafting, etc.)
@@ -829,7 +891,14 @@ export interface ShopResult {
     amountBought?: number;
     /** Some but not all of the requested amount was bought. */
     partial?: boolean;
-    reason?: 'invalid_amount' | 'shop_not_open' | 'item_not_found' | 'partial_fill' | 'timeout' | 'out_of_stock' | 'no_inventory_space';
+    reason?:
+        | 'invalid_amount'
+        | 'shop_not_open'
+        | 'item_not_found'
+        | 'partial_fill'
+        | 'timeout'
+        | 'out_of_stock'
+        | 'no_inventory_space';
 }
 
 export interface ShopSellResult {
@@ -868,7 +937,14 @@ export interface AttackResult {
     success: boolean;
     message: string;
     /** `npc_not_found` also covers players: no target matched. */
-    reason?: 'npc_not_found' | 'no_attack_option' | 'out_of_reach' | 'already_in_combat' | 'not_attackable' | 'died' | 'timeout';
+    reason?:
+        | 'npc_not_found'
+        | 'no_attack_option'
+        | 'out_of_reach'
+        | 'already_in_combat'
+        | 'not_attackable'
+        | 'died'
+        | 'timeout';
     /** What the resolved target was, when one was found. */
     targetType?: 'npc' | 'player';
 }
@@ -903,7 +979,14 @@ export interface CraftLeatherResult {
     message: string;
     xpGained?: number;
     itemsCrafted?: number;
-    reason?: 'no_needle' | 'no_leather' | 'no_thread' | 'interface_not_opened' | 'level_too_low' | 'timeout' | 'no_xp_gained';
+    reason?:
+        | 'no_needle'
+        | 'no_leather'
+        | 'no_thread'
+        | 'interface_not_opened'
+        | 'level_too_low'
+        | 'timeout'
+        | 'no_xp_gained';
 }
 
 export interface SmithResult {
@@ -912,7 +995,15 @@ export interface SmithResult {
     xpGained?: number;
     itemsSmithed?: number;
     product?: InventoryItem;
-    reason?: 'no_hammer' | 'no_bars' | 'no_anvil' | 'cant_reach' | 'interface_not_opened' | 'level_too_low' | 'timeout' | 'no_xp_gained';
+    reason?:
+        | 'no_hammer'
+        | 'no_bars'
+        | 'no_anvil'
+        | 'cant_reach'
+        | 'interface_not_opened'
+        | 'level_too_low'
+        | 'timeout'
+        | 'no_xp_gained';
 }
 
 export interface OpenBankResult {
@@ -980,7 +1071,15 @@ export interface PickpocketResult {
      * 'not_started' = no attempt message and no rejection either; unaccounted for.
      * 'timeout' = the attempt did start, then never resolved.
      */
-    reason?: 'npc_not_found' | 'no_pickpocket_option' | 'cant_reach' | 'stunned' | 'timeout' | 'dispatch_failed' | 'rejected' | 'not_started';
+    reason?:
+        | 'npc_not_found'
+        | 'no_pickpocket_option'
+        | 'cant_reach'
+        | 'stunned'
+        | 'timeout'
+        | 'dispatch_failed'
+        | 'rejected'
+        | 'not_started';
 }
 
 export interface CraftJewelryResult {

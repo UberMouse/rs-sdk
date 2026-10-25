@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, w
 import { dirname, join } from 'node:path';
 import { z } from 'zod/v4';
 import { type BotEnv, controllerCount, FETCH_TIMEOUT_MS, REPO_ROOT } from './env';
-import { configName, packFile } from './packs';
+import { configName, objInfo, packFile } from './packs';
 import { errMessage, fileStamp } from './util';
 
 /** Newest save format the engine reads (PlayerLoading.SAV_VERSION). */
@@ -460,6 +460,20 @@ export function listLibrary(): { entries: LibraryEntry[]; invalid: { file: strin
         }
     }
     return { entries, invalid };
+}
+
+/**
+ * The inventory items of a spec that put more than one of a non-stackable obj in a single inventory slot (`{ id: 373, count: 20 }`
+ * is 20 swordfish in one slot). The engine loads such a slot as is, and the first use or eat of one of them
+ * removes the whole slot: 20 held swordfish vanished with one eat. List the item once per copy instead.
+ */
+export function unstackableStacks(items: ReadonlyArray<{ id: number; count: number }> | undefined): string[] {
+    const bad: string[] = [];
+    for (const { id, count } of items ?? []) {
+        const obj = configName('obj', id);
+        if (count > 1 && obj && objInfo(obj)?.stackable === false) bad.push(`${obj} (id ${id}) x${count}`);
+    }
+    return bad;
 }
 
 /**

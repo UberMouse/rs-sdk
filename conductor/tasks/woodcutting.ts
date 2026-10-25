@@ -1,9 +1,10 @@
 import { z } from 'zod/v4';
-import type { NearbyLoc } from '../../sdk/types';
+import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { CHOP_OPTION, CHOP_WAIT_TICKS, chop } from '../actions/chop';
 import { drop } from '../actions/drop';
 import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
@@ -48,6 +49,8 @@ type WoodcuttingParams = z.infer<typeof Params>;
 interface WoodcuttingMemory {
     /** The tick the bot first found no tree to chop, until it finds one again. */
     noTreeSinceTick: number | null;
+    /** Idle ticks and the ones with a tree in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
 }
 type Ctx = TaskContext<WoodcuttingParams, WoodcuttingMemory>;
 
@@ -59,12 +62,14 @@ const fullWithoutLogs = (ctx: Ctx) => ({ fail: `inventory full with no ${ctx.par
  * chop would trade the bot back and forth.
  */
 function choppable(params: WoodcuttingParams): (loc: NearbyLoc) => boolean {
+    const isTree = treeOfKind(params);
+    return t => isTree(t) && inArea(params.area, t);
+}
+
+/** A tree of the task's kind the bot could chop, wherever it stands. */
+function treeOfKind(params: WoodcuttingParams): (loc: NearbyLoc) => boolean {
     const { pattern } = TREES[params.tree];
-    return t =>
-        pattern.test(t.name) &&
-        t.reachable === true &&
-        t.options.some(o => CHOP_OPTION.test(o)) &&
-        inArea(params.area, t);
+    return t => pattern.test(t.name) && t.reachable === true && t.options.some(o => CHOP_OPTION.test(o));
 }
 
 /**
@@ -80,7 +85,13 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
     const since = ctx.memory.noTreeSinceTick;
     const left = Math.max(0, since + NO_TREE_GIVE_UP_TICKS - now);
     const isChoppable = choppable(ctx.params);
-    const respawn = yield* wait('tree respawn', s => s.nearbyLocs.some(isChoppable), left);
+    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, treeOfKind(ctx.params));
+    const respawn = yield* trackIdle(
+        ctx,
+        ctx.memory.areaWatch,
+        seen,
+        wait('tree respawn', s => s.nearbyLocs.some(isChoppable), left),
+    );
     if (respawn.kind === 'met') return;
     const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
     const { area } = ctx.params;
@@ -102,7 +113,8 @@ export default defineTask({
         'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
         'Draynor willows (3087,3235, dark wizards nearby). Refuses areas reaching the Wilderness.',
     params: Params,
-    memory: (): WoodcuttingMemory => ({ noTreeSinceTick: null }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): WoodcuttingMemory => ({ noTreeSinceTick: null, areaWatch: newAreaWatch() }),
     // Chopping a tree cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,

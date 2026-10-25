@@ -1,0 +1,191 @@
+{
+    "name": "plague-city-start",
+    "purpose": "Plague City start: lumbridge-quests combat (Att 40 Str 47 Def 40 HP 48, steel scimitar, 6 salmon), East Ardougne market (2655,3300), rope, 4 empty buckets, bucket of milk, chocolate dust, snape grass (the hangover cure inputs, bought far away), 100 coins; spade, picture and dwellberries are collected by the plan",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2655,
+                "z": 3300
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 15
+            },
+            "inventory": [
+                {
+                    "id": 954,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 1927,
+                    "count": 1
+                },
+                {
+                    "id": 1975,
+                    "count": 1
+                },
+                {
+                    "id": 231,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 100
+        }
+    },
+    "sha1": "1e2c127eee2cfe6c7c38008214127a24e849309b",
+    "createdAt": "2026-10-24T01:27:27.436Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2655,
+            "z": 3300,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 15
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            },
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 1927,
+                "name": "bucket_milk",
+                "count": 1
+            },
+            {
+                "id": 1975,
+                "name": "chocolate_dust",
+                "count": 1
+            },
+            {
+                "id": 231,
+                "name": "snape_grass",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

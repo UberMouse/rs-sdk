@@ -22,6 +22,8 @@
 //   other:<text>           a condition none of these forms fit; the build report lists each one
 //   other:came from <npc>  the way came in by the npc's teleport (cameFrom): a way out that returns to where the
 //                          player came from (the essence mine's portals) has one per npc
+//   other:came from *      (ANY_CAME_FROM) met by an account in the essence mine with no wizard on record: any
+//                          wizard's way out; never a requirement of the index, only a token an account carries
 import { cmp } from './util';
 
 export type Requirement =
@@ -46,6 +48,12 @@ export const CAME_FROM = 'other:came from ';
  * (NearestOptions.context).
  */
 export const cameFrom = (npc: string): string => `${CAME_FROM}${npc}`;
+/**
+ * Met by an account standing in the essence mine that does not know which wizard it came in by: any wizard's way out
+ * (lib/account.ts meetsToken). An account outside the mine meets no way out, as it could only come in by one wizard
+ * and out by the same.
+ */
+export const ANY_CAME_FROM = `${CAME_FROM}*`;
 
 /** The canonical string of a requirement. Throws on a malformed one (an id that isn't `[a-z0-9_]+`). */
 export function formatRequirement(r: Requirement): string {

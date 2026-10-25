@@ -1,0 +1,203 @@
+{
+    "name": "observatory-start",
+    "purpose": "Observatory Quest start: Att 40 Str 54 Def 40 HP 47 Prayer 49, mithril scimitar worn, 10 swordfish, 500 coins, 3 planks + bronze bar + molten glass (no cheap source: plank shop unplaced, bronze bar far, glass needs furnace/sand), at the Observatory reception (2447,3186)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2447,
+                "z": 3186
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49
+            },
+            "inventory": [
+                {
+                    "id": 960,
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
+                },
+                {
+                    "id": 960,
+                    "count": 1
+                },
+                {
+                    "id": 2349,
+                    "count": 1
+                },
+                {
+                    "id": 1775,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 500,
+            "varps": {
+                "281": 1000
+            }
+        }
+    },
+    "sha1": "3cc7c46790e1fb012c2cb2ab53bb83744ae20b8a",
+    "createdAt": "2026-10-24T03:17:33.535Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2447,
+            "z": 3186,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
+            },
+            {
+                "id": 960,
+                "name": "woodplank",
+                "count": 1
+            },
+            {
+                "id": 2349,
+                "name": "bronze_bar",
+                "count": 1
+            },
+            {
+                "id": 1775,
+                "name": "molten_glass",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

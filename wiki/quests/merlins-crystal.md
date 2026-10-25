@@ -10,7 +10,7 @@
 | Members | yes (Excalibur, black candle and bat bones are members objs) |
 
 Everything on this page is read from the server scripts and game data on 2026-10-23 (paths are under
-`server/content/scripts/`); none of it has been run by a bot yet. Coordinates are `(x, z)` with ` L<n>` above
+`server/content/scripts/`); the bot route (`plan:merlins-crystal`) ran start to finish on questw3 (phases under Plan status). Coordinates are `(x, z)` with ` L<n>` above
 level 0.
 
 ## Requirements
@@ -63,7 +63,7 @@ Each step: who or what (config display name), where, the exact dialog choices, i
    Table!". Stage 0 -> 1.
 2. **Sir Gawain** (2763, 3506), Camelot ground floor. Choices: "Do you know how Merlin got trapped?", then "Thank you
    for the information." (or "Any idea how to get into Morgan Le Faye's stronghold?", which only says he is
-   stumped). Stage 1 -> 2.
+   stumped). Stage 1 -> 2. Gawain can wander into the garden behind the Door (2766,3504), where `talk` fails "no reachable Sir Gawain" (2 runs); an `interact` Open on that Door from (2766,3505) with `tile` (2766,3504) also failed "no reachable loc", so the way in is not established. [v 2026-10-24 conductor3 local]
 3. **Sir Lancelot** (2759, 3515) L1, Camelot first floor; staircase (2750, 3510) up to (2750, 3513) L1. Choices: "Any
    ideas on how to get into Morgan Le Faye's stronghold?" (option 3 of 3). Stage 2 -> 3.
 4. **Crate** (`merlincrate_empty`, op "Hide-in") at (2801, 3442), Catherby, south-west of the bank. Works from stage
@@ -77,10 +77,14 @@ Each step: who or what (config display name), where, the exact dialog choices, i
    stops and **Morgan Le Faye** appears at (2770, 3403) L2. Choices: "Tell me how to untrap Merlin and I
    might." (stage 3 -> 4), then any of "So where can I find Excalibur?", "What are the magic words?", "OK I will go
    do all that." (the last ends it; Morgan vanishes, `sir_mordred.rs2:73-77`). Do not pick "No. He deserves to
-   die." (kills Mordred, no stage change) or "Ok then." (Morgan leaves, no stage change). Leave the keep by the
-   **Crate** (`merlincrate_empty2`, "Hide-in") at (2779, 3401) on the jetty: "Yes." then "Yes."; it puts the player
-   at (2802, 3441) in Catherby (`quest_arthur.rs2:38-66`). The Large door also opens from inside, west
-   (`quest_arthur.rs2:94-116`).
+   die." (kills Mordred, no stage change) or "Ok then." (Morgan leaves, no stage change). Leave the keep by
+   walking out of the front **Large door** (2763, 3401/3402) from inside, which opens west
+   (`quest_arthur.rs2:94-116`): `travel` from the keep to (2802, 3440) level 0 succeeded. The exit **Crate**
+   (`merlincrate_empty2`, "Hide-in", "Yes." then "Yes.", puts the player at (2802, 3441); `quest_arthur.rs2:38-66`) is a
+   level-1 map loc at (2779, 3401) on a bridge-flag tile; the server lowers it to level 0 and the lite client does
+   too (SceneLite), so `interact {name:"^Crate$", option:"^Hide-in$", at:{x:2778,z:3401,level:0}}` opens its dialog
+   [v 2026-10-24 questw1 local]. The Morgan dialog opens on level 2, the crate-in dialog on
+   level 0. [v 2026-10-23 questw3 local]
 6. **Chaos altar** (`thrantaxaltar`, op "Check") at (3239, 3608), the small Chaos Temple in Wilderness level 12.
    Only at exactly stage 4 (`quest_arthur.rs2:143`); sets bit 0 and shows the words "Snarthon Candtrick
    Termanto". No NPCs spawn within 12 tiles of it (world index). PvP Wilderness: carry nothing of value.
@@ -129,7 +133,7 @@ Steps 6-10 can be done in any order once stage 4 is reached; step 11 needs 6, 7-
 | NPC (config) | Where | Level | HP | Att / Str / Def | Bonuses | Max hit | Notes |
 |---|---|---|---|---|---|---|---|
 | Sir Mordred (`sir_mordred`) | (2769, 3403) L2 | 39 | 38 | 33 / 33 / 33 | att +20, str +16; def stab 99, slash 82, **crush 45** | 5 | slash attacks, attack rate 4 (default); respawn 50 ticks (`keep_le_faye.npc:45-91`) |
-| Renegade Knight (`renegade_knight`) | 3 on L0 near (2769, 3398), 5 on L1 near (2770, 3402) | 37 | 48 | 28 / 28 / 28 | as Mordred, crush def 62 | 5 | `huntmode=cowardly`: they do not attack (`keep_le_faye.npc:1-43`) |
+| Renegade Knight (`renegade_knight`) | 3 on L0 near (2769, 3398), 5 on L1 near (2770, 3402) | 37 | 48 | 28 / 28 / 28 | as Mordred, crush def 62 | 5 | `huntmode=cowardly` (`keep_le_faye.npc:1-43`) but they do attack: a combat-~50 bot idling on the jetty fell from HP 47 to 23 and had to kill one with `combat` [v 2026-10-23 questw3 local]; see `learnings/hazards.md` |
 | Thrantax The Mighty (`thrantax`) | the magic symbol | 92 | 80 | 80 / 80 / 80 | crush | ~9 | only after a wrong phrase; avoid |
 | Giant bat | see step 9 | 27 | 32 | 22 / 22 / 22 | none | 3 | flees when attacked |
 
@@ -164,6 +168,7 @@ for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temp
   he asks "Have you got any bread for me yet?", choose "Yes, here you go.", `beggar.rs2:1-13`, `quest_arthur.rs2:212-215`).
 - Refused the beggar ("No I don't have any bread with me.", which the dialog guard's decline would pick): bit 3 is set;
   as above.
+- Catalog recipe for the beggar door: `interact {target:"loc", name:"^Door$", option:"^Open$", tile:{x:3016,z:3246}, choices:["Yes certainly"]}` from (3015,3246) answers the dialog the Door opens (without `choices` the guard would pick the decline). The Chaos altar `interact` Check ends done on its inscription page. [v 2026-10-24 questw3 local]
 - Lost Excalibur at stage 4-5: talk to the Lady again ("I seek the sword Excalibur."), which resets bits 2-4, and redo
   the beggar. At stage 6 or later (and after the quest) she sells it back for 500 coins (`lady_of_the_lake.rs2:20-35`).
 - Lost or burned the candle (a wrong phrase) at stage 4: ask the Candle maker "Have you got any black candles?"
@@ -177,8 +182,9 @@ for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temp
 |---|---|
 | Camelot stairs (2750, 3510) and tower ladders (2769, 3493), (2767, 3491) | yes: `travel`/`at` climb them (walk-graph probe, 16-18 run ticks from the courtyard) |
 | Catherby crate to Keep Le Faye | **no**: a scripted ride the world index leaves out as a quest transport (`wiki/world/gate-list.ts:961-963`); do it with `interact` + `talk` (Catherby coverage below) |
-| Keep Le Faye front door (2763, 3401/3402) | **planner wrong**: the SDK masks it as an ordinary door (not in `ONE_WAY_DOORS`, `sdk/pathfinding.ts:73-79`), so a walk from Catherby plans straight through it (probe: Catherby -> Mordred 45 run ticks, no hop) and is refused in game ("The door is securely locked"). From inside it opens west. |
-| Keep crate back to Catherby (`merlincrate_empty2`) | the world index has it only as far as the crate interior (2778, 9839); the way out is a varp coord it cannot follow |
+| Keep Le Faye front door (2763, 3401/3402) | **planner wrong from outside**: the SDK masks it as an ordinary door (not in `ONE_WAY_DOORS`, `sdk/pathfinding.ts:73-79`), so a walk from Catherby plans straight through it (probe: Catherby -> Mordred 45 run ticks, no hop) and is refused in game ("The door is securely locked"). From inside it opens west and `travel` from the keep to Catherby (2802, 3440) works. [v 2026-10-23 questw3 local] |
+| Keep crate back to Catherby (`merlincrate_empty2`) | `interact` finds it (the lite client lowers bridge-tile locs to the server level, step 5); the world index has it only as far as the crate interior (2778, 9839) |
+| Walks planned from Camelot L1 (Lancelot's floor) to Catherby | fail ("stops 54 tiles short at (2767,3497)"); `travel` to the level-0 courtyard (2762, 3508) first. [v 2026-10-23 questw3 local] |
 | Keep stairs (2769, 3404), (2769, 3398) | yes (probe: jetty -> Mordred 14 run ticks) |
 | Port Sarim jeweller's ladder | yes (a scripted crossing), but not needed |
 | Chaos Temple (Wilderness 12) | `travel` with `wilderness: true` (probe: Edgeville -> altar ~100 run ticks); `interact` refuses a target there |
@@ -189,29 +195,33 @@ for Camelot; Falador East / Draynor for Port Sarim; Edgeville for the Chaos Temp
 |---|---|---|
 | 1-3 Arthur, Gawain, Lancelot | `talk` | `{npc:"^King Arthur$", at:{x:2764,z:3515}, choices:["Knight of the Round Table"]}`; `{npc:"^Sir Gawain$", choices:["how Merlin got trapped","Thank you for the information"]}`; `{npc:"^Sir Lancelot$", at:{x:2759,z:3515,level:1}, choices:["get into Morgan Le Faye's stronghold"]}` |
 | 4 crate in | `interact` then `talk` | `{target:"loc", name:"^Crate$", option:"^Hide-in$", at:{x:2801,z:3443}}` (done on "a dialog opened"), then `talk {continue:true, choices:["^Yes\\.$","^Yes\\.$"]}`, which answers the open dialog and lands the player at (2778, 3401). [v 2026-10-23 questw3 local] |
-| 5 Mordred | `combat` + `talk` (risky) | `combat {target:"Sir Mordred", area:{x:2769,z:3403,level:2,radius:3}, food:[...]}` with a phase `until: v => v.state.dialog.isOpen`, then `talk {npc:"Morgan Le Faye", choices:["untrap Merlin","OK I will go do all that"]}`. **Gap**: while `combat` runs, the dialog guard declines a choice it does not answer, and its decline pattern (`DECLINE_CHOICE` `^no\b`, `conductor/actions/dismiss.ts:113`) picks "No. He deserves to die." The `until` should end the phase first, but the engine then settles the fight under the shared guards (`conductor/lib/engine.ts:369-386`), so the guard may still answer. Needs a `combat` option to stop on a dialog (or answer `choices`). |
-| 5 crate out | `interact` + `talk` | as step 4 on the jetty crate (2779, 3401). Unverified. |
-| 6 Chaos altar | `travel` + `interact` | `travel {to:{x:3239,z:3606}, wilderness:true}`, then `interact` on the altar with `wilderness:true` and `minFood` (the opt-in is per task: each Wilderness task needs it). Unverified. |
-| 7 candle maker, wax | `talk`, `pickup`, `talk` (use) | `talk {npc:"^Candle maker$", choices:["black candles"]}`; `pickup {area:{x:2807,z:3450,radius:1}, items:[{name:"Insect repellent",count:1}]}`; `talk {use:{items:["^Insect repellent$"], onLoc:"^Beehive$"}, at:{x:2758,z:3444}}`; `talk {use:{items:["^Bucket$"], onLoc:"^Beehive$"}}`; `talk {npc:"^Candle maker$"}` |
-| 8 light candle | `items` | `combine {use:"^Tinderbox$", on:"^Black candle$", product:"^Lit black candle$"}`. Unverified. |
-| 9 bat bones | `combat` | `{target:"Giant bat", area:{x:2752,z:3405,radius:8}, loot:["Bat bones"]}` with `until: v => v.inv("Bat bones") >= 1`. Bats flee; unverified. |
-| 10 Lady, beggar | `talk`, `interact` + `talk` | `talk {npc:"Lady of the Lake", at:{x:2924,z:3405}, choices:["I seek the sword Excalibur"]}`; `interact {target:"loc", name:"^Door$", option:"^Open$", at:{x:3017,z:3246}}` then `talk {npc:"^Beggar$", choices:["Yes certainly"]}`. A `travel` whose route opens this door after the Lady triggers the beggar mid-walk, and the guard's decline answers "No I don't have any bread with me." (bit 3; recover as above). |
-| 11 summon | none, then `talk` | **Gap**: Drop on an item at a spot. `interact` refuses Drop on items and there is no drop task (only `conductor/actions/drop.ts`). Needs a drop with `at` (tolerance 1) that leaves the opened dialog for a following `talk {npc:"Thrantax", choices:["^Snarthon Candtrick Termanto$"]}`. |
+| 5 Mordred | `combat` (`stopOnDialog`, `eatBelow` 0.85) + `talk` | Verified from `merlins-crystal-start`: Arthur, Gawain, Lancelot, travel to (2762, 3508) L0, crate in, `combat` on Mordred with `stopOnDialog`, then `talk {continue:true}` for the Morgan dialog (stage 4). `stopOnDialog` settles ~100 ticks with Mordred still hitting; a low-HP eat during the settle closes Morgan's choice dialog and leaves the quest at stage 3 (hit by a combat-45 start; with combat 70 no lobster was eaten). `talk` (continue) and `interact` need `level` in `at` or they plan to level 0 even from the keep's L2. [v 2026-10-24 questw3 local]. |
+| 5 leave the keep | `travel` | `travel {to:{x:2802,z:3440,level:0}}` from inside the keep (out of the front door). Verified. [v 2026-10-23 questw3 local] |
+| 6 Chaos altar | `travel` + `interact` | `travel {to:{x:3239,z:3606}, wilderness:true}`, then `interact` Check on the altar with `wilderness:true` and `minFood` (opt-in per task), then `travel` out. The quest stage must be exactly 4. Check ends done on the inscription page (`interact` counts an op-opened page as the effect). Phases altar-go, altar-check, altar-leave. [v 2026-10-24 questw3 local] |
+| 7 candle maker, wax | `talk`, `pickup`, `talk` (use) | `talk {npc:"^Candle maker$", choices:["black candles"]}`; `pickup {area:{x:2807,z:3450,radius:1}, items:[{item:"Insect repellent",count:1}]}` (the key is `item`, not `name`; works on the table tile since the adjacent-stand pickup change) [v 2026-10-23 questw3 local]; `talk {use:{items:["^Insect repellent$"], onLoc:"^Beehive$"}, at:{x:2758,z:3444}}`; `talk {use:{items:["^Bucket$"], onLoc:"^Beehive$"}}`; `talk {npc:"^Candle maker$"}`. The "Black candle" option appears only at stage 4. Asking again once the bit is set shows "Have you got any wax yet?" with no choices, so a talk that waits for choices fails. The Insect repellent is never used up. [v 2026-10-24 questw3 local] |
+| 8 light candle | `items` | `combine {use:"^Tinderbox$", on:"^Black candle$", product:"^Lit black candle$"}`. Verified (phase light). [v 2026-10-24 questw3 local] |
+| 9 bat bones | `combat` | `{target:"Giant bat", area:{x:2752,z:3405,radius:8}, loot:["Bat bones"]}` with `until: v => v.inv("Bat bones") >= 1`. Verified (phase bats). [v 2026-10-24 questw3 local] |
+| 10 Lady, beggar | `talk`, `interact`, `talk` | `talk {npc:"Lady of the Lake", at:{x:2924,z:3405}, choices:["I seek the sword Excalibur"]}`; `interact {target:"loc", name:"^Door$", option:"^Open$", tile:{x:3016,z:3246}, choices:["Yes certainly"], onFail: continue}` from (3015,3246), then a dialog phase `talk {npc:"^Beggar$", choices:["Yes certainly"]}` near the door. The `choices` are required or the guard declines the bread choice; when the dialog opens mid-walk the `interact` can still report no-effect, hence `onFail` continue plus the beggar-talk phase. Re-talking to the Lady resets the declined flags. [v 2026-10-24 questw3 local] |
+| 11 summon | `items` drop with `choices` | The Thrantax chant is answered by the `items` drop itself, with `choices:["^Snarthon Candtrick Termanto$"]` (phase summon), then bones-away and crystal. [v 2026-10-24 questw3 local] |
 | 12 crystal | `talk` (use) | `{use:{items:["^Excalibur$"], onLoc:"^Giant crystal$"}, at:{x:2766,z:3491,level:2}}` |
 | 13 Arthur | `talk` | `{npc:"^King Arthur$"}` |
 | banking, shops | `bank`, `shop` | Arhein (bucket, tinderbox), Baker (bread) |
 
-Blocking gaps, in order: the Wilderness altar check (6), lighting the candle (8), dropping the bat bones on the symbol
-(11); then the Mordred-to-Morgan dialog (5) and the keep door the walker thinks is open.
+Plan status: **promoted** (`conductor/plans/merlins-crystal.ts`). A fresh load of `merlins-crystal-start` ran to quest done in 18.6 min on questw3 with no mid-run edits. Phase order: Arthur, Gawain, Lancelot, leave-floor, crate-in + crate-dialog, Mordred (combat `stopOnDialog`, `eatBelow` 0.85), Morgan (talk continue), keep-flee (`travel` `flee:true` when attacked), keep-out (front door), repellent (pickup adjacent take), candle-ask, Chaos altar (altar-go, altar-check, altar-leave), hive + hive-dialog, candle-wax, light, bats, Lady, beggar-door then beggar-talk, summon, bones-away, crystal, arthur-finish. [v 2026-10-24 questw3 local]
+
+Observed in that run:
+- Renegade Knights and Sir Mordred keep attacking in the keep after Morgan's scene; `travel` `flee:true` leaves.
+- Camelot upper floors (Lancelot L1, the tower): walks planned from there fail ("stops 54 tiles short"); travel to the level-0 courtyard first, and give `at` level 0 for Arthur's final walk.
+- Step 7 beehive: using the repellent then the bucket opens mesbox pages; a following `talk {continue:true}` with no choices finishes it and the wax arrives.
+- Dialog history keeps one entry per page with wrapped lines: match short phrases (see `learnings/dialogs.md`); a phrase on a page that never appeared isn't recorded. The `items` task's drop `at` needs tolerance >= 1.
 
 ## Suggested library saves
 
 Members world. Generated saves (`conductor/tools/library.ts generate`, spec keys `position`, `skills`, `inventory`,
 `equipment`, `bank`, `varps`).
 
-- `merlins-crystal-start`: Attack/Strength/Defence 45, Hitpoints 45 (combat ~50); worn a crush weapon (e.g. a
-  mithril mace) and iron or better armour; inventory 10 lobsters (379), 1 bread (2309), 1 tinderbox (590), 1 bucket
-  (1925), 600 coins; bank empty; varps `{"14":0}`; at Camelot (2758, 3505). Runs the whole quest.
+- `merlins-crystal-start`: Attack/Strength/Defence/Hitpoints 70; worn mithril mace, rune full helm, platebody, platelegs and kiteshield; inventory 10 lobsters (379), 1 bread (2309), 1 tinderbox (590), 1 bucket
+  (1925), 600 coins; bank empty; varps `{"14":0}`; at Camelot (2758, 3505). Runs the whole quest (18.6 min on questw3). Combat 70 matters: at combat ~50 a low-HP eat during the Mordred settle closed Morgan's dialog. [v 2026-10-24 questw3 local]
 - `merlins-crystal-summon`: the same stats; varps `{"14":4,"15":1}` (stage 4, altar words read); inventory lit black
-  candle (32), bat bones (530), Excalibur (35), 5 lobsters; at the magic symbol (2780, 3515). Tests steps 11-13 (the
+  candle (32), bat bones (530), Excalibur (35), 5 lobsters; at (2780, 3512) in the library save (the symbol is (2780, 3515)); exists, untested. Tests steps 11-13 (the
   drop-and-chant gap) without the Wilderness. A wrong phrase there costs the only candle.

@@ -1,0 +1,122 @@
+{
+    "name": "holy-grail-start",
+    "purpose": "Holy Grail from the start (Merlin's Crystal done varp 14=7, grail varp 5=0) at Camelot (2758,3505): Att/Str/Def/HP 70, Prayer 43, 300 coins in the pack only (Entrana-safe); bank holds Excalibur, rune full helm/chainbody/platelegs/kiteshield (rune platebody needs Dragon Slayer), leather boots and 20 lobsters (Seers Village bank is nearest).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2758,
+                "z": 3505,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70,
+                "Prayer": 43
+            },
+            "bank": [
+                {
+                    "id": 35,
+                    "count": 1
+                },
+                {
+                    "id": 1163,
+                    "count": 1
+                },
+                {
+                    "id": 1113,
+                    "count": 1
+                },
+                {
+                    "id": 1079,
+                    "count": 1
+                },
+                {
+                    "id": 1201,
+                    "count": 1
+                },
+                {
+                    "id": 1061,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 20
+                }
+            ],
+            "coins": 300,
+            "varps": {
+                "5": 0,
+                "14": 7
+            }
+        }
+    },
+    "sha1": "e3b03f95b9999ea48e1c38184aca7727416b9476",
+    "createdAt": "2026-10-23T23:35:08.273Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2758,
+            "z": 3505,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70,
+            "Prayer": 43
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 300
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 35,
+                "name": "excalibur",
+                "count": 1
+            },
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1113,
+                "name": "rune_chainbody",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1061,
+                "name": "leather_boots",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 20
+            }
+        ],
+        "varps": {
+            "14": 7,
+            "281": 1000
+        }
+    }
+}

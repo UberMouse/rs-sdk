@@ -423,3 +423,23 @@ describe('fishing: shark and fallback', () => {
         expect([...new Set(r.sends.filter(s => s.startsWith('drop')))]).toEqual(['drop Raw tuna', 'drop Raw shark']);
     });
 });
+
+describe('fishing: seenOutsideArea diagnostic', () => {
+    const params = { area: { x: 3086, z: 3228, radius: 4 } };
+
+    test('a spot of the method in view outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(fishing, {
+            params,
+            timeline: base.player({ at: SPOT }).npc('Fishing spot', 3100, 3228, { options: NET_OPTIONS }).series(1),
+        });
+        expect(r.result.diagnostics).toMatchObject({ idleTicks: 700, seenOutsideAreaTicks: 700 });
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain('(3100,3228)');
+    });
+
+    test('no spot in view: idle ticks, no warning', async () => {
+        const r = await simulate(fishing, { params, timeline: base.player({ at: SPOT }).series(1) });
+        expect(r.result.diagnostics).toEqual({ idleTicks: 700, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+});

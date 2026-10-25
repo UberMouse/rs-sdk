@@ -21,6 +21,8 @@ if (npc && attackOpt) {
 }
 ```
 
+The `combat` task's `target` is a plain NPC name (`'Giant rat'`, `'Elvarg'`), not a regex. `eatBelow` is a fraction 0.1-0.9 of max HP, not hit points; `prayers: ['Protect from Melee']` turns a prayer on for the fight. [v 2026-10-24 questw1 local]
+
 ## Combat Style Cycling
 
 Combat-style indices depend on the equipped weapon the SDK reads
@@ -231,4 +233,12 @@ This pattern enabled balanced 60+ in all melee stats.
 - A Staff of air carried in the inventory is not counted by the `combat` task's rune preflight, which runs before it wields the `weapon` param: Wind Blast reported "needs 3 Air rune, the bot has 0". Wield the staff in an earlier phase. [v 2026-10-16 conductor2 local]
 - Hill giants are named exactly `Giant`. `combat` refuses a level-28 NPC when the inventory holds no food (its level cap drops to 5); plan fight phases use `onFail: 'continue'` so a restock phase can run. [v 2026-10-16 conductor2 local]
 - That cap, not a default `maxLevel`, is what refuses a target (`maxLevel` only filters targets; with food the cap is combat level + `maxLevelGap`, default 5): a combat-52 bot with its salmon eaten was refused "Ice warrior is level 57, above limit 5". Keep food in the inventory for real fights. [v 2026-10-23 questw4 local]
+- The engine refuses to start any task while the bot is under attack unless the task allows it (`startInCombat`, engine.ts:489); `combat` and `talk` with `continue` opt in (below), a `travel` with `flee` is allowed. So an in-task mining/walking phase cannot be rescued by a follow-up fight task: put the flee exit in the plan, at an HP well above the low-HP guard (it fired only at 16 and 4 of 49 while several monsters hit for ~40 HP in seconds), and an eat can fail ("Failed to eat Lobster") at HP 4. [v 2026-10-23 questw4 local]
+- `combat` starts under attack whenever an attacker is one of its targets (or every attacker is at or below the bot's combat level), at any HP: the low-HP guard eats during the run, and with no food it fails "no food". `talk` with `continue: true` starts under attack when a dialog is open; `travel` with `flee` is the exit for everything else (`interact`/`items` stay refused). The low-HP guard's line rises with the attackers on the bot (0.5 for one or none, 0.65 for two, 0.8 for three or more, `lib/threat.ts`). [unit tests only; the combat-under-attack smoke starts the fight from the scorpion save but did not capture the start-under-attack state]
+- Why "Failed to eat" at low HP: from the server source (`consume.rs2`, `%eat_delay >= map_clock`), an eat sent inside the eat delay is silently dropped, so the old 13-tick wait lost the window. Under fire the guard now waits 3 ticks and re-sends up to 3 times when an eat shows no effect. Read from the source, not reproduced live.
 - The engine's low-HP guard runs ahead of every other step and, with no food, only regenerates in place: an `interact` Climb-up errand at the foot of a ladder at 16/49 HP ran 60 guard steps through its 2-minute stop without climbing. Get HP back up (eat, rest) before an errand that follows a flee. [v 2026-10-23 questw4 local]
+
+- Protect from Melee with 43 Prayer points lasts about 100 s of fighting. Against the Black Knight Titan (142 HP) it ran out with the Titan at 7 HP, so plan melee plus food to finish (Prayer 70 would cover the whole fight). [v 2026-10-24 questw5 local]
+
+## combat `targetRange: "visible"`
+- Works for cows at the Falador farm (area (3027, 3307) radius 22): the cows were not thin, the first fight settled in 17 ticks, and two phases (Attack 79 s, Defence 115 s) had no "no free", wait or walk-back lines. [v 2026-10-24 conductor3 local]

@@ -18,13 +18,15 @@ level checks are commented out, "no wc req in 2004"). Only wielding needs Attack
 | Steel | 5 | 2× | Bob's (200 gp, 3 in stock); Gulluck and Sons (200 gp); Armoury (300 gp) | 31 |
 | Black | 10 | 2.25× | no shop | not smithable |
 | Mithril | 20 | 2.5× | no shop | 51 |
-| Adamant | 30 | 3× | no shop | 71 |
+| Adamant | 30 | 3× | no shop; smithed by the bot (route below) | 71 |
 | Rune | 40 | 3.5× | no shop | 86 |
 
 Shop stock from `wiki/shops/` (generated); no shop in the content stocks a black, mithril,
 adamant or rune axe (`grep` of the `.inv` configs finds them only in the smithing and skill-guide
 interfaces). Smithing levels from `skill_smithing/configs/smithing/smithing.dbrow` (1 bar each).
 [v 2026-10-10 conductor2 local; read from content]
+
+Adamant axe route (conductor3's `adamant-tools` draft): mine 1 adamantite ore + 6 coal in the Dwarven Mine (coal ~46 s), smelt an **Adamantite bar** at the Falador furnace (~35 s), smith the axe at the Dwarven Mine anvil (3012, 9813) (~24 s, needs a Hammer); Falador to Draynor ~92 s. The bar's item name is "Adamantite bar", not "Adamant bar" (a plan gated on the wrong name re-ran mining). [v 2026-10-24 conductor3 local]
 
 ## Chop speed
 
@@ -53,7 +55,7 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 | Tree | Level | Log Type | Locations |
 |------|-------|----------|-----------|
 | Normal | 1 | Logs | Lumbridge, Draynor, south of Seers, Feldip Hills |
-| Oak | 15 | Oak logs | East of Draynor bank, south of Seers bank |
+| Oak | 15 | Oak logs | North of Draynor bank, south of Seers bank |
 | Willow | 30 | Willow logs | SW of Draynor bank, NW of Seers bank |
 | Maple | 45 | Maple logs | North and south of Seers bank |
 | Yew | 60 | Yew logs | Cemetery south of Seers, south of Edgeville bank |
@@ -66,6 +68,7 @@ Levels checked against `server/content/scripts/skill_woodcutting/configs/trees.d
 | Lumbridge trees | (3195, 3220) | 1 | normal trees, cluster west/south of the centre; `woodcutting` task with `area` radius 12; bronze axe, levels 1-67 (task waits for respawns once the cluster is cut down). XP is at the local 25× rate ([local-server](../../learnings/local-server.md)) | ~310k (local, stats.ts, 12 runs; 248k with onFull drop at lower levels) | 2026-10-10 conductor2 local (rev 289) |
 | Lumbridge trees, steel axe | (3195, 3220), radius 12 | 60-62 | normal trees, `stop-full` run: 19 logs in 110 s (~10 logs/min), 11875 XP | not measured (single run) | 2026-10-10 conductor2 local |
 | Varrock oaks | (3190, 3458), radius 10 | 15 | oak trees; `woodcutting` task `onFull: stop`; bronze axe, WC 30-46 in one 189 s run; steel axe (bronze also held, game uses the best): WC 46-60, +40,312 XP in ~186 s of chopping filled 20 oak logs (+18,750 XP, 937.5 XP/log); no hostile NPCs reported at combat 20 | ~358k bronze, `onFull: stop`, WC 30-46 (stats.ts, 1 run); ~590k steel axe, `onFull: drop`, WC 46-60 (stats.ts, 1 run, includes ~60 s walk; chopping alone ~780k, ~2.2x bronze, matching the 2x steel chance above) | 2026-10-10 conductor2 local (rev 289) |
+| Draynor north oaks (`tree:draynor-village:1`) | (3095, 3283), radius 16 (bbox 3084-3106 x 3275-3290) | 1 / 15 | the cluster's 13 normal trees to 15, then its 5 oaks, every log dropped (plan `oak-draynor-drop`); steel axe from Bob's (200 gp). No jail-guard attacks here over ~4 min of chopping. Not the south cluster `tree:draynor-village:2` (3112, 3240): the jail guards attack through the fence there at any combat level ([hazards](../../learnings/hazards.md)) | north site, adamant axe, WC 68-74: +67,500 XP in 247 s with ~30 s walk in, ~1.1M/h chopping (1 run). South site, steel axe, WC 15-50: ~775k/h (1 run) | 2026-10-24 conductor3, conductor3w1 local |
 | Draynor willows, steel axe | (3086, 3233), 5 trees ([place](../places/draynor-willows.md), [resource](../resources/tree/willow.md)) | 68-80 | willow logs; 22 logs filled in ~120 s (~11 logs/min, ~37k WC XP per fill at WC 77), then burned at Draynor ([firemaking](firemaking.md)); [Draynor bank](../services/bank.md) booth (3092, 3243) is 10 tiles away. Dark wizards there ignored a combat-49 bot over three runs ([hazards](../../learnings/hazards.md)) | ~667k chop-burn cycle, WC 68-77 (601 s run, stats of RESULT); full cycle ~3 min: chop 120 s, burn 55 s, ~12-tile walk each way | 2026-10-11 conductor2 local |
 
 ## Notes

@@ -52,13 +52,87 @@ describe('pickup: picking up', () => {
         expect(r.result.inventoryDelta).toEqual({ Knife: 2 });
     });
 
-    test('ignores items outside the area and unreachable ones', async () => {
+    test('ignores items outside the area', async () => {
         const r = await simulate(pickup, {
             params: { ...PARAMS, maxWaitSeconds: 10 },
-            timeline: inside.ground('Knife', 3224, 3207).ground('Knife', 3225, 3202, 1, { reachable: false }).series(1),
+            timeline: inside.ground('Knife', 3224, 3207).series(1),
         });
         expect(r.sends).toEqual([]);
-        expect(r.result.reason).toBe('pickup: Knife is present in the area but unreachable (waited 10s)');
+        expect(r.result.reason).toBe('pickup: no Knife appeared in the area within 10s');
+    });
+
+    test('takes an item that routes before one on a blocked tile', async () => {
+        const both = inside.ground('Knife', 3225, 3202, 1, { reachable: false }).ground('Knife', 3222, 3202);
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            timeline: both.series(10, (w, i) => (i >= 4 ? taken(inside.tick(i)) : w)),
+        });
+        expect(r.result.reason).toBe('finish: holding every requested item');
+        expect(r.sends).toEqual([TAKE]);
+    });
+});
+
+describe('pickup: an item on a blocked tile (a spawn on a Table)', () => {
+    const TABLE = { x: 3224, z: 3202 };
+    const start = world().player({ at: { x: 3224, z: 3207 } });
+    const onTable = start.ground('Knife', TABLE.x, TABLE.z, 1, { reachable: false });
+
+    test('walks beside it and takes it from the north side', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            react: walking(),
+            timeline: onTable.series(60, (w, i) => (i >= 30 ? taken(start.tick(i)) : w)),
+        });
+        expect(r.result.reason).toBe('finish: holding every requested item');
+        // The walk to the north stand tile comes first; every send after it is a take (a timed-out take is sent again).
+        expect(r.sends[0]).toBe('walk to (3224, 3203)');
+        expect(r.sends.slice(1).length).toBeGreaterThan(0);
+        expect(r.sends.slice(1).every(m => m === TAKE)).toBe(true);
+    });
+
+    test('a take refused from one side is tried from the next; the fourth refusal fails the run', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            react: walking(),
+            timeline: onTable.series(400, (w, i) => (i >= 1 ? w.message(CANT_REACH) : w)),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('pickup: 4 pickups in a row failed (last: Cannot reach Knife - path blocked)');
+        const walks = r.sends.filter(m => m.startsWith('walk to'));
+        expect(walks[0]).toBe('walk to (3224, 3203)');
+        expect(walks).toContain('walk to (3225, 3202)');
+        expect(walks).toContain('walk to (3224, 3201)');
+        expect(walks).toContain('walk to (3223, 3202)');
+        expect(r.sends.filter(m => m === TAKE)).toHaveLength(4);
+    });
+
+    test('sides that cannot be walked to fail the run with the walk message', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            pathfinder: fakePaths(() => ({ success: false, waypoints: [], error: 'blocked' })),
+            timeline: onTable.series(1),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('pickup: 4 sides beside Knife failed (last: ');
+        expect(r.sends).not.toContain(TAKE);
+    });
+
+    test('a blocked item from an unwalkable side is skipped to a side that works', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            react: walking(),
+            pathfinder: fakePaths((from, to) =>
+                to.x === 3224 && to.z === 3203
+                    ? { success: false, waypoints: [], error: 'table' }
+                    : { success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] },
+            ),
+            timeline: onTable.series(80, (w, i) => (i >= 40 ? taken(start.tick(i)) : w)),
+        });
+        expect(r.result.reason).toBe('finish: holding every requested item');
+        const walks = r.sends.filter(m => m.startsWith('walk to'));
+        // The north side has no route, so nothing is sent for it and the east side is walked to.
+        expect(walks[0]).toBe('walk to (3225, 3202)');
+        expect(walks).not.toContain('walk to (3224, 3203)');
     });
 });
 
@@ -220,5 +294,24 @@ describe('pickup: guards', () => {
         });
         expect(r.result.reason).toBe('finish: holding every requested item');
         expect(r.sends).toEqual([TAKE, 'continue dialog']);
+    });
+});
+
+describe('pickup: seenOutsideArea diagnostic', () => {
+    test('the item on the ground outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(pickup, {
+            params: PARAMS,
+            timeline: inside.ground('Knife', KNIFE.x + 10, KNIFE.z).series(1),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(r.result.diagnostics?.idleTicks);
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain(`(${KNIFE.x + 10},${KNIFE.z})`);
+    });
+
+    test('nothing on the ground: idle ticks, no warning', async () => {
+        const r = await simulate(pickup, { params: PARAMS, timeline: inside.series(1) });
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
     });
 });

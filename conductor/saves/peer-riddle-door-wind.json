@@ -1,0 +1,38 @@
+{
+    "name": "peer-riddle-door-wind",
+    "purpose": "As peer-riddle-door-mind but riddle id 5 (WIND)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2631,
+                "z": 3669
+            },
+            "varps": {
+                "347": 1,
+                "348": 262184
+            }
+        }
+    },
+    "sha1": "88b223a78342fbf1d96526a5c0b71f22d95d40ef",
+    "createdAt": "2026-10-23T23:38:11.872Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2631,
+            "z": 3669,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "347": 1,
+            "348": 262184
+        }
+    }
+}

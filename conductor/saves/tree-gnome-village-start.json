@@ -1,0 +1,350 @@
+{
+    "name": "tree-gnome-village-start",
+    "purpose": "Tree Gnome Village start: Att/Str/Def 80 HP 85, full rune melee set + amulet of power worn, 20 swordfish, 6 logs (Montai), 500 coins, outside the Tree Gnome maze (2504,3189) next to Elkoy.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2504,
+                "z": 3189
+            },
+            "skills": {
+                "Attack": 80,
+                "Strength": 80,
+                "Defence": 80,
+                "Hitpoints": 85
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 995,
+                    "count": 500
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1731,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                }
+            ]
+        }
+    },
+    "sha1": "010fb6d3d29814cb47007bce5a9aac49c92d8655",
+    "createdAt": "2026-10-24T01:27:11.361Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2504,
+            "z": 3189,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 80,
+            "Defence": 80,
+            "Strength": 80,
+            "Hitpoints": 85
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1731,
+                "name": "amulet_of_power",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

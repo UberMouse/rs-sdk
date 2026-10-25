@@ -1,0 +1,288 @@
+{
+    "name": "jungle-potion-start",
+    "purpose": "Jungle Potion start: lumbridge-quests combat (Att 40 Str 47 Def 40 HP 48, steel scimitar, 24 salmon) + Herblore 28, Druidic Ritual done (varp 80=4), 200 coins, at Port Sarim by the Karamja sailors (3028,3218)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3028,
+                "z": 3218,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48,
+                "Prayer": 15,
+                "Herblore": 28
+            },
+            "inventory": [
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                },
+                {
+                    "id": 329,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1325,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 200,
+            "varps": {
+                "80": 4
+            }
+        }
+    },
+    "sha1": "b57c58ccbaf44345694f5e0707ce73e15a133a35",
+    "createdAt": "2026-10-24T02:21:05.471Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3028,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48,
+            "Prayer": 15,
+            "Herblore": 28
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 200
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            },
+            {
+                "id": 329,
+                "name": "salmon",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1325,
+                "name": "steel_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "80": 4,
+            "281": 1000
+        }
+    }
+}

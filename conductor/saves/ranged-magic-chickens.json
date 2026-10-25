@@ -27,7 +27,23 @@
                 },
                 {
                     "id": 315,
-                    "count": 5
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
                 },
                 {
                     "id": 1277,
@@ -36,8 +52,8 @@
             ]
         }
     },
-    "sha1": "35be5d00b368a1d7eaa5de9785bcd0b3977ca491",
-    "createdAt": "2026-10-10T02:28:14.897Z",
+    "sha1": "288ff5134cdfcae439b79e78b0da9543df686168",
+    "createdAt": "2026-10-24T01:27:10.455Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -72,7 +88,27 @@
             {
                 "id": 315,
                 "name": "shrimp",
-                "count": 5
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
             },
             {
                 "id": 1277,

@@ -1,9 +1,10 @@
 import { z } from 'zod/v4';
-import type { NearbyNpc } from '../../sdk/types';
+import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { FISH_WAIT_TICKS, countAny, fish, tileOf } from '../actions/fish';
 import { drop } from '../actions/drop';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, wait } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
@@ -143,6 +144,8 @@ type FishingParams = z.infer<typeof Params>;
 interface FishingMemory {
     /** The tick the bot first found no spot to fish, until it finds one again. */
     noSpotSinceTick: number | null;
+    /** Idle ticks and the ones with a spot in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
     /** The spot the bot is fishing, while its last send landed: the server keeps fishing without a resend. */
     fishing: { index: number; x: number; z: number } | null;
     /** The method last cast, to log a switch between `method` and `fallback`. */
@@ -205,7 +208,22 @@ function* waitForSpot(ctx: Ctx): Op<Outcome> {
     const since = ctx.memory.noSpotSinceTick;
     const left = Math.max(0, since + NO_SPOT_GIVE_UP_TICKS - now);
     const isFishable = kinds(ctx.params).map(k => fishable(ctx.params, k));
-    const found = yield* wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left);
+    const ofKinds = kinds(ctx.params).map(ofMethod);
+    const seen = (s: BotWorldState) =>
+        outsideSighting(
+            s,
+            ctx.params.area,
+            s.nearbyNpcs
+                .filter(n => ofKinds.some(ok => ok(n)))
+                .map(n => ({ name: n.name, ...tileOf(n), distance: n.distance })),
+            () => true,
+        );
+    const found = yield* trackIdle(
+        ctx,
+        ctx.memory.areaWatch,
+        seen,
+        wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left),
+    );
     if (found.kind === 'met') return;
     const seconds = Math.round(((found.state.tick - since) * TICK_MS) / 1000);
     const { area } = ctx.params;
@@ -246,7 +264,8 @@ export default defineTask({
         'Draynor Village Net/Bait spots: use area {x:3086,z:3227,radius:2} (dark wizards attack at the northern tiles). ' +
         'Refuses areas reaching the Wilderness.',
     params: Params,
-    memory: (): FishingMemory => ({ noSpotSinceTick: null, fishing: null, active: null }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): FishingMemory => ({ noSpotSinceTick: null, areaWatch: newAreaWatch(), fishing: null, active: null }),
     // Fishing re-sends an interaction that would cancel auto-retaliate, so a bot under attack must not.
     guards: [underAttackGuard],
     stepTimeoutMs: NO_SPOT_STEP_TIMEOUT_MS,

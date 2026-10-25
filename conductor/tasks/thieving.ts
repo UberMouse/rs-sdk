@@ -12,6 +12,7 @@ import {
 } from '../actions/pickpocket';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, ticks, wait } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
 import { defineTask, type TaskContext } from '../lib/task';
 import { LOW_HP_FRACTION } from '../lib/threat';
@@ -98,6 +99,8 @@ type ThievingParams = z.infer<typeof Params>;
 interface ThievingMemory {
     /** The tick the stun from the last caught attempt ends; attempts sent before it are dropped silently. */
     stunnedUntil: number;
+    /** Idle ticks and the ones with a target in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
 }
 type Ctx = TaskContext<ThievingParams, ThievingMemory>;
 
@@ -129,16 +132,20 @@ function pickTarget(state: BotWorldState, p: ThievingParams): NearbyNpc | undefi
     return state.nearbyNpcs
         .filter(
             n =>
-                exactName(p.npc).test(n.name) &&
-                n.reachable !== false &&
-                !n.inCombat &&
-                n.options.some(o => PICKPOCKET_OPTION.test(o)) &&
+                freeNpc(n, p) &&
                 inArea(p.area, n) &&
                 // Without an area nothing refuses a route to the Wilderness before the bot is in it.
                 (p.area !== undefined || !isInWilderness(state.player?.level ?? 0, n.x, n.z)),
         )
         .sort((a, b) => a.distance - b.distance)[0];
 }
+
+/** An NPC of the task's kind the bot could pick now, wherever it stands. */
+const freeNpc = (n: NearbyNpc, p: ThievingParams) =>
+    exactName(p.npc).test(n.name) &&
+    n.reachable !== false &&
+    !n.inCombat &&
+    n.options.some(o => PICKPOCKET_OPTION.test(o));
 
 /** Walks to a far NPC, then picks its pocket. */
 function* walkAndPick(ctx: Ctx, npc: NearbyNpc): Op<PickpocketResult> {
@@ -160,7 +167,8 @@ export default defineTask({
         '(Man/Woman 1, Farmer 10, Warrior 25, Guard 40...), areas reaching the Wilderness, and NPCs with no ' +
         'pickpocket config. Verified spot: Men around Lumbridge castle (3222,3218, radius 6) at Thieving 1.',
     params: Params,
-    memory: (): ThievingMemory => ({ stunnedUntil: -Infinity }),
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    memory: (): ThievingMemory => ({ stunnedUntil: -Infinity, areaWatch: newAreaWatch() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
 
@@ -252,7 +260,9 @@ export default defineTask({
                         const failure = yield* walkToArea(ctx, area);
                         if (failure) return { fail: failure };
                     }
-                    yield* ticks(NO_TARGET_WAIT_TICKS);
+                    const seen = (s: BotWorldState) =>
+                        outsideSighting(s, ctx.params.area, s.nearbyNpcs, n => freeNpc(n, ctx.params));
+                    yield* trackIdle(ctx, ctx.memory.areaWatch, seen, ticks(NO_TARGET_WAIT_TICKS));
                     return;
                 }
                 noTarget.reset();

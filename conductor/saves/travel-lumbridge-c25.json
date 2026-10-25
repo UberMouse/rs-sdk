@@ -18,7 +18,43 @@
             "inventory": [
                 {
                     "id": 315,
-                    "count": 10
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
+                },
+                {
+                    "id": 315,
+                    "count": 1
                 },
                 {
                     "id": 995,
@@ -39,8 +75,8 @@
             ]
         }
     },
-    "sha1": "c99b50f547ca08b67accb3bcf3e6d23a20a8a25d",
-    "createdAt": "2026-10-11T00:34:39.495Z",
+    "sha1": "3c02265569c7534d769ffaddc02d42415f889051",
+    "createdAt": "2026-10-24T01:27:10.904Z",
     "saveVersion": 6,
     "summary": {
         "position": {
@@ -58,7 +94,52 @@
             {
                 "id": 315,
                 "name": "shrimp",
-                "count": 10
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
+            },
+            {
+                "id": 315,
+                "name": "shrimp",
+                "count": 1
             },
             {
                 "id": 995,

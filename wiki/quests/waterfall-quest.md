@@ -9,8 +9,8 @@
 | Members | yes (all quest objs `members=yes`, `configs/waterfall.obj`) |
 | Skill or quest requirements | none |
 
-Everything on this page is from the server scripts, map files and the world index; no run has done the quest yet
-[server data, unverified in game 2026-10-23]. Script paths are under `server/content/scripts/`; a bare
+Most of this page is from the server scripts, map files and the world index [server data]; the promoted plan
+`conductor/plans/waterfall-quest.ts` finishes the quest from `lib:waterfall-start` in one run (Plan status below). Script paths are under `server/content/scripts/`; a bare
 `quest_waterfall.rs2:N` (and `almera.rs2`, `hudon.rs2`, `golrie.rs2`, `baxtorian_book.rs2`, `waterfall_pillars.rs2`,
 `waterfall_journal.rs2`) is in `quests/quest_waterfall/scripts/`. Tiles are (x, z, level) from the map files
 (`server/content/maps/m39_53`, `m39_54`, `m39_149`, `m39_153`, `m40_154`).
@@ -189,7 +189,7 @@ collision). Display names are the config `name=`.
 15. **Out.** Open the Door (2604, 9900) from (2604, 9901): moved to (2566, 9901) (`:380-390`). Use A key on the Door
     (2568, 9893) from the north (stand (2568, 9894)) to get south of it. Walk to the entry (2575, 9861); Open the Door
     `baxtorian_door_waterfall_quest` there: moved to the ledge (2511, 3463) (`:287-289`); Get in the Barrel (2512,
-    3463): (2527, 3413) (`:291-297`).
+    3463): (2527, 3413) (`:291-297`). Keep the A key until you are out: walks inside the dungeon failed "No connector from level 0 (2566,9901) to (2604,9901)" and "No path to (2575,9861) from (2511,3463)" (`grail-exit-prep`, 2 of 4 runs), so do these steps by `interact`. [v 2026-10-24 conductor3 local]
 
 After stage 8, the key on the Door (2566, 9901) moves the player straight to the chalice room door (2604, 9901)
 (`:399-401`).
@@ -247,26 +247,30 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
 | 5 Read | `interact` `{"target":"item","name":"^Book on baxtorian$","option":"^Read$"}` | yes; the book interface stays open |
 | 6 Cellar | `travel` to (2533, 3157); `interact` `{"target":"loc","name":"^Ladder$","option":"^Climb-down$","at":{"x":2533,"z":3156}}` | yes (not `travel`: gap 5) |
 | 6 Golrie's crate | `interact` `{"target":"loc","name":"^Crate$","option":"^Search$","at":{"x":2548,"z":9566,"tolerance":1},"expect":"large key"}` | yes, with a tie risk (gap 3) |
-| 7 Key on gate | `talk` `use` `{"items":["^A key$"],"onLoc":"^Door$"}` at (2515, 9575) | **no** (gap 2) |
+| 7 Key on gate | `talk` `use` `{"items":["^A key$"],"onLoc":"^Door$"}` at (2515, 9575) | yes (a teleporting use counts as its effect) |
 | 7 Golrie | `talk` `{"npc":"^Golrie$"}` | yes |
 | 7 Out of the cell | `interact` `{"target":"loc","name":"^Door$","option":"^Open$"}`; then `interact` Ladder `^Climb-up$` at (2533, 9556) | yes |
 | 8 Strip for the tomb | `bank` deposits carried items | **no** for worn gear (gap 4) |
-| 8 Pebble on tombstone | `talk` `use` `{"items":["^Glarial's pebble$"],"onLoc":"^Tombstone of glarial$"}` | **no** (gap 2) |
+| 8 Pebble on tombstone | `talk` `use` `{"items":["^Glarial's pebble$"],"onLoc":"^Tombstone of glarial$"}` | yes (a teleporting use counts as its effect) |
 | 8 Chest, tomb | `interact` `{"target":"loc","name":"^Closed chest$","option":"^Open$","at":{"x":2530,"z":9845}}`, `interact` `^Open chest$` `^Search$`, `interact` `{"target":"loc","name":"^Tomb of glarial$","option":"^Search$","at":{"x":2541,"z":9811}}` | yes |
 | 8 Tomb ladder | `interact` `{"target":"loc","name":"^Ladder$","option":"^Climb-up$","at":{"x":2555,"z":9844}}` | yes (not `travel`: gap 5) |
 | 9 Gear up | `interact` `{"target":"item","name":"...","option":"^(Wield|Wear)$"}` per piece | yes |
 | 9 Raft to the island | `travel` `{"to":{"x":2512,"z":3476},"tolerance":1}` | yes |
 | 9 Rope on Rock | none | **no** (gap 1) |
-| 9 Rope on Dead tree | `talk` `use` `{"items":["^Rope$"],"onLoc":"^Dead tree$"}` at (2512, 3466) | **no** (gap 2) |
+| 9 Rope on Dead tree | `talk` `use` `{"items":["^Rope$"],"onLoc":"^Dead tree$"}` at (2512, 3466) | yes (a move of the player counts as the effect; not run here) |
 | 9 Ledge door | `travel` `{"to":{"x":2575,"z":9861}}` from the ledge, amulet held | yes (by tile, through `actions/cross.ts`) |
 | 10 Dungeon crate | `interact` `{"target":"loc","name":"^Crate$","option":"^Search$","at":{"x":2588,"z":9888,"tolerance":1},"expect":"large key"}` | yes, with a tie risk (gap 3) |
-| 11 Key on Doors | `talk` `use` key on `^Door$` at (2568, 9893), then at (2566, 9901) | **no** (gap 2) |
+| 11 Key on Doors | `talk` `use` key on `^Door$` at (2568, 9893), then at (2566, 9901) | yes (a move of the player counts as the effect; not run here) |
 | 12 Pillars | `talk` `use` `{"items":["^Air rune$","^Earth rune$","^Water rune$"],"onLoc":"^Pillar$"}` at each stand tile, six runs | partly: the uses register (the rune leaves the inventory), but the nearest Pillar is picked by distance (gap 3) and a repeated rune times out |
 | 13 Statue | `talk` `use` `{"items":["^Glarial's amulet$"],"onLoc":"^Statue of Glarial$"}` at (2565, 9915) | yes, but the boulder (runes missing) also reads as success (an animation); check the amulet is gone and the bot is at (2603, 9914) |
 | 14 Chalice | `talk` `use` `{"items":["^Glarial's urn$"],"onLoc":"^Chalice of eternity$"}` at (2603, 9912) | yes |
-| 15 Out | `travel` to (2566, 9901) (the Door (2604, 9900) crossing); key on Door (2568, 9893) (gap 2); `travel` to Ardougne North (entry Door and Barrel crossings) | partly |
+| 15 Out | one `travel` from the chalice room or the pillar room to the mainland, A key held (`met: ["quest:waterfall>=8"]` for the key on the Door (2566, 9901), which the quest tab cannot show): Open Door (2604, 9900), key on Door (2568, 9893), entry Door, Barrel | yes [v 2026-10-24 conductor3w2 local: pillar room (2563, 9912) to Falador West bank, 178 s] |
 
 ### Gaps, most important first
+
+These were task gaps found when the catalog was audited; the promoted plan (Plan status) completes the quest
+regardless, using `interact` with `unreachable` / `use`, `onFail: continue` and banking worn gear before the tomb
+[v 2026-10-24 questw2 local]. Read them as why a plan is shaped that way, not as blockers.
 
 1. **Approach ops on an unreachable loc.** `interact` and `talk` `use` take only locs whose `reachable` is not false
    (`conductor/tasks/interact.ts` `candidates`, `talk.ts:90-96` `findLoc`), and nothing on the island is reachable
@@ -276,13 +280,12 @@ route, checked with `nearestWay` on the world index graph [2026-10-23]:
    `ClientInteraction.test.ts:682-728`). Needed: an `interact` param that names the loc by tile (gap 3) and sends the
    op even when unrouted, from a stand tile the plan gives ((2512, 3476)); its effect is the player moving
    (swim: to (2527, 3413)) or an animation (rope: `human_throwrope`), then a landing at (2513, 3468).
-2. **Use an item on a loc whose effect is a move.** `talk` `use` waits for an inventory change, a dialog or
-   interface, an animation or a refusal (`conductor/actions/use.ts` `used`). The pebble on the tombstone, the rope on
+2. **Fixed: use an item on a loc whose effect is a move.** `talk` `use` used to wait for an inventory change, a dialog or
+   interface, an animation or a refusal, and now also for the game to move the player (`conductor/actions/use.ts` `used`, `movement.ts`). The pebble on the tombstone, the rope on
    the Dead tree, the key on Golrie's gate and on the dungeon Doors only move the player and print messages (nothing
-   is used up), so each times out after 10 s and is retried; on a key door the retry runs from the far side and walks
+   is used up), so each timed out after 10 s and was retried; on a key door the retry runs from the far side and walks
    the bot back through (`quest_waterfall.rs2:357-367`, `:392-407`), and after the rope the retry finds the other
-   Dead tree (2510, 3463) beside the ledge. Needed: item-on-loc in `interact` (an inventory item regex), with its
-   effect model (position change, loc change, `expect` on a message), sent once.
+   Dead tree (2510, 3463) beside the ledge. `interact` also takes an item on a loc (`use`), sent once.
 3. **Pick a loc by tile.** Both tasks pick the nearest loc of that name; a tie goes to the one scanned first, smaller
    x then smaller z (`server/webclient/src/bot/StateCollector.ts:1117-1124`, stable sort at `:1272`), and `at` only
    gets the bot within its tolerance (min 1). Wrong picks within one tile of a stand tile: the six Pillars (each must
@@ -299,7 +302,7 @@ tie goes to Golrie's), the dungeon key Crate vs `crate` (2586, 9887) from (2587,
    `UNDERGROUND_AREAS`, `leftOut`). `interact` climbs them; adding the cellar (m39_149) and the tomb (m39_153) as
    areas would let `travel` route through.
 6. **Walker moves for use-item gates.** `moveRefusal` refuses every `oplocu`/`aplocu` trigger
-   (`walk-graph.ts:108-114`). With gap 2's act, `actions/cross.ts` could make the rope, pebble and key moves, and one
+   (`walk-graph.ts:108-114`). With gap 2 fixed, `actions/cross.ts` could make the rope, pebble and key moves, and one
    `travel` would go from Almera's bank to the dungeon entry; the rock's row also needs its landing (2513, 3468)
    derived (roadmap: "approach-op gates used from range").
 
@@ -317,3 +320,57 @@ Format as `conductor/saves/*.json` (`source.spec`: `position`, `skills`, `invent
   Adamant full helm (slot 0), Rune scimitar (3), Adamant platebody (4), Adamant kiteshield (5), Adamant platelegs (7);
   inventory Rope, Glarial's amulet (295), Glarial's urn (296), 6 each Air, Earth, Water rune, 15 Lobster; varp 65 = 4
   (the ledge door moves the stage only from 4), varp 66 = 0.
+
+## Plan status
+
+Promoted: `conductor/plans/waterfall-quest.ts`. A fresh load of `lib:waterfall-start` to quest done in one run, 1223 s
+(run `2026-10-24T01-56-32-174Z-plan-waterfall-quest`, questw2). [v 2026-10-24 questw2 local]
+
+- Start save `waterfall-start`: stage 0, Catherby bank (2809, 3441), Att/Str/Def 45, HP 50, Prayer 43, Agility 52,
+  Fishing 79, Cooking 81, Thieving 72; inventory 20 swordfish + 500 coins; bank 30 swordfish, 10 tuna, rune scimitar,
+  adamant full helm, platebody, platelegs, kiteshield; nothing worn. `waterfall-tomb`: stage 3, at the tombstone
+  (2560, 3445), pebble + rope + 20 swordfish. (The "Suggested library saves" above are the original sketches.)
+- Minimum proven: no harpoon, rope or runes owned at the start. The plan buys the rope at Arhein (Catherby, 23 gp)
+  and the 18 runes at Betty (Port Sarim, 72 gp), so 100+ coins and 20+ food suffice. Combat below 45 is untested.
+- Stage comes from held items (book, pebble, amulet, urn, key), position regions and the quest tab. `v.last` only
+  rotates the settle phases after a search or climb, because the view is one tick stale.
+- Phase seconds: buy-runes (Port Sarim) 111; bank-runes walk Catherby -> Ardougne North 161 (no loop); Almera 57;
+  to-cellar 106; tomb about 150 (tombstone 108 with fights, chest 53, flee 42, urn 11, exit 1); bank-gear 40;
+  to-island-2 59; key-crate + dungeon fight/wait 160; door1 54; door2 42; pillars 6 x 3; statue 13; chalice 2.
+  Idle time: waiting out Skeleton fights at the key crate (~100 s) and door use-items timeouts (~100 s).
+- Hudon: Talk-to works from the island with `interact` `unreachable` at (2512, 3478); the bookcase gives the book
+  only after that talk. The forced dialog on landing does not set stage 2.
+
+Gotchas the plan works around [v 2026-10-24 questw2 local]:
+
+- Pebble on the tombstone: `talk` `use` walks back to its `at` tile after the teleport, i.e. out of the tomb via the
+  ladder (earlier successes depended on that use timing out). The plan uses `interact` with `use` {item pebble} on
+  the Tombstone instead. Re-entering works at any stage.
+- Pack slots: the chalice refuses the reward with fewer than 5 free slots (the plan drops 6 swordfish first,
+  make-room); the key crate search fails silently with a full pack (bank-gear takes 14 swordfish and bank-food 5, 19
+  in all, so the key fits).
+- Fights: no task starts under attack, so the dungeon waits fights out with `travel` flee to the crate or door 1,
+  eating held food, auto-retaliating with rune scimitar + adamant. Two alternating phases per fight, so a failed wait
+  never ends the plan. Skeletons (45) x3 and Skeleton Mages attack at the key crate; Fire giants (86) are by door 1;
+  survivable at Attack 60 with rune scimitar + adamant by waiting the fight out.
+- Door 1, door 2 and the key crate use `onFail` continue / maxFails 10-12, because use-items reports a Timeout
+  although the key works.
+- Tomb: no combat phase; flee to the ladder (2555, 9844) whenever attacked, eat on the surface and inside. Only the
+  tomb forbids gear: bank weapon and armour before the tombstone, withdraw them at Ardougne North after, wear them
+  for the dungeon with 20+ food. Going into the dungeon geared-light with little food died at the key crate (three
+  Skeletons held the bot in a 286 s fight until the food ran out).
+- Not done: Protect from Melee (combat `prayers` only toggles during a combat run, which cannot start in the tomb).
+- Searching the crate in Golrie's cellar draws Zombies and Giant bats. Hadley's house -> Tree Gnome Village ladder has
+  no path: see `learnings/walking.md`.
+- A combat-35 account (HP 33, little food) died on the tomb chest -> urn leg (auto-retaliation about 25 HP/min).
+
+## Plan status: waterfall-armour
+
+Promoted: `conductor/plans/waterfall-armour.ts` (waterfall-quest with a Defence-40 armour prep). Run `2026-10-24T02-45-31-672Z-plan-waterfall-armour`, one run, 1628 s, no deaths: Attack 40 -> 84, Strength 62 -> 87 (343,750 XP each from the reward plus ~23.8k Strength from fights), HP 52 -> 54. [v 2026-10-24 conductor3 local]
+
+- Safe at Defence 40 / combat 62 in Mithril platebody + Mithril platelegs + Adamant full helm with a Mithril scimitar and 20 Swordfish: dungeon fights waited out with `travel` flee (5 fight and 5 wait phases, ~78 s each), HP lowest 37/54, 3 Swordfish eaten. This extends the proven range below Attack 60 / rune; below combat 45 stays untested.
+- Armour bought with the `shop` task by NPC name: Peksa (Adamant full helm 3,520), Horvik (Mithril platebody 5,200), Louie Legs (Mithril platelegs 2,600); see `learnings/equipment.md`.
+- Phase seconds: prep-bank 73, buy-helm 38, buy-body 41, buy-legs 75, bank-start 197, buy-runes 117, buy-rope 5, almera 60, to-island-1 11, hudon-talk 9, swim 5, bookcase 14, to-cellar 106, cell-key 61 (one of two runs failed on 3 key-on-door timeouts, retried), tombstone 109 (2 runs), bank-runes 163, tomb-flee 42, tomb-urn 12, tomb-chest 14, to-island-2 60, bank-gear 40, key-crate 13, door1 53, door2 42, statue 14, pillars 3-4 each, chalice 2. The long phases are walks: bank-start, bank-runes, tombstone (100-200 s each).
+- The statue phase's second run failing "no connector from (2603,9914) to (2565,9915)" after the chalice is harmless.
+- The run ends with interface 297 (quest-complete scroll) open in the chalice room (2603, 9912).
+- Loot kept: Glarial's urn, 2 Diamond, 2 Gold bar, 40 Mithril seeds.

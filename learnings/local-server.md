@@ -32,6 +32,8 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
   (`data/market.sqlite`) exists, a login loads the player's GE checkpoint instead of the `.sav`
   (`PlayerLoading.load`, read from code), so `up.sh` refuses to start the engine until it is
   retired.
+- Quest points are recounted at login from the quest varps (`quests.rs2` `update_questpoints`), so a library save that sets only the QP varp is overwritten. A save meant to have 32 QP needs real quest varps: 14=7 (Merlin's Crystal), 29=2, 31=100, 32=3, 62=6, 80=4, 144=100, 222=30, 273=110 gave 32 QP (nine quests: Merlin's Crystal, Cook's Assistant, Doric's Quest, Ernest the Chicken, Goblin Diplomacy, Druidic Ritual, Romeo and Juliet, Demon Slayer, Prince Ali Rescue). [v 2026-10-24 questw1 local]
+- A save made by `library.ts generate` can hold different unset varps from a fresh account: varp 28 (the Temple of Ikov ice-arrow chest location) is -1 on a fresh account but 0 in a generated save, and with 0 no chest ever held arrows. When a quest mechanic depends on a varp's initial value, set it in the library save (the Ikov start save sets `{28:-1}`); see [Temple of Ikov](../wiki/quests/temple-of-ikov.md). [v 2026-10-24 questw5 local]
 - Stopping a client does not log the player out. The server keeps a disconnected player in the
   world for 500 ticks (~3.5 min at 400 ms, relaxed for bot background tabs) before an idle
   logout, and force-logs out after 1000 ticks. `/status/<bot>` reports `inGame: false` as soon as

@@ -10,7 +10,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `flax-gnome-spin-bank` | [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) `flax:tree-gnome-stronghold:8` | 490k at 10 | 490k | 490k | 490k | 490k | 490k | 490k | 490k | 490k | 490k | 490k | 13.1k | player | - |
 | `flax-seers-spin-bank` | [Flax (Kandarin)](../places/flax.md) `flax:flax:0` | 452k at 10 | 452k | 452k | 452k | 452k | 452k | 452k | 452k | 452k | 452k | 452k | 12.1k | player | 292k at 43 (65%) |
 
-- `flax-gnome-spin-bank`: Flax picked in the Gnome Stronghold, spun into bow strings at its wheel, banked there. The Seers flax-spin method's Stronghold twin, a higher floor. No run has checked the flax field, the wheel or the walk between; no promoted plan; unmeasured.
+- `flax-gnome-spin-bank`: Flax picked in the Gnome Stronghold, spun into bow strings at its wheel, banked there. The Seers flax-spin method's Stronghold twin, a higher floor. Run 2026-10-24 by conductor3 as the flax stage of plan crafting80 (Crafting 10-80): ~332k XP/h over the loop phases (68% of the floor), time split spin 42%, pick 33%, bank 14%, walk down to the field 11%. That plan also shears and spins wool, so it names no method; a flax-only plan would carry the measured entry.
   - **Requires**: Reach: none. Levels: Crafting 10. Tools: none.
   - **Sink**: spinning at [Tree Gnome Stronghold (Kandarin)](../places/tree-gnome-stronghold.md) `spinning-wheel:tree-gnome-stronghold:0`, then bank at [Gnome Stronghold south bank (Tree Gnome Stronghold)](../places/gnome-stronghold-bank.md) `bank:gnome-stronghold-bank:0`; legs 4 + 24 + 23 run ticks.
   - **Supplies/hr** at 99: none.

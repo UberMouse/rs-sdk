@@ -238,6 +238,38 @@ describe('shop: failures', () => {
         expect(r.sends).toEqual([]);
     });
 
+    test('two same-named NPCs, only the farther one trades: it is opened', async () => {
+        const dwarves = world()
+            .player({ at: KEEPER })
+            .inv('Coins', 5)
+            .npc('Shop keeper', KEEPER.x, KEEPER.z + 1, { index: 3, options: ['Talk-to'] })
+            .npc('Shop keeper', KEEPER.x, KEEPER.z + 3, { index: 4, options: ['Talk-to', 'Trade'] });
+        const r = await simulate(shop, {
+            params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] },
+            timeline: dwarves.series(1),
+            react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(
+            r.commands.flatMap(c => (c.type === 'send' && c.action.type === 'interactNpc' ? [c.action.npcIndex] : [])),
+        ).toEqual([4]);
+    });
+
+    test('same-named NPCs none of which trade fail clearly with no-trade-option', async () => {
+        const w = world()
+            .player({ at: KEEPER })
+            .inv('Coins', 5)
+            .npc('Shop keeper', KEEPER.x, KEEPER.z + 1, { index: 3, options: ['Talk-to'] })
+            .npc('Shop keeper', KEEPER.x, KEEPER.z + 3, { index: 4, options: ['Talk-to'] });
+        const r = await simulate(shop, {
+            params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] },
+            timeline: w.series(1),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('trade: cannot open shop via "Shop keeper": No trade option on NPC');
+        expect(r.sends).toEqual([]);
+    });
+
     test('three opens that time out fail the run before the watchdog', async () => {
         const r = await simulate(shop, {
             params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] },
@@ -634,6 +666,35 @@ describe('shop: a shopkeeper out of reach', () => {
             'open shop failed (cant-reach): no route',
             'walk to Shop keeper (3212,3248) to open the shop: Arrived',
         ]);
+    });
+
+    test('the walk goes to the same-named NPC that trades, not a nearer one that does not', async () => {
+        let opens = 0;
+        const w = carrying
+            .player({ at: { x: KEEPER.x, z: KEEPER.z - 4 } })
+            .npc('Shop keeper', KEEPER.x, KEEPER.z - 3, { index: 3, options: ['Talk-to'] });
+        const driver = new TimelineDriver(w.series(1), {
+            react: walking(react),
+            respond: a => (a.reason === OPEN && ++opens <= 1 ? noRoute : undefined),
+        });
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver });
+        expect(r.result.status).toBe('done');
+        expect(walkLogs(r)[0]).toBe('walk to Shop keeper (3212,3248) to open the shop: Arrived');
+        expect(r.sends[1]).toBe(WALK);
+    });
+
+    test('the walk goes to a reachable same-named trader, not a nearer unreachable one', async () => {
+        let opens = 0;
+        const w = carrying
+            .player({ at: { x: KEEPER.x, z: KEEPER.z - 4 } })
+            .npc('Shop keeper', KEEPER.x, KEEPER.z - 3, { index: 3, options: ['Talk-to', 'Trade'], reachable: false });
+        const driver = new TimelineDriver(w.series(1), {
+            react: walking(react),
+            respond: a => (a.reason === OPEN && ++opens <= 1 ? noRoute : undefined),
+        });
+        const r = await simulate(shop, { params: { ...NPC, buy: [{ item: 'Hammer', count: 1 }] }, driver });
+        expect(r.sends[1]).toBe(WALK);
+        expect(walkLogs(r)[0]).toBe('walk to Shop keeper (3212,3248) to open the shop: Arrived');
     });
 
     test('three opens that cannot reach it fail the run, with a walk after each of the first two', async () => {

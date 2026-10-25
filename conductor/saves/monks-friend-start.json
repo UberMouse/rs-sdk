@@ -1,0 +1,165 @@
+{
+    "name": "monks-friend-start",
+    "purpose": "Monk's Friend start: conductor3-like combat (Att 40 Str 54 Def 40 HP 47 Prayer 49, mithril scimitar, 10 swordfish), bronze axe, 500 coins, quest not started, East Ardougne (2662,3305)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2662,
+                "z": 3305,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 500
+        }
+    },
+    "sha1": "61f81a9c9ad05c45f5f44da7cc7b8e6922770057",
+    "createdAt": "2026-10-24T02:35:38.572Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2662,
+            "z": 3305,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            },
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

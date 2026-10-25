@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
-import { withDoorStops } from '../../actions/paths';
+import { collisionPaths, withDoorStops } from '../../actions/paths';
 import { DOOR_OPEN_TICKS, WEB_SLASH_ATTEMPTS, type WalkResult, walkTo } from '../../actions/walk';
 import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { interpret } from '../../core/interpret';
@@ -223,5 +223,23 @@ describe('withDoorStops', () => {
     test('a route that misses every web is unchanged', () => {
         const missing = [at(3200, 9890), at(3205, 9895), at(3205, 9899)];
         expect(withDoorStops(missing)).toEqual(missing);
+    });
+});
+
+describe('withDoorStops over the SDK door index', () => {
+    // The Varrock west square alley (x 3213) ends in a double door at (3212, 3470) and (3213, 3470).
+    test('the planned route from the alley mouth stops before the double door and on it', () => {
+        const r = collisionPaths.findPath({ x: 3213, z: 3438, level: 0 }, { x: 3222, z: 3476 }, []);
+        expect(r.reachedDestination).toBe(true);
+        const stops = r.waypoints.filter(w => w.x === 3213 && w.z >= 3438 && w.z <= 3472).map(w => w.z);
+        expect(stops).toContain(3469);
+        expect(stops).toContain(3470);
+        // The walk opens the door when a waypoint is beside it.
+        expect(collisionPaths.doorsAlong(r.waypoints).some(d => d.x === 3213 && d.z === 3470)).toBe(true);
+    });
+
+    test('a route that crosses no door is unchanged', () => {
+        const run = [at(3213, 3438), at(3213, 3456)];
+        expect(withDoorStops(run)).toEqual(run);
     });
 });

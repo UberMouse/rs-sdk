@@ -8,7 +8,7 @@ import { type Page, dialogScript } from '../dialog-script';
 import { fakePaths } from '../paths';
 import { walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
-import { attackedFrom, world } from '../world';
+import { attackedFrom, type World, world } from '../world';
 
 const DUKE = 'Duke Horacio';
 const base = world();
@@ -128,6 +128,9 @@ describe('talk: conversation', () => {
 
 const parse = (p: object) => (talk.params as { safeParse(x: unknown): { success: boolean } }).safeParse(p);
 
+const underAttack = (w: World) =>
+    w.player({ inCombat: true }).npcBeside('Goblin', { attacking: true, inCombat: true, combatLevel: 2 });
+
 describe('talk: continue an open dialog', () => {
     const CRATE_PAGES: Page[] = [[], ['Yes.', 'No.'], [], [], ['Yes.', 'No.'], null];
     const open = base.dialog({ text: 'page 0', options: [] });
@@ -144,6 +147,45 @@ describe('talk: continue an open dialog', () => {
         expect(r.sends.filter(s => /Talk-to/.test(s))).toEqual([]);
         expect(clicks(r)).toHaveLength(CRATE_PAGES.length - 1);
         expect(r.steps).toEqual(['continue-dialog']);
+    });
+
+    test('continues an open dialog while attacked: the dialog is the way out of the fight', async () => {
+        const r = await simulate(talk, {
+            params: { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] },
+            timeline: underAttack(open).series(40),
+            react: dialogScript(CRATE_PAGES, () => false, 1).react,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toStartWith('continue-dialog: continued the open dialog, 2 choices made');
+    });
+
+    // maxHp 40: the eat window is below 20, the hold's floor is 10.
+    const lowHp = (hp: number) =>
+        simulate(talk, {
+            params: { continue: true, choices: ['^Yes\\.$', '^Yes\\.$'] },
+            timeline: underAttack(open.inv('Shrimps', 3).player({ hp, maxHp: 40 })).series(40),
+            react: dialogScript(CRATE_PAGES, () => false, 1).react,
+        });
+
+    test('at low HP above the floor under attack the open dialog is answered, not closed by an eat', async () => {
+        const r = await lowHp(15);
+        // The eat waits until the dialog is answered (it closes after the last page).
+        expect(r.sends.slice(0, CRATE_PAGES.length - 1).filter(s => s.startsWith('Eat'))).toEqual([]);
+        expect(clicks(r)).toHaveLength(CRATE_PAGES.length - 1);
+    });
+
+    test('at the HP floor under attack the guard eats first', async () => {
+        const r = await lowHp(10);
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
+    test('continue with no dialog open is still refused while attacked', async () => {
+        const r = await simulate(talk, {
+            params: { continue: true },
+            timeline: underAttack(base).series(10),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('in combat at');
     });
 
     test('with no dialog open it fails after a short wait and sends nothing', async () => {
@@ -598,5 +640,22 @@ describe('talk: travels', () => {
         });
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('talk: talked to Captain Tobias, 1 choice made');
+    });
+});
+
+describe('talk: a use that teleports the player', () => {
+    // Glarial's pebble on her tombstone: the game moves the bot into the tomb, with no message and no inventory change.
+    const stone = base.player({ at: { x: 2560, z: 3446 } }).inv("Glarial's pebble", 1, { id: 294 });
+    const timeline = stone
+        .loc("Glarial's Tombstone", 2560, 3445, { options: ['Read'], reachable: true })
+        .series(30, (w, i) => (i < 3 ? w : w.player({ at: { x: 2554, z: 9844 } })));
+
+    test('the position jump is the effect: the use counts and the task is done', async () => {
+        const r = await simulate(talk, {
+            params: { use: { items: ["^Glarial's pebble$"], onLoc: "^Glarial's Tombstone$" } },
+            timeline,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe("finish: used 1 item on ^Glarial's Tombstone$");
     });
 });

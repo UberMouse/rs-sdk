@@ -1,0 +1,107 @@
+{
+    "name": "undercombat-scorpions",
+    "purpose": "Combat ~17 (Att/Str/Def 15, HP 22) with 6 Lobsters and a Bronze sword in the Falador Dwarven Mine among cowardly scorpions (level 14 hunt players up to combat 28), (3056,9774). Tests starting a run under attack (combat, low-HP guard).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3056,
+                "z": 9774
+            },
+            "skills": {
+                "Attack": 15,
+                "Strength": 15,
+                "Defence": 15,
+                "Hitpoints": 22
+            },
+            "inventory": [
+                {
+                    "id": 1277,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "81d5f7f1a8aebe0db45ae7b131135095955eb3b0",
+    "createdAt": "2026-10-23T22:45:35.062Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3056,
+            "z": 9774,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 15,
+            "Defence": 15,
+            "Strength": 15,
+            "Hitpoints": 22
+        },
+        "inventory": [
+            {
+                "id": 1277,
+                "name": "bronze_sword",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

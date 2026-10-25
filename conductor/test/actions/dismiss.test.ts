@@ -11,9 +11,11 @@ import {
     dismiss,
     isSkillMenu,
     NEVER_CLOSE_INTERFACES,
+    leftoverModal,
     OP_OWNED_INTERFACES,
     SMITHING_INTERFACE,
 } from '../../actions/dismiss';
+import { COMBOLOCK_INTERFACES } from '../../actions/combolock';
 import { world } from '../world';
 import { refuse, runOp } from './harness';
 
@@ -228,6 +230,14 @@ describe('closableInterface', () => {
     test("an op's own interface is not closable: the anvil's smithing interface is the smith op's", () => {
         for (const id of OP_OWNED_INTERFACES) expect(closableInterface(world().modal(id).build()), `${id}`).toBe(false);
         expect(OP_OWNED_INTERFACES.has(SMITHING_INTERFACE)).toBe(true);
+    });
+
+    test('a combination lock left open is a leftover modal the run closes at its start, though no guard closes it', () => {
+        for (const id of COMBOLOCK_INTERFACES) {
+            const s = world().modal(id).build();
+            expect(closableInterface(s), `${id}`).toBe(false);
+            expect(leftoverModal(s), `${id}`).toBe(`interface ${id}`);
+        }
     });
 });
 

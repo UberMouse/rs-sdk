@@ -1,0 +1,284 @@
+{
+    "name": "holy-grail-realm",
+    "purpose": "Holy Grail steps 6-15 without the ships out: stage 4 (varp 5=4, Merlin's Crystal done), Att/Str/Def/HP 70, Prayer 43, Excalibur and rune armour (chainbody) worn, pack holds a holy table napkin, 2 magic whistles, 15 lobsters, 270 coins (one fare paid); at the six heads (2741,3235).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2741,
+                "z": 3235,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70,
+                "Prayer": 43
+            },
+            "inventory": [
+                {
+                    "id": 15,
+                    "count": 1
+                },
+                {
+                    "id": 16,
+                    "count": 1
+                },
+                {
+                    "id": 16,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 35,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1113,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1061,
+                    "count": 1,
+                    "slot": 10
+                }
+            ],
+            "coins": 270,
+            "varps": {
+                "5": 4,
+                "14": 7
+            }
+        }
+    },
+    "sha1": "622a9bd2d40c46b3612552c50b27534af523f7af",
+    "createdAt": "2026-10-23T23:35:08.563Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2741,
+            "z": 3235,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70,
+            "Prayer": 43
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 270
+            },
+            {
+                "id": 15,
+                "name": "holy_table_napkin",
+                "count": 1
+            },
+            {
+                "id": 16,
+                "name": "magic_whistle",
+                "count": 1
+            },
+            {
+                "id": 16,
+                "name": "magic_whistle",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 35,
+                "name": "excalibur",
+                "count": 1
+            },
+            {
+                "id": 1113,
+                "name": "rune_chainbody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1061,
+                "name": "leather_boots",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "5": 4,
+            "14": 7,
+            "281": 1000
+        }
+    }
+}

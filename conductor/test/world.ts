@@ -395,6 +395,17 @@ export class World {
         return this.with({ autoRetaliateEnabled: on });
     }
 
+    /** Another player in view, beside the bot. */
+    otherPlayer(name: string, index = 2): World {
+        const { x, z } = this.at;
+        return this.with({
+            nearbyPlayers: [
+                ...this.s.nearbyPlayers,
+                { kind: 'player', index, name, combatLevel: 3, x: x + 1, z, distance: 1 },
+            ],
+        });
+    }
+
     /** The bot in combat targeting NPC `index`, or with `false` out of combat with no target. */
     fighting(index: number | false): World {
         const cur = this.s.player;

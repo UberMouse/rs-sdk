@@ -81,6 +81,7 @@ await sdk.sendBankWithdraw(bankSlot, count);
 ```
 
 - The bank task's `withdraw` with `upTo` is capped by the inventory (`inventoryRoom` in `conductor/tasks/bank.ts`): a non-stackable item by the free slots, a stackable one (Feather, runes, coins; the obj config's `stackable`) only by needing one free slot, or none if a stack of it is held, even a stack of one. Before the fix (2026-10-23) a stackable not held as a stack of 2+ came up 27 of 155 Feather. [v 2026-10-23 conductor3 local]
+- A bank `withdraw` with `upTo` of an item not in the bank is skipped without failing, so it works as an inventory probe. [v 2026-10-24 conductor3 local]
 - The bank task has no balance read-out. To read a banked coin total: withdraw Coins with `upTo` and a large count, read the run's `inventoryDelta`, then deposit them again. [v 2026-10-23 conductor3 local]
 
 ## Closing the Bank

@@ -100,3 +100,49 @@ test(
     },
     itestTimeout({ taskMinutes: 2 }) * 2,
 );
+
+const PESTLE_AND_MORTAR = 233;
+const CHARCOAL = 973;
+const POT_OF_FLOUR = 1933;
+const BUCKET_OF_WATER = 1929;
+
+test(
+    'items task grinds charcoal once, then answers the dough menu with `choice`',
+    async () => {
+        await withFixtureBot(
+            {
+                position: COURTYARD,
+                skills: { Attack: 60, Strength: 60, Defence: 60, Hitpoints: 60 },
+                inventory: [
+                    { id: PESTLE_AND_MORTAR, count: 1 },
+                    { id: CHARCOAL, count: 1 },
+                    { id: POT_OF_FLOUR, count: 1 },
+                    { id: BUCKET_OF_WATER, count: 1 },
+                ],
+            },
+            async ({ name }) => {
+                const grind = await runTask(
+                    name,
+                    'items',
+                    { combine: { use: '^Pestle and mortar$', on: '^Charcoal$' } },
+                    ['minutes:2'],
+                );
+                const grindDetail = `${JSON.stringify(grind.result)}\n${grind.stderr}`;
+                expect(grind.result.status, grindDetail).toBe('done');
+                expect(grind.result.inventoryDelta['Ground charcoal'], grindDetail).toBe(1);
+
+                const dough = await runTask(
+                    name,
+                    'items',
+                    { combine: { use: '^Pot of flour$', on: '^Bucket of water$', choice: '^Pastry dough' } },
+                    ['minutes:2'],
+                );
+                const doughDetail = `${JSON.stringify(dough.result)}\n${dough.stderr}`;
+                expect(dough.result.status, doughDetail).toBe('done');
+                expect(dough.result.inventoryDelta['Pastry dough'], doughDetail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }) * 2,
+);

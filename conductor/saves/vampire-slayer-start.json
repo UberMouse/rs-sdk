@@ -1,0 +1,156 @@
+{
+    "name": "vampire-slayer-start",
+    "purpose": "Vampire Slayer start: conductor3 profile (Att 40 Str 54 Def 40 HP 47 Prayer 49, mithril scimitar worn, 10 swordfish in separate slots, 200 coins), vampire varp 0, at Draynor village square (3105,3250); no garlic, hammer or beer",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3105,
+                "z": 3250,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 200
+        }
+    },
+    "sha1": "7193e4decbff590856f7cf4fff66d60cd54fedbf",
+    "createdAt": "2026-10-24T02:43:53.488Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3105,
+            "z": 3250,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 200
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

@@ -1,6 +1,7 @@
 // What an account meets of the world index's requirement tokens, and the account a bot's state shows.
 import { describe, expect, test } from 'bun:test';
 import { type Account, accountOf, meetsOneOf, meetsSet, meetsToken, NO_ACCOUNT } from '../../lib/account';
+import { ANY_CAME_FROM } from '../../../wiki/world/requirements';
 import { world } from '../world';
 
 const account = (a: Partial<Account> = {}): Account => ({ levels: {}, coins: 0, ...a });
@@ -110,11 +111,20 @@ describe('meetsToken: objs carried and worn, and the wizard on record', () => {
         expect(meetsToken(carrying, 'consume:shantay_pass:3')).toBe(false);
     });
 
-    test('a came-from requirement is met only for the wizard on record, and for any with none on record', () => {
+    test('a came-from requirement is met only for the wizard on record; with none, only inside the mine', () => {
         const aubury = account({ met: new Set(['other:came from aubury']) });
         expect(meetsToken(aubury, 'other:came from aubury')).toBe(true);
         expect(meetsToken(aubury, 'other:came from wizard_sedridor')).toBe(false);
-        expect(meetsToken(NO_ACCOUNT, 'other:came from wizard_sedridor')).toBe(true);
+        // None on record and not known to be in the mine (a bot outside): no way out is met.
+        expect(meetsToken(NO_ACCOUNT, 'other:came from wizard_sedridor')).toBe(false);
+        // Inside the mine with none on record: any wizard's.
+        const inside = account({ met: new Set([ANY_CAME_FROM]) });
+        expect(meetsToken(inside, 'other:came from wizard_sedridor')).toBe(true);
+        expect(meetsToken(inside, 'other:came from aubury')).toBe(true);
+        // A wizard on record beats the wildcard.
+        const both = account({ met: new Set([ANY_CAME_FROM, 'other:came from aubury']) });
+        expect(meetsToken(both, 'other:came from aubury')).toBe(true);
+        expect(meetsToken(both, 'other:came from wizard_sedridor')).toBe(false);
     });
 });
 
@@ -158,6 +168,19 @@ describe('accountOf', () => {
         );
         expect(a.worn).toEqual(new Set(['bronze_pickaxe']));
         expect(a.met).toEqual(new Set(['category:weapon_axe:held', 'category:weapon_pickaxe:worn']));
+    });
+
+    test('inside the essence mine it meets the any-wizard way out; outside it does not', () => {
+        const inside = accountOf(
+            world()
+                .player({ at: { x: 2910, z: 4830 } })
+                .build(),
+        );
+        expect(inside.met?.has(ANY_CAME_FROM)).toBe(true);
+        expect(meetsToken(inside, 'other:came from aubury')).toBe(true);
+        const outside = accountOf(world().build());
+        expect(outside.met?.has(ANY_CAME_FROM)).toBe(false);
+        expect(meetsToken(outside, 'other:came from aubury')).toBe(false);
     });
 
     test('no coins carried is 0', () => {

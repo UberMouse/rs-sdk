@@ -1,0 +1,162 @@
+{
+    "name": "dwarf-cannon-start",
+    "purpose": "Dwarf Cannon Quest start: Att 40 Str 54 Def 40 HP 47 Prayer 49 Crafting 85 Smithing 87 (conductor3 levels: the railing and cannon repairs roll on Crafting/Smithing), mithril scimitar worn, 10 swordfish, 500 coins, at the Dwarf Commander camp (2571,3460); the quest hands out railings and tool kit itself",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2571,
+                "z": 3460
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49,
+                "Crafting": 85,
+                "Smithing": 87
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 500,
+            "varps": {
+                "281": 1000
+            }
+        }
+    },
+    "sha1": "f87b8c8ee2c0343c40c9a1522c854b5a02f7e98e",
+    "createdAt": "2026-10-24T03:50:14.278Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2571,
+            "z": 3460,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49,
+            "Crafting": 85,
+            "Smithing": 87
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

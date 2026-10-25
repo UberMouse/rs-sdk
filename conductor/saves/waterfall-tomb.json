@@ -1,0 +1,346 @@
+{
+    "name": "waterfall-tomb",
+    "purpose": "Waterfall Quest stage 3 (book read, pebble held) at the Glarial tombstone (2560,3445): Att/Str/Def 45 HP 50 Prayer 43, 20 swordfish + pebble + rope in inventory, runes 6 each + 30 swordfish + rune scimitar + adamant set in the bank (worn after the tomb); no gear worn (questw2)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2560,
+                "z": 3445
+            },
+            "skills": {
+                "Attack": 45,
+                "Strength": 45,
+                "Defence": 45,
+                "Hitpoints": 50,
+                "Prayer": 43,
+                "Agility": 52,
+                "Fishing": 79,
+                "Cooking": 81,
+                "Thieving": 72
+            },
+            "inventory": [
+                {
+                    "id": 294,
+                    "count": 1
+                },
+                {
+                    "id": 954,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "bank": [
+                {
+                    "id": 556,
+                    "count": 6
+                },
+                {
+                    "id": 557,
+                    "count": 6
+                },
+                {
+                    "id": 555,
+                    "count": 6
+                },
+                {
+                    "id": 373,
+                    "count": 30
+                },
+                {
+                    "id": 1333,
+                    "count": 1
+                },
+                {
+                    "id": 1161,
+                    "count": 1
+                },
+                {
+                    "id": 1123,
+                    "count": 1
+                },
+                {
+                    "id": 1073,
+                    "count": 1
+                },
+                {
+                    "id": 1199,
+                    "count": 1
+                }
+            ],
+            "coins": 1000,
+            "varps": {
+                "65": 3
+            }
+        }
+    },
+    "sha1": "fbc015b93731af6109e1cb72d8f89bcd6b209700",
+    "createdAt": "2026-10-23T23:40:23.396Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2560,
+            "z": 3445,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 45,
+            "Defence": 45,
+            "Strength": 45,
+            "Hitpoints": 50,
+            "Prayer": 43,
+            "Cooking": 81,
+            "Fishing": 79,
+            "Agility": 52,
+            "Thieving": 72
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1000
+            },
+            {
+                "id": 294,
+                "name": "glarials_pebble_waterfall_quest",
+                "count": 1
+            },
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 6
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 6
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 6
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 30
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1161,
+                "name": "adamant_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1123,
+                "name": "adamant_platebody",
+                "count": 1
+            },
+            {
+                "id": 1073,
+                "name": "adamant_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1199,
+                "name": "adamant_kiteshield",
+                "count": 1
+            }
+        ],
+        "varps": {
+            "65": 3,
+            "281": 1000
+        }
+    }
+}

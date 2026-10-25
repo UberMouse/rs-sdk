@@ -13,6 +13,7 @@
 // (0..103) relative to mapBuildBase*, matching what the real World stores.
 
 import { LocLayer } from '#/dash3d/LocLayer.js';
+import { MapFlag } from '#/dash3d/MapFlag.js';
 import LocType from '#/config/LocType.js';
 
 import { LocIndex, valueAngle, valueLocId, valueShape } from './LocIndex.js';
@@ -105,7 +106,7 @@ export class SceneLite {
 
     /** Static loc id at a world coord, ignoring the overlay - for LOC_DEL bookkeeping. */
     staticLocIdAt(layer: LocLayer, level: number, worldX: number, worldZ: number): number {
-        const value = this.index.lookup(layer, level, worldX, worldZ);
+        const value = this.staticValue(layer, level, worldX, worldZ);
         return value ? valueLocId(value) : 0;
     }
 
@@ -162,7 +163,23 @@ export class SceneLite {
             return override === DELETED ? 0 : override;
         }
 
-        return this.index.lookup(layer, level, worldX, worldZ);
+        return this.staticValue(layer, level, worldX, worldZ);
+    }
+
+    /**
+     * Static loc at a SERVER level. The map files store a loc on a LinkBelow
+     * (bridge) tile at the level of the bridge deck, and GameMap.loadLocations
+     * lowers it one level (and drops one stored below the deck), so the server,
+     * zone packets, and the player all see it at level-1. The index keeps raw
+     * file levels (the full client's scene does too), so mirror the rule here:
+     * on a bridged tile server level S holds the raw level S+1 locs.
+     */
+    private staticValue(layer: LocLayer, level: number, worldX: number, worldZ: number): number {
+        const bridged = (this.index.mapFlags(1, worldX, worldZ) & MapFlag.LinkBelow) !== 0;
+        if (bridged && level + 1 > 3) {
+            return 0;
+        }
+        return this.index.lookup(layer, bridged ? level + 1 : level, worldX, worldZ);
     }
 
     /**

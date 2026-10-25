@@ -6,6 +6,7 @@ import {
     WALK_MAX_TICKS,
     WALK_RESERVE_TICKS,
     WALK_TICKS_PER_TILE,
+    ROUTE_TOO_LONG,
     walkBudgetTicks,
     type WalkResult,
     walkTo,
@@ -33,6 +34,7 @@ interface Run {
     guards?: Guard[];
     maxTicks?: number;
     reserveTicks?: number;
+    maxRouteTiles?: number;
     /** The step's tick budget, counted from the first state's tick, as the engine gives ctx.stepTicksLeft. */
     stepBudget?: number;
 }
@@ -55,7 +57,7 @@ async function walk(states: BotWorldState[], x: number, z: number, tolerance?: n
         pathfinder: paths,
         stepTicksLeft: () => (stepBudget === undefined ? undefined : startTick + stepBudget - driver.state().tick),
     };
-    const walkOpts = { maxTicks: opts.maxTicks, reserveTicks: opts.reserveTicks };
+    const walkOpts = { maxTicks: opts.maxTicks, reserveTicks: opts.reserveTicks, maxRouteTiles: opts.maxRouteTiles };
     const run = await interpret(walkTo(ctx, x, z, tolerance, walkOpts), {
         driver,
         guards: opts.guards,
@@ -200,6 +202,28 @@ describe('walkTo: tolerance (ported from sdk/test/walkto-tolerance.test.ts)', ()
         const w = await walk(standing({ x: 3201, z: 3201 }), 3200, 3200, 1, { paths });
         expect(w.result()).toEqual({ ok: true, message: 'Already at destination' });
         expect(paths.queries).toHaveLength(0);
+    });
+});
+
+describe('walkTo: maxRouteTiles', () => {
+    // A tile 8 away as the crow flies, reached by a 60-tile detour round a pond.
+    const detour = fakePaths(full({ x: 3200, z: 3260 }, { x: 3208, z: 3260 }, { x: 3208, z: 3200 }));
+    test('a first route longer than the limit is refused before a step is taken', async () => {
+        const w = await walk(standing({ x: 3200, z: 3200 }), 3208, 3200, 0, { paths: detour, maxRouteTiles: 20 });
+        expect(w.result()).toEqual({
+            ok: false,
+            reason: 'no-path',
+            message: 'Route to (3208, 3200) from (3200, 3200) is 128 tiles, over the 20 allowed',
+        });
+        expect(w.sends).toEqual([]);
+        expect(ROUTE_TOO_LONG.test(w.result().message)).toBe(true);
+    });
+
+    test('a route within the limit is walked, and with no limit any route is', async () => {
+        const near = await walk(standing({ x: 3200, z: 3200 }), 3208, 3200, 0, { maxRouteTiles: 20 });
+        expect(near.result()).toEqual({ ok: true, message: 'Arrived' });
+        const far = await walk(standing({ x: 3200, z: 3200 }), 3208, 3200, 0, { paths: detour });
+        expect(far.sends[0]).toBe('walk to (3200, 3260)');
     });
 });
 

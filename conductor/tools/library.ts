@@ -12,7 +12,7 @@
 import { join } from 'node:path';
 import { z } from 'zod/v4';
 import { createSaveData, type SaveConfig, TestPresets } from '../../sdk/test/utils/save-generator';
-import { LIBRARY_DIR, listLibrary, readLibrarySave, writeLibrarySave } from '../lib/saves';
+import { LIBRARY_DIR, listLibrary, readLibrarySave, unstackableStacks, writeLibrarySave } from '../lib/saves';
 import { errMessage, fail, parseCli } from '../lib/util';
 
 /** The shape of save-generator's SaveConfig, so a bad --spec fails here rather than as a broken save. */
@@ -96,6 +96,10 @@ try {
             if (!purpose) fail('generate needs --purpose "<what the save is for>"', 2);
             if (!flags.preset === !flags.spec) fail('generate needs exactly one of --preset or --spec', 2);
             const { spec, recorded } = readSpec();
+            const stacked = unstackableStacks(spec.inventory);
+            if (stacked.length) {
+                fail(`non-stackable items counted in one slot (list one entry per item): ${stacked.join(', ')}`, 2);
+            }
             const entry = writeLibrarySave(name, createSaveData(spec), {
                 purpose,
                 source: { kind: 'generated', spec: recorded },

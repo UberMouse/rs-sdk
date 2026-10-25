@@ -1,0 +1,252 @@
+{
+    "name": "sigli-draugen-start",
+    "purpose": "Fremennik Trials: Sigli trial started (viking=1, sigli bits=1), Hunters' talisman (uncharged) held, Att/Str/Def/HP 70, rune scimitar wielded, 20 swordfish, in the Rellekka hunting forest (2690,3615). Tests locate then combat on The Draugen.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2690,
+                "z": 3615
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70
+            },
+            "inventory": [
+                {
+                    "id": 3697,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "varps": {
+                "347": 1,
+                "348": 16384
+            }
+        }
+    },
+    "sha1": "91aef4d72c02c50b6c55ac1542feb6d7fac2e45f",
+    "createdAt": "2026-10-23T23:49:32.856Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2690,
+            "z": 3615,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70
+        },
+        "inventory": [
+            {
+                "id": 3697,
+                "name": "viking_draugen_talisman_uncharged",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "347": 1,
+            "348": 16384
+        }
+    }
+}

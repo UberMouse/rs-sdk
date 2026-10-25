@@ -184,6 +184,14 @@ because stopping half way leaves the world in a state no later step can finish o
   guards and no stops; a throw is logged and never changes the result. It must be a no-op when there
   is nothing to undo, only undo what the run itself did (record it in `memory`), and must not close
   a dialog the run leaves open (a prayer click, for one, closes it).
+- **`diagnostics(ctx)`** (optional) returns `{ diagnostics?, warnings? }`, read once as the run ends
+  (also on a stop or a failure): counts and advice for the RESULT, never a decision. Both keys are
+  absent from the RESULT when empty, each warning is also printed as a `warning:` line, and a throw is
+  logged (`diagnostics failed`) and never changes the status. A task working an `area` fills it with
+  `areaWatchReport` (`lib/area-watch.ts`): wrap its idle wait in `trackIdle`, and the RESULT carries
+  `idleTicks`, `seenOutsideAreaTicks` and `nearestOutsideArea`, with a `seenOutsideArea` warning when a
+  matching free target stood in view outside the area for over a tenth of the idle ticks (sampled at
+  each wait's start and end, so a long respawn wait counts whole or not at all).
 - **`guards: [underAttackGuard]`** for a skilling task whose interaction would cancel
   auto-retaliate (chopping, mining): it holds off while something fights the bot, and fails on a
   stuck fight. It is opt-in. A task may declare its own `TaskGuard` (a `name` distinct from the

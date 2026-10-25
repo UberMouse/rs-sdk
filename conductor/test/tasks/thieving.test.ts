@@ -444,3 +444,20 @@ describe('thieving: tables and budget', () => {
         expect(stepBudgetTicks(thieving.stepTimeoutMs ?? 0)).toBeGreaterThanOrEqual(WALK_MAX_TICKS + AFTER_WALK_TICKS);
     });
 });
+
+describe('thieving: seenOutsideArea diagnostic', () => {
+    test('a free Man in view outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(thieving, { params: PARAMS, timeline: manAt(base, SPOT.x + 12, SPOT.z).series(1) });
+        expect(r.result.diagnostics?.idleTicks).toBeGreaterThan(0);
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(r.result.diagnostics?.idleTicks);
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain(`(${SPOT.x + 12},${SPOT.z})`);
+    });
+
+    test('a Man busy in a fight outside the area does not count', async () => {
+        const w = base.npc('Man', SPOT.x + 12, SPOT.z, { index: 9, options: ['Pickpocket'], inCombat: true });
+        const r = await simulate(thieving, { params: PARAMS, timeline: w.series(1) });
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+});

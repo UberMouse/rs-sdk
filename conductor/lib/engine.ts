@@ -66,6 +66,14 @@ export const SETTLE_TICKS = 100;
 /** Attacked, or still fighting its own target (one that is not hitting back, or not yet). */
 const inFight = (s: BotWorldState) => isAttacked(s) || ownFight(s);
 
+/**
+ * The HP floor of `TaskDef.holdsDialog`: the hold widens the low-hp eat window from 50% of max HP down to
+ * max(HOLD_HP_FLOOR_MIN, HOLD_HP_FLOOR_FRACTION of max), never to death. At or below it the guard eats even if the
+ * eat closes the dialog.
+ */
+export const HOLD_HP_FLOOR_MIN = 8;
+export const HOLD_HP_FLOOR_FRACTION = 0.25;
+
 /** What a choice dialog found open at the start is called, when the task does not drive dialogs itself. */
 const STRAY_CHOICE = 'choice dialog';
 
@@ -357,6 +365,19 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
+    // A dialog the run keeps open for the next phase: the eat would close it. Only above the HP floor: the hold
+    // widens the low-hp eat window from 50% down to the floor, never to death; below it the guard eats even if
+    // that closes the dialog.
+    const holdsDialog = (s: BotWorldState) => {
+        const p = s.player;
+        return (
+            parsed.success &&
+            !!p &&
+            p.hp > Math.max(HOLD_HP_FLOOR_MIN, Math.ceil(HOLD_HP_FLOOR_FRACTION * p.maxHp)) &&
+            !!def.holdsDialog?.(ctx.params, s)
+        );
+    };
+
     /**
      * The task's `onEnd` cleanup, once, best effort: under no guards and no stops (the stop that ended the run
      * would fire again). Skipped when the params never parsed. Never throws; a failure is logged.
@@ -406,15 +427,26 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
+    /** The task's diagnostics hook, best effort: a throw is logged and the result carries none. */
+    const readDiagnostics = (): { diagnostics?: Record<string, unknown>; warnings?: string[] } => {
+        try {
+            return def.diagnostics?.(ctx) ?? {};
+        } catch (e) {
+            say(`diagnostics failed: ${errMessage(e)}`);
+            return {};
+        }
+    };
+
     const finish = async (endStatus: TaskStatus, endReason: string, endBy?: string): Promise<TaskResult> => {
         const atStop = stateOrNull();
+        const keepsDialog = endStatus === 'done' && !!atStop && holdsDialog(atStop);
         const { status, reason, by } =
-            endStatus === 'done' && atStop && inFight(atStop)
+            endStatus === 'done' && atStop && inFight(atStop) && !keepsDialog
                 ? await settle({ status: endStatus, reason: endReason, by: endBy })
                 : { status: endStatus, reason: endReason, by: endBy };
         if (status !== 'done') await takeScreenshot(status);
         // Eating first: a slow onEnd must not delay it at low HP.
-        if (by !== guardLabel(deathGuard.name)) await eatIfHurt();
+        if (by !== guardLabel(deathGuard.name) && !keepsDialog) await eatIfHurt();
         await runOnEnd();
         const s = stateOrNull();
         const xpGained = s ? xpGainedSince(s, xpBefore) : {};
@@ -433,6 +465,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             }
         }
         const p = s?.player;
+        const extra = parsed.success ? readDiagnostics() : {};
         const result: TaskResult = {
             task: def.name,
             bot: botName,
@@ -454,7 +487,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             inCombat: p ? p.combat.inCombat : null,
             screenshots,
             logFile,
+            ...(extra.diagnostics && Object.keys(extra.diagnostics).length > 0 && { diagnostics: extra.diagnostics }),
+            ...(extra.warnings && extra.warnings.length > 0 && { warnings: extra.warnings }),
         };
+        for (const w of extra.warnings ?? []) say(`warning: ${w}`);
         emit({ type: 'result', ...result });
         say(`${status}: ${reason}`);
         return result;
@@ -510,7 +546,10 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         name: guardLabel(g.name),
         policy: g.policy,
         critical: g.critical,
-        when: s => g.when(s, ctx) && !(goesOnWithoutFood && g.name === lowHpGuard.name && underFire(s) && !findFood(s)),
+        when: s =>
+            g.when(s, ctx) &&
+            !(goesOnWithoutFood && g.name === lowHpGuard.name && underFire(s) && !findFood(s)) &&
+            !(g.name === lowHpGuard.name && holdsDialog(s)),
         cleared: () => episodes.delete(g.name),
         run: s => {
             const label = guardLabel(g.name);

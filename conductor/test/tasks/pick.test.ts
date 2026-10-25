@@ -169,3 +169,23 @@ describe('pick: area and guards', () => {
         expect(on.result.stepRuns['interrupt:under-attack']).toBe(7);
     });
 });
+
+describe('pick: seenOutsideArea diagnostic', () => {
+    const params = { ...PARAMS, area: { x: 2743, z: 3445, radius: 5 } };
+
+    test('a plant in view outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(pick, {
+            params,
+            timeline: base.loc('Flax', 2760, 3445, { options: ['Pick'] }).series(1),
+        });
+        expect(r.result.diagnostics).toMatchObject({ idleTicks: 100, seenOutsideAreaTicks: 100 });
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain('(2760,3445)');
+    });
+
+    test('nothing in view: idle ticks, no warning', async () => {
+        const r = await simulate(pick, { params, timeline: base.series(1) });
+        expect(r.result.diagnostics).toEqual({ idleTicks: 100, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+});

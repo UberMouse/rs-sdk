@@ -12,6 +12,14 @@ test(
         await withFixtureBot(
             { position: COURTYARD },
             async ({ name }) => {
+                // The coffin is one loc on the shared server: an earlier run leaves it open (Close | Search). Closing
+                // a closed one fails harmlessly with no result read.
+                await runTask(
+                    name,
+                    'interact',
+                    { target: 'loc', name: '^coffin$', option: '^close$', at: { x: 3248, z: 3195, tolerance: 2 } },
+                    ['minutes:3'],
+                );
                 const run = await runTask(
                     name,
                     'interact',
@@ -191,6 +199,109 @@ test(
                 const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
                 expect(run.result.status, detail).toBe('done');
                 expect(run.result.inventoryDelta?.['Bucket of milk'], detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
+
+// Sheep shearing (server/content/scripts/general_use/scripts/shear_sheep.rs2): Shears used on the woolly Sheep
+// (npc 43) give wool; a sheared one (42) answers "This sheep has already been shorn.". Inside the fenced field north
+// of Ardougne.
+const SHEEP_FIELD = { x: 2654, z: 3365 };
+const SHEARS = 1735;
+const WOOLLY_SHEEP = 43;
+
+test(
+    'interact shears a woolly sheep picked by npcId',
+    async () => {
+        await withFixtureBot(
+            { position: SHEEP_FIELD, inventory: [{ id: SHEARS, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'npc',
+                        name: '^Sheep$',
+                        npcId: WOOLLY_SHEEP,
+                        use: { item: '^Shears$' },
+                        expect: 'you get some wool',
+                    },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta?.Wool, detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 2 }),
+);
+
+// Port Sarim jeweller's Door (quests/quest_arthur/scripts/quest_arthur.rs2 oploc1,jewellersdoor): with the Lady's
+// test started (bit 2 of varp 15) opening it starts the Beggar's choice dialog, which `choices` answers. The Beggar gives Excalibur for one Bread (beggar.rs2).
+const JEWELLER_DOOR = { x: 3015, z: 3246 };
+const ARTHUR_VARP = 14;
+const EXCALIBUR_COMPONENTS_VARP = 15;
+const EXCALIBUR_STARTED_MASK = 4;
+const BREAD = 2309;
+
+test(
+    'interact opens the jeweller door and answers the beggar it starts',
+    async () => {
+        await withFixtureBot(
+            {
+                position: JEWELLER_DOOR,
+                inventory: [{ id: BREAD, count: 1 }],
+                varps: { [ARTHUR_VARP]: 4, [EXCALIBUR_COMPONENTS_VARP]: EXCALIBUR_STARTED_MASK },
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'loc',
+                        name: '^Door$',
+                        option: '^Open$',
+                        tile: { x: 3016, z: 3246 },
+                        choices: ['Yes certainly'],
+                    },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.reason, detail).toMatch(/1 choice made/);
+                // Bread given, Excalibur received.
+                expect(run.result.inventoryDelta.Excalibur, detail).toBe(1);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
+
+// The Grail bell (quest_grail.rs2 opheld1): within 4 tiles of a Grail Maiden at the Fisher King's castle it shows
+// a message box, a chat line and teleports the bot to (2761, 4692) (the maidens stand at (2763, 4690) and (2760, 4688)). With no `expect` the first box (the dialog
+// guard clicks it away) is the effect; with `expect` naming the later one the run waits through the guard
+// and ends once the castle line has been shown, the bot teleported.
+test(
+    'interact counts the bell teleport as the effect although the dialog guard handled the message box',
+    async () => {
+        await withFixtureBot(
+            { position: { x: 2764, z: 4689 }, inventory: [{ id: 17, count: 1 }] },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'interact',
+                    { target: 'item', name: '^Grail bell$', option: '^Ring$', expect: 'inside the castle' },
+                    ['minutes:2'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.finalPos, detail).toMatchObject({ x: 2761, z: 4692 });
             },
             { connect: false },
         );

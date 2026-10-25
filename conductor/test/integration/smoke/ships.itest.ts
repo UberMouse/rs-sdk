@@ -93,7 +93,13 @@ test(
     'Port Sarim to Entrana and back, unarmed and free',
     async () => {
         await withFixtureBot(
-            { position: { x: 3029, z: 3212 }, inventory: [{ id: 329, count: 2 }] },
+            {
+                position: { x: 3029, z: 3212 },
+                inventory: [
+                    { id: 329, count: 1 },
+                    { id: 329, count: 1 },
+                ],
+            },
             async ({ name }) => {
                 await sail(name, toEntrana, { x: 2834, z: 3335 });
                 await sail(name, fromEntrana, { x: 3048, z: 3234 });

@@ -234,10 +234,12 @@ describe('combat: an NPC already attacking the bot', () => {
         expect(attacked(r)[0]).toBe(6);
     });
 
-    test('without a recent hit the attacker is left to others and the free NPC is chosen', async () => {
+    test('without a recent hit, with another player in view, the attacker is left to others and the free NPC is chosen', async () => {
         const r = await simulate(combat, {
             params: PARAMS,
-            timeline: two(base).series(8, (w, i) => (i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w)),
+            timeline: two(base.otherPlayer('Bob')).series(8, (w, i) =>
+                i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w,
+            ),
             stops: xp(25),
         });
         expect(attacked(r)[0]).toBe(7);
@@ -248,6 +250,51 @@ const attackedBy = (name: string, index: number, level: number, hp = 10) =>
     base
         .player({ inCombat: true, lastDamageTick: 0, hp })
         .npc(name, COOP.x + 1, COOP.z, { index, options: ['Attack'], attacking: true, combatLevel: level });
+
+describe('combat: an NPC facing the bot before its first hit', () => {
+    // Elvarg targets the bot long before she hits: the bot is not hit, and the NPC is already inCombat.
+    const facing = base
+        .npc('Chicken', COOP.x + 1, COOP.z, { index: 20, options: ['Attack'], attacking: true, inCombat: true })
+        .npc('Chicken', COOP.x + 2, COOP.z, { index: 21, options: ['Attack'] });
+
+    test('is a valid target when no other player is in view', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: killOf(facing, 20), stops: xp(25) });
+        expect(attacked(r)[0]).toBe(20);
+    });
+
+    test('is refused when it may be fighting another player in view (no hit on the bot yet)', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: facing
+                .otherPlayer('Bob')
+                .series(8, (w, i) => (i >= 6 ? w.fighting(false).skill('Attack', 1, 25) : w)),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(21);
+    });
+
+    test('is a valid target beside another player once it has hit the bot', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: killOf(facing.otherPlayer('Bob').player({ lastDamageTick: 0 }), 20),
+            stops: xp(25),
+        });
+        expect(attacked(r)[0]).toBe(20);
+    });
+});
+
+describe('combat: an NPC fighting a listed player', () => {
+    test('is refused even after a hit on the bot; the NPC attacking the bot is taken', async () => {
+        // Bob (index 1) is the target of chicken 20; chicken 21 faces the unlisted bot.
+        const fightWorld = base
+            .player({ lastDamageTick: 0 })
+            .otherPlayer('Bob', 1)
+            .npc('Chicken', COOP.x + 1, COOP.z, { index: 20, options: ['Attack'], attacking: true })
+            .npc('Chicken', COOP.x + 2, COOP.z, { index: 21, options: ['Attack'] });
+        const r = await simulate(combat, { params: PARAMS, timeline: killOf(fightWorld, 21), stops: xp(25) });
+        expect(attacked(r)[0]).toBe(21);
+    });
+});
 
 describe('combat: starting in a fight', () => {
     test('starts when the attacker is one of its targets, and fights it first', async () => {
@@ -279,16 +326,45 @@ describe('combat: starting in a fight', () => {
         expect(r.sends).toEqual([]);
     });
 
-    test('is refused at low HP, whether the attacker is a target or not', async () => {
-        const goblin = await simulate(combat, { params: PARAMS, timeline: attackedBy('Goblin', 20, 2, 4).series(3) });
-        expect(goblin.result.reason).toStartWith('in combat at');
-        const chicken = await simulate(combat, {
-            params: PARAMS,
-            timeline: attackedBy('Chicken', CHICKEN, 1, 4).series(3),
+    test('starts at low HP against a target attacker: the low-HP guard eats during the run, no refusal', async () => {
+        const hurt = attackedBy('Chicken', CHICKEN, 1, 4).inv('Shrimps', 3);
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'] },
+            timeline: hurt.series(12, (f, i) =>
+                i >= 8 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0, hp: i >= 2 ? 8 : 4 }),
+            ),
+            stops: xp(25),
         });
-        expect(chicken.result.status).toBe('failed');
-        expect(chicken.result.reason).toStartWith('in combat at');
-        expect(chicken.sends).toEqual([]);
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
+    test('at low HP with no food the run starts and the guard ends it (no "in combat" refusal)', async () => {
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: attackedBy('Chicken', CHICKEN, 1, 4).series(6, f => f.player({ lastDamageTick: 0, hp: 4 })),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).not.toStartWith('in combat at');
+        expect(r.result.reason).toContain('no food');
+    });
+
+    test('starts when one of several attackers is a target, though another is stronger than the bot', async () => {
+        const mixed = attackedBy('Chicken', CHICKEN, 1).npc('Giant', COOP.x - 1, COOP.z, {
+            index: 21,
+            options: ['Attack'],
+            attacking: true,
+            combatLevel: 28,
+        });
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: mixed.series(10, (f, i) =>
+                i >= 6 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0 }),
+            ),
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(attacked(r)[0]).toBe(CHICKEN);
     });
 
     test('a stale inCombat flag (no target, last hit 17 ticks ago, nobody attacking) does not refuse', async () => {
@@ -625,6 +701,132 @@ describe('combat: return to area', () => {
         });
         expect(r.steps[0]).toBe('return-to-area');
         expect(r.sends).toEqual([]);
+    });
+});
+
+describe('combat: targetRange visible', () => {
+    const VISIBLE = { ...PARAMS, targetRange: 'visible' };
+    /** The bot stands in the coop; the only chicken is 12 tiles away, beyond the area (radius 8). */
+    const outside = chickenAt(base, COOP.x + 12, COOP.z);
+
+    test('a chicken in view beyond the area is attacked; the default mode ignores it', async () => {
+        const seen = await simulate(combat, {
+            params: VISIBLE,
+            timeline: kill(outside),
+            react: walking(),
+            stops: xp(25),
+        });
+        expect(seen.result.reason).toBe('reached +25 Attack xp');
+        expect(seen.sends).toEqual([`walk to (${COOP.x + 12}, ${COOP.z})`, ATTACK]);
+        const ignored = await simulate(combat, { params: PARAMS, timeline: outside.series(1) });
+        expect(ignored.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(ignored.sends).toEqual([]);
+    });
+
+    test('the nearest visible target wins, in or out of the area', async () => {
+        const w = outside.npc('Chicken', COOP.x - 4, COOP.z, { index: 11, options: ['Attack'] });
+        const r = await simulate(combat, { params: VISIBLE, timeline: kill(w), react: walking(), stops: xp(25) });
+        const targets = r.driver.commands.flatMap(c =>
+            c.type === 'send' && c.action.type === 'interactNpc' ? [c.action.npcIndex] : [],
+        );
+        expect(targets).toEqual([11]);
+    });
+
+    test('still free and reachable only', async () => {
+        const w = base
+            .npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true })
+            .npc('Chicken', COOP.x + 13, COOP.z, { index: 10, options: ['Attack'], reachable: false });
+        const r = await simulate(combat, { params: VISIBLE, timeline: w.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+        expect(r.sends).toEqual([]);
+    });
+
+    describe('the Wilderness', () => {
+        const EDGE = { x: 3100, z: 3490 };
+        const edgeParams = { target: 'Chicken', targetRange: 'visible', area: { ...EDGE, radius: 4 } };
+        const edge = world().player({ at: EDGE }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('a target inside it, or within three tiles of it, is never picked', async () => {
+            for (const z of [3522, 3518]) {
+                const w = edge.npc('Chicken', EDGE.x, z, { index: CHICKEN, options: ['Attack'] });
+                const r = await simulate(combat, { params: edgeParams, timeline: w.series(1), react: walking() });
+                expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+                expect(r.sends).toEqual([]);
+            }
+        });
+
+        test('a target further from it is picked', async () => {
+            const w = edge.npc('Chicken', EDGE.x, 3512, { index: CHICKEN, options: ['Attack'] });
+            const r = await simulate(combat, {
+                params: edgeParams,
+                timeline: w.series(1),
+                react: walking(),
+                respond: a => (a.type === 'interactNpc' ? { success: false, message: 'stop' } : undefined),
+            });
+            expect(r.sends[0]).toBe(`walk to (${EDGE.x}, 3512)`);
+        });
+
+        test('an attacker beside it is still fought back, while a free one there is refused', async () => {
+            const z = 3518;
+            const npcs = (w: World) =>
+                w
+                    .npc('Chicken', EDGE.x, z, { index: 7, options: ['Attack'] })
+                    .npc('Chicken', EDGE.x + 1, z, { index: 6, options: ['Attack'], attacking: true, inCombat: true });
+            const r = await simulate(combat, {
+                params: { ...edgeParams, area: { ...EDGE, z: 3512, radius: 4 } },
+                // Hit on tick 0 but not yet in combat, as the engine requires to start.
+                timeline: npcs(edge.player({ at: { x: EDGE.x, z: 3516 }, lastDamageTick: 0 })).series(8),
+                react: walking(),
+                respond: a => (a.type === 'interactNpc' ? { success: false, message: 'stop' } : undefined),
+            });
+            expect(attacked(r)[0]).toBe(6);
+        });
+
+        test('loot beside it is not picked up', async () => {
+            const w = edge.ground('Feather', EDGE.x, 3519, 1, { id: FEATHER });
+            const r = await simulate(combat, { params: { ...edgeParams, loot: ['Feather'] }, timeline: w.series(1) });
+            expect(r.sends).toEqual([]);
+        });
+    });
+
+    describe('return to area', () => {
+        const FAR = { x: COOP.x + 40, z: COOP.z };
+        const away = world().player({ at: FAR }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('walks back when no target is in view', async () => {
+            const r = await simulate(combat, {
+                params: VISIBLE,
+                timeline: away.series(3),
+                pathfinder: noRoute,
+            });
+            expect(r.steps[0]).toBe('return-to-area');
+        });
+
+        test('does not walk back while a target is in view; the default mode does', async () => {
+            const w = chickenAt(away, FAR.x + 6, FAR.z);
+            const visible = await simulate(combat, { params: VISIBLE, timeline: w.series(3), pathfinder: noRoute });
+            expect(visible.steps[0]).toBe('fight');
+            const area = await simulate(combat, { params: PARAMS, timeline: w.series(3), pathfinder: noRoute });
+            expect(area.steps[0]).toBe('return-to-area');
+        });
+
+        test('loot outside the area is picked up in visible mode only', async () => {
+            const w = away.ground('Feather', FAR.x + 2, FAR.z, 1, { id: FEATHER });
+            const params = { ...VISIBLE, loot: ['Feather'] };
+            const visible = await simulate(combat, {
+                params,
+                timeline: w.series(2),
+                respond: a => (a.type === 'pickupItem' ? { success: false, message: 'stop here' } : undefined),
+            });
+            expect(visible.steps[0]).toBe('loot');
+            expect(visible.sends[0]).toBe('take Feather');
+            const area = await simulate(combat, {
+                params: { ...PARAMS, loot: ['Feather'] },
+                timeline: w.series(2),
+                pathfinder: noRoute,
+            });
+            expect(area.steps[0]).toBe('return-to-area');
+        });
     });
 });
 
@@ -1045,6 +1247,80 @@ describe('combat: stopOnDialog', () => {
         expect(r.result.stepRuns['interrupt:dialog']).toBeUndefined();
     });
 
+    /** Mordred's "death": the dialog opens with food held, and the fight is still on (he is healed). */
+    const stillFightingAt = (hp: number) =>
+        coop
+            .inv('Shrimps', 3)
+            .player({ maxHp: 40, hp: 40 })
+            .series(40, (w, i) =>
+                i >= 6
+                    ? w.fighting(CHICKEN).player({ hp }).dialog({ options: choice })
+                    : i >= 2
+                      ? w.fighting(CHICKEN)
+                      : w,
+            );
+
+    // maxHp 40: the eat window is below 20, the hold's floor is 10 (HOLD_HP_FLOOR_FRACTION).
+    test('just above the HP floor with the fight still on: no eat, no settle wait, the dialog is still open', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(11),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.result.reason).not.toMatch(/settled|still in combat/);
+        expect(r.result.stepRuns['interrupt:low-hp']).toBeUndefined();
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+        expect(r.driver.state().tick).toBeLessThan(12);
+    });
+
+    test('at the HP floor the dialog does not hold: the guard eats', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(10),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('below the HP floor the end-of-run settle and eat run even with the dialog open', async () => {
+        // The dialog opens at tick 6 and ends the run; the fight goes on, so finish() settles and eats.
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(5),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('low HP in a fight with no dialog open still eats', async () => {
+        const noDialog = coop
+            .inv('Shrimps', 3)
+            .series(40, (w, i) => (i >= 2 ? w.fighting(CHICKEN).player({ hp: 3 }) : w));
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: noDialog,
+            stops: xp(25),
+        });
+        expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('the fight ending a tick or two before the dialog shows does not send a second attack', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(12, (w, i) =>
+                i >= 8
+                    ? w.fighting(false).dialog({ options: choice })
+                    : i >= 6
+                      ? w.fighting(false)
+                      : i >= 2
+                        ? w.fighting(CHICKEN)
+                        : w,
+            ),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+    });
+
     test('without it the dialog guard declines the choice nobody took (the decline that kills Mordred)', async () => {
         const r = await simulate(combat, { params: PARAMS, timeline: mordredFalls });
         expect(r.sends).toContain('decline stray choice');
@@ -1444,5 +1720,153 @@ describe('combat: respawnWaitTicks', () => {
     test('is capped, so a huge wait is an invalid param', async () => {
         const r = await simulate(combat, { params: { ...PARAMS, respawnWaitTicks: 5000 }, timeline: coop.series(1) });
         expect(r.result.status).toBe('error');
+    });
+});
+
+/** 49 max HP, `n` Chickens (the target) all fighting the bot, at `hp`; the fight dies out at tick 8. */
+const swarm = (n: number, hp: number) => {
+    let w = base.player({ maxHp: 49, hp, inCombat: true, lastDamageTick: 0 }).inv('Shrimps', 6);
+    for (let k = 0; k < n; k++)
+        w = w.npc('Chicken', COOP.x + 1, COOP.z + k, {
+            index: CHICKEN + k,
+            options: ['Attack'],
+            attacking: true,
+            combatLevel: 1,
+        });
+    return w.series(12, (f, i) =>
+        i >= 8 ? f.fighting(false).skill('Attack', 1, 25) : f.player({ lastDamageTick: 0 }),
+    );
+};
+
+describe('combat: the low-HP line rises with the attackers on the bot', () => {
+    test('three attackers at 30/49 (61%): the guard eats before the first attack', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: swarm(3, 30),
+            react: healing(5),
+            stops: xp(25),
+        });
+        expect(r.sends[0]).toBe('Eat Shrimps');
+    });
+
+    test('a single attacker at 30/49 is not over-eaten: it fights on', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: swarm(1, 30),
+            stops: xp(25),
+        });
+        expect(r.sends).not.toContain('Eat Shrimps');
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+    });
+});
+
+describe('combat: an eat the server ignored under fire', () => {
+    test('is sent again after a short wait, not after the full eat wait', async () => {
+        let ignored = false;
+        const healingReact = healing(20)!;
+        const react: TimelineOptions['react'] = (action, state) => {
+            if (!ignored && action.type === 'useInventoryItem') {
+                ignored = true; // the server's 2-tick eat delay: no message, no effect
+                return undefined;
+            }
+            return healingReact(action, state);
+        };
+        const hurt = swarm(3, 10);
+        const r = await simulate(combat, {
+            params: { ...PARAMS, food: ['Shrimps'], eatBelow: 0.1 },
+            timeline: hurt,
+            react,
+            stops: xp(25),
+        });
+        expect(r.sends.slice(0, 2)).toEqual(['Eat Shrimps', 'Eat Shrimps']);
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+    });
+});
+
+describe('combat: seenOutsideArea diagnostic', () => {
+    /** The only chicken stands 12 tiles out, beyond the area (radius 8). */
+    const outside = chickenAt(base, COOP.x + 12, COOP.z);
+    /** Twenty looks of three ticks, the last one ends the run. */
+    const IDLE = 19 * 3;
+
+    test('a free chicken in view outside the area while idle warns, naming its tile', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: outside.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
+        expect(r.result.diagnostics).toEqual({
+            idleTicks: IDLE,
+            seenOutsideAreaTicks: IDLE,
+            nearestOutsideArea: { name: 'Chicken', x: COOP.x + 12, z: COOP.z },
+        });
+        expect(r.result.warnings).toHaveLength(1);
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain(`(${COOP.x + 12},${COOP.z})`);
+        expect(r.result.warnings?.[0]).toContain('widen the area to radius 12');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('the warning needs more than a tenth of the idle ticks', async () => {
+        // Seen for the first 3 of 57 idle ticks (one look, 5%), then gone.
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: base.series(30, (w, i) => (i < 3 ? chickenAt(w, COOP.x + 12, COOP.z) : w)),
+        });
+        expect(r.result.diagnostics?.idleTicks).toBe(IDLE);
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(3);
+        expect(r.result.warnings).toBeUndefined();
+        // Two looks (6 of 57 idle ticks, 10.5%) cross the line.
+        const more = await simulate(combat, {
+            params: PARAMS,
+            timeline: base.series(30, (w, i) => (i < 6 ? chickenAt(w, COOP.x + 12, COOP.z) : w)),
+        });
+        expect(more.result.diagnostics?.seenOutsideAreaTicks).toBe(6);
+        expect(more.result.warnings).toHaveLength(1);
+    });
+
+    test('nothing outside the area: counts idle ticks, no warning', async () => {
+        const taken = base.npc('Chicken', COOP.x + 1, COOP.z, { options: ['Attack'], inCombat: true });
+        const r = await simulate(combat, { params: PARAMS, timeline: taken.series(1) });
+        expect(r.result.diagnostics).toEqual({ idleTicks: IDLE, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('an outside chicken that is busy, unreachable or of another kind does not count', async () => {
+        const w = base
+            .npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true })
+            .npc('Chicken', COOP.x + 13, COOP.z, { index: 10, options: ['Attack'], reachable: false })
+            .npc('Cow', COOP.x + 14, COOP.z, { index: 11, options: ['Attack'] });
+        const r = await simulate(combat, { params: PARAMS, timeline: w.series(1) });
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('a successful kill with no idling reports nothing', async () => {
+        const r = await simulate(combat, { params: PARAMS, timeline: kill(coop), react: walking(), stops: xp(25) });
+        expect(r.result.status).toBe('done');
+        expect(r.result.diagnostics).toBeUndefined();
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('visible mode takes those targets, so nothing is counted', async () => {
+        const w = base.npc('Chicken', COOP.x + 12, COOP.z, { index: 9, options: ['Attack'], inCombat: true });
+        const r = await simulate(combat, { params: { ...PARAMS, targetRange: 'visible' }, timeline: w.series(1) });
+        expect(r.result.reason).toBe('fight: no free reachable Chicken in view');
+        expect(r.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    describe('near the Wilderness', () => {
+        const EDGE = { x: 3100, z: 3490 };
+        const edgeParams = { target: 'Chicken', area: { ...EDGE, radius: 4 } };
+        const edge = world().player({ at: EDGE }).skill('Attack', 1, 0).combatStyle(0);
+
+        test('a chicken within three tiles of it is not counted; a further one is', async () => {
+            const near = edge.npc('Chicken', EDGE.x, 3518, { index: CHICKEN, options: ['Attack'] });
+            const a = await simulate(combat, { params: edgeParams, timeline: near.series(1) });
+            expect(a.result.diagnostics?.seenOutsideAreaTicks).toBe(0);
+            expect(a.result.warnings).toBeUndefined();
+            const far = edge.npc('Chicken', EDGE.x, 3512, { index: CHICKEN, options: ['Attack'] });
+            const b = await simulate(combat, { params: edgeParams, timeline: far.series(1) });
+            expect(b.result.warnings).toHaveLength(1);
+        });
     });
 });

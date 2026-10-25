@@ -186,6 +186,9 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   nowhere.
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
+- **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]
+- **Stale view after a cast, jump or pickup.** The next phase selection can read the pre-action inventory or loc view and re-pick the same phase (a spell cast wastes a 25-tick bloom; repeated jumps). Guard such a phase with `v.last` plus a short walking settle phase. An `items drop` of several named items fails preflight if one is absent: one phase per junk item. A `pickup` can fail "attacked while picking up" near monsters: two identical phases with `onFail: 'continue'`. [v 2026-10-24 questw1 local]
+- **A random-roll failure counts as idle.** A try that can fail without changing anything (a skill roll such as replacing a railing: no XP, same inventory and position) is an idle phase run, and 3 in a row end the plan. Follow each failure with a short `travel` nudge phase to a fresh tile (picked e.g. by `hp % 7`), so the state changes. [v 2026-10-24 questw7 local]
 - **Predicate errors.** A `when` or `until` that throws ends the plan `error`, naming the phase.
 - **Combat between phases.** `executeTask` refuses to start in combat. A stop or `until` that lands
   in a fight (the bot attacked, or still fighting its own target) ends the phase after the engine
@@ -226,6 +229,9 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
 lastReason }`, `recent`, the last 3 phase runs `{ phase, runId, logFile, status, reason }`, and
   `bankDelta`, the bank as last seen open less as first seen open (the bank changes only while
   open, so that is the plan's change to it; absent when the plan never saw the bank open).
+  A plan that ends done after at least one phase reads `PLAN_SETTLE_TICKS` more states (`runPlan`'s optional
+  `nextTick`) before building the result, so reward XP published after the `until` holds (a quest's lump)
+  appears in the plan total but in no phase's `xpGained`.
   The task-runner, the journal and `stats.ts` read it as they read any task's result; `params`
   holds each phase's task and parsed params (the same whether the plan ran or not), so `stats.ts`
   keys a plan as one method and its XP/hour compares with single tasks.

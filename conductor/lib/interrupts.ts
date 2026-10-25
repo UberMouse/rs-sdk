@@ -5,7 +5,7 @@ import type { BotWorldState } from '../../sdk/types';
 import { ATTACK_OPTION } from '../actions/attack';
 import type { ActionContext } from '../actions/context';
 import { clearStrayChoice, closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
-import { eat } from '../actions/eat';
+import { EAT_ATTEMPT_TICKS, eat } from '../actions/eat';
 import type { GuardOutcome } from '../core/interpret';
 import { log, type Op, ticks } from '../core/op';
 import { isInWilderness } from './wilderness';
@@ -23,6 +23,8 @@ const DEATH_REASON_MESSAGES = 3;
 const MAX_EATS_PER_EPISODE = 8;
 /** Eats re-sent within one low-HP episode after the server ignored one while the player was held. */
 const MAX_HELD_RETRIES = 3;
+/** Eats re-sent within one low-HP episode when an eat under fire showed no effect (the server's 2-tick eat delay); not counted against MAX_EATS_PER_EPISODE. */
+const MAX_FIRE_RETRIES = 3;
 /** Ticks the guard waits for a hold (obstacle script, forced walk) to end before it re-sends the eat. */
 const HOLD_WAIT_TICKS = 20;
 /** Ticks waited per slice while regenerating HP with nothing to eat. */
@@ -150,6 +152,11 @@ function* waitHoldEnd(): Op<boolean> {
     return false;
 }
 
+/** HP is under the eat line; the line rises with attackers only while the bot is under fire (an NPC fighting someone else beside it must not raise it). */
+function lowForAttackers(s: BotWorldState): boolean {
+    return isLowHp(s, underFire(s) ? attackers(s).length : 0);
+}
+
 interface LowHpEpisode {
     /** HP when the guard last ran, to tell whether the bot is still losing HP. */
     lastHp: number | null;
@@ -165,11 +172,11 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
     name: 'low-hp',
     policy: 'abort',
     episode: () => ({ lastHp: null, eats: 0, regenTicks: 0 }),
-    when: s => isLowHp(s),
+    when: s => lowForAttackers(s),
     *run(_fired, run, episode) {
         // The aborted step's cleanup may have taken ticks since the guard fired: decide on the state now.
         const s = yield* ticks(0);
-        if (!isLowHp(s)) return;
+        if (!lowForAttackers(s)) return;
         const p = s.player;
         const where = `hp ${p?.hp}/${p?.maxHp} at (${p?.worldX},${p?.worldZ})`;
         const hpFell = episode.lastHp !== null && !!p && p.hp < episode.lastHp;
@@ -187,7 +194,17 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
         if (++episode.eats > MAX_EATS_PER_EPISODE) return { fail: `${where} after ${MAX_EATS_PER_EPISODE} eats` };
         let eaten = food;
         let from = p;
-        let r = yield* eat(run, food);
+        // Under fire a dead 13-tick wait is the worst case: try short and send again (an eat within 2 ticks of the last is ignored).
+        const fire = underFire(s);
+        const maxTries = fire ? MAX_FIRE_RETRIES : 0;
+        let r = yield* eat(run, food, fire ? EAT_ATTEMPT_TICKS : undefined);
+        for (let tries = 0; !r.ok && r.reason === 'timeout' && tries < maxTries; tries++) {
+            const now = run.state();
+            const f = findFood(now);
+            if (!f || !lowForAttackers(now)) break;
+            eaten = f;
+            r = yield* eat(run, f, EAT_ATTEMPT_TICKS);
+        }
         // The server ignores an eat while a movement script holds the player (an agility obstacle): when
         // the eat showed no effect and the player moved or animated during that attempt, wait the hold
         // out and retry. Never under fire: a fight animates the player, and waiting there only costs HP.
@@ -195,7 +212,7 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
         let retries = 0;
         for (; !r.ok && r.reason === 'timeout' && retries < MAX_HELD_RETRIES; retries++) {
             const now = run.state();
-            if (!isLowHp(now) || underFire(now) || !wasHeld(from, now.player)) break;
+            if (!lowForAttackers(now) || underFire(now) || !wasHeld(from, now.player)) break;
             const f = findFood(now);
             if (!f) break;
             yield* log(`low hp: eat ignored while held at (${now.player?.worldX},${now.player?.worldZ}); waiting`);
@@ -293,6 +310,17 @@ export function attackers(s: BotWorldState): BotWorldState['nearbyNpcs'] {
 function strongest(npcs: BotWorldState['nearbyNpcs']): BotWorldState['nearbyNpcs'][number] | undefined {
     return [...npcs].sort((a, b) => b.combatLevel - a.combatLevel)[0];
 }
+
+const dialogWords = (s: BotWorldState) =>
+    [s.dialog.text ?? '', ...(s.dialog.allComponents ?? []).map(c => c.text)].join(' ');
+/** The level-up box (levelup.dbrow: "Congratulations, you just advanced an attack level."): not a quest dialog. */
+export const isLevelUp = (s: BotWorldState) => /you just advanced an? \w+ level/i.test(dialogWords(s));
+/**
+ * The page a level-up opens after its click (levelup_unlocks_*.rs2 objbox: "You can now wield Steel Weaponry!",
+ * "Members can now cook ...", "You are now qualified to enter ..."). The words alone also fit other text, so a
+ * caller with a click to anchor on takes it as one only right after that click.
+ */
+export const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords(s));
 
 /** Took a hit (a 0 splat counts) within RECENT_HIT_TICKS. */
 export const recentlyHit = (s: BotWorldState): boolean => {

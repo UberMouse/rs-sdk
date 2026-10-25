@@ -8,8 +8,8 @@
 | Reward | Wolfbane dagger, 1,406 Prayer XP base = **35,150 Prayer XP** at 25x (Prayer 1 -> 51 on this server's level table); after one more talk to Drezel, the holy barrier into Morytania |
 
 Script paths below are under `server/content/scripts/`. Steps 1-4 (Roald, knock, dog) ran on conductor2w5
-[v 2026-10-16 conductor2w5 local]; everything else comes from the server scripts and map data [server data, unverified
-in game 2026-10-23].
+[v 2026-10-16 conductor2w5 local] and again on questw5 (plan run 2026-10-23T09-18-02Z: Roald, knock, dog; a second run:
+Roald, monks, Golden key, cell door, "Tell me anyway", "Yes" [v 2026-10-23 questw5 local]); the whole quest to stage 61 then ran end to end in plan `priest-in-peril` (section "Verified run"); anything not named there comes from the server scripts and map data [server data, unverified in game 2026-10-23].
 
 ## Requirements
 
@@ -105,10 +105,12 @@ Gates (SDK pathfinder routes through both). [server data: collision probe 2026-1
 Dialog notes:
 - Step 2: knocking at stage 2 or 3 gives a reminder, at 4+ a choice of three joke lines; none moves the varp
   (`temple_doors.rs2:30-48`). "Nope." at the last knock choice ends it at stage 1.
-- Step 6: "You're right, we don't." or "No." ends it at stage 4; talk through the door again.
+- Step 6: in a run the `interact` phase (Talk-through) followed by a `talk` with `continue:true` kept the dialog open
+  across the two phases and made both choices [v 2026-10-23 questw5 local]. "You're right, we don't." or "No." ends it at stage 4; talk through the door again.
 - Step 14: each talk gives min(essence held, 60 - stage) and closes the dialog (`drezel.rs2:83-107`). Noted essence
   is refused ("How is that supposed to help me?", `drezel.rs2:75-81`): only unnoted rune essence counts.
-- Step 15 at stage 61 and later, Drezel opens his Nature Spirit dialog, which can ask a choice (`drezel.rs2:160+`).
+- Step 14: the first Drezel talk at stage 8 is the meet dialog and takes no essence; later talks take it. [v 2026-10-23 questw5 local]
+- Step 15: the stage-60 Drezel talk sets 61. A further talk opens the Nature Spirit dialog, a choice ("Well, I'm going to look around a bit more." / "Is there anything else interesting to do around here?"), which makes a `talk` with no choices end `failed` after the stage is already set (`onFail: 'continue'`). [v 2026-10-23 questw5 local]
 - Roald talks about the Shield of Arrav instead when the bot carries the certificate or both shield halves
   (`king_roald.rs2:11-36`): bank them first.
 
@@ -136,6 +138,9 @@ Banks: **Varrock East** (3254, 3418) is the nearest, 89 run ticks from the templ
 (`wiki/world.json`). Canifis bank is behind the holy barrier (stage 61). Carry no other "Bucket of water": the murky,
 blessed and plain buckets of water share that name (`configs/priestperil.obj:174-198`).
 
+Timing: Roald, knock, bucket shop and the dog fight took about 3.5 min in total, the dog fight alone about 30 s
+(combat level ~35; Strength +4500 XP on the kill) [v 2026-10-23 questw5 local].
+
 ## Recovery
 
 | Lost | Recover |
@@ -154,6 +159,13 @@ blessed and plain buckets of water share that name (`configs/priestperil.obj:174
   (`conductor/actions/walk.ts` walkRoute, same-plane fallback). A walk from outside to level 1 or 2 fails
   `no-connector`. Walk to a level-0 tile inside first (or use the stairs and ladder with `interact`); from inside, an
   `at` on level 1 or 2 plans through the temple stairs and ladder. The way out is ungated.
+- **Gate tokens (walk `met`)**: the dungeon gates in `wiki/world/gate-list.ts` (:299-300, :2084) are
+  `quest:priestperil>=5` (Gate (3405, 9895)), `>=8` (Gate (3431, 9897)) and `>=6` (the cell door). A walk with only
+  `met:["quest:priestperil>=4"]` into the dungeon failed `No connector from level 0 (3406, 3503) to (3422, 9889)`, and
+  the same walk from temple level 2 (3415, 3489) failed `No connector from level 2 (3415, 3489) to (3422, 9889)`
+  [v 2026-10-23 questw5 local]. With the tokens `quest:priestperil>=5` (Gate 1), `>=6` (cell door) and `>=8` (Gate 2)
+  the dungeon walks route [v 2026-10-23 questw5 local]. The walk from temple level 2 into the dungeon with the right
+  token was not tested: the plan climbs down by hand (Ladder, Staircase) and walks from the ground floor. [unconfirmed]
 - **Dungeon**: the mausoleum dungeon is not one of `UNDERGROUND_AREAS` in `conductor/lib/connectors.ts`, so it is the
   lumped plane `0u` and its Trapdoor and Ladder are left out of the connector table. No walk goes down or up: use
   `interact` (Trapdoor Open, then Climb-down; Ladder Climb-up). Inside, walks fall back to the SDK pathfinder, which
@@ -169,9 +181,9 @@ blessed and plain buckets of water share that name (`configs/priestperil.obj:174
 |---|---|---|---|
 | 1 | `talk` | `{npc:"^King Roald$", at:{x:3222,z:3476,tolerance:2}, choices:["^Sure"]}` | verified [v 2026-10-16 conductor2w5 local] |
 | 2 | `interact` + `talk` | `{target:"loc", name:"^Large door$", option:"^Knock-at$", at:{x:3405,z:3489,tolerance:2}}`, then `{npc:"Drezel", choices:["Roald sent me","^Sure"]}` (no `at`) | interact leaves the dialog open; the talk with no `at` continues it [v 2026-10-16 conductor2w5 local] |
-| 3 | `interact` x2, `combat`, `interact` | Trapdoor `{option:"^Open$", at:{x:3405,z:3506,tolerance:1}}` (`onFail:"continue"`: it may be open), `{option:"^Climb-down$"}`; `{target:"Temple guardian", skill:"Strength", area:{x:3405,z:9902,radius:8}, food:[...]}`; Ladder `{option:"^Climb-up$", at:{x:3405,z:9905,tolerance:2}}` | verified [v 2026-10-16 conductor2w5 local]. The dog may be out of view at the landing; a phase `until` that tests "no dog in view" can hold before the fight. |
+| 3 | `interact` x2, `combat`, `interact` | Trapdoor `{option:"^Open$", at:{x:3405,z:3506,tolerance:1}}` (`onFail:"continue"`: it may be open), `{option:"^Climb-down$"}`; `{target:"Temple guardian", skill:"Strength", area:{x:3405,z:9902,radius:8}, food:[...]}`; Ladder `{option:"^Climb-up$", at:{x:3405,z:9905,tolerance:2}}` | verified [v 2026-10-16 conductor2w5 local]. The `combat` task's own walk to the dog descends the trapdoor [v 2026-10-23 questw5 local]. The dog may be out of view at the landing; a phase `until` that tests "no dog in view" can hold before the fight. |
 | 4 | `talk` | Roald, no choices | |
-| 5 | `combat` | `{target:"Monk of Zamorak", area:{x:3413,z:3488,radius:6}, loot:["Golden key"], food:[...]}`, phase `until: v => v.inv('Golden key') > 0` | kills the level 17 and 22 monks too (no variant filter). Its walk to the area is the level-0 fallback through the Large door. |
+| 5 | `combat` | `{target:"Monk of Zamorak", area:{x:3413,z:3488,radius:6}, loot:["Golden key"], food:[...]}`, phase `until: v => v.inv('Golden key') > 0` | kills the level 17 and 22 monks too unless `level: 30` is set: `level:30` with `maxLevelGap` 20 killed only the key-dropping monk and looted the Golden key [v 2026-10-23 questw5 local]. Its walk to the area is the level-0 fallback through the Large door. |
 | 6 | `interact` x2 + `interact` + `talk` | Staircase Climb-up `at:{x:3415,z:3485}`; Ladder Climb-up `at:{x:3411,z:3485,level:1,tolerance:1}`; `{target:"loc", name:"^Cell door$", option:"^Talk-through$", at:{x:3414,z:3489,level:2,tolerance:1}}`; then `{npc:"Drezel", choices:["^Tell me anyway","^Yes"]}` | |
 | 7 | `talk` (use only) | `{use:{items:["^Bucket$"], onLoc:"^Well$"}, at:{x:3422,z:9889,tolerance:2}}` | after the trapdoor `interact`s; the walk opens the first Gate |
 | 8 | `talk` (use only) | `{use:{items:["^Golden key$"], onLoc:"^Monument$"}, at:{x:3430,z:9890,tolerance:0}}` | grave 3 with the unstudied layout; `use` takes the nearest Monument by name, so the stand tile picks it |
@@ -200,7 +212,22 @@ blessed and plain buckets of water share that name (`configs/priestperil.obj:174
 4. **Targeting one loc or one item exactly.** `talk.use` takes the nearest loc matching a name and the first item
    matching a name: a loc tile param (`use.at`) would pick the monument without relying on the stand tile, and an item
    id would tell the three "Bucket of water" objs apart.
-5. **One monk variant.** `combat` matches the name only; a minimum-level filter would skip the level 17/22 monks.
+5. **Quest stage as plan evidence.** A predicate can test the dialog text a step leaves in `state.recentDialogs`
+   (`learnings/dialogs.md`): "Find the key to your cell" after the cell talk (stage 5), Drezel's stage-60 line "Okay, I will
+   keep it equipped whenever I fight werewolves" (`drezel.rs2` `drezel_access_holy_barrier`). The cell line
+   ("find the key to your cell") worked as plan evidence; Drezel's stage-60 line did not appear in `recentDialogs` in the
+   proof run, so do not rely on it [v 2026-10-23 questw5 local].
+
+## Verified run (plan priest-in-peril)
+
+`conductor/plans/priest-in-peril.ts`, promoted: done in 20.0 min from `lib:priest-in-peril-start` on questw5 (log `conductor/runs/questw5/2026-10-23T09-55-06-043Z-plan-priest-in-peril.ndjson`), ending with the Holy barrier Pass-through landing at (3423, 3485). [v 2026-10-23 questw5 local]
+
+- Start save `lib:priest-in-peril-start`: Varrock east bank (3254, 3420), Rune Mysteries done, Attack 40 Strength 47 Defence 40 Hitpoints 48, Mining 1, rune mace and adamant full helm, platebody, platelegs, kiteshield, 100 coins, Pot, bronze pickaxe, 8 lobsters. Not shrunk further.
+- Gains: Prayer 35,150, Mining 6,750, Strength 7,200, Hitpoints 2,370; combat level 50 to 57.
+- Essence: 18 per trip with a pickaxe and 8 lobsters held, 3 trips for 50. Each talk hands over min(held, 60 - stage). Mine entry and exit gotchas: `learnings/mining.md`.
+- Two phases (`fill`, `pour`) ran twice, the repeat failing on a stale inventory view: `learnings/dialogs.md`.
+- Phase seconds: roald-start 34, knock 62, knock-talk 11, dog 54, bucket 57, to-palace 17, roald-dog 27, monks 85, cell-door 17, cell-choices 24, fill 34, swap 3, enter-temple 25, up-stairs 4, up-ladder 4, unlock 6, bless 8, pour 14, cell-7 8, drop-marker 2, down-ladder 15, down-stairs 6, mine 219, leave-mine 10, enter-mine 156, leave-dungeon 50, give 231, drezel-61 18, pass-try 2.
+- Holy barrier: stand (3440, 9889), Pass-through lands (3423, 3485). The plan's `pass` phase fails before stage 61 and continues.
 
 ## Library saves for testing
 

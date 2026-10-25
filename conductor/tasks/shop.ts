@@ -1,7 +1,7 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
-import { buy, closeShop, OPEN_SHOP_WAIT_TICKS, sell, withShop } from '../actions/shop';
+import { buy, closeShop, OPEN_SHOP_WAIT_TICKS, pickShopkeeper, sell, withShop } from '../actions/shop';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/wilderness';
@@ -232,15 +232,13 @@ function* performRemaining(ctx: Ctx, stepStart: number): Op<Ending | null> {
 
 /**
  * Stopgap until the openShop op walks to the shopkeeper itself, as bot.openShop does before trading:
- * walks (the walkTo op) to within KEEPER_WALK_TOLERANCE of the nearest shopkeeper named `npc`, opening
- * the doors on the way, which the client's pathing of the op's Trade click does not.
+ * walks (the walkTo op) to within KEEPER_WALK_TOLERANCE of the shopkeeper named `npc` that openShop
+ * would trade with (pickShopkeeper), opening the doors on the way, which the client's pathing of the
+ * op's Trade click does not.
  */
 function* walkToKeeper(ctx: Ctx): Op<void> {
     const name = exactName(ctx.params.npc);
-    const keeper = ctx
-        .state()
-        .nearbyNpcs.filter(n => name.test(n.name))
-        .sort((a, b) => a.distance - b.distance)[0];
+    const keeper = pickShopkeeper(ctx.state().nearbyNpcs, name);
     if (!keeper) {
         yield* log(`no ${ctx.params.npc} in view to walk to; the next open tries again from here`);
         return;

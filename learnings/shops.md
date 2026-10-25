@@ -18,15 +18,18 @@ overstocked on that item, not that the sale failed.
 
 | Shop | Location | Coordinates | What They Sell |
 |------|----------|-------------|----------------|
-| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. [v 2026-10-09 conductor1 local] |
+| Lumbridge General Store | Lumbridge | NPC "Shop keeper", walk target (3212, 3247) | Hammer (1gp), Pot, Jug, Bucket, Tinderbox (1gp, bought on local), Chisel, Shears; buys most items. Pot 1 gp, Bucket 2 gp; buys Salmon ~18 gp each (55 gp for 3). [v 2026-10-23 questw3 local] Stock list otherwise [v 2026-10-09 conductor1 local] |
+| Falador General Store | Falador | NPC "Shop keeper" (2956, 3388) | Hammer 1 gp (the Falador West bank held none). [v 2026-10-24 conductor3 local] |
 | Every general store (Lumbridge, Rimmington (2947, 3217), Falador, Varrock, Edgeville) | various | - | Stock only 2 Buckets and 2 Jugs each (as the `wiki/shops/` pages list): a 14-bucket buy fills 2, so buy at several shops. [v 2026-10-11 conductor2 local] |
 | Aubury's Rune Shop | Varrock | (3253, 3402) | Air and Mind runes (and others). Prices climb as you buy: 110 Mind + 110 Air cost 1079 gp (about 5 gp/rune for bulk), well above the ~770 gp the wiki base prices suggest; read the log's shop lines for real prices. [v 2026-10-11 conductor2 local] |
 | Aubury's Rune Shop, Death runes | Varrock | (3253, 3402) | Aubury stocks them (`varrock.inv` `[runeshop]`: 1000, base 150 in the config); Zaff's staff shop does not (`[staffshop]` lists only staves, and `wiki/shops/staffshop.md` agrees). 145 Death runes cost 7,417 gp (51 gp average, 1% ramp). [v 2026-10-16 conductor2 local]
 | Varrock Sword Shop | Varrock | (3204, 3398) | Bronze to steel swords. Shop keeper (3203, 3397), Shop assistant (3205, 3399) |
 | Bob's Brilliant Axes | Lumbridge | NPC "Bob", walk target (3232, 3203) | Axes (bronze axe 16gp, bought on local [v 2026-10-09 conductor1 local]); iron 56 gp and steel 200 gp per the stock list, nothing above steel; bronze pickaxe 1gp only |
-| Nurmof's Pickaxe Shop | Dwarven Mine, under Falador | (2998, 9844) | Every pickaxe from bronze to rune (stock list: `wiki/shops/nurmofs-pickaxe-shop.md`); visited by a bot: Iron pickaxe 140 gp bought, reached via the Falador mine stairs (`learnings/walking.md`) [v 2026-10-11 conductor2w1 local] |
+| Nurmof's Pickaxe Shop | Dwarven Mine, under Falador | (2998, 9844) | Every pickaxe from bronze to rune (stock list: `wiki/shops/nurmofs-pickaxe-shop.md`); visited by a bot: Iron pickaxe 140 gp bought, Adamant pickaxe 3,200 gp bought [v 2026-10-24 conductor3 local], reached via the Falador mine stairs (`learnings/walking.md`) [v 2026-10-11 conductor2w1 local] |
 | Burthorpe Games Room bar | Under Burthorpe | Barmaid "Sam" behind the bar at x 2201 | Trade (op 3) opens the shop from (2203, 4942), two tiles off across the bar pumps; from (2199, 494x), behind the shelves, it does not open. [v 2026-10-19 t9check1 local] |
 | Gerrant's Fishy Business | Port Sarim | (3014, 3224) | Small fishing net (5gp), fishing gear; fly fishing rod 5 gp; feather price climbs as stock drops: 277 feathers cost ~1,040 gp (a 450 order partial-filled) [v 2026-10-11 conductor2 local] |
+
+- The `shop` task failed twice with `cannot open shop via "Dwarf": No trade option on NPC` in the Dwarven Mine while a trading Dwarf (idx 5250, [Trade]) stood 3 tiles away: it picked a same-named Dwarf with no Trade option. Fixed in 7d30f5a41: `shop` now picks the reachable, nearest same-named NPC that offers Trade. [v 2026-10-24 conductor3 local; fix v unit+itest 7d30f5a41]
 
 ## Starter tools: where to get each
 
@@ -36,7 +39,7 @@ overstocked on that item, not that the sale failed.
 | Pickaxe | Bob's Brilliant Axes, Lumbridge | bronze 1 gp | 2026-10-09 conductor1 local |
 | Tinderbox | Lumbridge General Store | 1 gp | 2026-10-09 conductor1 local |
 | Knife | ground spawn (3224, 3202), no Lumbridge shop sells it | free | 2026-10-09 conductor1 local |
-| Hammer | Lumbridge General Store (per stock list, wiki/shops/lumbridge-general-store.md) | 1 gp | unverified |
+| Hammer | Lumbridge General Store (per stock list, wiki/shops/lumbridge-general-store.md); Falador General Store (2956, 3388) | 1 gp | Falador 2026-10-24 conductor3 local |
 | Chisel, shears, needle, others | Chisel and shears are in the Lumbridge General Store list above; needle and the rest unknown | | unverified |
 
 ## Opening a Shop

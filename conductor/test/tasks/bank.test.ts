@@ -223,6 +223,17 @@ describe('bank: no area walks to the nearest bank', () => {
         );
     });
 
+    test("started inside the essence mine with no wizard on record, it plans a bank by any wizard's way out", async () => {
+        const mine = lumbridge.player({ at: { x: 2910, z: 4830 } }).quests({ runemysteries: 'done' });
+        const r = await simulate(bank, {
+            params: { deposit: [{ item: 'Logs' }] },
+            timeline: mine.series(1),
+            react: walking(react),
+        });
+        expect(r.result.reason).not.toContain('preflight');
+        expect(logged(r)[0]).toStartWith('no area given: walking to the nearest bank');
+    });
+
     test('off the surface with no area and no bank in view is refused', async () => {
         const underground = lumbridge.player({ at: { x: 3222, z: 9618 } });
         expect((await refusal({ deposit: [{ item: 'Logs' }] }, underground)).reason).toContain(

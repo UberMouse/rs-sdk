@@ -9,6 +9,8 @@ import {
     useOn,
     useOnNpc,
 } from '../../actions/interaction';
+import { ticks } from '../../core/op';
+import type { Guard } from '../../core/interpret';
 import { type World, world } from '../world';
 import { refuse, runOp } from './harness';
 
@@ -442,5 +444,87 @@ describe('useOnNpc', () => {
         ];
         const { result } = await runOp(states, ctx => useOnNpc(ctx, bucket, cow));
         expect(result).toMatchObject({ ok: false, reason: 'refused' });
+    });
+});
+
+describe('interact: dialog pages the client recorded', () => {
+    const levelUp = ['Congratulations, you just advanced a Woodcutting level.'];
+
+    test('a message box page alone is the effect (the Chaos altar)', async () => {
+        const { result } = await runOp(
+            after(x => x.recentDialog(['Snarthon Candtrick Termanto'])),
+            ctx => interact(ctx, coffin, /^open$/i),
+        );
+        expect(result).toEqual({ ok: true, effect: 'a dialog page appeared: "Snarthon Candtrick Termanto"' });
+    });
+
+    test('a level-up page alone is not the effect of a discarded op', async () => {
+        const states = after(x => x.recentDialog(levelUp), INTERACT_WAIT_TICKS + 3).map((s, i) =>
+            feedback(i === 0 ? 0 : 1)(s),
+        );
+        const { result } = await runOp(states, ctx => interact(ctx, coffin, /^open$/i));
+        expect(result).toMatchObject({ ok: false, reason: 'rejected' });
+    });
+
+    test('a refusal message beside a stray page is a failure, not the effect', async () => {
+        const { result } = await runOp(
+            after(x => x.message('Nothing interesting happens.').recentDialog(['Some NPC line'])),
+            ctx => interact(ctx, coffin, /^open$/i),
+        );
+        expect(result).toMatchObject({ ok: false, reason: 'refused' });
+    });
+});
+
+describe('interact: a move the game made across a guard interrupt', () => {
+    // The dialog guard clicks a message box away: its handler's ticks never reach the wait's predicate.
+    const dialogGuard: Guard = {
+        name: 'dialog',
+        policy: 'suspend',
+        when: s => s.dialog.isOpen,
+        *run() {
+            yield* ticks(3);
+        },
+    };
+    const ringer = START.player({ at: { x: 2762, z: 4694 } }).inv('Grail bell', 1, {
+        id: 1234,
+        options: [{ text: 'Ring', opIndex: 1 }],
+    });
+    const bell: InteractTarget = { kind: 'item', item: ringer.build().inventory[0]! };
+
+    test('a two-tile teleport after a message box the guard handled is the effect of an item option', async () => {
+        const states = [
+            ringer.build(),
+            ringer.tick(2).dialog({ options: [] }).build(),
+            ...Array.from({ length: 6 }, (_, i) =>
+                ringer
+                    .tick(3 + i)
+                    .player({ at: { x: 2761, z: 4692 } })
+                    .build(),
+            ),
+        ];
+        const { result } = await runOp(states, ctx => interact(ctx, bell, /^ring$/i), {
+            guards: [dialogGuard],
+        });
+        expect(result).toEqual({ ok: true, effect: 'the player moved to (2761,4692)' });
+    });
+
+    test('with no move the same item option is still no-effect', async () => {
+        const states = [
+            ringer.build(),
+            ringer.tick(2).dialog({ options: [] }).build(),
+            ...Array.from({ length: INTERACT_WAIT_TICKS + 6 }, (_, i) => ringer.tick(3 + i).build()),
+        ];
+        const { result } = await runOp(states, ctx => interact(ctx, bell, /^ring$/i), { guards: [dialogGuard] });
+        expect(result).toMatchObject({ ok: false });
+    });
+
+    test('a small step of the bot toward a loc over the guard ticks is not a move', async () => {
+        const states = [
+            w.build(),
+            w.tick(2).dialog({ options: [] }).build(),
+            ...Array.from({ length: INTERACT_WAIT_TICKS + 6 }, (_, i) => at(3224, 3218)(w.tick(3 + i)).build()),
+        ];
+        const { result } = await runOp(states, ctx => interact(ctx, coffin, /^open$/i), { guards: [dialogGuard] });
+        expect(result).toMatchObject({ ok: false });
     });
 });

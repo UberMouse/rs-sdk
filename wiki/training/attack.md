@@ -21,7 +21,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Hazard**: no npc there hunts players; single-way.
   - **Supplies/hr** at 99: none.
   - **Measured**: 29.9k at 1 by conductor3 on 2026-10-23.
-- `cows-falador-farm`: Cows on the farm east of Falador, bones buried, food from Falador East. Melee 1-25 band: seven cows, max hit 1, none hunts. No promoted plan; unmeasured, and uncalibrated (no CALIBRATIONS record), so it eats nothing yet.
+- `cows-falador-farm`: Cows on the farm east of Falador, bones buried, food from Falador East. Plans: melee40. Melee 1-40 band: seven cows, max hit 1, none hunts; uncalibrated (no CALIBRATIONS record), so it eats nothing yet. Plan melee40 (conductor3 2026-10-24, combat targetRange visible, area radius 22, Mithril scimitar, bones not buried) ran Attack 28-40 and Defence 20-40 in 9.6 min with no idle waits; its rates beat the steel-scimitar floor because the scimitar was better.
   - **Requires**: Reach: none. Levels: Attack 5, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 5. Tools: none. Gear: Steel scimitar, Amulet of strength. Food: Lobster.
   - **Sink**: bank at [Falador East bank (Falador)](../places/falador-east-bank.md) `bank:falador-east-bank:0`; legs 36 + 36 run ticks.
   - **Hazard**: no npc there hunts players; the npcs there hit for at most 1; single-way.

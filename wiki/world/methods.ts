@@ -674,14 +674,19 @@ export const METHODS: MethodDef[] = [
     },
     {
         id: 'oak-draynor-drop',
-        name: 'Oaks south of Draynor, dropped',
+        name: 'Oaks north of Draynor, dropped',
         family: 'woodcutting',
-        at: { level: 0, x: 3102, z: 3242 },
+        at: { level: 0, x: 3097, z: 3285 },
         params: { tree: 'oak' },
         sink: { mode: 'drop' },
+        plans: ['oak-draynor-drop'],
         notes:
-            'The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest ' +
-            'the spawn. No promoted plan; unmeasured.',
+            'The five oaks of tree:draynor-village:1, each log dropped as cut. Every oak site ties on a drop sink (no ' +
+            'legs); this one is near the spawn. The plan chops the normal trees of the same cluster to 15 first, area ' +
+            '(3095,3283) r16 (bbox 3084-3106 x 3275-3290 plus margin). The south cluster (tree:draynor-village:2) is ' +
+            'out: the jail guards attack through the fence there (learnings/hazards.md). Runs: conductor3 2026-10-24, ' +
+            'south site, steel axe, WC 15-50 in 143.6 s, ~775k/h; conductor3w1 2026-10-24, north site, adamant axe, ' +
+            'WC 68-74, ~1.1M/h chopping (984k/h with the walk in), no attacks. Started above level 1, so left out of measured.',
         source: 'research-gathering 2026-10-23: every tree site rated with resolveMethods',
     },
     {
@@ -783,8 +788,11 @@ export const METHODS: MethodDef[] = [
         loot: { bones: 'bury' },
         sink: { mode: 'bank' },
         notes:
-            'Melee 1-25 band: seven cows, max hit 1, none hunts. No promoted plan; unmeasured, and uncalibrated (no ' +
-            'CALIBRATIONS record), so it eats nothing yet.',
+            'Melee 1-40 band: seven cows, max hit 1, none hunts; uncalibrated (no CALIBRATIONS record), so it eats ' +
+            'nothing yet. Plan melee40 (conductor3 2026-10-24, combat targetRange visible, area radius 22, Mithril ' +
+            'scimitar, bones not buried) ran Attack 28-40 and Defence 20-40 in 9.6 min with no idle waits; its rates ' +
+            'beat the steel-scimitar floor because the scimitar was better.',
+        plans: ['melee40'],
         source: 'research-combat 2026-10-23: a survey of every reachable npc site',
     },
     {
@@ -850,8 +858,10 @@ export const METHODS: MethodDef[] = [
             bank: { level: 1, x: 2445, z: 3425 },
         },
         notes:
-            "The Seers flax-spin method's Stronghold twin, a higher floor. No run has checked the flax field, the " +
-            'wheel or the walk between; no promoted plan; unmeasured.',
+            "The Seers flax-spin method's Stronghold twin, a higher floor. Run 2026-10-24 by conductor3 as the flax " +
+            'stage of plan crafting80 (Crafting 10-80): ~332k XP/h over the loop phases (68% of the floor), time split ' +
+            'spin 42%, pick 33%, bank 14%, walk down to the field 11%. That plan also shears and spins wool, so it ' +
+            'names no method; a flax-only plan would carry the measured entry.',
         source: 'research-artisan 2026-10-23',
     },
     {
@@ -872,7 +882,17 @@ export const METHODS: MethodDef[] = [
             end: 'bank',
             bank: { level: 0, x: 2809, z: 3443 },
         },
-        plans: ['catherby-swordfish'],
+        plans: ['catherby-swordfish', 'catherby-shark-fallback'],
+        measured: [
+            {
+                xpPerHour: { fishing: 880_118 },
+                level: { fishing: 91, cooking: 95 },
+                bot: 'conductor3',
+                date: '2026-10-23',
+                hours: 0.4698,
+                from: 'stats.ts conductor3 --methods --since 2026-10-23T09:20:00Z (plan catherby-shark-fallback; cooking left out: it stopped at 99 partway, so its rate counts fishing-only time)',
+            },
+        ],
         notes: 'Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.',
         source: 'research-artisan 2026-10-23',
     },
@@ -941,5 +961,104 @@ export const METHODS: MethodDef[] = [
         },
         notes: 'Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.',
         source: 'fishing-spot movement audit 2026-10-23: the Fishing Guild layout against Catherby',
+    },
+
+    // High-tier mining and smithing (Mining 85-99, Smithing 82-99). Superheating mithril ore takes 4 coal a cast (the bar's
+    // smelting struct) and the superheat family reads the secondary ore, so it is modelled. Adamantite (6 coal a bar, 7 slots a
+    // bar, smelted or superheated) is not: five bars of a platebody do not fit a 28 slot load, and the model has no whole
+    // batch for it, so no adamant platebody record exists (resolveMethods fails on one).
+    {
+        id: 'coal-mining-guild-drop',
+        name: 'Coal at the Mining Guild, dropped as mined',
+        family: 'mining',
+        at: { level: 0, x: 3041, z: 9739 },
+        params: { rock: 'coal' },
+        sink: { mode: 'drop' },
+        notes: "Mining 60 to enter (ladder and door). The guild's 37 coal rocks are one site, so respawn does not bind. Assumes the best pickaxe usable and the server's player count scaling. No promoted plan; unmeasured.",
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'coal-mining-guild-bank',
+        name: 'Coal at the Mining Guild, banked at Falador East',
+        family: 'mining',
+        at: { level: 0, x: 3041, z: 9739 },
+        params: { rock: 'coal' },
+        sink: { mode: 'bank' },
+        notes: 'As coal-mining-guild-drop, banked at the nearest bank (Falador East, 29 run ticks each way). Banked coal supplies the mithril and adamant smelting and superheat records. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'mithril-mining-guild-drop',
+        name: 'Mithril at the Mining Guild, dropped as mined',
+        family: 'mining',
+        at: { level: 0, x: 3041, z: 9739 },
+        params: { rock: 'mithril' },
+        sink: { mode: 'drop' },
+        notes: 'Mining 60 to enter, 55 for the rock. Five mithril rocks with a 400 tick base respawn, so the rate is respawn-bound at high levels. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'mithril-mining-guild-bank',
+        name: 'Mithril at the Mining Guild, banked at Falador East',
+        family: 'mining',
+        at: { level: 0, x: 3041, z: 9739 },
+        params: { rock: 'mithril' },
+        sink: { mode: 'bank' },
+        notes: 'As mithril-mining-guild-drop, banked. Supplies the banked-ore smelting and superheat records. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'adamantite-dwarven-mine-drop',
+        name: 'Adamantite at the Dwarven Mine, dropped as mined',
+        family: 'mining',
+        at: { level: 0, x: 3042, z: 9773 },
+        params: { rock: 'adamantite' },
+        sink: { mode: 'drop' },
+        notes: 'The best adamantite site a walk from Lumbridge reaches with no requirement outside the Wilderness: three rocks with an 800 tick base respawn, so respawn-bound (Wilderness 3 has seven but is the Wilderness; Haunted Mine, Crandor and the Grand Tree tunnels need quests). Mining 70 for the rock. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'adamantite-dwarven-mine-bank',
+        name: 'Adamantite at the Dwarven Mine, banked at Falador East',
+        family: 'mining',
+        at: { level: 0, x: 3042, z: 9773 },
+        params: { rock: 'adamantite' },
+        sink: { mode: 'bank' },
+        notes: 'As adamantite-dwarven-mine-drop, banked (43 run ticks each way). Supplies the banked-ore adamant records. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'superheat-mithril-varrock-east-platebody',
+        name: 'Banked mithril ore and coal superheated at Varrock East, smithed into platebodies at the south-east anvil',
+        family: 'withdraw',
+        at: { level: 0, x: 3253, z: 3418 },
+        params: { obj: 'mithril_ore' },
+        sink: {
+            mode: 'process',
+            steps: [
+                { family: 'superheat', at: 'here', params: { ore: 'mithril_ore' } },
+                { family: 'smithing', at: { level: 0, x: 3246, z: 3404 }, params: { product: 'mithril_platebody' } },
+            ],
+            end: 'bank',
+        },
+        notes: 'Mirrors superheat-iron-varrock-east-platebody. A cast takes one ore, 4 coal and a nature rune; the coal is a supply carried by slot, so a trip holds few bars. Magic 43, Smithing 50 for the bar and 68 for the platebody. Assumes the ore and coal are banked. No promoted plan; unmeasured.',
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
+    },
+    {
+        id: 'smelt-mithril-falador-platebody',
+        name: 'Banked mithril ore and coal smelted at the Falador furnace, smithed into platebodies at the Asgarnia anvil, banked at Falador West',
+        family: 'withdraw',
+        at: { level: 0, x: 2947, z: 3367 },
+        params: { obj: 'mithril_ore' },
+        sink: {
+            mode: 'process',
+            steps: [
+                { family: 'smelting', at: { level: 0, x: 2975, z: 3368 }, params: { bar: 'mithril_bar' } },
+                { family: 'smithing', at: { level: 0, x: 2950, z: 3452 }, params: { product: 'mithril_platebody' } },
+            ],
+            end: 'bank',
+        },
+        notes: "Smithing 50 for the bar, 68 for the platebody. The anvil (anvil:asgarnia:1) needs Doric's Quest (Doric's anvil); it is the nearest anvil to the furnace with a bank within reach; the cycle banks where it withdraws, Falador West. The coal is a supply carried by slot (4 a bar). No promoted plan; unmeasured.",
+        source: 'high-tier mining and smithing 2026-10-24: Mining 85-99 and Smithing 82-99 routes rated from the world index',
     },
 ];

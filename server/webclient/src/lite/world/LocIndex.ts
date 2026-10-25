@@ -9,10 +9,9 @@
 // The result is four sorted key/value arrays - about 8 bytes per loc - shared by
 // every bot in the process and cached on disk so it's built once per machine.
 //
-// Placement note: ClientBuild.loadLocations computes a `currentLevel` for the
-// LinkBelow bridge adjustment but passes the RAW file `level` to addLoc - the
-// adjustment only picks a collision map. So scene placement needs no land data
-// at all, which is why this index reads loc files only.
+// Levels note: the index keeps the RAW file levels, as the full client's scene
+// does. Callers apply the LinkBelow (bridge) shift to server levels: SceneLite
+// (staticValue) for scene lookups and CollisionBuilder for collision.
 
 import { mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';

@@ -35,12 +35,14 @@ export interface CuratedCrossing {
     /**
      * Where the act is done. Absent: at every spawn of the act's npc or placed loc of its loc. `placed`: at the spawns
      * of `npc` (an interface act's, the npc whose op opens it; else the act's npc or loc), only those inside `in` and
-     * outside every `notIn`, as an `inzone` on the line `at` (`file:line`) or in the trigger's script checks it.
+     * outside every `notIn`, as an `inzone` on the line `at` (`file:line`) or in the trigger's script checks it; with
+     * `tiles` (coord literals), only the placements on those tiles, each of which must be placed (the move is made at
+     * those placed locs of the config and the script's own check, which `at` cites, is not a zone).
      * `zone`: on the zone's tiles on walkable land (an item op's), checked so; with `seed`, only those a walk inside
      * the zone gets to from it.
      */
     where?:
-        | { placed: { npc?: string; in?: Zone; notIn?: readonly Zone[]; at: string } }
+        | { placed: { npc?: string; in?: Zone; notIn?: readonly Zone[]; tiles?: readonly string[]; at: string } }
         | { zone: { in: Zone; seed?: string; at: string } };
     /** The landings, as coord literals: one, or the coords a random draw takes. */
     to: readonly string[];
@@ -205,8 +207,11 @@ export function deriveCuratedCrossings(input: CuratedCrossingInput): CuratedCros
         } else {
             const placed = where && 'placed' in where ? where.placed : undefined;
             if (placed) zonesAt(placed.at, [...(placed.in ? [placed.in] : []), ...(placed.notIn ?? [])]);
+            const only = placed?.tiles?.map(coordTile);
             const keep = (t: Tile) =>
-                (!placed?.in || inZone(placed.in, t)) && !(placed?.notIn ?? []).some(z => inZone(z, t));
+                (!placed?.in || inZone(placed.in, t)) &&
+                !(placed?.notIn ?? []).some(z => inZone(z, t)) &&
+                (!only || only.some(o => tileKey(o) === tileKey(t)));
             const npc = placed?.npc ?? (e.act.kind === 'npc-op' ? e.act.npc : undefined);
             const loc = 'loc' in e.act ? e.act.loc : undefined;
             if (npc !== undefined) {
@@ -218,6 +223,9 @@ export function deriveCuratedCrossings(input: CuratedCrossingInput): CuratedCros
             } else if (loc !== undefined) {
                 const locs = input.locs.filter(l => l.config === loc);
                 if (!locs.length) throw fail(`${loc} is never placed`);
+                for (const o of only ?? [])
+                    if (!locs.some(l => tileKey(l.tile) === tileKey(o)))
+                        throw fail(`${loc} is not placed at ${tileCoord(o)}`);
                 ats = locs
                     .filter(l => keep(l.tile))
                     .map(l => ({

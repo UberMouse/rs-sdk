@@ -1,0 +1,304 @@
+{
+    "name": "grand-tree-start",
+    "purpose": "Grand Tree start: Tree Gnome Village done (varp treequest 9), Att/Str/Def 80 HP 85 Prayer 43 Agility 30, full rune melee set + amulet of power worn, 20 swordfish, 3000 coins, on the Grand Tree ground floor at (2465,3495) next to King Narnode (2466,3497). Swordfish are 20 separate slots (a count-20 slot is eaten whole).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2465,
+                "z": 3495
+            },
+            "skills": {
+                "Attack": 80,
+                "Strength": 80,
+                "Defence": 80,
+                "Hitpoints": 85,
+                "Prayer": 43,
+                "Agility": 30
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 995,
+                    "count": 3000
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1731,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "111": 9
+            }
+        }
+    },
+    "sha1": "ed93013c93451746369dec61f41f2b5d0f4b63b2",
+    "createdAt": "2026-10-24T01:16:41.828Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2465,
+            "z": 3495,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 80,
+            "Defence": 80,
+            "Strength": 80,
+            "Hitpoints": 85,
+            "Prayer": 43,
+            "Agility": 30
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 3000
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1731,
+                "name": "amulet_of_power",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "111": 9,
+            "281": 1000
+        }
+    }
+}

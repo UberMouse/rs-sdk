@@ -74,6 +74,7 @@ still opens the interface. [v 2026-10-10 itest-fixture local]
 
 ### XP Rates
 
+- 13 bronze bars = 2,015 Smithing XP (Smithing 1 -> 20); 8 iron ore smelted = 1,250 XP. [v 2026-10-24 conductor3 local]
 - Smelting bronze bar: ~155 xp per bar (includes level-up bonuses)
 - Smithing bronze dagger: ~312 xp per dagger at level 14-26 range
 - 10 bars smelted: 1→14 Smithing

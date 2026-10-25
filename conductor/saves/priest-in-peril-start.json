@@ -1,0 +1,199 @@
+{
+    "name": "priest-in-peril-start",
+    "purpose": "Priest in Peril from the start (varp 302 = 0, Rune Mysteries done varp 63 = 6) at Varrock east bank (3254,3420): Att 40 Str 47 Def 40 HP 48, rune mace + adamant helm/body/legs/kiteshield worn, 100 coins, a Pot (the plan's stage marker), a bronze pickaxe (the plan mines the 50 rune essence) and 8 lobsters. No bucket (the plan buys one).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3254,
+                "z": 3420,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 47,
+                "Defence": 40,
+                "Hitpoints": 48
+            },
+            "inventory": [
+                {
+                    "id": 1931,
+                    "count": 1
+                },
+                {
+                    "id": 1265,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1432,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1161,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1123,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1073,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1199,
+                    "count": 1,
+                    "slot": 5
+                }
+            ],
+            "coins": 100,
+            "varps": {
+                "63": 6,
+                "302": 0
+            }
+        }
+    },
+    "sha1": "403197f9f2601c10732ffc569a0d1d1cd64d7e3d",
+    "createdAt": "2026-10-23T09:17:55.648Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3254,
+            "z": 3420,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 47,
+            "Hitpoints": 48
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            },
+            {
+                "id": 1931,
+                "name": "pot_empty",
+                "count": 1
+            },
+            {
+                "id": 1265,
+                "name": "bronze_pickaxe",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1161,
+                "name": "adamant_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1432,
+                "name": "rune_mace",
+                "count": 1
+            },
+            {
+                "id": 1123,
+                "name": "adamant_platebody",
+                "count": 1
+            },
+            {
+                "id": 1199,
+                "name": "adamant_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1073,
+                "name": "adamant_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "63": 6,
+            "281": 1000
+        }
+    }
+}

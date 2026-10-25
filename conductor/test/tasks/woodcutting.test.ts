@@ -282,3 +282,55 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe('interrupt:low-hp: hp 4/10 at (3222,3218), no food');
     });
 });
+
+describe('woodcutting: seenOutsideArea diagnostic', () => {
+    const AREA = { x: 3222, z: 3218, radius: 5 };
+
+    test('a tree in view outside the area while waiting warns, naming its tile', async () => {
+        const r = await simulate(woodcutting, {
+            params: { area: AREA },
+            timeline: stumps.loc('Tree', 3240, 3218, { options: ['Chop down'] }).series(1),
+        });
+        expect(r.result.reason).toBe('chop: area depleted: no reachable tree in radius 5 for 120s');
+        expect(r.result.diagnostics).toEqual({
+            idleTicks: 300,
+            seenOutsideAreaTicks: 300,
+            nearestOutsideArea: { name: 'Tree', x: 3240, z: 3218 },
+        });
+        expect(r.result.warnings?.[0]).toContain('seenOutsideArea');
+        expect(r.result.warnings?.[0]).toContain('(3240,3218)');
+    });
+
+    test('only stumps in view: idle ticks, no warning', async () => {
+        const r = await simulate(woodcutting, { params: { area: AREA }, timeline: stumps.series(1) });
+        expect(r.result.diagnostics).toEqual({ idleTicks: 300, seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('a stop that cancels the wait still counts the ticks it idled', async () => {
+        const r = await simulate(woodcutting, {
+            params: { area: AREA },
+            timeline: stumps.loc('Tree', 3240, 3218, { options: ['Chop down'] }).series(1),
+            stops: [{ kind: 'minutes', minutes: (50 * 400) / 60_000 }],
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.diagnostics).toMatchObject({ idleTicks: 50, seenOutsideAreaTicks: 50 });
+        expect(r.result.warnings).toHaveLength(1);
+    });
+
+    test('without an area nothing is outside it', async () => {
+        const r = await simulate(woodcutting, { timeline: stumps.series(1) });
+        expect(r.result.warnings).toBeUndefined();
+    });
+
+    test('a tree at the Wilderness edge outside the area is not counted', async () => {
+        const area = { x: 3100, z: 3490, radius: 4 };
+        const edge = base
+            .player({ at: { x: 3100, z: 3490 } })
+            .loc('Tree stump', 3100, 3490, { id: 1342 })
+            .loc('Tree', 3100, 3518, { options: ['Chop down'] });
+        const r = await simulate(woodcutting, { params: { area }, timeline: edge.series(1) });
+        expect(r.result.diagnostics).toMatchObject({ idleTicks: expect.any(Number), seenOutsideAreaTicks: 0 });
+        expect(r.result.warnings).toBeUndefined();
+    });
+});

@@ -32,6 +32,11 @@ For lower-level control, `sendInteractLoc()` only confirms client dispatch. Take
 an XP/inventory baseline and wait for the intended change rather than sleeping
 for an arbitrary duration.
 
+## Essence mine entry from a quest area
+
+- The `essence-mine` task's `enter` has no `met` param, so its walk to Aubury fails from inside a gated area: from the Priest in Peril dungeon `No connector from level 0 (3440,9894) to (3252,3402)`, from temple level 2 `no-path ... ends 238 tiles away at (3409,3483)`. First leave (climb down, then `travel` with `met` of the gates, e.g. `quest:priestperil>=8`), then `enter`. [v 2026-10-23 questw5 local]
+- Rune essence trips with a pickaxe and 8 lobsters held gave 18 essence each (3 trips for 50); a Bronze pickaxe at Mining 1 works; one "timed out waiting for ore from rock" recovered on its own. [v 2026-10-23 questw5 local]
+
 ## Detecting Mining Activity
 
 Animation ID 625 indicates active mining:

@@ -8,7 +8,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `trees-lumbridge-burn` | [Lumbridge trees (Lumbridge)](../places/lumbridge-trees.md) `tree:lumbridge-trees:0` | 255k at 1 | 364k | 448k | 512k | 562k | 575k | 575k | 575k | 575k | 575k | 575k | 0 | player | - |
-| `oak-draynor-drop` | [Draynor Village (Misthalin)](../places/draynor-village.md) `tree:draynor-village:2` | 1.18M at 15 | - | 1.26M | 1.44M | 1.63M | 1.82M | 1.99M | 2M | 2M | 2M | 2M | 0 | player | - |
+| `oak-draynor-drop` | [Draynor Village (Misthalin)](../places/draynor-village.md) `tree:draynor-village:1` | 1.18M at 15 | - | 1.26M | 1.44M | 1.63M | 1.82M | 1.99M | 2M | 2M | 2M | 2M | 0 | player | - |
 | `willow-draynor-bank` | [Draynor willows (Draynor Village)](../places/draynor-willows.md) `tree:draynor-willows:0` | 1.25M at 30 | - | - | 1.25M | 1.41M | 1.57M | 1.71M | 1.86M | 2M | 2.14M | 2.28M | 53.9k | player | - |
 | `willow-draynor-burn` | [Draynor willows (Draynor Village)](../places/draynor-willows.md) `tree:draynor-willows:0` | 891k at 30 | - | - | 891k | 1.03M | 1.13M | 1.21M | 1.28M | 1.34M | 1.4M | 1.46M | 0 | player | 667k at 68 (77%) |
 | `willow-seers-longbow-bank` | [Seers' Village (Kandarin)](../places/seers-village.md) `tree:seers-village:1` | 1.11M at 40 | - | - | 1.02M | 1.11M | 1.21M | 1.3M | 1.38M | 1.46M | 1.53M | 1.6M | 303k | player | 758k at 80 (66%) |
@@ -17,7 +17,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Requires**: Reach: none. Levels: Woodcutting 1, Firemaking 1, each with the other skills at 99; every skill at once: 1. Tools: best axe (wielded), Tinderbox.
   - **Sink**: firemaking at (3230, 3240, 0), then keep; legs 24 + 24 run ticks.
   - **Supplies/hr** at 99: none.
-- `oak-draynor-drop`: Oaks south of Draynor, dropped. The five oaks, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is nearest the spawn. No promoted plan; unmeasured.
+- `oak-draynor-drop`: Oaks north of Draynor, dropped. Plans: oak-draynor-drop. The five oaks of tree:draynor-village:1, each log dropped as cut. Every oak site ties on a drop sink (no legs); this one is near the spawn. The plan chops the normal trees of the same cluster to 15 first, area (3095,3283) r16 (bbox 3084-3106 x 3275-3290 plus margin). The south cluster (tree:draynor-village:2) is out: the jail guards attack through the fence there (learnings/hazards.md). Runs: conductor3 2026-10-24, south site, steel axe, WC 15-50 in 143.6 s, ~775k/h; conductor3w1 2026-10-24, north site, adamant axe, WC 68-74, ~1.1M/h chopping (984k/h with the walk in), no attacks. Started above level 1, so left out of measured.
   - **Requires**: Reach: none. Levels: Woodcutting 15. Tools: best axe (wielded).
   - **Sink**: drop.
   - **Supplies/hr** at 99: none.

@@ -1,0 +1,317 @@
+{
+    "name": "grand-tree-stage90",
+    "purpose": "Grand Tree mid-quest (stage 90): lumber order held, outside the Gnome Stronghold gate at (2459,3374), femi_help 1 (boxes declined, Femi's fare 1000), kit as grand-tree-start. For iterating the plan past the Karamja leg. Swordfish are 20 separate slots (a count-20 slot is eaten whole).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2459,
+                "z": 3374
+            },
+            "skills": {
+                "Attack": 80,
+                "Strength": 80,
+                "Defence": 80,
+                "Hitpoints": 85,
+                "Prayer": 43,
+                "Agility": 30
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 995,
+                    "count": 3000
+                },
+                {
+                    "id": 787,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1731,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "varps": {
+                "111": 9,
+                "150": 90,
+                "152": 1
+            }
+        }
+    },
+    "sha1": "b881cbf652f2c2079139e2672af0fc9778367017",
+    "createdAt": "2026-10-24T01:16:41.256Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2459,
+            "z": 3374,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 80,
+            "Defence": 80,
+            "Strength": 80,
+            "Hitpoints": 85,
+            "Prayer": 43,
+            "Agility": 30
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 3000
+            },
+            {
+                "id": 787,
+                "name": "grandtree_order",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1731,
+                "name": "amulet_of_power",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "111": 9,
+            "150": 90,
+            "152": 1,
+            "281": 1000
+        }
+    }
+}

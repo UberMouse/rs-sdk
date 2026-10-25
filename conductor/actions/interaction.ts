@@ -4,9 +4,10 @@
 import type { BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
+import { MOVED_PREFIX, movementWatch } from './movement';
 import type { ActionContext } from './context';
 import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc, sendUseOnNpc } from './interact';
-import { CANT_REACH, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
+import { CANT_REACH, dialogPageSince, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
 
 /** Ticks to wait for the effect (10 s as `use`: the walk up to the target plus the action). */
 export const INTERACT_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
@@ -68,47 +69,23 @@ export function optionsOf(target: InteractTarget): string[] {
 export const targetName = (t: InteractTarget): string =>
     t.kind === 'npc' ? t.npc.name : t.kind === 'loc' ? t.loc.name : t.item.name;
 
-/** Running covers two tiles a tick: a player further off than that per elapsed tick was moved by the game. */
-const MAX_STEP_TILES = 2;
-
-/** The effect text of a move the game made. */
-const MOVED_PREFIX = 'the player moved to ';
-
 const signature = (xs: readonly { slot?: number; id: number; count: number }[]) =>
     xs.map(i => `${i.slot ?? ''}:${i.id}:${i.count}`).join(',');
 
 /**
- * Watches the player across the ticks of a wait for a move the game made (a teleport, a swim wash-up, a pass
- * through a door, a gangplank, a whistle), which a walk toward the target never is: it covers at most
- * MAX_STEP_TILES a tick and stays on its floor. A bot that began on the target's own tile has nothing to
- * walk, so any move of it counts. Sticky: once seen, it stays seen. Call it with each state of the wait.
+ * The movement watch for `target`: a bot that began on a loc's own tile has nothing to walk, and an inventory
+ * item is not walked to at all, so any move of the player is the game's.
  */
-function movementWatch(target: InteractTarget, before: BotWorldState): (s: BotWorldState) => string | null {
-    const start = before.player;
-    let prev = start;
-    let prevTick = before.tick;
-    let seen: string | null = null;
-    const onTarget =
-        target.kind === 'loc' &&
-        !!start &&
-        start.worldX === target.loc.x &&
-        start.worldZ === target.loc.z &&
-        start.level === target.loc.level;
-    return s => {
-        const now = s.player;
-        if (!seen && prev && now) {
-            const jump = Math.max(Math.abs(now.worldX - prev.worldX), Math.abs(now.worldZ - prev.worldZ));
-            // A state the client skipped covers more ticks of walking.
-            const reach = MAX_STEP_TILES * Math.max(1, s.tick - prevTick);
-            const away = !!start && (now.worldX !== start.worldX || now.worldZ !== start.worldZ);
-            if (now.level !== prev.level || jump > reach || (onTarget && away))
-                seen = `${MOVED_PREFIX}(${now.worldX},${now.worldZ})`;
-        }
-        prev = now ?? prev;
-        prevTick = s.tick;
-        return seen;
-    };
-}
+const watchFor = (target: InteractTarget, before: BotWorldState) =>
+    movementWatch(
+        before,
+        target.kind === 'item' ||
+            (target.kind === 'loc' &&
+                !!before.player &&
+                before.player.worldX === target.loc.x &&
+                before.player.worldZ === target.loc.z &&
+                before.player.level === target.loc.level),
+    );
 
 /** What changed in the world between `before` and `s`, or null while nothing shows. `moved` is the movement watch's finding. */
 function stateChange(
@@ -163,6 +140,12 @@ function verdictOf(
     }
     const refusal = messages.find(m => REFUSAL.test(m.text));
     if (refusal) return { kind: 'failed', reason: 'refused', message: `${name}: "${refusal.text}"` };
+    if (!expect) {
+        // A message box the op opened can be clicked away (the dialog guard) before the wait sees it open; the
+        // page the client recorded is still the effect (the Chaos altar's inscription). A refusal outranks it.
+        const page = dialogPageSince(s, cursor);
+        if (page) return { kind: 'effect', effect: `a dialog page appeared: "${page}"` };
+    }
     const bare = expect ? undefined : messages.find(m => s.tick - m.tick >= grace);
     return bare ? { kind: 'effect', effect: `game message "${bare.text}"` } : null;
 }
@@ -268,7 +251,7 @@ function* attempt(
     const name = targetName(target);
     const sent = yield* send();
     if (!sent.ok) return sent;
-    const watch = movementWatch(target, before);
+    const watch = watchFor(target, before);
     const w = yield* wait(
         `${what} ${name}`,
         s => verdictOf(target, before, cursor, expect, MESSAGE_GRACE_TICKS, s, watch(s)) !== null,

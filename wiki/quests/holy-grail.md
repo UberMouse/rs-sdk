@@ -168,40 +168,37 @@ Draynor Manor; Ardougne for the Karamja trips. Karamja and Entrana have none.
 | Crossing | Bot can route it? |
 |---|---|
 | Camelot stairs; Merlin's workshop door (gate `quest:grail>=1`, `wiki/world/gate-list.ts:1435`) | yes (probe 18 run ticks; the account reads "started" from the quest tab) |
-| Entrana boat, both ways | **no walk**, but a `talk` (`travels:true`) plus gangplank `interact` phase pair does it: see [ships](../../learnings/ships.md). The loadout rule `entrana` is in world.json. |
+| Entrana boat, both ways | **no walk**, a `talk` (`travels:true`) plus gangplank `interact` phase pair does it: see [ships](../../learnings/ships.md). The loadout rule `entrana` is in world.json. |
 | Karamja / Brimhaven ships, both ways | as Entrana: [ships](../../learnings/ships.md) |
 | Draynor Manor stairs, whistle door | yes (probe above) |
-| Whistle, six heads -> blighted realm (stage < 9) | **no**: the world index has the blighted realm as expected unreached (`wiki/world/areas.ts:1340-1357`) |
-| Whistle, blighted realm -> Karamja | **no** (probe: no way from the castle or the landing) |
-| Whistle, six heads -> restored realm (stage 9) | **no** during the quest: the crossing requires `quest:grail` done (`wiki/world/gates.ts:424-436`) |
+| Whistle, six heads -> blighted realm (stage < 9) | by `interact` Blow, not `travel` (the index has the blighted realm as expected unreached, `wiki/world/areas.ts:1340-1357`) |
+| Whistle, blighted realm -> Karamja | by `interact` Blow, not `travel` |
+| Whistle, six heads -> restored realm (stage 9) | by `interact` Blow; `travel` cannot during the quest: the crossing requires `quest:grail` done (`wiki/world/gates.ts:424-436`) |
 | Whistle, restored realm -> Karamja | yes (requires only a whistle held and members; probe: grail tile -> six heads 8 run ticks) |
 | Titan choke, Grail castle | **no**: the Titan's kill teleport and the bell's teleport are the only ways (probe) |
 | Fisher Realm castle stairs, restored castle stairs and ladder | yes |
 
-## Catalog coverage
+## Plan (promoted)
 
-| Step | Task | Params / notes |
-|---|---|---|
-| 1 Arthur | `talk` | `{npc:"^King Arthur$", at:{x:2764,z:3515}, choices:["Tell me of this quest","I'd enjoy trying that"]}` |
-| 2 Merlin | `talk` | `{npc:"^Merlin$", at:{x:2767,z:3500,level:1}, choices:["Thank you for the advice"]}`; the walk to `at` opens the workshop door, which spawns him. Unverified. |
-| 3 Entrana | `bank`, `talk`, `interact` | bank weapons and armour (`depositAllExcept`); `talk {npc:"^Monk of Entrana$", at:{x:3047,z:3235}, choices:["I'm ready to go"]}` boards; then disembark with `interact` Cross on the gangplank by `tile` (recipe, with `travels:true` on the talk, in [ships](../../learnings/ships.md)). Then `talk {npc:"^High Priest$", at:{x:2851,z:3349}, choices:["Ok, I will go searching"]}`. |
-| 4 Galahad | `talk` | `{npc:"^Galahad$", at:{x:2612,z:3474}, choices:["I seek an item from the realm"]}` |
-| 5 whistles | `travel`, `interact`, `pickup` | `travel {to:{x:3106,z:3362,level:2}}`; `interact {target:"loc", name:"^Door$", option:"^Open$", at:{x:3106,z:3362,level:2}}` (or let the walk open it); `pickup {area:{x:3107,z:3359,level:2,radius:1}, items:[{name:"Magic whistle",count:2}]}` |
-| 6 Karamja | `talk` + `interact` | ship as step 3 (Barnaby `choices:["Yes please"]`, see [ships](../../learnings/ships.md)); `travel {to:{x:2741,z:3235}}` |
-| 6 blow whistle | **gap** | `interact {target:"item", name:"^Magic whistle$", option:"^Blow$"}` sends it, but a teleport shows no effect the task reads (no dialog, inventory, worn, animation or message change; `interaction.ts:60-73`), so it fails "no-effect" after the teleport has happened. `travel` cannot use the crossing before the quest is done. Needs a position-jump effect in `interact`, or a teleport task that checks the landing. Same gap at steps 11 and 13. |
-| 7 Titan | `combat` | `{target:"Black Knight Titan", area:{x:2791,z:4722,radius:4}, weapon:"Excalibur", food:["Lobster"], maxLevelGap:40}` with phase `until: v => (v.state.player?.worldX ?? 9999) < 2791` (the kill moves the bot west; `combat` never ends on its own and the Titan respawns in 10 ticks). No task turns on Protect from Melee (**gap**, optional). |
-| 8 Fisherman, bell | `talk`, `pickup` | `talk {npc:"^Fisherman$", choices:["get into the castle"]}`; `pickup {area:{x:2762,z:4694,radius:1}, items:[{name:"Grail bell",count:1}]}` |
-| 9 ring | `interact` | `{target:"item", name:"^Grail bell$", option:"^Ring$", at:{x:2762,z:4694}}`: the message box it opens is the effect; the engine's dialog guard clicks through the rest. Check a Grail Maiden is within 4 tiles. |
-| 10 Fisher King | `talk` | `{npc:"^The Fisher King$", at:{x:2762,z:4687,level:1}, choices:["You don't look too well"]}` |
-| 11 leave realm | **gap** | whistle (step 6 gap); ship back: `talk {npc:"^Customs officer$", choices:["Can I journey on this ship","Search away","^Ok\\.$"]}` + gangplank gap |
-| 12 Percival | `interact` + `talk` | `interact {target:"loc", name:"^Sacks$", option:"^Open$", at:{x:2960,z:3508}}` then `talk {npc:"^Sir Percival$", choices:["Your father wishes to speak to you"]}` continuing the open dialog |
-| 13 grail | **gap**, `travel`, `pickup` | whistle into the restored realm (gap); `travel {to:{x:2650,z:4684,level:2}}`; `pickup {area:{x:2649,z:4684,level:2,radius:1}, items:[{name:"Holy grail",count:1}]}` |
-| 14 back | `travel` | `travel {to:{x:2741,z:3235}}` uses the whistle crossing; then the ship gap |
-| 15 Arthur | `talk` | `{npc:"^King Arthur$", at:{x:2764,z:3515}}` |
+`conductor/plans/holy-grail.ts` runs the whole quest: fresh load of `lib:holy-grail-start` to quest done in 23.5 min, one run, no mid-run edits. [v 2026-10-24 questw5 local]
 
-Blocking gaps, in order: **ships** (no task takes one, and nothing steps off a deck: four voyages), **whistle teleports**
-mid-quest (three blows `interact` cannot confirm; the restored-realm return is routed), then the optional prayer
-toggle for the Titan.
+Phase times: Camelot -> Port Sarim -> Entrana round trip -> Galahad about 7 min (long walks); Seers' bank, Draynor Manor and whistles about 3 min; Titan about 100 s plus a short melee finish; each ship voyage 15-30 s. Steps 6-15 from the realm save take 7.8 min. [v 2026-10-24 questw5 local]
+
+Recipes the run settled (the other steps are plain `talk` / `travel` / `pickup` with the choices listed in the walkthrough):
+
+- Ships: `talk` with `travels:true` plus a gangplank `interact`, as in [ships](../../learnings/ships.md). The ~20-page dialog history is too short to carry progress across ships, so the plan uses the coin fare as a durable counter (start 290-300 coins, fare 30). The pack holds only coins (Entrana refuses gear). [v 2026-10-24 questw5 local]
+- Start the plan with 290-300 coins in the pack: `firstTrip` is `coins >= 260`, so with more (714 coins) it never flips after the Fisher King and the plan loops ships to Karamja and back (two extra round trips, about 4 min) before Percival. [v 2026-10-24 conductor3 local]
+- Observed walker failure on a 28-min run: the `ring` phase (walk to the bell at (2762, 4694)) failed "walk: No path to (2762,4694) from (2794,4713)" in the blighted realm; the one-off plan `percival-finish` then finished Percival. Cause not diagnosed. [v 2026-10-24 conductor3 local]
+- Titan at Prayer 49: Protect from Melee ran out ("out of prayer points", 49 -> 13); plain melee with swordfish and Excalibur finished it at Defence 40, Attack 84, Strength 87, no death. [v 2026-10-24 conductor3 local]
+- Completed again: Holy Grail 282 s from the realm stage (Defence 40 -> 85, Prayer 49 -> 81, 2 QP, +382,500 / +275,000 XP). [v 2026-10-24 conductor3 local]
+- Merlin's workshop: a `talk` or `interact` walk carries `met` tokens only through its `at.met` (`at: {x, z, met: ["quest:grail>=1"]}`); without it, after Merlin a `travel` with `met:["quest:grail>=1"]` to (2760, 3512) is needed before any long walk, otherwise "No path ... ends 541 tiles away at (2768, 3498)". [v 2026-10-24 questw5 local]
+- Draynor Manor whistle door is at (3106, 3361) L2 (not 3362); the whistles lie at (3107, 3359) on a table and `pickup` works from an adjacent tile. The whistle room is south of the door; from it or the upper floors the walker has no way out, so hand steps: `interact` Door Open (tile 3106, 3361) swings the player north; Staircase Climb-down (3105, 3363) L2 -> L1; Staircase Walk-down (3108, 3364) L1 -> ground; then `travel`/`talk` walks reach Port Sarim. [v 2026-10-24 questw5 local]
+- Whistle Blow: `interact` on the item confirms it by effect (the player moved to (2806, 4715), (2678, 4715) or (2741, 3235)). [v 2026-10-24 questw5 local]
+- Grail bell Ring (2762, 4694): the dialog guard takes the message box and `interact` reports no-effect although the bot is teleported to (2761, 4692); `interact` now counts the teleport as the effect (any move of the player, for an inventory-item option), so no `expect` is needed (smoke `interact counts the bell teleport`, bot stands within 4 tiles of a maiden, e.g. (2764, 4689); from (2762, 4694) no maiden is in range and the bell does nothing). [v 2026-10-24 questw5 local] [v 2026-10-24 itest-fixture local]
+- Titan: Excalibur worn, lobsters, `combat` with `until` on x < 2791. Protect from Melee at 43 Prayer points lasts about 100 s and ran out with the Titan at 7/142 HP: finish with plain melee and lobsters (Prayer 70 would cover the whole fight). After the kill the player is at (2790, 4722); the Fisherman (2802, 4706) is reachable from the west side, the bell (2762, 4694) is reachable again, and the walk back through the choke works. [v 2026-10-24 questw5 local]
+- Armour: the rune platebody needs Dragon Slayer ("You need to complete the Dragon Slayer quest first"); rune full helm, chainbody, platelegs and kiteshield wear fine at Defence 40. [v 2026-10-24 questw5 local]
+- The Holy grail at (2649, 4684) L2 is reached by a restored-realm blow-in as written in step 13. [v 2026-10-24 questw5 local]
+- Rewards seen: Prayer 275,000 and Defence 382,500 XP (Defence 89, Prayer 81 afterwards). [v 2026-10-24 questw5 local]
 
 ## Suggested library saves
 
@@ -209,11 +206,10 @@ Members world; generated saves (`conductor/tools/library.ts generate`).
 
 - `holy-grail-start`: Attack/Strength/Defence 70, Hitpoints 70, Prayer 43; varps `{"14":7,"5":0}` (Merlin's Crystal
   done, Holy Grail not started); inventory 300 coins only (Entrana-safe); bank Excalibur (35), rune full helm (1163),
-  rune platebody (1127), rune platelegs (1079), rune kiteshield (1201), leather boots (1061), 20 lobsters (379); at
-  Camelot (2758, 3505). Seers' Village bank is the nearest. Runs the whole quest.
+  rune chainbody, rune platelegs (1079), rune kiteshield (1201), leather boots (1061), 20 lobsters (379); at
+  Camelot (2758, 3505). Seers' Village bank is the nearest. Runs the whole quest (300 coins: the plan counts fares off it). [v 2026-10-24 questw5 local]
 - `holy-grail-realm`: the same stats; varps `{"14":7,"5":4}`; worn Excalibur and the rune set; inventory holy table
-  napkin (15), 2 magic whistles (16), 15 lobsters, 200 coins; at the six heads (2741, 3235). Tests the whistle,
-  Titan, bell and Fisher King steps (6-11) without the ships.
+  napkin (15), 2 magic whistles (16), 15 lobsters, 270 coins; at the six heads (2741, 3235). Runs steps 6-15 (castle through Arthur) without the outbound ships. [v 2026-10-24 questw5 local]
 
 ## After the quest
 

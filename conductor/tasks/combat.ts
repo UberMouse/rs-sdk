@@ -8,11 +8,20 @@ import { prayerActive, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
+import {
+    areaWatchReport,
+    type AreaWatch,
+    newAreaWatch,
+    trackIdle,
+    outsideSighting,
+    type Sighting,
+    WILDERNESS_MARGIN,
+} from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { attackers, recentlyHit } from '../lib/interrupts';
-import { isLowHp } from '../lib/threat';
+import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
+import { squareReachesWilderness } from '../lib/wilderness';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
-import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
@@ -92,6 +101,8 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Ground items further than this are not worth leaving the fight spot for. */
 const LOOT_RADIUS = 6;
 const EAT_FAIL_LIMIT = 3;
+/** Ticks the dialog may trail the end of the fight that opens it (the client's state packets and the interface update are separate). */
+const DIALOG_LAG_TICKS = 3;
 const STEP_TIMEOUT_MS = 300_000;
 /** Without food, preflight refuses NPCs above this combat level (chickens are 1, cows 2). */
 const NO_FOOD_MAX_NPC_LEVEL = 5;
@@ -115,6 +126,13 @@ const Params = z
         skill: z.enum(SKILLS).default('Attack'),
         /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
         area: AreaSchema,
+        /**
+         * Which NPCs are targets. "area" (default): only those inside `area`. "visible": the nearest free reachable
+         * matching NPC anywhere in view, for targets that roam, flee or teleport (imps); `area` then only anchors the
+         * run: the bot walks back to it when no target is in view (and no wanted loot lies near). Loot is picked up
+         * wherever it lies near the bot. Free targets, and loot, within WILDERNESS_MARGIN tiles of the Wilderness are never taken (an attacker is still fought).
+         */
+        targetRange: z.enum(['area', 'visible']).default('area'),
         /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
         weapon: z.string().trim().optional(),
         shield: z.string().trim().optional(),
@@ -183,6 +201,8 @@ const Params = z
 
 type CombatParams = z.infer<typeof Params>;
 interface CombatMemory {
+    /** Idle ticks and the ones with a target in view outside the area (diagnostic, lib/area-watch.ts). */
+    areaWatch: AreaWatch;
     /** The tick the fight being waited out was first seen, until the bot is out of combat. */
     fightStartedAtTick: number | null;
     /** The tick a fight was first seen with no ammo left (Ranged), or null while ammo remains. */
@@ -303,17 +323,22 @@ const dialogPage = (s: BotWorldState) =>
         s.dialog.options.map(o => o.text),
         s.dialog.allComponents?.map(c => c.text),
     ]);
-const dialogWords = (s: BotWorldState) =>
-    [s.dialog.text ?? '', ...(s.dialog.allComponents ?? []).map(c => c.text)].join(' ');
-/** The level-up box (levelup.dbrow: "Congratulations, you just advanced an attack level."): not a quest dialog. */
-const isLevelUp = (s: BotWorldState) => /you just advanced an? \w+ level/i.test(dialogWords(s));
 /**
- * The page a level-up opens after its click (levelup_unlocks_*.rs2 objbox: "You can now wield Steel Weaponry!",
- * "Members can now cook ...", "You are now qualified to enter ..."); only taken as one right after a level-up click.
+ * A dialog `stopOnDialog` leaves for the next phase: open, and neither a level-up box nor (`unlock`) the unlock page
+ * after one's click. The step passes whether it is within UNLOCK_PAGE_TICKS of its click; the engine's hook has no
+ * click memory and takes any unlock-looking page as one, the safe side (an eat may then close it).
  */
-const isUnlockPage = (s: BotWorldState) => /\b(can|are) now\b/i.test(dialogWords(s));
+const keptDialog = (s: BotWorldState, unlock: boolean) => s.dialog.isOpen && !isLevelUp(s) && !unlock;
 /** How long after a level-up click an unlock page still counts as part of it. */
 const UNLOCK_PAGE_TICKS = LEVEL_UP_WAIT_TICKS + 2;
+
+/** `visible` mode only (Wilderness coordinates apply on the surface, hence `level === 0`): the point is on the surface within WILDERNESS_MARGIN of the Wilderness, where the bot must not go. */
+const nearWilderness = (state: BotWorldState, p: CombatParams, at: { x: number; z: number }) =>
+    p.targetRange === 'visible' && state.player?.level === 0 && squareReachesWilderness(at.x, at.z, WILDERNESS_MARGIN);
+
+/** A target or loot at `at` is allowed by the range mode: inside the area, or (visible) anywhere safe in view. */
+const inRange = (state: BotWorldState, p: CombatParams, at: { x: number; z: number }) =>
+    p.targetRange === 'visible' ? !nearWilderness(state, p, at) : inArea(p.area, at);
 
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
@@ -324,9 +349,27 @@ function wantedGroundItems(ctx: Ctx) {
     return ctx
         .state()
         .groundItems.filter(i => names.some(n => exactName(n).test(i.name)))
-        .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inArea(ctx.params.area, i))
+        .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inRange(ctx.state(), ctx.params, i))
         .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
+}
+
+/** A matching NPC the bot may attack now, wherever it stands: free, reachable, attackable, of a level the task wants. */
+const freeTarget = (n: BotWorldState['nearbyNpcs'][number], p: CombatParams) =>
+    matches(n, p) &&
+    n.reachable !== false &&
+    !n.inCombat &&
+    levelWanted(n, p) &&
+    n.options.some(o => ATTACK_OPTION.test(o));
+
+/**
+ * Diagnostic only: the nearest free in-limit target in view outside the area, for the idle count. Nothing in
+ * `visible` mode (it takes those) and nothing within WILDERNESS_MARGIN of the Wilderness (never taken).
+ */
+function outsideTarget(state: BotWorldState, p: CombatParams): Sighting | undefined {
+    if (p.targetRange !== 'area') return undefined;
+    const limit = levelLimit(state, p);
+    return outsideSighting(state, p.area, state.nearbyNpcs, n => freeTarget(n, p) && n.combatLevel <= limit);
 }
 
 /**
@@ -336,24 +379,27 @@ function wantedGroundItems(ctx: Ctx) {
  */
 function pickTarget(state: BotWorldState, p: CombatParams) {
     const limit = levelLimit(state, p);
-    // `attackers` cannot tell the bot's attacker from an NPC fighting another player; a recent hit on the bot can.
-    const attacker = (recentlyHit(state) ? attackers(state) : []).find(
+    // `attackers` cannot tell the bot's attacker from an NPC fighting another player; a recent hit on the bot can,
+    // and so can having no listed player (Elvarg faces the bot long before its first hit; a player the client does
+    // not list cannot be seen, so this is a heuristic). Whatever the hit, an NPC facing a listed player, or one a
+    // listed player targets, is that player's fight.
+    const mine = recentlyHit(state) || state.nearbyPlayers.length === 0;
+    const othersFight = (n: BotWorldState['nearbyNpcs'][number]) =>
+        state.nearbyPlayers.some(
+            pl =>
+                n.targetIndex - PLAYER_TARGET_OFFSET === pl.index ||
+                (pl.combatTargetType === 'npc' && pl.combatTargetIndex === n.index),
+        );
+    const attacker = (mine ? attackers(state) : []).find(
         n =>
+            !othersFight(n) &&
             matches(n, p) &&
             n.reachable !== false &&
             n.combatLevel <= limit &&
             n.options.some(o => ATTACK_OPTION.test(o)),
     );
     if (attacker) return { target: attacker, tooStrong: undefined, limit };
-    const candidates = state.nearbyNpcs.filter(
-        n =>
-            matches(n, p) &&
-            n.reachable !== false &&
-            !n.inCombat &&
-            levelWanted(n, p) &&
-            n.options.some(o => ATTACK_OPTION.test(o)) &&
-            inArea(p.area, n),
-    );
+    const candidates = state.nearbyNpcs.filter(n => freeTarget(n, p) && inRange(state, p, n));
     const target = candidates.filter(n => n.combatLevel <= limit).sort((a, b) => a.distance - b.distance)[0];
     return { target, tooStrong: candidates.find(n => n.combatLevel > limit), limit };
 }
@@ -387,6 +433,10 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
     );
     // The fight being timed is over; a later fight starts a fresh clock.
     if (!fighting(w.state)) ctx.memory.fightStartedAtTick = null;
+    // The fight's end (Sir Mordred's scripted death) reaches the bot a tick or so before the dialog it opens; an attack
+    // sent in that gap closes the dialog before the plan's `talk` can answer it. Give the dialog a moment to show.
+    if (stopOnDialog && !fighting(w.state) && !w.state.dialog.isOpen)
+        yield* wait('dialog after the fight', st => st.dialog.isOpen, DIALOG_LAG_TICKS);
 }
 
 /** bot.attack's walk to a far NPC, then the attack op; a failed walk reads as upstream's out-of-reach. */
@@ -420,8 +470,12 @@ function* chooseTarget(ctx: Ctx, engaged?: NearbyNpc): Op<{ target: NearbyNpc } 
         };
     const lookLimit = Math.max(NO_TARGET_LIMIT, Math.ceil(ctx.params.respawnWaitTicks / NO_TARGET_WAIT_TICKS));
     if (noTarget.add() >= lookLimit)
-        return { outcome: { fail: `no free reachable ${targetLabel(ctx.params)} in the area` } };
-    yield* ticks(NO_TARGET_WAIT_TICKS);
+        return {
+            outcome: {
+                fail: `no free reachable ${targetLabel(ctx.params)} ${ctx.params.targetRange === 'visible' ? 'in view' : 'in the area'}`,
+            },
+        };
+    yield* trackIdle(ctx, ctx.memory.areaWatch, s => outsideTarget(s, ctx.params), ticks(NO_TARGET_WAIT_TICKS));
     return { outcome: undefined };
 }
 
@@ -440,24 +494,40 @@ function countCast(ctx: Ctx, target: NearbyNpc) {
 }
 
 /**
- * Combat may start in a fight (arriving at aggressive hill giants, an attack mid-plan) when something faces the
- * bot and every such attacker is a target of this task, or winnable: its level no higher than the bot's with HP
- * and HP above the eat threshold, which every attacker needs (the standing under-attack rule). An unknown attacker (a hit with none next to the
- * bot) or a stronger one keeps the engine's refusal. The pick step fights the attacker first.
+ * Combat may start in a fight (arriving at aggressive hill giants, an attack mid-plan, a mining phase swarmed in a
+ * dungeon) when something faces the bot and at least one such attacker is a target of this task, or every one is
+ * winnable (its level no higher than the bot's). Fighting is this task's purpose, and the plan has no other way
+ * out: eat/interact tasks are refused under attack. Low HP does not refuse: the low-HP guard eats during the run.
+ * An unknown attacker (a hit with none next to the bot) keeps the engine's refusal. The pick step fights the
+ * attacker first.
  */
 export function startsInCombat(p: CombatParams, state: BotWorldState): boolean {
     const foes = attackers(state);
     const me = state.player;
     if (!me || foes.length === 0) return false;
-    // Low HP refuses either way: the plan eats first, and the run starts healthy.
-    if (isLowHp(state)) return false;
-    return foes.every(n => matches(n, p) || n.combatLevel <= me.combatLevel);
+    return foes.some(n => matches(n, p)) || foes.every(n => n.combatLevel <= me.combatLevel);
 }
+
+const returnToAreaBase = returnToAreaStep<CombatParams>(params => params.area);
+/**
+ * The walk back to the area. In `visible` mode the bot may have chased targets out of it: it keeps going
+ * after what it sees (a target, or loot to pick up) and walks back only when there is none.
+ */
+const returnToArea: Step<CombatParams, CombatMemory> = {
+    ...returnToAreaBase,
+    when: (ctx: Ctx) =>
+        returnToAreaBase.when(ctx) &&
+        (ctx.params.targetRange === 'area' ||
+            (!fighting(ctx.state()) &&
+                attackers(ctx.state()).length === 0 &&
+                !pickTarget(ctx.state(), ctx.params).target &&
+                wantedGroundItems(ctx).length === 0)),
+};
 
 export default defineTask({
     name: 'combat',
     description:
-        'Train a combat skill on one kind of NPC inside an area: wields the given weapon/shield, sets the attack ' +
+        `Train a combat skill on one kind of NPC inside an area (starts even while under attack when an attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run), or with \`targetRange: "visible"\` on any matching NPC in view (imps and other roamers; \`area\` then only anchors the run; the bot walks back to it only when no target or loot is in view). Targets and loot within ${WILDERNESS_MARGIN} tiles of the Wilderness are never taken. Wields the given weapon/shield, sets the attack ` +
         'style for `skill` (Attack/Strength/Defence/Ranged), attacks the nearest reachable matching NPC that is not ' +
         'fighting someone else, waits for the kill, repeats. Ranged: `weapon` is a bow and `ammo` its arrows (wielded; ' +
         'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +
@@ -470,11 +540,13 @@ export default defineTask({
         'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
         'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, failing when the prayer points run out; ' +
         "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
-        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
+        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; the open dialog is also kept from the low-HP eat and the end-of-run settle and eat (above the HP floor, the larger of 8 and a quarter of max HP); a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
+    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): CombatMemory => ({
+        areaWatch: newAreaWatch(),
         fightStartedAtTick: null,
         noAmmoSinceTick: null,
         lootSkipped: new Map(),
@@ -486,6 +558,9 @@ export default defineTask({
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
     startInCombat: startsInCombat,
+    // The dialog is kept open past the end of the run, so neither the low-hp eat nor the engine's fight settle and
+    // eat before leaving may close it (the engine only holds above its HP floor).
+    holdsDialog: (p, s) => p.stopOnDialog && keptDialog(s, isUnlockPage(s)),
     // With `stopOnDialog` the run ends when a dialog opens and leaves it for the next phase: the shared dialog
     // guard would click through it or answer a choice with its decline pattern ("No. He deserves to die.").
     allowGuards: p => (p.stopOnDialog ? ['dialog'] : []),
@@ -502,7 +577,7 @@ export default defineTask({
         if (on.length === 0) return;
         const clicked = ctx.memory.levelUpClickedAtTick;
         const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
-        if (ctx.params.stopOnDialog && s.dialog.isOpen && !isLevelUp(s) && !unlock) {
+        if (ctx.params.stopOnDialog && keptDialog(s, unlock)) {
             yield* log(`dialog open, leaving prayers on: ${on.join(', ')}`);
             return;
         }
@@ -549,7 +624,7 @@ export default defineTask({
                 // the unlock page that follows its click.
                 const clicked = ctx.memory.levelUpClickedAtTick;
                 const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
-                if (!isLevelUp(s) && !unlock) {
+                if (keptDialog(s, unlock)) {
                     if (!ctx.memory.fought) return { fail: `dialog open before any fight: ${dialogText(s)}` };
                     const left = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
                     return {
@@ -650,7 +725,7 @@ export default defineTask({
                 }
             },
         },
-        returnToAreaStep<CombatParams>(params => params.area),
+        returnToArea,
         {
             name: 'out-of-prayer',
             // An empty prayer tab mid-fight leaves the bot unprotected: end the run, not the fight.

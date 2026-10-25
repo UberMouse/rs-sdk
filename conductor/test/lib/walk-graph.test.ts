@@ -5,7 +5,8 @@ import { readConfigs } from '../../../wiki/world/sources/configs';
 import { at, Grid } from '../../../wiki/world/test/grid';
 import { CROSSING_TICKS } from '../../../wiki/world/distance';
 import { expectedTicks, statRandomChance } from '../../../wiki/world/roll';
-import type { Crossing, Gate, Roll, Transport, World } from '../../../wiki/world/types';
+import { ANY_CAME_FROM } from '../../../wiki/world/requirements';
+import type { Act, Crossing, Gate, Roll, Transport, World } from '../../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
 import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
 import {
@@ -292,8 +293,12 @@ describe('the essence mine portals: the way back to the wizard on record', () =>
         expect(landed(['other:came from wiz_b'])).toEqual([byB]);
     });
 
-    test('with none on record, the nearest exit (the walk goes on from wherever the portal lands)', () => {
-        expect(landed([])).toEqual([byB]);
+    test('in the mine with none on record, the nearest exit (the walk goes on from wherever the portal lands)', () => {
+        expect(landed([ANY_CAME_FROM])).toEqual([byB]);
+    });
+
+    test('with none on record and not known to be in the mine, no portal is taken', () => {
+        expect(landed([])).toBeUndefined();
     });
 });
 
@@ -507,5 +512,60 @@ describe('the Wilderness: a move into it is planned only when the way starts or 
 
     test('to a tile in the Wilderness: through the teleport', () => {
         expect(crossed(nearestWay(FROM, [at(0, 3225, 3530)], search(graph)))).toEqual([teleport.act]);
+    });
+});
+
+const way = (from: [number, number], to: [number, number], account: Account) =>
+    nearestWay(at(0, ...from), [at(0, ...to)], { account, connectors: CONNECTORS, maxHops: MAX_HOPS });
+
+describe('the Waterfall dungeon: the ways out, on the world index', () => {
+    const KEY = 'baxtorian_key_waterfall_quest';
+    const DOOR = 'baxtorian_door_2_waterfall_quest';
+    const keyed = (met: string[] = []): Account => ({
+        ...NO_ACCOUNT,
+        held: new Map([[KEY, 1]]),
+        met: new Set(met),
+    });
+    const CHALICE: [number, number] = [2603, 9912];
+    const PILLARS: [number, number] = [2563, 9912];
+    const FALADOR_WEST_BANK: [number, number] = [2946, 3369];
+    const USE_KEY: Act = { kind: 'item-on-loc', obj: KEY, loc: DOOR };
+
+    test('from the chalice room to the mainland: Open the Door, the key on the south Door, the entry Door, the Barrel', () => {
+        const out = way(CHALICE, FALADOR_WEST_BANK, keyed());
+        expect(crossed(out).map(a => (a.kind === 'loc-op' ? `${a.loc} op${a.op}` : a.kind))).toEqual([
+            `${DOOR} op1`,
+            'item-on-loc',
+            'baxtorian_door_waterfall_quest op1',
+            'barrel_waterfall_quest op1',
+        ]);
+        expect(crossed(out)[1]).toEqual(USE_KEY);
+    });
+
+    test('without the key there is no way: the Door south of the corridor takes it', () => {
+        expect(way(CHALICE, FALADOR_WEST_BANK, NO_ACCOUNT)).toBeUndefined();
+    });
+
+    test('the key on the Door (2566, 9901) leads to the chalice room only from stage 8, and the caller says so', () => {
+        expect(way(PILLARS, CHALICE, keyed())).toBeUndefined();
+        const through = way(PILLARS, [2604, 9901], keyed(['quest:waterfall>=8']));
+        expect(crossed(through)).toEqual([USE_KEY]);
+        // From the corridor side too (the script does not look at the side).
+        expect(crossed(way([2566, 9901], [2604, 9901], keyed(['quest:waterfall>=8'])))).toEqual([USE_KEY]);
+    });
+
+    test('the pillar room reaches the mainland through the chalice room once the amulet is placed', () => {
+        const out = way(PILLARS, FALADOR_WEST_BANK, keyed(['quest:waterfall>=8']));
+        expect(
+            crossed(out).map(a =>
+                a.kind === 'loc-op' ? `${a.loc} op${a.op}` : a.kind === 'item-on-loc' ? `${a.kind} ${a.loc}` : a.kind,
+            ),
+        ).toEqual([
+            `item-on-loc ${DOOR}`,
+            `${DOOR} op1`,
+            `item-on-loc ${DOOR}`,
+            'baxtorian_door_waterfall_quest op1',
+            'barrel_waterfall_quest op1',
+        ]);
     });
 });

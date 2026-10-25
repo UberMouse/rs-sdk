@@ -1,0 +1,75 @@
+{
+    "name": "chaos-altar-stage4",
+    "purpose": "Merlin's Crystal stage 4 beside the Chaos altar (Wilderness), 4 lobsters: tests interact Check mesbox as effect",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3239,
+                "z": 3604
+            },
+            "inventory": [
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                }
+            ],
+            "varps": {
+                "14": 4
+            }
+        }
+    },
+    "sha1": "5d19fca2718d9b190e2e9b4f22251eea80dcfa04",
+    "createdAt": "2026-10-24T01:27:06.936Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3239,
+            "z": 3604,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "14": 4,
+            "281": 1000
+        }
+    }
+}

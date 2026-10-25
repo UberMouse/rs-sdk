@@ -1,0 +1,389 @@
+{
+    "name": "dragon-slayer-ship-deck",
+    "purpose": "Dragon Slayer on the Lady Lumbridge deck (3047,3207 L1), map given to Ned (dragonquest 8), shield worn, Prayer 43, 25 swordfish.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3047,
+                "z": 3207,
+                "level": 1
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 70,
+                "Prayer": 43
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1725,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1113,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1059,
+                    "count": 1,
+                    "slot": 9
+                },
+                {
+                    "id": 1061,
+                    "count": 1,
+                    "slot": 10
+                },
+                {
+                    "id": 1540,
+                    "count": 1,
+                    "slot": 5
+                }
+            ],
+            "varps": {
+                "14": 7,
+                "29": 2,
+                "31": 100,
+                "32": 3,
+                "62": 6,
+                "80": 4,
+                "101": 32,
+                "144": 100,
+                "176": 8,
+                "177": 3,
+                "183": 1,
+                "184": 3,
+                "186": 1,
+                "187": 1,
+                "222": 30,
+                "273": 110
+            }
+        }
+    },
+    "sha1": "e3a7c471650f7c29489403a2e9292d60dfdb1326",
+    "createdAt": "2026-10-24T02:12:41.745Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3047,
+            "z": 3207,
+            "level": 1
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 70,
+            "Prayer": 43
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1725,
+                "name": "amulet_of_strength",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1113,
+                "name": "rune_chainbody",
+                "count": 1
+            },
+            {
+                "id": 1540,
+                "name": "antidragonbreathshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 1059,
+                "name": "leather_gloves",
+                "count": 1
+            },
+            {
+                "id": 1061,
+                "name": "leather_boots",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "14": 7,
+            "29": 2,
+            "31": 100,
+            "32": 3,
+            "62": 6,
+            "80": 4,
+            "101": 32,
+            "144": 100,
+            "176": 8,
+            "177": 3,
+            "183": 1,
+            "184": 3,
+            "186": 1,
+            "187": 1,
+            "222": 30,
+            "273": 110,
+            "281": 1000
+        }
+    }
+}

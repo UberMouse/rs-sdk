@@ -59,9 +59,15 @@ script walked the bot under attack and it died, 2026-10-11).
    Every wake re-reads your whole context, so a turn that only says you are waiting is pure
    cost: you are woken only by the run's completion, the one check-in, and a conductor message
    (the user, 2026-10-23: runners "waste a lot of tokens on pointless turns").
+   A change that only swaps a param (food, item name, a tile) is not a new draft: rerun it with no
+   check-in. Never `sleep 1` or re-poll the output file after a completion notification: the
+   notification is the result (retro #5: one runner spent ~28 wait-only turns and 9 `sleep; tail`
+   check-ins over 45 min).
 5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself). After every RESULT, write your state file before any other command, and act on a
-   RESULT `hint`.
+   RESULT `hint`. A RESULT `warnings` entry (e.g. `seenOutsideArea`) is advice to act on: widen the
+   area or move its centre to the tile it names (re-check the Wilderness margin), and rerun before trusting
+   the run's rate; `diagnostics.idleTicks` and `seenOutsideAreaTicks` give the idle share.
 6. Drive the bot only through `run-task.ts`. On a death, stop and report; on an attack, resolve it
    first (Debugging, below).
 
@@ -126,7 +132,10 @@ results and lessons in your next report as well, marked `(re-sent)`.
    `conductor/runs/<bot>/*Z-<task>.ndjson`; log names are `<stamp>Z-<task>.ndjson` and
    `<stamp>Z-plan-<name>.ndjson`, so the `Z-` anchor keeps a task lookup from matching a plan
    log). A log with no `"type":"result"` line (the run was killed hard) is an `error` result,
-   reason `no result: run cut off`, counted like any error.
+   reason `no result: run cut off`, counted like any error. A run killed by SIGTERM or cut off
+   while `free -g` shows more than 8 GiB available (the kill was memory pressure from elsewhere):
+   restart the same plan once, since plans resume from the world state; report only a second kill
+   in a row (retro #3: an imp run killed at 61 min waited a conductor turn for this).
 3. Journal it unless `grep -F '<its runId>' <journal>` finds a line (every journal line carries
    the runId, below). A result with an empty `runId` never ran (a usage or connection failure
    before a log opened): don't journal it (an empty `grep -F ''` matches every line) and don't
