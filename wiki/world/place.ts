@@ -385,8 +385,10 @@ function besideTiles(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: S
 
 /**
  * The walkable tiles a player uses an npc standing on `t` from, as besideCluster has them for a cluster of that one
- * tile that does not wander: one sharing an edge with it that steps onto it or passes the entity reach test, so not
- * a diagonal one nor one across a wall. A fishing spot's, on each tile it moves to (standTile, checks.ts useTiles).
+ * tile that does not wander: one round it that steps onto it (a diagonal too, when `t` is open) or passes the entity
+ * reach test (an edge-sharing tile, no wall between). Fishing spot tiles are water, so no step gets onto one and
+ * a spot's are the edge-sharing tiles not across a wall. A fishing spot's, on each tile it moves to (standTile,
+ * checks.ts useTiles).
  */
 export function besideSpot(t: Tile, collision: StepCollision): Tile[] {
     const box = { x1: t.x, z1: t.z, x2: t.x, z2: t.z };

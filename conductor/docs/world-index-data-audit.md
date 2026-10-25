@@ -180,7 +180,11 @@ Files: `W/build.ts` (or `W/test/*.real.test.ts`), `W/classify.ts` for 1.
 - Cluster per kind and level across leaf areas, then assign the site's area by its members' majority (E1).
 - Trees per subtype (species) (E2); per-kind radius with a walk-distance link instead of Chebyshev, so a wall or river
   splits and a town square joins (E3).
-- Stand from the walk component holding most members and a way to a bank (E4).
+- Stand from the walk component holding most members and a way to a bank (E4). Open item from Task 8: a fishing
+  stand nearest its spots' cover centre ignores the walk to the sinks, and over a wide cover that costs: Shilo
+  Village's (radius 28) moved from (2855, 2972), beside the spot tile (2855, 2973) and 9 run ticks from its bank, to
+  (2850, 2977) on the south shore, 26 ticks; the out-of-area enum tile's skew is not the cause (the centre (2846,
+  2973) or, without it, (2852, 2974) picks the same tile). 2.4 should break ties, or rank, on walk cost to the sinks.
 - `nearest` as a range over member stands (min and max ticks), the max on the page (E5).
 - Render `bbox` (or span) in the Sites tables and say in `W/README.md` and `.claude/agents/task-runner.md` to size a
   gather area from `bbox` plus margin (E6). This one has no dependency and can go first.

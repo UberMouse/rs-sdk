@@ -337,10 +337,12 @@ split.
 whose spots move takes only the tiles beside its spots' tiles (the spawns are among them), since a union would let
 bbox tiles at the spawn end win the `walked`/`free` order, and §2.3 of the design doc already says "beside its
 spots' tiles". "Beside" is one rule for the stand and check 4's use tiles (`place.ts` `besideSpot`, which
-`checks.ts` `useTiles` calls too): `besideCluster` of the one tile with no wander, walkable, so a tile sharing an
-edge that steps onto it or passes the entity reach test, not a diagonal one nor one across a wall. A spot that
-does not move keeps the grown bbox, as any npc site does. At the merged HEAD no enum feeds two sites (8bdc4b697's
-join merged the A2 enums), so check 5's real test pins 0 of those and the one pool roaming out (Shilo Village).
+`checks.ts` `useTiles` calls too): `besideCluster` of the one tile with no wander, walkable, so a tile that steps
+onto it or passes the entity reach test; spot tiles are water, so that is a tile sharing an edge with one, not a
+diagonal one nor one across a wall. A spot that does not move keeps the grown bbox, as any npc site does. At the
+merged HEAD no enum feeds two sites (8bdc4b697's join merged the A2 enums), so check 5's real test pins 0 of those
+and the one pool roaming out (Shilo Village). Nearest the cover's centre ignores the walk to the sinks (Shilo's
+stand went 9 to 26 ticks from its bank): an open item in the design doc's §2.4 stand bullet.
 
 ### Acceptance criteria
 
