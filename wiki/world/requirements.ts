@@ -242,7 +242,8 @@ export function dominates(a: readonly string[], b: readonly string[], quests?: Q
 
 /**
  * The ways to use a site: each set a walk gets there with (`walk`) joined with each set using it asks (`gated`),
- * the minimal ones. A site whose use asks nothing (`gated` the one empty set) keeps `walk` as it is.
+ * the minimal ones. A site whose use asks nothing (`gated` the one empty set) keeps `walk` as it is, so `walk` must
+ * be minimal already, as reach.ts Reach's setsAt and setsAny return it.
  */
 export function joinUse(
     walk: readonly (readonly string[])[],

@@ -119,6 +119,14 @@ describe('stand connectivity', () => {
         );
     });
 
+    test("audit E4's groups: 17 stands with members cut off, 37 with no bank or one asking more, none in both", () => {
+        const cut = stand.filter(f => f.detail.includes('members usable from the stand'));
+        const bank = stand.filter(f => /no bank from the stand|more than any member's way in/.test(f.detail));
+        expect([cut.length, bank.length]).toEqual([17, 37]);
+        expect(cut.filter(f => bank.includes(f))).toEqual([]);
+        expect(stand.filter(f => f.detail.includes('MAX_WANDER'))).toEqual([]);
+    });
+
     test('by kind: npc 37, rock 6, tree 9, pickpocket 2', () => {
         const kinds = new Map<string, number>();
         for (const f of stand) kinds.set(f.keys[0]!.kind, (kinds.get(f.keys[0]!.kind) ?? 0) + 1);

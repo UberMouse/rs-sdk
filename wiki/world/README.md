@@ -296,11 +296,13 @@ some walk reaches.
   features of a kind that close, but only within one leaf area, so they are one place clustered as two because an
   area edge cuts it. An entry names both sites.
 - **`stand`** (`STAND_ALLOW`): a site whose stand is cut off from it (audit E4). Its stand's free walk (steps, and
-  crossings that need nothing, within the site's roam, or its bbox when it has none, grown by twice the kind's
-  `SITE_RADIUS`) gets to a use tile of fewer than half its members: a loc's `reachTiles`, the walkable tiles beside
-  an npc's roam (`besideCluster`), and for a fishing spot those beside any tile of its subtype's `movement`. A member
-  no walk gets to a use tile of (a duck mid-pond, a banker behind the counter) is left out of the count, and a site
-  wandering more than 64 tiles is not walked (its bound would be the map). Or the kind takes its products to a bank
+  crossings that need nothing, within the rect holding the site's roam, or its bbox when it has none, every use
+  tile and the stand, grown by twice the kind's `SITE_RADIUS`) gets to a use tile of fewer than half its members: a
+  loc's `reachTiles`, the walkable tiles beside an npc's roam (`besideCluster`), and for a fishing spot those beside
+  any tile of its subtype's `movement`. The stand is a tile of the walk like any other: on an opened loc asking
+  something, the walk gets nothing. A member no walk gets to a use tile of (a duck mid-pond, a banker behind the
+  counter) is left out of the count. A site wandering more than 64 tiles (`MAX_WANDER`) is not walked, its bound
+  being the map, and is a finding of its own (`wanders N > MAX_WANDER 64, not walked`). Or the kind takes its products to a bank
   (`distance.ts` `SINKS`) and the stand has no nearest bank, or one whose way asks more (`requirements.ts`
   `dominates`) than every member's own way in: its use tiles' sets joined with what using the site asks, as the
   site's reach joins them. A stand in the wrong pocket waits on the stand rework (audit §2.4); a place the graph

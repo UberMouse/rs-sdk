@@ -364,6 +364,22 @@ describe('standConnectivity', () => {
         expect(run(shop().block(pool), [door([[KEY]])], [inShop])).toEqual([]);
     });
 
+    test("bounds the walk round every use tile: a spot's pool past the bbox grown by twice the radius", () => {
+        // Two cage spots move only to a pool at (3229, 3229), 21 tiles past the bbox and 23 from the shore stand,
+        // so beyond both grown by twice the radius: a walk to beside the pool is what uses them, 3 of 3.
+        const pool = at(0, 3229, 3229);
+        const cage = { ...spot(pool), subtype: 'cage' };
+        const far = {
+            ...site(SHORE, [[]], []),
+            features: [0, 2, 3],
+            movement: {
+                net: { tiles: WATER, centre: at(0, 3209, 3210), radius: 6 },
+                cage: { tiles: [pool], centre: pool, radius: 0 },
+            },
+        };
+        expect(run(new Grid().block(pool), [], [far], [...SPOTS.map(spot), cage, cage])).toEqual([]);
+    });
+
     test('names a kind that banks with no nearest bank', () =>
         expect(run(shop(), [], [site(SHORE, [[]], undefined)]).map(f => f.detail)).toEqual([
             'fishing-spot:shore:0 stand (3206, 3211): no bank from the stand',
@@ -427,10 +443,10 @@ describe('standConnectivity', () => {
         // Wandering 20, the walk's bound reaches the door; not wandering, it is 12 tiles round the spawn.
         expect(snail(20, [pen])).toEqual([]);
         expect(snail(0, [pen])).toEqual(['npc:pen:0 stand (3218, 3200): 0 of 1 members usable from the stand']);
-        // Behind a locked door it is found, unless it wanders past MAX_WANDER, where it is not walked at all.
+        // Behind a locked door it is found; wandering past MAX_WANDER it is not walked, and found as that.
         const locked = [{ ...pen, requires: [[KEY]] }];
         expect(snail(20, locked)).toEqual(['npc:pen:0 stand (3218, 3200): 0 of 1 members usable from the stand']);
-        expect(snail(70, locked)).toEqual([]);
+        expect(snail(70, locked)).toEqual(['npc:pen:0 stand (3218, 3200): wanders 70 > MAX_WANDER 64, not walked']);
     });
 
     test("an opened loc's tile asking something stops the walk, on the stand too", () => {

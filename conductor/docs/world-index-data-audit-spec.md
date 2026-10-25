@@ -269,10 +269,12 @@ A site with a stand and a non-empty `reach` (unreached sites are the unreached r
 a member; one used from nowhere (a duck mid-pond, a banker behind the counter) is not this check's to report, and a
 site with no members is skipped. The bank test compares by `requirements.ts` `dominates`: the bank's way must ask
 no more than one member's way in, that member's use tiles' sets joined with the use gates and in the came-from
-context the nearest sinks were searched under, as `build.ts` `addReach` joins them. The walk is bounded to the
-site's roam (its bbox when it has none) grown by `2 * SITE_RADIUS[kind]`, since an npc is used from up to its wander
-past its spawn; a site wandering more than 64 tiles (a map-wide `wanderrange`) is not walked, so it is never found
-cut off on a walk too short for it.
+context the nearest sinks were searched under, as `build.ts` `addReach` joins them. The walk is bounded to the rect
+holding the site's roam (its bbox when it has none), every use tile and the stand, grown by `2 * SITE_RADIUS[kind]`:
+an npc is used from up to its wander past its spawn, a fishing spot from beside tiles its spots move to, a
+connector (radius 0) from tiles beside its bbox. The stand is in the bound by construction and is walked like any
+tile: an opened loc on it asking something leaves the walk nothing. A site wandering more than 64 tiles
+(`MAX_WANDER`, a map-wide `wanderrange`) is not walked and is a finding of its own, allowlisted like any other.
 
 ### Acceptance criteria
 

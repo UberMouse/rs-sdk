@@ -253,8 +253,7 @@ function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: 
     const queue: number[] = [];
     let stop = false;
     const visit = (i: number): void => {
-        // The start is the walk's own whatever the bound (a connector's stand is beside its 0-radius bbox).
-        if (stop || i < 0 || seen.has(i) || (i !== start && !inside(i))) return;
+        if (stop || i < 0 || seen.has(i) || !inside(i)) return;
         if (openAlts.get(i)?.includes(0) === false) return;
         seen.add(i);
         queue.push(i);
@@ -275,26 +274,29 @@ function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: 
 /**
  * The most an npc site wanders for which the stand check walks to its members. An npc's use tiles lie up to its
  * wander past its spawn (useTiles), so the walk's bound grows with it; the sites tested today wander 63 at most,
- * and a config wandering map-wide (quest_fluffs.npc:57, wanderrange=30000) would make the walk the whole map.
+ * and a config wandering map-wide (quest_fluffs.npc:57, wanderrange=30000) would make the walk the whole map. A
+ * site wandering more is a finding of its own, not walked.
  */
 const MAX_WANDER = 64;
 
 /**
- * How many of a site's members (`tiles`, each member's use tiles) the free walk from tile `start` gets to a use tile
- * of, bounded to the site's roam (its bbox when it has none) grown by twice its kind's SITE_RADIUS, the way round
- * a wall. The walk stops once half are, so a count under half is exact. Undefined for a site wandering past
- * MAX_WANDER, whose bound would be most of the map: it is not walked, so it is never found cut off on a walk
- * capped short of its members.
+ * How many of a site's members (`tiles`, each member's use tiles) the free walk from the stand gets to a use tile
+ * of. The walk is bounded to the rect holding the site's roam (its bbox when it has none), every use tile and the
+ * stand, grown by twice its kind's SITE_RADIUS for the way round a wall, so every use tile and the start are
+ * inside it. The walk stops once half are usable, so a count under half is exact.
  */
-function usableFrom(
-    graph: ReachGraph,
-    site: StandWorld['sites'][number],
-    start: number,
-    tiles: readonly Tile[][],
-): number | undefined {
-    if ((site.wander ?? 0) > MAX_WANDER) return undefined;
+function usableFrom(graph: ReachGraph, site: StandWorld['sites'][number], tiles: readonly Tile[][]): number {
+    const stand = site.stand!;
     const grow = 2 * SITE_RADIUS[site.kind];
     const { x1, z1, x2, z2 } = site.roam ?? site.bbox;
+    const held = { x1, z1, x2, z2 };
+    for (const t of [stand, ...tiles.flat()]) {
+        held.x1 = Math.min(held.x1, t.x);
+        held.z1 = Math.min(held.z1, t.z);
+        held.x2 = Math.max(held.x2, t.x);
+        held.z2 = Math.max(held.z2, t.z);
+    }
+    const bound = { x1: held.x1 - grow, z1: held.z1 - grow, x2: held.x2 + grow, z2: held.z2 + grow };
     // The members each tile is a use tile of.
     const membersAt = new Map<number, number[]>();
     tiles.forEach((ts, m) => {
@@ -304,7 +306,7 @@ function usableFrom(
         }
     });
     const usable = new Set<number>();
-    freeComponent(graph, start, { x1: x1 - grow, z1: z1 - grow, x2: x2 + grow, z2: z2 + grow }, i => {
+    freeComponent(graph, graph.index.of(stand.level, stand.x, stand.z), bound, i => {
         for (const m of membersAt.get(i) ?? []) usable.add(m);
         return usable.size * 2 >= tiles.length;
     });
@@ -313,14 +315,14 @@ function usableFrom(
 
 /**
  * Check 4, stand connectivity (audit E4): a site with a stand some set reaches whose stand's free walk component
- * (freeComponent, bounded to the site's roam grown by twice the kind's SITE_RADIUS: usableFrom) holds a use tile
- * (useTiles) of fewer
- * than half its members, or, for a kind that takes its products to a bank (distance.ts SINKS), whose stand has no
- * nearest bank or one whose way asks more than any member's own way in does: place.ts standTile takes the
+ * (freeComponent, bounded round the roam, the use tiles and the stand: usableFrom) holds a use tile (useTiles) of
+ * fewer than half its members, or, for a kind that takes its products to a bank (distance.ts SINKS), whose stand
+ * has no nearest bank or one whose way asks more than any member's own way in does: place.ts standTile takes the
  * walkable candidate nearest the centre, which can be a pocket the members are not in. A member is a feature with
  * a use tile some walk gets to: one used from nowhere (a duck mid-pond, a banker behind the counter) is no stand's
  * to reach. A member's way in is the sets of its use tiles joined with what using the site asks, in the context its
- * nearest sinks were searched under, as the site's reach is the stand's (build.ts addReach). One finding per site.
+ * nearest sinks were searched under, as the site's reach is the stand's (build.ts addReach). A site wandering past
+ * MAX_WANDER is found as that, not walked. One finding per site.
  */
 export function standConnectivity(world: StandWorld, input: StandInput): Finding[] {
     const { graph, collision, reach } = input;
@@ -343,9 +345,12 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             const tiles = uses[n]!;
             if (start < 0 || !tiles.length) return [];
             const wrong: string[] = [];
-            const usable = usableFrom(graph, site, start, tiles);
-            if (usable !== undefined && usable * 2 < tiles.length)
-                wrong.push(`${usable} of ${tiles.length} members usable from the stand`);
+            const wander = site.wander ?? 0;
+            if (wander > MAX_WANDER) wrong.push(`wanders ${wander} > MAX_WANDER ${MAX_WANDER}, not walked`);
+            else {
+                const usable = usableFrom(graph, site, tiles);
+                if (usable * 2 < tiles.length) wrong.push(`${usable} of ${tiles.length} members usable from the stand`);
+            }
             if (SINKS[site.kind]?.includes('bank')) {
                 const bank = site.nearest?.bank;
                 if (!bank) wrong.push('no bank from the stand');
