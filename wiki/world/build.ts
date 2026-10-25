@@ -23,18 +23,20 @@ import { itemPages } from '../generate-items';
 import { npcPages } from '../generate-npcs';
 import { shopPages } from '../generate-shops';
 import { areaResolver } from './area-resolve';
-import { NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW } from './allow';
+import { NEAR_MISS_ALLOW, SPLIT_ALLOW, STAND_ALLOW, UNCLAIMED_ALLOW } from './allow';
 import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import {
     applyAllow,
+    applyConfigAllow,
     NEAR_MISS_GAP,
     nearMissAreas,
     splitResources,
     standConnectivity,
+    unclaimedTriggers,
     type CheckId,
     type CheckResult,
 } from './checks';
-import { classifier } from './classify';
+import { classification } from './classify';
 import { contentHash } from './content-hash';
 import { joinUse, questFacts, type QuestFacts } from './requirements';
 import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
@@ -783,7 +785,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
     const callables = scripts.flatMap(([f, text]) => parseCallables(f, text));
     const dbrows = readDbrows();
     const courses = readCourses(triggers, callables);
-    const classify = classifier({
+    const classified = classification({
         locConfigs,
         npcConfigs,
         dbrows,
@@ -791,6 +793,7 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         callables,
         courses,
     });
+    const { classify } = classified;
     const courseStep = (f: Pick<Feature, 'subtype' | 'config' | 'tile'>) => {
         const course = courses.find(c => c.course === f.subtype);
         return course && stepAt(course, f.config, first(locConfigs.get(f.config), 'category'), f.tile);
@@ -1087,7 +1090,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
     );
     const checkWorld = { sites, features, areas };
+    // The configs the maps place, unpacked ids left out (they are in `unpacked`).
+    const placedConfigs = {
+        loc: new Set(map.locs.flatMap(l => packs.loc.name.get(l.id) ?? [])),
+        npc: new Set(map.npcs.flatMap(n => packs.npc.name.get(n.id) ?? [])),
+    };
+    const configs = { loc: locConfigs, npc: npcConfigs };
     const checks: Record<CheckId, CheckResult> = {
+        unclaimed: applyConfigAllow(
+            unclaimedTriggers({ placed: placedConfigs, configs, classification: classified }),
+            UNCLAIMED_ALLOW,
+            placedConfigs,
+        ),
         'near-miss': applyAllow(nearMissAreas(checkWorld, COVERED), NEAR_MISS_ALLOW, checkWorld),
         split: applyAllow(splitResources(checkWorld, COVERED), SPLIT_ALLOW, checkWorld),
         stand: applyAllow(
@@ -1492,8 +1506,16 @@ export function formatReport(report: BuildReport): string[] {
     return lines;
 }
 
-/** What each check finds, as its ERROR lines name it, and the allow.ts table it is curated in. */
-const CHECKS: Record<CheckId, { finds: string; table: string }> = {
+/**
+ * What each check finds, as its ERROR lines name it, the allow.ts table it is curated in, and what makes an entry
+ * of it invalid (default: a site key no site or several sites hold).
+ */
+const CHECKS: Record<CheckId, { finds: string; table: string; invalid?: string }> = {
+    unclaimed: {
+        finds: 'placed configs with a gather or processing trigger no rule claimed',
+        table: 'UNCLAIMED_ALLOW',
+        invalid: 'naming no config, or a config no map places',
+    },
     'near-miss': {
         finds: `sites 1-${NEAR_MISS_GAP} tiles outside a leaf area not their own`,
         table: 'NEAR_MISS_ALLOW',
@@ -1508,18 +1530,19 @@ const CHECKS: Record<CheckId, { finds: string; table: string }> = {
     },
 };
 
-/** Each check's count found and allowed, then its findings left, invalid entries and stale ones: all errors. */
+/**
+ * Each check's count found and allowed, with how many each reason allows when the check counts them, then its
+ * findings left, invalid entries and stale ones: all errors.
+ */
 export function formatChecks(checks: BuildReport['checks']): string[] {
     return (Object.keys(CHECKS) as CheckId[]).flatMap(id => {
         const c = checks[id];
-        const { finds, table } = CHECKS[id];
+        const { finds, table, invalid = 'with a site key no site or several sites hold' } = CHECKS[id];
         return [
             `checks: ${id}: ${c.left.length + c.allowed} ${finds}, ${c.allowed} allowed by allow.ts ${table}`,
+            ...(c.reasons ?? []).map(([reason, n]) => `  ${n} ${reason}`),
             ...list(`ERROR ${id}: ${c.left.length} ${finds} that allow.ts ${table} does not allow:`, c.left),
-            ...list(
-                `ERROR ${id}: ${c.invalid.length} allow.ts ${table} entries with a site key no site or several sites hold (a typo?):`,
-                c.invalid,
-            ),
+            ...list(`ERROR ${id}: ${c.invalid.length} allow.ts ${table} entries ${invalid} (a typo?):`, c.invalid),
             ...list(
                 `ERROR ${id}: ${c.stale.length} allow.ts ${table} entries no finding matches (fixed now, or gone):`,
                 c.stale,

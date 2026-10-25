@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { classifier, membersCode, type Classified } from '../classify';
+import { classification, classifier, membersCode, type Classified } from '../classify';
 import type { Config } from '../sources/configs';
 import type { CourseDef } from '../sources/courses';
 import type { Callable, Trigger } from '../sources/triggers';
@@ -583,4 +583,42 @@ describe('flax and agility courses', () => {
         expect(() => classify('loc', 'log', {}, { courses: [course('gnome', 'log'), course('wild', 'log')] })).toThrow(
             'loc:log moves on the laps of gnome, wild',
         ));
+});
+
+describe('unclaimed triggers', () => {
+    const triggers = [
+        trig('npc/scripts/cow.rs2', 'npc', 'cow', '\nstat_advance(attack, 40);', false, '2'),
+        trig('npc/scripts/cow_milking.rs2', 'npc', 'cow', '\ninv_add(inv, bucket_milk, 1);', false, 'u'),
+        trig('a.rs2', 'loc', 'closed', '\n~open_chest(open);', false, '1'),
+        trig('a.rs2', 'loc', 'closed', '\nmes("Locked.");', false, '3'),
+        trig('a.rs2', 'loc', 'open', '\n@openbank;', false, '2'),
+    ];
+    const run = classification({
+        locConfigs: new Map<string, Config>([
+            ['closed', { name: ['Closed chest'] }],
+            ['open', { name: ['Open chest'] }],
+            ['yewtree', { name: ['Yew'] }],
+        ]),
+        npcConfigs: new Map<string, Config>([['cow', { name: ['Cow'], op2: ['Attack'], param: ['attackbonus,1'] }]]),
+        dbrows: [{ row: 'yew_tree_table', table: 'woodcutting_trees', data: { tree: [['yewtree']] } }],
+        triggers,
+        callables: [label('~open_chest', '(loc $other_chest)\nloc_change($other_chest, 300);')],
+    });
+
+    test("an attackable npc's Attack op is its kind's, its use-item op no rule's", () => {
+        expect(run.classify('npc', 'cow').map(k => k.kind)).toEqual(['npc']);
+        expect(run.unclaimed('npc', 'cow').map(t => t.op)).toEqual(['u']);
+    });
+
+    test('the op that changes a loc into a kind is claimed, its other ops not', () =>
+        expect(run.unclaimed('loc', 'closed').map(t => t.op)).toEqual(['3']));
+
+    test('a config a rule matched by data alone has no unclaimed trigger', () =>
+        expect(run.unclaimed('loc', 'yewtree')).toEqual([]));
+
+    test('reach gives a body and the bodies it calls, as code', () =>
+        expect(run.reach('\n~open_chest(open); // not ~this')).toEqual([
+            '\n~open_chest(open); ',
+            '(loc open)\nloc_change(open, 300);',
+        ]));
 });

@@ -263,18 +263,32 @@ function clash(a: string[], b: string[]): string | undefined {
     return a.find(op => b.includes(op)) ?? (a.includes(ANY_OP) ? b[0] : a[0]);
 }
 
-// The fallback: an attackable npc no other rule claimed, so it never counts as a second match.
-const npc = (on: 'loc' | 'npc', config: string, cfg: Config): Match | null =>
-    on === 'npc' && OPS.some(op => first(cfg, op) === 'Attack') && hasCombatStats(cfg)
-        ? { kind: 'npc', subtype: config, ops: [ANY_OP] }
+// The fallback: an attackable npc no other rule claimed, so it never counts as a second match. It is used
+// through its Attack ops only: a cow's use-item Milk (npc/scripts/cow_milking.rs2) is no part of it.
+const npc = (on: 'loc' | 'npc', config: string, cfg: Config): Match | null => {
+    const attack = OPS.filter(op => first(cfg, op) === 'Attack');
+    return on === 'npc' && attack.length && hasCombatStats(cfg)
+        ? { kind: 'npc', subtype: config, ops: attack.map(op => op.slice(2)) }
         : null;
+};
 
-/**
- * Classifies a config into one kind per use. A config has several kinds only when each comes from an
- * op of its own (`duel_fadli`: Bank on op3, Buy on op4); otherwise two matches throw, since that
- * means a rule is too broad.
- */
-export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: string) => readonly Classified[] {
+export interface Classification {
+    /**
+     * A config's kinds, one per use. A config has several kinds only when each comes from an op of its own
+     * (`duel_fadli`: Bank on op3, Buy on op4); otherwise two matches throw, since that means a rule is too broad.
+     */
+    classify: (on: 'loc' | 'npc', config: string) => readonly Classified[];
+    /**
+     * The triggers on a config (by its name or category) whose op slot no rule's match on it, or on a config it
+     * changes into, was made through: none when a rule matched by data alone (a tree with no trigger).
+     */
+    unclaimed: (on: 'loc' | 'npc', config: string) => Trigger[];
+    /** A trigger body and the bodies of the labels and procs it calls, transitively, as code (membersCode). */
+    reach: (body: string) => string[];
+}
+
+/** Classifies the configs, and says which of their triggers no rule claimed (the unclaimed-trigger check's input). */
+export function classification(input: ClassifyInput): Classification {
     const dbrowIndex = (table: string, column: string): Map<string, DbRow> => {
         const out = new Map<string, DbRow>();
         for (const row of input.dbrows.filter(r => r.table === table)) {
@@ -522,8 +536,11 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
             return out;
         });
 
-    const cache = new Map<string, readonly Classified[]>();
-    return (on, config) => {
+    const cache = new Map<string, { out: readonly Classified[]; ops: ReadonlySet<string> }>();
+    const classified = (
+        on: 'loc' | 'npc',
+        config: string,
+    ): { out: readonly Classified[]; ops: ReadonlySet<string> } => {
         const key = `${on}:${config}`;
         const cached = cache.get(key);
         if (cached) return cached;
@@ -563,7 +580,23 @@ export function classifier(input: ClassifyInput): (on: 'loc' | 'npc', config: st
         // Frozen: later calls get this same array, so a caller must not be able to change it.
         out.forEach(Object.freeze);
         Object.freeze(out);
-        cache.set(key, out);
-        return out;
+        const result = {
+            out,
+            ops: new Set([...hits.map(([, h]) => h), ...(fallback ? [fallback] : [])].flatMap(h => h.ops)),
+        };
+        cache.set(key, result);
+        return result;
+    };
+    return {
+        classify: (on, config) => classified(on, config).out,
+        unclaimed: (on, config) => {
+            const { ops } = classified(on, config);
+            if (ops.has(ANY_OP)) return [];
+            return triggersOn(on, config, configsOf(on).get(config) ?? {}).filter(t => !ops.has(t.op));
+        },
+        reach: raw => reach(raw).map(r => r.body),
     };
 }
+
+/** Classifies a config into one kind per use (classification). */
+export const classifier = (input: ClassifyInput): Classification['classify'] => classification(input).classify;

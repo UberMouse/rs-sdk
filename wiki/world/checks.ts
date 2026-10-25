@@ -1,16 +1,20 @@
 // Build checks for the classes of wrong data the world index audit found (conductor/docs/world-index-data-audit.md
-// §2.2): each check returns findings that name their sites by SiteKey, a curated allowlist (allow.ts) leaves out the
-// ones known and explained, and build.ts fails on what is left, and on an allowlist entry naming no site (invalid) or
-// matching no finding (stale), as it does for EXPECTED_UNREACHED.
+// §2.2): each check returns findings that name their sites by SiteKey (check 1 its configs, by ConfigKey), a curated
+// allowlist (allow.ts) leaves out the ones known and explained, and build.ts fails on what is left, and on an
+// allowlist entry naming no site (invalid) or matching no finding (stale), as it does for EXPECTED_UNREACHED.
+import type { Classification } from './classify';
 import { SINKS } from './distance';
 import { besideCluster, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
 import { coord, STEPS, type Reach, type ReachGraph } from './reach';
 import { dominates, joinUse } from './requirements';
 import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
+import { first, type Config } from './sources/configs';
+import type { Trigger } from './sources/triggers';
 import type { Area, Feature, FeatureKind, Rect, Site, Tile } from './types';
+import { cmp } from './util';
 
 /** The checks, by the id their report lines carry. */
-export type CheckId = 'near-miss' | 'split' | 'stand';
+export type CheckId = 'unclaimed' | 'near-miss' | 'split' | 'stand';
 
 /** What one check found: the site or sites it is about, by id and by key, and what is wrong with them. */
 export interface Finding {
@@ -38,6 +42,8 @@ export interface CheckResult {
     invalid: string[];
     /** Valid entries no finding matches (fixed now, or gone), or that duplicate an earlier one's match: errors. */
     stale: string[];
+    /** Check 1's: how many findings each reason allows, by reason. */
+    reasons?: [reason: string, allowed: number][];
 }
 
 /** What a check reads: the placed sites, the features they index and the curated areas. */
@@ -152,41 +158,59 @@ export function splitResources(world: CheckWorld, covered: ReadonlySet<FeatureKi
  * entry matching a finding an earlier entry matches is stale too, as a duplicate of that one.
  */
 export function applyAllow(findings: readonly Finding[], allow: readonly Allowed[], world: SiteKeyWorld): CheckResult {
-    const named = new Map<Allowed, string>();
-    const invalid: string[] = [];
-    for (const e of allow) {
-        const { ids, invalid: bad } = resolveSiteKeys(e.keys, world);
-        if (bad.length) invalid.push(`${keysName(e.keys)} (${e.source}): ${bad.join('; ')}`);
-        else
-            named.set(
-                e,
-                e.keys
-                    .map(k => ids.get(k)!)
-                    .sort()
-                    .join(' '),
-            );
-    }
-    const name = (e: Allowed): string => `${keysName(e.keys)} (${e.source})`;
-    const used = new Set<Allowed>();
-    const dupes: string[] = [];
+    return allowBy(
+        findings.map(f => ({ match: [...f.ids].sort().join(' '), name: `${keysName(f.keys)}: ${f.detail}` })),
+        allow.map(e => {
+            const { ids, invalid: bad } = resolveSiteKeys(e.keys, world);
+            const name = `${keysName(e.keys)} (${e.source})`;
+            if (bad.length) return { entry: e, name, invalid: `${name}: ${bad.join('; ')}` };
+            const match = e.keys
+                .map(k => ids.get(k)!)
+                .sort()
+                .join(' ');
+            return { entry: e, name, matches: [match] };
+        }),
+    ).result;
+}
+
+/** An allow entry resolved: what it is called in errors and the findings it matches, by their `match`, or why it is invalid. */
+type Resolved<E> = { entry: E; name: string } & ({ matches: string[]; invalid?: never } | { invalid: string });
+
+/**
+ * The findings (each by the `match` an entry names it by) less those an entry matches, with the entry that allowed
+ * each finding allowed (`by`, in finding order); the entries no finding matches, or only in part (`<name>: <matches>
+ * match no finding`), stale; and an entry matching a finding an earlier entry matches stale too, as a duplicate of
+ * that one.
+ */
+function allowBy<E>(
+    findings: readonly { match: string; name: string }[],
+    allow: readonly Resolved<E>[],
+): { result: CheckResult; by: E[] } {
+    const invalid = allow.flatMap(e => (e.invalid === undefined ? [] : [e.invalid]));
+    const valid = allow.filter(e => e.invalid === undefined) as (Resolved<E> & { matches: string[] })[];
+    const used = new Map(valid.map(e => [e, new Set<string>()]));
+    const dupes = new Set<string>();
     const left: string[] = [];
-    let allowed = 0;
+    const by: E[] = [];
     for (const f of findings) {
-        const ids = [...f.ids].sort().join(' ');
-        const [first, ...rest] = [...named].filter(([, n]) => n === ids).map(([e]) => e);
-        if (!first) {
-            left.push(`${keysName(f.keys)}: ${f.detail}`);
+        const [earliest, ...rest] = valid.filter(e => e.matches.includes(f.match));
+        if (!earliest) {
+            left.push(f.name);
             continue;
         }
-        allowed++;
-        used.add(first);
+        by.push(earliest.entry);
+        used.get(earliest)!.add(f.match);
         for (const e of rest) {
-            used.add(e);
-            dupes.push(`${name(e)}: a duplicate of ${name(first)}`);
+            used.get(e)!.add(f.match);
+            dupes.add(`${e.name}: a duplicate of ${earliest.name}`);
         }
     }
-    const unused = [...named.keys()].filter(e => !used.has(e)).map(name);
-    return { left, allowed, invalid, stale: [...unused, ...dupes] };
+    const unused = valid.flatMap(e => {
+        const idle = e.matches.filter(m => !used.get(e)!.has(m));
+        if (!idle.length) return [];
+        return [idle.length === e.matches.length ? e.name : `${e.name}: ${idle.join(', ')} match no finding`];
+    });
+    return { result: { left, allowed: by.length, invalid, stale: [...unused, ...dupes] }, by };
 }
 
 /** What the stand check reads: the placed sites with their stands, reach, nearest sinks and fishing movement. */
@@ -365,4 +389,125 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             ];
         }),
     );
+}
+
+/** A placed loc or npc config, as `loc <config>` or `npc <config>`: what check 1's findings and entries name. */
+export type ConfigKey = `${'loc' | 'npc'} ${string}`;
+
+/** A check 1 finding: a placed config, and its unclaimed triggers with their shapes. */
+export interface ConfigFinding {
+    config: ConfigKey;
+    detail: string;
+}
+
+/** Check 1 findings left for one reason: one config, or a group sharing the reason, with a trigger line of one. */
+export interface ConfigAllowed {
+    configs: ConfigKey[];
+    reason: string;
+    /** A trigger's script line, `file:line` under server/content/scripts. */
+    source: string;
+}
+
+/** What check 1 reads: the placed configs, their configs (for the op labels) and classify.ts's classification. */
+export interface UnclaimedInput {
+    placed: { loc: ReadonlySet<string>; npc: ReadonlySet<string> };
+    configs: { loc: ReadonlyMap<string, Config>; npc: ReadonlyMap<string, Config> };
+    classification: Pick<Classification, 'unclaimed' | 'reach'>;
+}
+
+/** Whether one body of `bodies` matches every pattern. */
+const inOne =
+    (...res: RegExp[]) =>
+    (bodies: readonly string[]): boolean =>
+        bodies.some(b => res.every(re => re.test(b)));
+
+const INV_ADD = /\binv_add\(/;
+const INV_DEL = /\binv_del\(/;
+const DELAY = /\b(p_delay|anim)\(/;
+// A loc_change or loc_del depletes the loc, as a tree stump or a picked crop; an npc_changetype the npc (a sheared
+// sheep, general_use/scripts/shear_sheep.rs2).
+const DEPLETE = /\b(loc_change|loc_del|npc_changetype\w*)\(/;
+// p_oploc and p_opnpc run the op again (skill_mining/scripts/mining.rs2 @mining_continue): a loop.
+const AGAIN = /\bp_op(loc|npc)\(/;
+
+/**
+ * The shapes of a use worth a feature, over a trigger's reach (classify.ts Classification.reach): `xp`, a
+ * stat_advance of a stat but agility, whose xp an obstacle gives on the way across (shortcuts, quest obstacles,
+ * skill_agility/scripts/shortcuts.rs2), which is no use of the loc; `shop`, ~openshop; `gather`, an inv_add in a body
+ * that depletes the loc or npc (DEPLETE) or animates or waits (p_delay, anim) while a body runs the op again (AGAIN);
+ * `pickup`, ~pickup_loc_floor (the crops, general_use/scripts/pickables.rs2); `use`, an item used on it that a body
+ * takes (inv_del) while it gives one (inv_add: a bucket filled at a well, general_use/scripts/water_sources.rs2) or
+ * animates or waits (grain into a mill hopper, general_use/scripts/windmills.rs2 @hopper_fill). A bare inv_add is
+ * no shape: dialogue handing out a quest item is one.
+ */
+const SHAPES: readonly (readonly [string, (bodies: readonly string[], t: Trigger) => boolean])[] = [
+    ['xp', inOne(/\bstat_advance\((?!\s*agility\b)/)],
+    ['shop', inOne(/~openshop(\(|_activenpc\b)/)],
+    ['gather', b => inOne(INV_ADD, DEPLETE)(b) || (inOne(INV_ADD, DELAY)(b) && inOne(AGAIN)(b))],
+    ['pickup', inOne(/~pickup_loc_floor\b/)],
+    ['use', (b, t) => t.op === 'u' && (inOne(INV_DEL, INV_ADD)(b) || inOne(INV_DEL, DELAY)(b))],
+];
+
+/** Op labels whose triggers are dialogue or combat, not a use: a Talk-to's quest reward, a monster's Attack. */
+const NOT_USES: ReadonlySet<string> = new Set(['Talk-to', 'Attack']);
+
+const header = (t: Trigger): string => `[${t.kind}${t.on}${t.op},${t.category ? '_' : ''}${t.target}]`;
+
+/**
+ * Check 1, unclaimed triggers (audit B1, B2, C): a placed config with an op trigger (op, ap, use-item) no rule made a
+ * feature through (classify.ts Classification.unclaimed) whose reach has a shape (SHAPES), on an op not labelled
+ * Talk-to or Attack (NOT_USES). One finding per config, naming each such trigger by its line, header and shapes.
+ */
+export function unclaimedTriggers(input: UnclaimedInput): ConfigFinding[] {
+    const { placed, configs, classification } = input;
+    return (['loc', 'npc'] as const).flatMap(on =>
+        [...placed[on]].sort().flatMap(config => {
+            const cfg = configs[on].get(config) ?? {};
+            const hits = classification.unclaimed(on, config).flatMap(t => {
+                if (t.op !== 'u' && NOT_USES.has(first(cfg, `op${t.op}`) ?? '')) return [];
+                const bodies = classification.reach(t.body);
+                const shapes = SHAPES.filter(([, has]) => has(bodies, t)).map(([n]) => n);
+                return shapes.length ? [`${t.file}:${t.line} ${header(t)} ${shapes.join(', ')}`] : [];
+            });
+            return hits.length ? [{ config: `${on} ${config}` as const, detail: hits.join('; ') }] : [];
+        }),
+    );
+}
+
+/** The most configs an entry's name lists before it counts the rest. */
+const NAMED_AT = 3;
+
+const configsName = (keys: readonly ConfigKey[]): string =>
+    keys.length > NAMED_AT
+        ? `${keys.slice(0, NAMED_AT).join(', ')} and ${keys.length - NAMED_AT} more`
+        : keys.join(', ');
+
+/**
+ * `findings` less those an `allow` entry names, as applyAllow does: an entry naming nothing, or a config not in
+ * `placed`, is invalid, and one naming a config no finding is about is stale. `reasons`: how many findings each
+ * reason allows.
+ */
+export function applyConfigAllow(
+    findings: readonly ConfigFinding[],
+    allow: readonly ConfigAllowed[],
+    placed: UnclaimedInput['placed'],
+): CheckResult {
+    const isPlaced = (k: ConfigKey): boolean => {
+        const at = k.indexOf(' ');
+        const on = k.slice(0, at);
+        return (on === 'loc' || on === 'npc') && placed[on].has(k.slice(at + 1));
+    };
+    const { result, by } = allowBy(
+        findings.map(f => ({ match: f.config, name: `${f.config}: ${f.detail}` })),
+        allow.map(e => {
+            const name = `${configsName(e.configs)} (${e.source})`;
+            const bad = e.configs.filter(k => !isPlaced(k));
+            if (!e.configs.length) return { entry: e, name, invalid: `${name}: names no config` };
+            if (bad.length) return { entry: e, name, invalid: `${name}: ${bad.join(', ')} not placed` };
+            return { entry: e, name, matches: [...e.configs] };
+        }),
+    );
+    const reasons = new Map<string, number>();
+    for (const e of by) reasons.set(e.reason, (reasons.get(e.reason) ?? 0) + 1);
+    return { ...result, reasons: [...reasons].sort(([a], [b]) => cmp(a, b)) };
 }

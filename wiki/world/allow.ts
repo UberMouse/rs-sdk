@@ -1,9 +1,10 @@
 // The allowlists of the build checks (checks.ts): findings known and explained, each with a reason saying what is
 // wrong and what fixes it, and a source, the map line of a feature the finding names (`maps/mX_Z.jm2:line` under
 // server/content) or the script of the op that settles it. build.ts fails on a finding no entry allows, on an entry
-// whose key names no one site (invalid) and on one no finding matches (stale: fixed now, or gone) or that repeats an
-// earlier entry's match, so an entry goes when the refit it waits on lands.
-import type { Allowed } from './checks';
+// whose key names no one site (invalid; check 1's, one naming a config no map places) and on one no finding matches
+// (stale: fixed now, or gone) or that repeats an earlier entry's match, so an entry goes when the refit it waits on
+// lands.
+import type { Allowed, ConfigAllowed, ConfigKey } from './checks';
 import { siteAt, type SiteKey } from './site-key';
 
 /** Where the area refits are planned: a reason ending "<this> refits the rect" waits on that work. */
@@ -450,4 +451,353 @@ export const STAND_ALLOW: readonly Allowed[] = [
             'distance.ts takes no way asking more than the way in, so the stand has no nearest bank; nothing a stand fixes',
         source: 'quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:290',
     },
+];
+
+/** Configs sharing a reason, with the line of one's trigger. */
+const configs = (reason: string, source: string, keys: readonly ConfigKey[]): ConfigAllowed => ({
+    configs: [...keys],
+    reason,
+    source,
+});
+
+// Check 1's reasons. One naming a kind ("<kind>: 2.6") is a use the index should have: plan 2.6 of
+// conductor/docs/world-index-data-audit.md adds the kind or fixes the rule, and the entry goes. The others say why
+// the config is no feature.
+const APE_STALL = 'ape atoll stall: 2.6, the stall rule reads only skill_thieving/scripts/stalls/ (audit B1)';
+const ROCK_CAKE_STALL = 'rock-cake stall: 2.6, a stall outside skill_thieving/scripts/stalls/, as audit B1';
+const WELL = 'well: 2.6, STATIONS maps category watersource but not well (audit B2)';
+const SAND_PIT = 'sand pit: 2.6, a sand pit without category sand_pit, as audit B2';
+const CROP = 'crop: 2.6, the pickable kind (audit C1)';
+const PICKABLE = 'pickable: 2.6, the pickable kind (audit C2)';
+const MILL = 'mill: 2.6, hopper and flour bin (audit C4)';
+const LIVESTOCK = 'livestock: 2.6, shearing and milking (audit C5)';
+const KEY_CHEST = 'key chest: no kind, and 2.6 plans none: each opening takes a key';
+const DYES = 'dye maker: no kind, and 2.6 plans none';
+const REPAIRS = 'repairs: no kind, and 2.6 plans none';
+const DUMMY = 'combat dummy: no kind, and 2.6 plans none';
+const MINIGAME = 'minigame: played by its own rules, no feature';
+const CLUE_STEP = 'treasure trail step: a clue names the loc, no feature';
+const TUTORIAL = 'tutorial island: bots skip it, no feature';
+const EMPTY_ROCK = 'empty rock: param mining_rock_empty, no ore, no feature';
+const CROSSING = 'door: a way through, which the gates read, not a feature';
+const QUEST = 'quest one-off: no feature';
+
+/**
+ * Check 1: placed configs whose triggers no rule claimed have a gather or processing shape. The entries naming a
+ * kind are plan 2.6's to-do list.
+ */
+export const UNCLAIMED_ALLOW: readonly ConfigAllowed[] = [
+    configs(APE_STALL, 'quests/quest_mm/scripts/aa_market.rs2:1', [
+        'loc mm_stall_crafting',
+        'loc mm_stall_food',
+        'loc mm_stall_general',
+        'loc mm_stall_magic',
+        'loc mm_stall_scimitar',
+    ]),
+    configs(ROCK_CAKE_STALL, 'areas/area_yanille/scripts/ogre_trader.rs2:21', ['loc rockcounter_withcakes']),
+    configs(WELL, 'general_use/scripts/water_sources.rs2:69', ['loc desertwell', 'loc well']),
+    configs(SAND_PIT, 'areas/area_shilo/scripts/shilo_sandpit.rs2:4', ['loc sand1']),
+    configs(CROP, 'general_use/scripts/pickables.rs2:43', ['loc cabbage', 'loc onion', 'loc potato', 'loc wheat']),
+    configs(PICKABLE, 'areas/area_brimhaven/scripts/pineapple_plants.rs2:1', ['loc pineapple_plant']),
+    configs(PICKABLE, 'areas/area_desert/scripts/kharidian_cactus.rs2:1', ['loc desert_cactus_full']),
+    configs(PICKABLE, 'areas/area_karamja/scripts/banana_tree.rs2:1', ['loc bananatreefull', 'loc mm_bananatreefull']),
+    configs(PICKABLE, 'areas/area_miscellania/scripts/weed_herbs.rs2:10', [
+        'loc misc_heather_dark',
+        'loc misc_heather_light',
+        'loc misc_heather_normal',
+    ]),
+    configs(MILL, 'general_use/scripts/windmills.rs2:94', [
+        'loc hopper_ardougne',
+        'loc hopper_lumbridge',
+        'loc hopper_varrock',
+        'loc hopper_zanaris',
+        'loc millbase',
+    ]),
+    configs(LIVESTOCK, 'general_use/scripts/shear_sheep.rs2:5', ['npc sheepunsheered']),
+    configs(LIVESTOCK, 'npc/scripts/cow_milking.rs2:1', ['npc cow']),
+    configs(KEY_CHEST, 'areas/area_taverly/scripts/crystal_chest.rs2:6', ['loc crystal_chestclosed']),
+    configs(KEY_CHEST, 'areas/area_wilderness/scripts/lava_maze.rs2:5', ['loc muddy_chestclosed']),
+    configs(KEY_CHEST, 'areas/area_yanille/scripts/agility_dungeon.rs2:101', ['loc shuttwistedchest']),
+    configs(DYES, 'areas/area_draynor/scripts/aggie.rs2:37', ['npc aggie']),
+    configs(REPAIRS, 'areas/area_lumbridge/scripts/bob.rs2:19', ['npc bob', 'npc nurmof']),
+    configs(DUMMY, 'areas/area_combat_training/scripts/combat_training_camp.rs2:45', ['loc biohazarddummy']),
+    configs(MINIGAME, 'minigames/game_gnomeball/scripts/gnomeball_shoot.rs2:1', ['loc goal_gnomeball_game']),
+    configs(MINIGAME, 'minigames/game_mortton/scripts/mortton_catacombs.rs2:441', [
+        'loc shadechest_black_black',
+        'loc shadechest_black_bloodred',
+        'loc shadechest_black_brown',
+        'loc shadechest_black_crimson',
+        'loc shadechest_black_purple',
+        'loc shadechest_bronze_black',
+        'loc shadechest_bronze_bloodred',
+        'loc shadechest_bronze_brown',
+        'loc shadechest_bronze_crimson',
+        'loc shadechest_bronze_purple',
+        'loc shadechest_silver_black',
+        'loc shadechest_silver_bloodred',
+        'loc shadechest_silver_brown',
+        'loc shadechest_silver_crimson',
+        'loc shadechest_silver_purple',
+        'loc shadechest_steel_black',
+        'loc shadechest_steel_bloodred',
+        'loc shadechest_steel_brown',
+        'loc shadechest_steel_crimson',
+        'loc shadechest_steel_purple',
+        'loc temple_pyre',
+        'loc templewall_base',
+        'loc templewallcorner_base',
+    ]),
+    configs(MINIGAME, 'minigames/game_ranging/scripts/target.rs2:2', ['loc loc_2513']),
+    configs(MINIGAME, 'minigames/game_trawler/scripts/trawler_net.rs2:60', [
+        'loc trawlernet_top_l',
+        'loc trawlernet_top_r',
+        'loc trawlernetland',
+    ]),
+    configs(CLUE_STEP, 'general_use/scripts/drawers.rs2:29', [
+        'loc arena_hospital_drawers2',
+        'loc chestclosed',
+        'loc chestclosedgold',
+        'loc drawers1',
+        'loc drawers2',
+        'loc drawers3',
+    ]),
+    configs(TUTORIAL, 'tutorial/scripts/skills/tut_mining.rs2:2', [
+        'loc newbiecopperrock',
+        'loc newbiedeadtree2',
+        'loc newbierange',
+        'loc newbietinrock',
+        'loc newbietree',
+        'loc newbietree2',
+        'npc 0_48_48_newbiefishing',
+    ]),
+    configs(EMPTY_ROCK, 'skill_mining/scripts/mining.rs2:2', ['loc rocks1', 'loc rocks2', 'loc rocks3']),
+    configs(CROSSING, 'areas/area_alkharid/scripts/shantay_pass.rs2:60', ['loc shantay_pass_henge_doorway']),
+    configs(CROSSING, 'skill_thieving/scripts/doors/locked_door.rs2:37', [
+        'loc east_ardy_sewer_gate_north',
+        'loc east_ardy_sewer_gate_south',
+        'loc loc_2550',
+        'loc loc_2551',
+        'loc loc_2554',
+        'loc loc_2555',
+        'loc loc_2556',
+        'loc loc_2557',
+        'loc loc_2558',
+        'loc loc_2559',
+    ]),
+    configs(QUEST, 'areas/area_ardougne_west/scripts/civilian.rs2:1', ['npc wantcat1', 'npc wantcat2', 'npc wantcat3']),
+    configs(QUEST, 'areas/area_gnome/scripts/aluft_gianne.rs2:2', ['npc aluft_gianne']),
+    configs(QUEST, 'areas/area_karamja/scripts/trufitus.rs2:2', ['npc trufitus']),
+    configs(QUEST, 'areas/area_mausoleum/scripts/monuments.rs2:7', [
+        'loc priestperil_grave_base1',
+        'loc priestperil_grave_base2',
+        'loc priestperil_grave_base3',
+        'loc priestperil_grave_base4',
+        'loc priestperil_grave_base5',
+        'loc priestperil_grave_base6',
+        'loc priestperil_grave_base7',
+    ]),
+    configs(QUEST, 'areas/area_mausoleum/scripts/well.rs2:8', ['loc priestperil_well']),
+    configs(QUEST, 'areas/area_seers/scripts/bees.rs2:8', ['loc merlin_beehive']),
+    configs(QUEST, 'areas/area_shilo/scripts/yanni_salika.rs2:52', ['npc shiloantiques']),
+    configs(QUEST, 'areas/area_varrock/scripts/bartender.rs2:110', [
+        'npc bluemoon_bartender',
+        'npc blurberry',
+        'npc deadmans_bartender',
+        'npc dragon_bartender',
+        'npc flyinghorse_bartender',
+        'npc foresters_bartender',
+        'npc jollyboar_bartender',
+        'npc risingsun_barmaid',
+        'npc rustyanchor_bartender',
+        'npc zambo',
+    ]),
+    configs(QUEST, 'areas/area_varrock/scripts/curator.rs2:42', ['npc curator']),
+    configs(QUEST, 'areas/area_varrock/scripts/straven.rs2:13', ['npc straven']),
+    configs(QUEST, 'areas/area_vt/scripts/vt_council_workman.rs2:20', ['npc vt_council_workmen']),
+    configs(QUEST, 'areas/area_wizard_tower/scripts/sedridor.rs2:47', ['npc head_wizard']),
+    configs(QUEST, 'quests/quest_biohazard/scripts/quest_biohazard.rs2:32', [
+        'loc biowatchtower',
+        'loc mournercauldron',
+    ]),
+    configs(QUEST, 'quests/quest_blackknight/scripts/quest_blackknight.rs2:91', ['loc blackknighthole']),
+    configs(QUEST, 'quests/quest_chompybird/scripts/raw_chompy.rs2:14', [
+        'loc chompybird_spitroast_empty',
+        'loc swampbubbles',
+        'loc swampbubbles_swamp',
+        'npc toad',
+    ]),
+    configs(QUEST, 'quests/quest_death/scripts/death_guard_equiproom.rs2:40', ['npc death_guard_equiproom']),
+    configs(QUEST, 'quests/quest_demon/scripts/demon_slayer.rs2:23', ['loc questdrain']),
+    configs(QUEST, 'quests/quest_desertrescue/scripts/quest_desertrescue.rs2:324', [
+        'loc captain_siads_chest_closed',
+        'loc cell_escape_window',
+        'loc experimental_anvil',
+        'loc miningcampgateclosedl',
+        'loc miningcampgateclosedr',
+        'loc thminebarrel_empty',
+        'loc touristtrap_minecart',
+        'npc al_shabim',
+        'npc ana',
+    ]),
+    configs(QUEST, 'quests/quest_druid/scripts/quest_druid.rs2:14', ['loc cauldron_of_thunder']),
+    configs(QUEST, 'quests/quest_druidspirit/scripts/quest_druidspirit.rs2:135', [
+        'loc stonedisc_ds_nature',
+        'loc stonedisc_ds_spirit',
+        'npc ghast_invis',
+    ]),
+    configs(QUEST, 'quests/quest_eadgar/scripts/eadgar_zoo_keeper_aviary.rs2:62', [
+        'loc eadgar_aviary_wall_hatch',
+        'npc eadgar_troll_chief_cook',
+    ]),
+    configs(QUEST, 'quests/quest_elemental_workshop/scripts/quest_elemental_workshop.rs2:208', [
+        'loc elemental_workshop_furnace',
+        'loc elemental_workshop_trough',
+        'loc elemental_workshop_workbench',
+    ]),
+    configs(QUEST, 'quests/quest_fishingcompo/scripts/quest_fishingcompo.rs2:75', ['loc garlicpipe']),
+    configs(QUEST, 'quests/quest_fluffs/scripts/quest_fluffs.rs2:195', ['npc gertrudescat']),
+    configs(QUEST, 'quests/quest_grandtree/scripts/quest_grandtree.rs2:71', ['loc grandtree_chestclosed']),
+    configs(QUEST, 'quests/quest_haunted/scripts/quest_haunted.rs2:81', ['loc hauntedfountain']),
+    configs(QUEST, 'quests/quest_hauntedmine/scripts/hauntedmine_crystals.rs2:31', [
+        'loc crystalcorner',
+        'loc crystaledging',
+        'loc glowing_mushroom',
+        'loc glowing_mushroom2',
+        'loc largecrystals',
+        'npc hauntedmine_boss_key',
+    ]),
+    configs(QUEST, 'quests/quest_horror/scripts/quest_horror.rs2:110', [
+        'loc horror_broken_bridge_left_spot',
+        'loc horror_broken_bridge_right_spot',
+    ]),
+    configs(QUEST, 'quests/quest_hunt/scripts/banana_crate.rs2:20', [
+        'loc bananacrate',
+        'loc piratechest',
+        'npc redbeard_frank',
+    ]),
+    configs(QUEST, 'quests/quest_itexam/scripts/area_digsite.rs2:813', [
+        'loc digbarrelclosed',
+        'loc digblastbrick',
+        'loc digchestclosed',
+        'loc digdugupsoil1',
+        'loc digdugupsoil2',
+        'loc digdugupsoil3',
+        'loc digwinch1',
+        'loc digwinch2',
+        'loc panning_point',
+        'loc specimen_tray',
+        'npc archaeological_expert',
+        'npc digworkman1',
+        'npc digworkman2',
+    ]),
+    configs(QUEST, 'quests/quest_itwatchtower/scripts/quest_itwatchtower.rs2:354', [
+        'loc shuttanothchest2',
+        'loc tobanchest',
+        'loc tree_ropeswing4_norope',
+        'loc watchleverup',
+        'npc city_guard',
+        'npc grew',
+        'npc og',
+        'npc ogre_guard3',
+        'npc ogre_shaman',
+        'npc toban',
+        'npc watchtower_wizard',
+    ]),
+    configs(QUEST, 'quests/quest_junglepotion/scripts/quest_junglepotion.rs2:10', [
+        'loc ardrigal_palm_full',
+        'loc rogues_purse_cave_full',
+        'loc sito_soil_full',
+        'loc snake_vine_full',
+        'loc volencia_moss_rock_full',
+    ]),
+    configs(QUEST, 'quests/quest_legends/scripts/quest_legends.rs2:1950', [
+        'loc dragons_eye_rock',
+        'loc fertilesoil',
+        'loc heart_recess_empty',
+        'loc lgancientwalldoor',
+        'loc lglockpickgatebottoml',
+        'loc lglockpickgatebottomr',
+        'loc lqfirewall_diagonal',
+        'loc lqfirewall_straight',
+        'loc mine_test_boulder1',
+        'loc mine_test_boulder2',
+        'loc mine_test_boulder3',
+        'loc sacred_water',
+        'npc ungadulu_good',
+    ]),
+    configs(QUEST, 'quests/quest_mcannon/scripts/locs/mcannon_broken_cannon.rs2:1', [
+        'loc broken_multicannon',
+        'loc dwarf_multicannon1',
+    ]),
+    configs(QUEST, 'quests/quest_mm/scripts/quest_mm.rs2:1064', [
+        'loc mm_iban_firewall_diagonal',
+        'loc mm_iban_firewall_straight',
+        'loc mm_jail_door',
+        'loc mm_pineapple_plant_one',
+    ]),
+    configs(QUEST, 'quests/quest_mortton/scripts/quest_mortton.rs2:28', [
+        'npc apothecary',
+        'npc ulsquire_shauncy_afflicted',
+    ]),
+    configs(QUEST, 'quests/quest_murder/scripts/quest_murder.rs2:194', ['loc flourbarrel']),
+    configs(QUEST, 'quests/quest_priestperil/scripts/vampire_coffin.rs2:8', [
+        'loc priestperil_coffin_noanim',
+        'npc priestperiltrappedmonk',
+    ]),
+    configs(QUEST, 'quests/quest_regicide/scripts/quest_regicide.rs2:495', [
+        'loc regicide_catapult',
+        'loc regicide_fractionalizing_still',
+        'loc regicide_furnace',
+        'loc regicide_loom',
+        'loc regicide_tar_collection',
+    ]),
+    configs(QUEST, 'quests/quest_scorpcatcher/scripts/quest_scorpcatcher.rs2:14', [
+        'npc questscorpiona',
+        'npc questscorpionb',
+        'npc questscorpionc',
+    ]),
+    configs(QUEST, 'quests/quest_sheepherder/scripts/locs/sheepherder_furnace.rs2:1', ['loc plaguesheep_furnace']),
+    configs(QUEST, 'quests/quest_tbwt/scripts/tbwt_tamayu.rs2:27', [
+        'npc tbwt_tamayu',
+        'npc tbwt_tiadeche',
+        'npc tbwt_tinsay',
+    ]),
+    configs(QUEST, 'quests/quest_troll/scripts/troll_stronghold_camp_guard.rs2:35', [
+        'npc troll_prison_guard1',
+        'npc troll_prison_guard2',
+    ]),
+    configs(QUEST, 'quests/quest_upass/scripts/quest_upass.rs2:348', [
+        'loc bloodwell_upass',
+        'loc cave_railings2',
+        'loc cave_railings5',
+        'loc cave_temple_altar',
+        'loc cave_well',
+        'loc cavewitch_door',
+        'loc ibantomb_left',
+        'loc ibantomb_right',
+        'loc loc_2276',
+        'loc obstical_rockswing_middle',
+        'loc upass_logtrap_trigger',
+        'loc upassdwarfbrewbarrel',
+        'loc upassshutchest1',
+    ]),
+    configs(QUEST, 'quests/quest_viking/scripts/viking_olaf.rs2:147', [
+        'loc viking_musical_tree',
+        'loc viking_seer_range',
+        'loc viking_seers_drain',
+        'loc viking_seers_mural',
+        'loc viking_seers_tap',
+        'loc viking_small_table_frozen',
+    ]),
+    configs(QUEST, 'quests/quest_waterfall/scripts/quest_waterfall.rs2:460', [
+        'loc baxtorian_chalice_waterfall_quest',
+        'loc statue_queen_waterfall_quest',
+        'loc stonepillar_small_waterfall_quest',
+    ]),
+    configs(QUEST, 'quests/quest_zombiequeen/scripts/quest_zombiequeen.rs2:1399', [
+        'loc thzq_tombrooml1',
+        'loc thzq_tombroomr1',
+        'loc zqdolmen',
+        'loc zqtableraft',
+    ]),
 ];

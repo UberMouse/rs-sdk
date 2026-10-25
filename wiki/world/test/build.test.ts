@@ -784,6 +784,16 @@ describe('formatReport', () => {
         unreached: { pockets: [], expected: 0, invalid: [], stale: [] },
         methods: { resolved: 6, errors: [] },
         checks: {
+            unclaimed: {
+                left: [],
+                allowed: 3,
+                invalid: [],
+                stale: [],
+                reasons: [
+                    ['crop: 2.6', 2],
+                    ['quest one-off', 1],
+                ],
+            },
             'near-miss': { left: [], allowed: 2, invalid: [], stale: [] },
             split: { left: [], allowed: 0, invalid: [], stale: [] },
             stand: { left: [], allowed: 0, invalid: [], stale: [] },
@@ -988,6 +998,9 @@ describe('formatReport', () => {
 
     test('the checks section: found and allowed by check, then what is left, invalid and stale, all errors', () => {
         expect(formatChecks(report.checks)).toEqual([
+            'checks: unclaimed: 3 placed configs with a gather or processing trigger no rule claimed, 3 allowed by allow.ts UNCLAIMED_ALLOW',
+            '  2 crop: 2.6',
+            '  1 quest one-off',
             'checks: near-miss: 2 sites 1-3 tiles outside a leaf area not their own, 2 allowed by allow.ts NEAR_MISS_ALLOW',
             'checks: split: 0 same-config site pairs split across leaf areas with features within their SITE_RADIUS, 0 allowed by allow.ts SPLIT_ALLOW',
             'checks: stand: 0 stands cut off from most of their members or from a bank, 0 allowed by allow.ts STAND_ALLOW',
@@ -1005,7 +1018,8 @@ describe('formatReport', () => {
                 },
             },
         };
-        expect(formatChecks(bad.checks).slice(1)).toEqual([
+        // Past the unclaimed check's three lines and near-miss's one.
+        expect(formatChecks(bad.checks).slice(4)).toEqual([
             'checks: split: 1 same-config site pairs split across leaf areas with features within their SITE_RADIUS, 0 allowed by allow.ts SPLIT_ALLOW',
             'ERROR split: 1 same-config site pairs split across leaf areas with features within their SITE_RADIUS that allow.ts SPLIT_ALLOW does not allow:',
             '  rock (1, 2, 0) and rock (3, 4, 0): rock:a:0 and rock:b:0, 2 tiles apart, both hold coal',
@@ -1021,6 +1035,16 @@ describe('formatReport', () => {
             { left: [], invalid: [], stale: bad.checks.split.stale },
         ])
             expect(failed({ ...report, checks: { ...report.checks, split: { ...one, allowed: 0 } } })).toBe(true);
+    });
+
+    test("the unclaimed check's invalid entries name configs, not site keys", () => {
+        const invalid = ['loc nowhere (general_use/scripts/pickables.rs2:2): loc nowhere not placed'];
+        const checks = { ...report.checks, unclaimed: { left: [], allowed: 0, invalid, stale: [] } };
+        expect(formatChecks(checks).slice(1, 3)).toEqual([
+            'ERROR unclaimed: 1 allow.ts UNCLAIMED_ALLOW entries naming no config, or a config no map places (a typo?):',
+            `  ${invalid[0]}`,
+        ]);
+        expect(failed({ ...report, checks })).toBe(true);
     });
 
     test('the methods section: how many resolved, and an error per record that did not', () => {

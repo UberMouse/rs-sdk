@@ -277,7 +277,7 @@ kind holds, or several do. `EXPECTED_UNREACHED`, the build checks' allowlists in
 ### Build checks
 
 `checks.ts` holds checks for classes of wrong data the index audit found (`conductor/docs/world-index-data-audit.md`
-§2.2). Each returns findings naming their sites by `SiteKey` with a detail line; its allowlist in `allow.ts` lists
+§2.2). Each returns findings naming their sites by `SiteKey` (`unclaimed` its configs, below) with a detail line; its allowlist in `allow.ts` lists
 the findings known and explained, each entry `{ keys, reason, source }`: the keys of the finding's sites, what is
 wrong and what fixes it, and a map line (`maps/mX_Z.jm2:line`) of a feature or the script line of the op that
 settles it. `bun run world` and `--check` print a `checks:` line per check and fail with `ERROR <check>:` lines on
@@ -286,6 +286,21 @@ the rect it waited on was refitted, or the site is gone; or it repeats an earlie
 `split` look at the COVERED kinds but trees, whose sites chain whole forests; `stand` at every site with a stand
 some walk reaches.
 
+- **`unclaimed`** (`UNCLAIMED_ALLOW`): a config the maps place with an op trigger (op, approach or use-item) that no
+  classify rule made a feature through (`classify.ts` `Classification.unclaimed`: an attackable npc's kind claims
+  only its Attack ops, so a cow's Milk is unclaimed), whose body or the labels and procs it calls (`reach`, as
+  classify follows them) has a gather or processing shape (`checks.ts` `SHAPES`): a `stat_advance` of a stat but
+  agility (an obstacle's xp is a crossing's), `~openshop`, `inv_add` with a `loc_change`/`loc_del`/`npc_changetype`
+  in one body or with a `p_delay`/`anim` while a body runs the op again (`p_oploc`, `p_opnpc`), `~pickup_loc_floor`,
+  or a use-item op that takes the item (`inv_del`) and gives one or animates. Ops labelled Talk-to or Attack are
+  left out, and a bare `inv_add` is no shape: dialogue handing out a quest item would flood the list (audit B1, B2,
+  C). One finding per config, `loc <config>` or `npc <config>`, naming each trigger's `file:line`. An entry is
+  `{ configs, reason, source }`: one config or a group sharing the reason, with one's trigger line as the source; it
+  is invalid when it names no config or one no map places, and stale for each config it names that no finding is
+  about. The report counts the findings each reason allows. **The entries whose reason names a kind
+  (`well: 2.6`, `crop: 2.6`, `mill: 2.6`, ...) are plan 2.6's to-do list**: adding the kind or fixing the rule makes
+  the entry stale, and it goes. The other reasons say why the config is no feature (a quest one-off, a minigame, a
+  door).
 - **`near-miss`** (`NEAR_MISS_ALLOW`): a site whose bbox lies outside every rect of a leaf area (one no area is the
   parent of) on its level, but 1-3 tiles (Chebyshev) from one, while its own leaf area is another: usually a rect
   drawn as a label square and never fitted to the place, with the site filed under the parent instead. A leaf drawn
@@ -414,6 +429,7 @@ Adding a method:
 | A page's layout or wording | `wiki/world/render/` |
 | A door or gate and what it needs; a Requires cell, or a site reading unreached that a bot gets to | its row in `wiki/world/gate-list.ts` (exported by `gates.ts`), or the derivation in `wiki/world/sources/gate-scan.ts`; else an `EXPECTED_UNREACHED` entry in `areas.ts` saying why |
 | A site just outside the area it is named after, or one place split into two sites at an area edge (`ERROR near-miss`, `ERROR split`) | the area's rects in `wiki/world/areas.ts`; a pair that is right as it is (a leaf round one thing, two places side by side) is an entry in `NEAR_MISS_ALLOW` or `SPLIT_ALLOW` in `wiki/world/allow.ts` saying why |
+| A placed loc or npc whose gather or processing trigger no rule claims (`ERROR unclaimed`) | the rule in `wiki/world/classify.ts`, or a new kind (plan 2.6); a config that is no feature (a quest one-off, a minigame) is an entry in `UNCLAIMED_ALLOW` in `wiki/world/allow.ts` saying why, and one waiting on 2.6 an entry naming the kind |
 | A stand cut off from most of its site's members or from a bank (`ERROR stand`) | how stands are chosen (`place.ts` `standTile`), or a missing or unpriced way out in the sources; until then an entry in `STAND_ALLOW` in `wiki/world/allow.ts` saying what cuts it off |
 | A site whose use (not the walk there) needs a quest: a Requires cell missing it | `USE_GATES` in `wiki/world/gates.ts` |
 | A transport (ship, cart, sled) or its fare | `CURATED_TRANSPORTS` in `wiki/world/gates.ts`, or `wiki/world/sources/transports.ts` |

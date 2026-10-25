@@ -46,22 +46,23 @@ checked against the game.
 
 | # | Finding | Evidence | Scale |
 |---|---|---|---|
-| B1 | Stall rule reads only `skill_thieving/scripts/stalls/`; Ape Atoll's stalls are in a quest dir | `W/classify.ts:422`; `S/quests/quest_mm/scripts/aa_market.rs2:1-13` (`@attempt_steal_aa_stall(level, low, high, xp, respawn)`) | 5 stalls (two at level 65) |
-| B2 | `STATIONS` maps category `watersource` but not `well` | `W/classify.ts:44-57`; `S/general_use/configs/water_sources.loc:24,:57` | 15 wells (bucket only, `water_sources.rs2:69`) |
+| B1 | Stall rule reads only `skill_thieving/scripts/stalls/`; Ape Atoll's stalls are in a quest dir, and so is Yanille's ogre rock-cake counter in an area one | `W/classify.ts:422`; `S/quests/quest_mm/scripts/aa_market.rs2:1-13` (`@attempt_steal_aa_stall(level, low, high, xp, respawn)`); `S/areas/area_yanille/scripts/ogre_trader.rs2:21` (`rockcounter_withcakes`, Thieving 15) | 5 stalls (two at level 65), 1 counter (check 1) |
+| B2 | `STATIONS` maps category `watersource` but not `well`; Shilo's sand pile has no category `sand_pit` | `W/classify.ts:44-57`; `S/general_use/configs/water_sources.loc:24,:57`; `S/areas/area_shilo/scripts/shilo_sandpit.rs2:4` (`sand1`, bucket of sand) | 15 wells (14 `well`, 1 `desertwell`; bucket only, `water_sources.rs2:69`), 3 sand piles (check 1) |
 | B3 | Fishing subtypes fall back to raw labels | `W/classify.ts:336`: `category_632` (karambwanji), `category_633` (karambwan), `loc_2027` (waterfall fly), `loc_2630` (lava eel loc) | page names |
 | B4 | Odd ones | `newbierange` not a range (its furnace is); `trappedchaosaltar` unclassified; Duel Arena nurses (Heal) unclassified | low value |
 
-Nothing lists placed features whose op triggers no rule claimed, which is how B1 and B2 stayed hidden.
+Nothing listed placed features whose op triggers no rule claimed, which is how B1 and B2 stayed hidden. Build check 1
+(`unclaimed`, §2.2) lists them now; its allowlist's entries naming a kind are 2.6's to-do list.
 
 ### 1.3 Kinds the index doesn't have
 
 | # | Feature | Engine | Placed |
 |---|---|---|---|
 | C1 | Crops: wheat, potato, cabbage, onion | `S/general_use/scripts/pickables.rs2:2-60` (`[oploc2,...]`, respawn 20-50 in the call); `W/classify.ts:379-380` leaves them out on purpose | 1,936 |
-| C2 | Other pickables: banana trees, pineapples, Kharidian cacti (knife), Miscellania heather | `area_karamja/scripts/banana_tree.rs2`, `area_desert/scripts/kharidian_cactus.rs2` | ~400 |
+| C2 | Other pickables: banana trees, pineapples, Kharidian cacti (knife), Miscellania heather | `area_karamja/scripts/banana_tree.rs2`, `area_desert/scripts/kharidian_cactus.rs2`, `area_brimhaven/scripts/pineapple_plants.rs2`, `area_miscellania/scripts/weed_herbs.rs2` | 402: 200 banana trees (5 on Ape Atoll), 161 cacti, 36 heather, 5 pineapple plants (and Ape Atoll's 6 quest plants, `quest_mm.rs2`) |
 | C3 | Ground item spawns | 1,204 `==== OBJ ====` map entries; `W/sources/maps.ts parseMapSquare` skips the section; only `wiki/generate-items.ts:743` reads them, deduped by mapsquare with no tile | 1,204 |
-| C4 | Flour mill chain: hoppers, levers, flour bins | `S/general_use/scripts/windmills.rs2` | 4 mills |
-| C5 | Livestock: sheep to shear, cows to milk | `general_use/scripts/shear_sheep.rs2` (57 sheep); `npc/scripts/cow_milking.rs2` (`[opnpcu,cow]`; cows are only combat `npc:cow`) | 57 + 52 |
+| C4 | Flour mill chain: hoppers, levers, flour bins | `S/general_use/scripts/windmills.rs2` | 4 mills (4 hopper configs, 4 flour bins of one) |
+| C5 | Livestock: sheep to shear, cows to milk | `general_use/scripts/shear_sheep.rs2` (57 sheep, 5 of them placed shorn); `npc/scripts/cow_milking.rs2` (`[opnpcu,cow]`; cows are only combat `npc:cow`; `cow2` and `cow_beef` are not placed) | 52 + 52 |
 
 ### 1.4 Area geometry (`W/areas.ts`)
 
@@ -126,7 +127,17 @@ Make these `--check` failures with a reviewed allowlist (each entry with a reaso
 
 1. **Unclaimed triggers** (B1, B2, C): every placed loc or npc config with an op trigger, a gather or processing
    shape (`inv_add`, `~pickup_loc_floor`, `stat_advance`, `~openshop`) and no feature kind. The output is the to-do
-   list for 2.6.
+   list for 2.6. Built (`W/checks.ts` `unclaimedTriggers`, `W/README.md` "Build checks"): per trigger no rule claimed,
+   over its reach. Measured on the placed configs: a bare `inv_add` caught 661 configs, most of them dialogue handing
+   out quest items, so the gather shape is `inv_add` with a `loc_change`/`loc_del`/`npc_changetype` in one body (67)
+   or with a `p_delay`/`anim` while a body re-runs the op (6); `stat_advance` caught 158 (145 past the label cut
+   below), 76 of those agility-only obstacles (cut: a crossing's xp), leaving 69; `~pickup_loc_floor` 4 (the crops); `~openshop` 0 (the shop rule
+   claims every one). Cows' milking and the mill hoppers have none of those, so a use-item shape was added: the item
+   taken (`inv_del`) with one given (104) or an `anim`/`p_delay` (103). Ops labelled Talk-to or Attack are cut (14
+   configs), and an attackable npc's kind claims only its Attack ops. 253 configs found: 164 quest one-offs, 28
+   minigame, 11 doors, 7 tutorial, 6 treasure-trail steps, 3 empty rocks, 7 with no planned kind (key chests,
+   repairs, dyes, a combat dummy), and 27 naming a 2.6 kind (stalls 6, wells 2, sand pit 1, crops 4, pickables 7,
+   mill 5, livestock 2).
 2. **Near-miss area** (D): a covered non-tree site within 3 tiles of a named leaf area's rects but resolved to
    another area. Sites further off a rect than that, such as Port Sarim's shop row (6-15 tiles west of it), are not
    its findings: 2.5 refits them from its own list.

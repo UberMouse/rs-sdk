@@ -1,18 +1,25 @@
 import { describe, expect, test } from 'bun:test';
 import {
     applyAllow,
+    applyConfigAllow,
     nearMissAreas,
     rectGap,
     splitResources,
     standConnectivity,
+    unclaimedTriggers,
     type CheckWorld,
+    type ConfigFinding,
+    type ConfigKey,
     type Finding,
     type StandInput,
     type StandWorld,
 } from '../checks';
+import { classification } from '../classify';
 import { locSizes } from '../place';
 import { fillReach, reachGraph } from '../reach';
 import { siteAt } from '../site-key';
+import type { Config } from '../sources/configs';
+import type { Callable, Trigger } from '../sources/triggers';
 import type { FeatureKind, Gate, Rect, Tile } from '../types';
 import { at, Grid } from './grid';
 
@@ -486,4 +493,154 @@ describe('standConnectivity', () => {
             'fishing-spot:shore:0 stand (3222, 3222): 1 of 3 members usable from the stand',
         ]);
     });
+});
+
+/** An op trigger on a config, its header at line `header`. */
+const trig = (file: string, on: 'loc' | 'npc', target: string, op: string, body: string, header = 1): Trigger => ({
+    file,
+    on,
+    kind: 'op',
+    op,
+    target,
+    category: false,
+    line: header,
+    body: `\n${body}`,
+});
+
+describe('unclaimedTriggers', () => {
+    const locs = new Map<string, Config>([
+        ['yewtree', { name: ['Yew'], op1: ['Chop down'] }],
+        ['odd_stall', { name: ['Stall'], op2: ['Steal-from'] }],
+        ['log_balance', { name: ['Log'], op1: ['Walk-across'] }],
+        ['bush', { name: ['Bush'], op1: ['Pick-from'] }],
+        ['unplaced_stall', { name: ['Stall'], op2: ['Steal-from'] }],
+    ]);
+    const npcs = new Map<string, Config>([
+        ['questgiver', { name: ['Man'], op1: ['Talk-to'], op3: ['Ask'] }],
+        ['cow', { name: ['Cow'], op2: ['Attack'], param: ['attackbonus,1'] }],
+    ]);
+    const triggers = [
+        trig('skill_woodcutting/scripts/woodcutting.rs2', 'loc', 'yewtree', '1', 'stat_advance(woodcutting, 250);'),
+        trig('quests/quest_x/scripts/market.rs2', 'loc', 'odd_stall', '2', 'stat_advance(thieving, 160);', 7),
+        trig('skill_agility/scripts/shortcuts.rs2', 'loc', 'log_balance', '1', 'stat_advance(agility, 75);'),
+        trig('areas/area_x/scripts/bush.rs2', 'loc', 'bush', '1', '~pick_bush(berries);', 3),
+        trig('quests/quest_x/scripts/quest_x.rs2', 'loc', 'unplaced_stall', '2', 'stat_advance(thieving, 160);'),
+        trig(
+            'quests/quest_x/scripts/man.rs2',
+            'npc',
+            'questgiver',
+            '1',
+            '~chatnpc("Take this."); inv_add(inv, key, 1);',
+        ),
+        trig('quests/quest_x/scripts/man.rs2', 'npc', 'questgiver', '3', 'inv_add(inv, map, 1); mes("A map.");'),
+        trig(
+            'npc/scripts/cow_milking.rs2',
+            'npc',
+            'cow',
+            'u',
+            'inv_del(inv, bucket_empty, 1); inv_add(inv, bucket_milk, 1);',
+        ),
+        trig('npc/scripts/cow.rs2', 'npc', 'cow', '2', 'stat_advance(attack, 40);'),
+    ];
+    const callables: Callable[] = [
+        {
+            file: 'areas/area_x/scripts/bush.rs2',
+            call: '~pick_bush',
+            line: 5,
+            body: '(obj $fruit)\ninv_add(inv, $fruit, 1);\nloc_change(bush_empty, 50);',
+        },
+    ];
+    const input = {
+        locConfigs: locs,
+        npcConfigs: npcs,
+        dbrows: [{ row: 'yew_tree_table', table: 'woodcutting_trees', data: { tree: [['yewtree']] } }],
+        triggers,
+        callables,
+    };
+    const placed = {
+        loc: new Set(['yewtree', 'odd_stall', 'log_balance', 'bush']),
+        npc: new Set(['questgiver', 'cow']),
+    };
+    const found = unclaimedTriggers({
+        placed,
+        configs: { loc: locs, npc: npcs },
+        classification: classification(input),
+    });
+
+    test('finds an unclaimed stat_advance loc, a gather through a called proc, and a use-item on an attackable npc', () =>
+        expect(found).toEqual([
+            { config: 'loc bush', detail: 'areas/area_x/scripts/bush.rs2:3 [oploc1,bush] gather' },
+            { config: 'loc odd_stall', detail: 'quests/quest_x/scripts/market.rs2:7 [oploc2,odd_stall] xp' },
+            { config: 'npc cow', detail: 'npc/scripts/cow_milking.rs2:1 [opnpcu,cow] use' },
+        ]));
+
+    test('leaves out a claimed tree, agility xp, dialogue handing out an item, a monster attack and unplaced configs', () => {
+        const names = found.map(f => f.config);
+        for (const c of ['loc yewtree', 'loc log_balance', 'npc questgiver', 'loc unplaced_stall'])
+            expect(names).not.toContain(c);
+        expect(found.find(f => f.config === 'npc cow')?.detail).not.toContain('[opnpc2,cow]');
+    });
+});
+
+describe('applyConfigAllow', () => {
+    const placed = { loc: new Set(['well', 'potato', 'wheat']), npc: new Set(['cow']) };
+    const findings: ConfigFinding[] = [
+        { config: 'loc potato', detail: 'pickables.rs2:2 [oploc2,potato] pickup' },
+        { config: 'loc wheat', detail: 'pickables.rs2:14 [oploc2,wheat] pickup' },
+        { config: 'loc well', detail: 'water_sources.rs2:69 [oplocu,_well] use' },
+    ];
+    const crop = { configs: ['loc potato', 'loc wheat'] as ConfigKey[], reason: 'crop: 2.6', source: 'p.rs2:2' };
+
+    test('a group entry allows each config it names, and the reasons count the findings each allows', () =>
+        expect(
+            applyConfigAllow(
+                findings,
+                [crop, { configs: ['loc well'], reason: 'well: 2.6', source: 'w.rs2:69' }],
+                placed,
+            ),
+        ).toEqual({
+            left: [],
+            allowed: 3,
+            invalid: [],
+            stale: [],
+            reasons: [
+                ['crop: 2.6', 2],
+                ['well: 2.6', 1],
+            ],
+        }));
+
+    test('a config no finding names makes its entry stale, a config no map places or none at all invalid', () =>
+        expect(
+            applyConfigAllow(
+                findings.slice(0, 1),
+                [
+                    crop,
+                    { configs: ['npc cow'], reason: 'livestock: 2.6', source: 'c.rs2:1' },
+                    { configs: ['loc nowhere'], reason: 'x', source: 'n.rs2:1' },
+                    { configs: [], reason: 'x', source: 'e.rs2:1' },
+                ],
+                placed,
+            ),
+        ).toEqual({
+            left: [],
+            allowed: 1,
+            invalid: ['loc nowhere (n.rs2:1): loc nowhere not placed', ' (e.rs2:1): names no config'],
+            stale: ['loc potato, loc wheat (p.rs2:2): loc wheat match no finding', 'npc cow (c.rs2:1)'],
+            reasons: [['crop: 2.6', 1]],
+        }));
+
+    test('a finding left is an error naming its config, and a second entry for a config is a stale duplicate', () =>
+        expect(
+            applyConfigAllow(
+                findings,
+                [crop, { configs: ['loc wheat'], reason: 'crop: 2.6', source: 'p.rs2:14' }],
+                placed,
+            ),
+        ).toEqual({
+            left: ['loc well: water_sources.rs2:69 [oplocu,_well] use'],
+            allowed: 2,
+            invalid: [],
+            stale: ['loc wheat (p.rs2:14): a duplicate of loc potato, loc wheat (p.rs2:2)'],
+            reasons: [['crop: 2.6', 2]],
+        }));
 });
