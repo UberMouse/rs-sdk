@@ -280,7 +280,8 @@ export interface Classification {
     classify: (on: 'loc' | 'npc', config: string) => readonly Classified[];
     /**
      * The triggers on a config (by its name or category) whose op slot no rule's match on it, or on a config it
-     * changes into, was made through: none when a rule matched by data alone (a tree with no trigger).
+     * changes into, was made through, nor the attackable-npc fallback's (its Attack ops): none when a rule matched
+     * by data alone (a tree with no trigger).
      */
     unclaimed: (on: 'loc' | 'npc', config: string) => Trigger[];
     /** A trigger body and the bodies of the labels and procs it calls, transitively, as code (membersCode). */
