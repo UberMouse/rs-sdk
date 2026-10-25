@@ -136,12 +136,13 @@ Make these `--check` failures with a reviewed allowlist (each entry with a reaso
    `~openshop` 0 (the shop rule claims every one). Cows' milking and the mill hoppers have none of those, so a
    use-item shape was added: the item taken (`inv_del`) with one given or an `anim`/`p_delay` (143). Ops labelled
    Talk-to are cut, and an npc's labelled Attack (a loc's is a training dummy's use): 13 configs. An attackable npc's
-   kind claims only its Attack ops. 268 configs found: 133 quest one-offs, 29 minigame, 11 doors, 7 tutorial, 6
-   treasure-trail steps, 3 empty rocks, 13 uncrossed agility obstacles (each reason says why the build has no
-   crossing), 5 more with no feature (quest-only items and water, a ghast to fight), 28 with no planned kind (cat
-   buyers 3, chompy hunting 4, dig site finds 5, elemental workshop 3, key chests 3, combat dummies 2, repairs 2,
-   quest pickpockets 2, a beehive, a flour barrel, a dye maker, a monkey skinner), and 33 naming a 2.6 kind (stalls
-   6, wells 2, sand pit 1, crops 4, pickables 13 with Jungle Potion's 5 herbs, mill 5, livestock 2). 128 findings
+   kind claims only its Attack ops. 268 configs found: 126 quest one-offs, 29 minigame, 11 doors, 7 tutorial, 6
+   treasure-trail steps, 3 empty rocks, 11 more with no feature (9 repeatable uses giving only quest items, quest
+   water, a ghast to fight), 26 with no planned kind (cat buyers 3, chompy hunting 4, dig site finds 5, elemental
+   workshop 3, key chests 3, combat dummies 2, repairs 2, a beehive, a flour barrel, a dye maker, a monkey skinner),
+   15 open items §2.6 lists (13 uncrossed agility obstacles, 2 quest pickpockets), and 34 naming a 2.6 kind (stalls
+   6, wells 2, sand pit 1, crops 4, pickables 13 with Jungle Potion's 5 herbs, mill 5, livestock 2, a furnace with
+   no category). 128 findings
    are use-item only, 106 of them quest one-offs, quest items, treasure-trail steps and key chests (a key or item
    used on a chest, a door or an npc): 2.6 can narrow the use shape before it adds kinds.
 2. **Near-miss area** (D): a covered non-tree site within 3 tiles of a named leaf area's rects but resolved to
@@ -190,6 +191,24 @@ arguments), ground item spawns (C3: an `obj-spawn` list with tile, quantity and 
 areas like any site; the item pages then read it instead of `parseObjSpawns`), pickables (C1-C2: a `pickable` kind,
 subtype the obj, respawn from the call), then mill (C4) and livestock (C5: shear and milk as npc-kind features). Fix
 the raw fishing subtype names (B3) with a name table in the same pass.
+
+Open items check 1 found that are rule or reach-graph gaps, not new kinds (`W/allow.ts` `UNCLAIMED_ALLOW` reasons
+point here):
+
+- **Quest pickpockets** (2.6, a rule fix as B1): the Dig Site workmen (`digworkman1`, `digworkman2`,
+  `S/quests/quest_itexam/scripts/digsite_workman.rs2:45`). The pickpocket rule reads only
+  `skill_thieving/scripts/pickpocketing/` (`W/classify.ts:492`).
+- **A furnace with no category** (2.6, a rule fix as B2): `regicide_furnace` (`S/quests/quest_regicide/scripts/quest_regicide.rs2:693`)
+  runs `@use_furnace`, but `STATIONS` maps only category `smithing_furnace`.
+- **A gate row's free config** (a later reach-graph fix): `tree_ropeswing2`, the free config of
+  `_island_rope_swing` (`W/gate-list.ts` `byConfig ''`). World.gates does not write it, and `deriveScriptedMoves`
+  leaves gate candidates to the gate list, so the swing has no crossing.
+- **Gate candidates kept out of the gates** (a later reach-graph fix): `agilityarena_handholds`,
+  `trollromance_piste_walk_barrier_down`, `ttcellclimbrock1`, `upass_pipe4`, `upass_pipe6`. `W/gate-list.ts` lists
+  them as not-a-gate or side-effect, and `deriveScriptedMoves` skips gate candidates, so no crossing is made.
+- **Moves read as no passage, or unsettled** (a later reach-graph fix): `agilityarena_ropeswing`,
+  `ttcellclimbrock2`-`4`, `zqrockjump2` (no passage read from their moves), `zqrockjump1`, `zqrockjump3` (moves no
+  bound run settles; the build report's scripted moves).
 
 ### 2.7 Curated table forms (F2-F5)
 

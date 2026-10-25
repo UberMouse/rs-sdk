@@ -494,7 +494,9 @@ const FLOUR_BARREL =
     "flour barrel: no kind, and 2.6 plans none: a pot of flour, repeatable once Murder Mystery's started";
 const DIG_SITE = 'dig site finds: no kind, and 2.6 plans none: panning, the specimen trays and the soil, repeatable';
 const PICKPOCKET_RULE =
-    'pickpocket: no rule, and 2.6 plans none: the pickpocket rule reads only skill_thieving/scripts/pickpocketing/, as audit B1';
+    'pickpocket: the pickpocket rule reads only skill_thieving/scripts/pickpocketing/, as audit B1; doc §2.6 lists it';
+const FURNACE =
+    'furnace: 2.6, a smelting furnace (smelting.rs2 @use_furnace) without category smithing_furnace, as audit B2; doc §2.6 lists it';
 const ELEMENTAL =
     'elemental workshop: no kind, and 2.6 plans none: lava, elemental bars and shields, repeatable after the quest';
 const SKINNER =
@@ -502,11 +504,11 @@ const SKINNER =
 const GHAST = 'ghast: a druid pouch makes it fightable, a fight and no feature';
 // Agility moves with no crossing in the reach graph: why the build has none.
 const GATE_CANDIDATE =
-    'passage, no feature, and no crossing: gate-list.ts keeps its trigger out of the gates, and deriveScriptedMoves leaves gate candidates to the gate list';
+    'passage, no feature, and no crossing: gate-list.ts keeps its trigger out of the gates, and deriveScriptedMoves leaves gate candidates to the gate list; doc §2.6 lists it';
 const FREE_GATE_CONFIG =
-    "passage, no feature, and no crossing: the gate row's free config (byConfig ''), which World.gates does not write";
+    "passage, no feature, and no crossing: the gate row's free config (byConfig ''), which World.gates does not write; doc §2.6 lists it";
 const NO_PASSAGE_READ =
-    'passage, no feature, and no crossing: deriveScriptedMoves reads no passage from its moves, or settles no landing (the build report)';
+    'passage, no feature, and no crossing: deriveScriptedMoves reads no passage from its moves, or settles no landing (the build report); doc §2.6 lists it';
 /**
  * Check 1: placed configs whose triggers no rule claimed have a gather or processing shape. The entries naming a
  * kind are plan 2.6's to-do list.
@@ -592,6 +594,17 @@ export const UNCLAIMED_ALLOW: readonly ConfigAllowed[] = [
         'loc glowing_mushroom2',
     ]),
     configs(QUEST_ITEM, 'areas/area_vt/scripts/vt_council_workman.rs2:20', ['npc vt_council_workmen']),
+    configs(QUEST_ITEM, 'quests/quest_regicide/scripts/quest_regicide.rs2:639', ['loc regicide_tar_collection']),
+    configs(QUEST_ITEM, 'quests/quest_regicide/scripts/quest_regicide.rs2:672', ['loc regicide_loom']),
+    configs(QUEST_ITEM, 'quests/quest_regicide/scripts/regicide_fractionalizing_still.rs2:4', [
+        'loc regicide_fractionalizing_still',
+    ]),
+    configs(QUEST_ITEM, 'quests/quest_upass/scripts/quest_upass.rs2:421', ['loc upassdwarfbrewbarrel']),
+    configs(QUEST_ITEM, 'quests/quest_viking/scripts/viking_peer.rs2:513', [
+        'loc viking_seers_drain',
+        'loc viking_seers_tap',
+    ]),
+    configs(FURNACE, 'quests/quest_regicide/scripts/quest_regicide.rs2:693', ['loc regicide_furnace']),
     configs(GATE_CANDIDATE, 'minigames/game_agilityarena/scripts/agilityarena.rs2:222', ['loc agilityarena_handholds']),
     configs(GATE_CANDIDATE, 'quests/quest_troll_love/scripts/quest_troll_love.rs2:1', [
         'loc trollromance_piste_walk_barrier_down',
@@ -803,13 +816,7 @@ export const UNCLAIMED_ALLOW: readonly ConfigAllowed[] = [
         'loc priestperil_coffin_noanim',
         'npc priestperiltrappedmonk',
     ]),
-    configs(QUEST, 'quests/quest_regicide/scripts/quest_regicide.rs2:495', [
-        'loc regicide_catapult',
-        'loc regicide_fractionalizing_still',
-        'loc regicide_furnace',
-        'loc regicide_loom',
-        'loc regicide_tar_collection',
-    ]),
+    configs(QUEST, 'quests/quest_regicide/scripts/quest_regicide.rs2:495', ['loc regicide_catapult']),
     configs(QUEST, 'quests/quest_scorpcatcher/scripts/quest_scorpcatcher.rs2:14', [
         'npc questscorpiona',
         'npc questscorpionb',
@@ -833,15 +840,12 @@ export const UNCLAIMED_ALLOW: readonly ConfigAllowed[] = [
         'loc loc_2276',
         'loc obstical_rockswing_middle',
         'loc upass_logtrap_trigger',
-        'loc upassdwarfbrewbarrel',
         'loc upassshutchest1',
     ]),
     configs(QUEST, 'quests/quest_viking/scripts/viking_olaf.rs2:147', [
         'loc viking_musical_tree',
         'loc viking_seer_range',
-        'loc viking_seers_drain',
         'loc viking_seers_mural',
-        'loc viking_seers_tap',
         'loc viking_small_table_frozen',
     ]),
     configs(QUEST, 'quests/quest_waterfall/scripts/quest_waterfall.rs2:460', [
