@@ -13,7 +13,7 @@ import { ROOT } from '../paths';
 import { methodModel, methodRate, resolveMethods, type MethodContext } from '../model/method';
 import { profileOf, type Profile } from '../model/profile';
 import { SKILLS, type Skill } from '../model/server';
-import { locSizes } from '../place';
+import { besideSpot, locSizes } from '../place';
 import { reachGraph } from '../reach';
 import { questFacts } from '../requirements';
 import { readConfigs } from '../sources/configs';
@@ -29,6 +29,10 @@ const graph = reachGraph({ world, collision: reachCollision, size: locSizes(read
 const { methods } = resolveMethods(METHODS, ctx, legFinder(graph, world.crossings));
 const spots = world.sites.filter(s => s.kind === 'fishing-spot');
 const site = (id: string) => spots.find(s => s.id === id)!;
+/** The tiles a site's spots are used from, on any tile they move to (place.ts besideSpot, as checks.ts useTiles has them). */
+const walled = reachCollision.walled ?? (<T>(f: () => T): T => f());
+const besideOwnSpots = (s: (typeof spots)[number]) =>
+    walled(() => Object.values(s.movement!).flatMap(m => m.tiles.flatMap(t => besideSpot(t, reachCollision))));
 
 describe('Catherby shore', () => {
     const catherby = site('fishing-spot:catherby:0');
@@ -64,9 +68,7 @@ describe('Catherby shore', () => {
         expect(catherby.movement!.rarefish!.radius).toBe(16);
     });
     test('stands on the shore, beside a tile its spots move to, needing nothing, with Catherby bank nearest', () => {
-        const stand = catherby.stand!;
-        const tiles = Object.values(catherby.movement!).flatMap(m => m.tiles);
-        expect(tiles.some(t => Math.max(Math.abs(t.x - stand.x), Math.abs(t.z - stand.z)) === 1)).toBe(true);
+        expect(besideOwnSpots(catherby)).toContainEqual(catherby.stand!);
         expect(catherby.reach).toContainEqual([]);
         expect(catherby.nearest!.bank!.site).toBe('bank:catherby-bank:0');
     });
@@ -108,6 +110,16 @@ test('every fishing site covers its spawns, and a spot that never moves covers o
     const brimhaven = site('fishing-spot:brimhaven:0').movement!['category_633']!;
     expect(brimhaven.tiles).toHaveLength(1);
     expect(brimhaven.radius).toBe(COVER_MARGIN);
+});
+
+test('every npc fishing stand is a tile its spots are used from: one sharing an edge with a tile they move to', () => {
+    // A loc spot (the lava eels' loc_2630) is used from its reachTiles, as checks.ts useTiles has it.
+    const npcSpots = spots.filter(s => s.stand && s.features.every(i => world.features[i]!.source === 'npc'));
+    expect(npcSpots.length).toBeGreaterThan(35);
+    const off = npcSpots.filter(
+        s => !besideOwnSpots(s).some(t => t.x === s.stand!.x && t.z === s.stand!.z && t.level === s.stand!.level),
+    );
+    expect(off.map(s => s.id)).toEqual([]);
 });
 
 test('spots sharing a movement enum are one site per shore', () => {

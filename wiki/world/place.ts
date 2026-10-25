@@ -384,6 +384,18 @@ function besideTiles(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: S
 }
 
 /**
+ * The walkable tiles a player uses an npc standing on `t` from, as besideCluster has them for a cluster of that one
+ * tile that does not wander: one sharing an edge with it that steps onto it or passes the entity reach test, so not
+ * a diagonal one nor one across a wall. A fishing spot's, on each tile it moves to (standTile, checks.ts useTiles).
+ */
+export function besideSpot(t: Tile, collision: StepCollision): Tile[] {
+    const box = { x1: t.x, z1: t.z, x2: t.x, z2: t.z };
+    return besideCluster({ bbox: box, roam: box, centre: t }, collision).filter(u =>
+        collision.walkable(u.level, u.x, u.z),
+    );
+}
+
+/**
  * A site's stand tile: first a tile a walk gets to (SiteOptions.walked), as a tile walled in with the locs
  * (the bankers' side of a counter) is no stand. With locs: a tile that reaches one of them, nearest the centre;
  * at a bank, first the one on the side facing away from the bankers. A booth reaches from every open side
@@ -397,7 +409,7 @@ function besideTiles(c: Pick<NpcSpawn, 'bbox' | 'roam' | 'centre'>, collision: S
  * PathingEntity.inApproachDistance (server/engine/src/engine/entity/PathingEntity.ts:422) takes an approach op:
  * the Burthorpe Games Room barmaid is traded with across her bar. When a member moves (SiteOptions.moves: a fishing
  * spot, which teleports among its enum's tiles, skill_fishing/scripts/fishing_movement.rs2:8-47), the walkable
- * tiles beside any tile a member can stand on instead of the grown bbox, nearest the centre of those tiles' cover
+ * tiles beside any tile a member can stand on (besideSpot) instead of the grown bbox, nearest the centre of those tiles' cover
  * (cover.ts coverOf), as a spot placed at one end of its enum spends most of its time away from there.
  */
 function standTile(
@@ -406,7 +418,7 @@ function standTile(
     kind: FeatureKind,
     centre: Tile,
     bbox: Rect,
-    collision: SiteCollision,
+    collision: StepCollision,
     {
         size,
         walked = () => true,
@@ -417,6 +429,7 @@ function standTile(
 ): Tile | null {
     const locs = members.filter(i => features[i]!.source === 'loc');
     let found: Candidate[];
+    let target = centre;
     if (locs.length) {
         const bankers = members.filter(i => features[i]!.source === 'npc').map(i => features[i]!.tile);
         let toward = { x: 0, z: 0 };
@@ -439,22 +452,21 @@ function standTile(
             return out;
         });
         const moved = members.flatMap(i => moves?.(features[i]!) ?? []);
-        const spots = moved.length ? uniqueTiles([...members.map(i => features[i]!.tile), ...moved]) : [];
-        if (spots.length) centre = coverOf(spots).centre;
-        const beside = spots.length
-            ? spots.flatMap(t => grownBox({ x1: t.x, z1: t.z, x2: t.x, z2: t.z }, t.level))
-            : grownBox(bbox, centre.level);
-        found = uniqueTiles([...beside.filter(t => collision.walkable(t.level, t.x, t.z)), ...far]).map(tile => ({
-            tile,
-            away: 0,
-        }));
+        let beside: Tile[];
+        if (moved.length) {
+            const spots = uniqueTiles([...members.map(i => features[i]!.tile), ...moved]);
+            target = coverOf(spots).centre;
+            const walled = collision.walled ?? (<T>(f: () => T): T => f());
+            beside = walled(() => spots.flatMap(t => besideSpot(t, collision)));
+        } else beside = grownBox(bbox, centre.level).filter(t => collision.walkable(t.level, t.x, t.z));
+        found = uniqueTiles([...beside, ...far]).map(tile => ({ tile, away: 0 }));
     }
     const unwalked = (c: Candidate): number => (walked(c.tile) ? 0 : 1);
     found.sort(
         (a, b) =>
             unwalked(a) - unwalked(b) ||
             b.away - a.away ||
-            dist2(a.tile, centre) - dist2(b.tile, centre) ||
+            dist2(a.tile, target) - dist2(b.tile, target) ||
             a.tile.x - b.tile.x ||
             a.tile.z - b.tile.z,
     );
@@ -562,7 +574,7 @@ export function buildSites(
     features: readonly Feature[],
     resolve: (t: Tile) => string[],
     zones: Zones,
-    collision: SiteCollision,
+    collision: StepCollision,
     { size, log, walked, free, approach, courses, shore, movement, moves }: SiteOptions,
 ): Placed<Site>[] {
     const paths = features.map(f => resolve(f.tile));

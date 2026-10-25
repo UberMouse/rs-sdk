@@ -25,7 +25,8 @@ aside in the last three).
 
 A site's stand tile is the first candidate a walk reaches with no requirement, else the first it reaches at all
 (`SiteOptions.free`): a sandbar behind a key is no stand when a free tile exists. A fishing site's candidates are
-the walkable tiles beside any tile its spots move to (its enum's tiles and the spawns, `SiteOptions.moves`), nearest
+the walkable tiles beside any tile its spots move to (its enum's tiles and the spawns, `SiteOptions.moves`), as
+`place.ts` `besideSpot` has them for the `stand` check too (sharing an edge, not across a wall), nearest
 the centre of their cover, so a pool spawned at one end of its enum stands by the middle; its nearest sinks are
 priced from that stand.
 

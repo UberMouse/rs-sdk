@@ -4,7 +4,7 @@
 // allowlist entry naming no site (invalid) or matching no finding (stale), as it does for EXPECTED_UNREACHED.
 import type { Classification } from './classify';
 import { SINKS } from './distance';
-import { besideCluster, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
+import { besideCluster, besideSpot, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
 import { coord, STEPS, type Reach, type ReachGraph } from './reach';
 import { dominates, joinUse } from './requirements';
 import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
@@ -244,7 +244,7 @@ const tileRect = (t: Tile, grow = 0): Rect => ({ x1: t.x - grow, z1: t.z - grow,
 /**
  * The tiles each of a site's features is used from: a loc's reachTiles; an npc's walkable tiles beside where it
  * walks (besideCluster, its roam the site's wander round its spawn); a fishing spot's, the tiles beside each tile its
- * subtype's spots can stand on (Site.movement), as a spot moves to any of them.
+ * subtype's spots can stand on (Site.movement, place.ts besideSpot, as standTile stands), as a spot moves to any of them.
  */
 function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: StandInput): Tile[][] {
     const { collision, size } = input;
@@ -259,7 +259,7 @@ function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: S
         const spots = site.kind === 'fishing-spot' ? site.movement?.[f.subtype]?.tiles : undefined;
         if (!spots) return beside(f.tile, site.wander ?? 0);
         let tiles = bySubtype.get(f.subtype);
-        if (!tiles) bySubtype.set(f.subtype, (tiles = spots.flatMap(t => beside(t, 0))));
+        if (!tiles) bySubtype.set(f.subtype, (tiles = spots.flatMap(t => besideSpot(t, collision))));
         return tiles;
     });
 }

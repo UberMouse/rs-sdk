@@ -333,6 +333,15 @@ split.
   tiles (not only the spawns' grown bbox), preferring, after main's `walked`/`free` order, the one nearest the
   movement cover's centre; `nearest` is then priced from that stand as today.
 
+**Amended (implementation):** "not only the spawns' grown bbox" is read as *instead of* it, not as a union: a site
+whose spots move takes only the tiles beside its spots' tiles (the spawns are among them), since a union would let
+bbox tiles at the spawn end win the `walked`/`free` order, and §2.3 of the design doc already says "beside its
+spots' tiles". "Beside" is one rule for the stand and check 4's use tiles (`place.ts` `besideSpot`, which
+`checks.ts` `useTiles` calls too): `besideCluster` of the one tile with no wander, walkable, so a tile sharing an
+edge that steps onto it or passes the entity reach test, not a diagonal one nor one across a wall. A spot that
+does not move keeps the grown bbox, as any npc site does. At the merged HEAD no enum feeds two sites (8bdc4b697's
+join merged the A2 enums), so check 5's real test pins 0 of those and the one pool roaming out (Shilo Village).
+
 ### Acceptance criteria
 
 - [ ] A real test reproduces, before the allowlist, every enum that still feeds several sites at the merged HEAD

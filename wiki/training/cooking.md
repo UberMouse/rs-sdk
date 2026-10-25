@@ -8,9 +8,9 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | Method | Where | Min | 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 99 | gp/hr | Binding | Measured |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `lure-lumbridge-cook-bank` | [Lumbridge (Misthalin)](../places/lumbridge.md) `fishing-spot:lumbridge:0` | 351k at 25 | - | - | 498k | 642k | 789k | 861k | 895k | 925k | 950k | 971k | 16.4k | travel | 758k at 68 (86%) |
-| `swordfish-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 341k at 45 | - | - | - | - | 657k | 828k | 1.01M | 1.16M | 1.26M | 1.35M | 67.2k | player | - |
+| `swordfish-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 341k at 45 | - | - | - | - | 658k | 829k | 1.01M | 1.16M | 1.26M | 1.35M | 67.3k | player | - |
 | `swordfish-fishing-guild-cook-bank` | [Fishing Guild (Kandarin)](../places/fishing-guild.md) `fishing-spot:fishing-guild:0` | 972k at 68 | - | - | - | - | 785k | 903k | 1.01M | 1.16M | 1.27M | 1.36M | 67.7k | player | - |
-| `shark-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 677k at 80 | - | - | - | - | - | - | - | 677k | 842k | 1.02M | 58.2k | player | - |
+| `shark-catherby-cook-bank` | [Catherby (Kandarin)](../places/catherby.md) `fishing-spot:catherby:0` | 677k at 80 | - | - | - | - | - | - | - | 677k | 843k | 1.02M | 58.3k | player | - |
 | `shark-fishing-guild-cook-bank` | [Fishing Guild (Kandarin)](../places/fishing-guild.md) `fishing-spot:fishing-guild:0` | 679k at 80 | - | - | - | - | - | - | - | 679k | 845k | 1.02M | 58.5k | player | - |
 
 - `lure-lumbridge-cook-bank`: Fly fishing at the River Lum, cooked on the Lumbridge pot, banked at Varrock East. Plans: lure-cook-bank. The measured Cooking includes 16 raw fish held from an earlier run (30,500 XP); without them ~656k/h. The plan drops burnt fish; the floor banks them.
@@ -20,7 +20,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Measured**: 758k at 68 by conductor2 on 2026-10-11.
 - `swordfish-catherby-cook-bank`: Tuna and swordfish harpooned at Catherby, cooked on the Catherby range, banked at Catherby. Plans: catherby-swordfish, catherby-shark-fallback. Cooking 60-99 band, Fishing alongside. The plan buys a harpoon from Harry and travels in from Ardougne once; its runs include that prologue.
   - **Requires**: Reach: none. Levels: Fishing 35, Cooking 45, each with the other skills at 99; every skill at once: 45. Tools: Harpoon.
-  - **Sink**: cooking at [Catherby (Kandarin)](../places/catherby.md) `range:catherby:0`, then bank at [Catherby bank (Catherby)](../places/catherby-bank.md) `bank:catherby-bank:0`; legs 18 + 8 + 21 run ticks.
+  - **Sink**: cooking at [Catherby (Kandarin)](../places/catherby.md) `range:catherby:0`, then bank at [Catherby bank (Catherby)](../places/catherby-bank.md) `bank:catherby-bank:0`; legs 18 + 8 + 20 run ticks.
   - **Supplies/hr** at 99: none.
 - `swordfish-fishing-guild-cook-bank`: Tuna and swordfish harpooned at the Fishing Guild, cooked on its range, banked in the guild. Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.
   - **Requires**: Reach: 68 Fishing. Levels: Fishing 68, Cooking 45, each with the other skills at 99; every skill at once: 68. Tools: Harpoon.
@@ -28,7 +28,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
   - **Supplies/hr** at 99: none.
 - `shark-catherby-cook-bank`: Sharks harpooned at Catherby, cooked on the Catherby range, banked at Catherby. The Net/Harpoon spots (memberfish) at the Catherby shore, harpoon only: Fishing 76 for sharks, Cooking 80 to cook them. The spots move over the whole shore (fishing_movement_catherby_enum, 280 + random(250) ticks), which the floor does not model: it assumes a spot is always at hand. No promoted plan; unmeasured.
   - **Requires**: Reach: none. Levels: Fishing 76, Cooking 80, each with the other skills at 99; every skill at once: 80. Tools: Harpoon.
-  - **Sink**: cooking at [Catherby (Kandarin)](../places/catherby.md) `range:catherby:0`, then bank at [Catherby bank (Catherby)](../places/catherby-bank.md) `bank:catherby-bank:0`; legs 18 + 8 + 21 run ticks.
+  - **Sink**: cooking at [Catherby (Kandarin)](../places/catherby.md) `range:catherby:0`, then bank at [Catherby bank (Catherby)](../places/catherby-bank.md) `bank:catherby-bank:0`; legs 18 + 8 + 20 run ticks.
   - **Supplies/hr** at 99: none.
 - `shark-fishing-guild-cook-bank`: Sharks harpooned at the Fishing Guild, cooked on its range, banked in the guild. Fishing 68 to enter. The spots move over the guild shore (fishing_movement_fishing_guild_enum), which the floor does not model. No promoted plan; unmeasured.
   - **Requires**: Reach: 68 Fishing. Levels: Fishing 76, Cooking 80, each with the other skills at 99; every skill at once: 80. Tools: Harpoon.

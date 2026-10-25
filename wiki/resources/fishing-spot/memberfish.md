@@ -32,11 +32,11 @@ The server multiplies the base XP by its xpRate (25 on the local server, learnin
 | Area | Site | Centre | Stand | Box | Area to copy | Count | F2P | Multiway | Wilderness | Requires | Nearest bank |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:0` | (2694, 2706) | (2695, 2706) | (2694, 2706) | [Movement](#movement) | 1 | no | yes | - | Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 90 ticks via Monkey Madness done |
-| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2779, 2742) | (2780, 2741) | [Movement](#movement) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 126 ticks via wear any mm greegree + Monkey Madness done |
-| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2847, 3430) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 3 | no | no | - | - | Catherby bank (Catherby), 21 ticks |
+| [Ape Atoll](../../places/ape-atoll.md) | `fishing-spot:ape-atoll:1` | (2780, 2741) | (2780, 2742) | (2780, 2741) | [Movement](#movement) | 1 | no | yes | - | wear any mm greegree + Monkey Madness at stage 10 | Gnome Stronghold south bank (Tree Gnome Stronghold), 126 ticks via wear any mm greegree + Monkey Madness done |
+| [Catherby (Kandarin)](../../places/catherby.md) | `fishing-spot:catherby:0` | (2847, 3427) | (2846, 3430) | x 2836-2859, z 3423-3431 | [Movement](#movement) | 3 | no | no | - | - | Catherby bank (Catherby), 21 ticks |
 | [Fishing Guild (Kandarin)](../../places/fishing-guild.md) | `fishing-spot:fishing-guild:0` | (2605, 3418) | (2604, 3416) | x 2599-2612, z 3410-3426 | [Movement](#movement) | 6 | no | no | - | 68 Fishing | Fishing Guild bank (Fishing Guild), 14 ticks |
-| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2646, 3710) | x 2645-2648, z 3708-3711 | [Movement](#movement) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 146 ticks |
-| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3273) | (2165, 3279) | x 2165, z 3266-3286 | [Movement](#movement) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 288 ticks via Regicide at stage 8 + 56 Agility |
+| [Rellekka (Kandarin)](../../places/rellekka.md) | `fishing-spot:rellekka:1` | (2647, 3710) | (2645, 3710) | x 2645-2648, z 3708-3711 | [Movement](#movement) | 4 | no | no | - | - | Seers' Village bank (Seers' Village), 146 ticks |
+| [Tirannwn](../../places/tirannwn.md) | `fishing-spot:tirannwn:0` | (2165, 3273) | (2165, 3280) | x 2165, z 3266-3286 | [Movement](#movement) | 3 | no | no | - | Regicide at stage 13 + 56 Agility | Gnome Stronghold south bank (Tree Gnome Stronghold), 288 ticks via Regicide at stage 8 + 56 Agility |
 
 ## Movement
 

@@ -7,7 +7,6 @@ import {
     spawnClusters,
     type LocReach,
     type Placed,
-    type SiteCollision,
     type StepCollision,
 } from '../place';
 import type { Config } from '../sources/configs';
@@ -43,13 +42,17 @@ const booth = (x: number, z: number): Feature => loc('bank', 'booth', x, z);
 const banker = (x: number, z: number): Feature => npc('bank', 'banker', x, z);
 
 /**
- * A stub of the collision data: every tile walkable except the blocked ones, and a loc reached from a
- * tile on its footprint or sharing an edge with it (the engine's rectangle rule with no walls about).
+ * A stub of the collision data: every tile walkable except the blocked ones, a step onto any walkable tile, and a
+ * loc reached from a tile on its footprint or sharing an edge with it (the engine's rectangle rule with no walls
+ * about).
  */
-function stubCollision(blocked: Tile[] = []): SiteCollision {
+function stubCollision(blocked: Tile[] = []): StepCollision {
     const closed = new Set(blocked.map(t => `${t.level},${t.x},${t.z}`));
+    const walkable = (level: number, x: number, z: number): boolean => !closed.has(`${level},${x},${z}`);
     return {
-        walkable: (level, x, z) => !closed.has(`${level},${x},${z}`),
+        walkable,
+        land: () => true,
+        canStep: (level, x, z, dx, dz) => walkable(level, x + dx, z + dz),
         reached: (from: Tile, l: LocReach) => {
             const [w, len] = l.rotation % 2 === 1 ? [l.length, l.width] : [l.width, l.length];
             const dx = from.x < l.x ? l.x - from.x : from.x > l.x + w - 1 ? from.x - (l.x + w - 1) : 0;
@@ -475,6 +478,9 @@ const spot = (config: string, x: number, z: number): Feature => ({
 const shore = (f: Feature): string | undefined =>
     f.config.startsWith('a') ? 'a' : f.config.startsWith('b') ? 'b' : undefined;
 const freeOffOrigin = (t: Tile): boolean => t.x !== 0;
+/** Whether a step or reach between two tiles crosses a wall between (0, 0) and (1, 0). */
+const acrossOrigin = (a: Tile, b: Tile): boolean =>
+    a.z === 0 && b.z === 0 && Math.min(a.x, b.x) === 0 && Math.max(a.x, b.x) === 1;
 const shoreSites = (fs: Feature[]): Placed<Site>[] =>
     buildSites(fs, oneArea, noZones, stubCollision(), { ...quiet, shore });
 
@@ -509,6 +515,26 @@ describe('shores', () => {
         expect(fixed!.stand).toEqual({ level: 0, x: 1, z: 1 });
         const [pool] = buildSites(fs, oneArea, noZones, collision, { ...opts, moves: () => water });
         expect(pool!.stand).toEqual({ level: 0, x: 20, z: 1 });
+    });
+
+    test('a pool stands only on a tile sharing an edge with a spot tile, not a diagonal one nor one across a wall', () => {
+        // Spots on water at (0, 0) and (6, 2): the cover's centre (3, 1) is nearest the diagonals (1, 1) and (5, 1).
+        const water = [
+            { level: 0, x: 0, z: 0 },
+            { level: 0, x: 6, z: 2 },
+        ];
+        const stub = stubCollision(water);
+        const fs = [spot('a1', 0, 0)];
+        const opts = { ...quiet, shore, moves: () => [water[1]!] };
+        expect(buildSites(fs, oneArea, noZones, stub, opts)[0]!.stand).toEqual({ level: 0, x: 1, z: 0 });
+        // A wall between (0, 0) and (1, 0): the next edge tile, beside the other spot tile.
+        const walled: StepCollision = {
+            ...stub,
+            canStep: (level, x, z, dx, dz) =>
+                !acrossOrigin({ level, x, z }, { level, x: x + dx, z: z + dz }) && stub.canStep(level, x, z, dx, dz),
+            reached: (from, l) => !acrossOrigin(from, l) && stub.reached(from, l),
+        };
+        expect(buildSites(fs, oneArea, noZones, walled, opts)[0]!.stand).toEqual({ level: 0, x: 5, z: 2 });
     });
 });
 
