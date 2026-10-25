@@ -240,6 +240,22 @@ export function dominates(a: readonly string[], b: readonly string[], quests?: Q
     });
 }
 
+/**
+ * The ways to use a site: each set a walk gets there with (`walk`) joined with each set using it asks (`gated`),
+ * the minimal ones. A site whose use asks nothing (`gated` the one empty set) keeps `walk` as it is.
+ */
+export function joinUse(
+    walk: readonly (readonly string[])[],
+    gated: readonly (readonly string[])[],
+    quests?: QuestFacts,
+): string[][] {
+    if (gated.length === 1 && !gated[0]!.length) return walk.map(w => [...w]);
+    return minimalSets(
+        walk.flatMap(w => gated.map(g => [...w, ...g])),
+        quests,
+    );
+}
+
 /** Sets by size, then by their strings. */
 const bySizeThenStrings = (a: readonly string[], b: readonly string[]): number =>
     a.length - b.length || cmp(a.join('\n'), b.join('\n'));

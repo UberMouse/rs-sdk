@@ -119,10 +119,10 @@ describe('stand connectivity', () => {
         );
     });
 
-    test('by kind: npc 38, rock 6, tree 9, pickpocket 2', () => {
+    test('by kind: npc 37, rock 6, tree 9, pickpocket 2', () => {
         const kinds = new Map<string, number>();
         for (const f of stand) kinds.set(f.keys[0]!.kind, (kinds.get(f.keys[0]!.kind) ?? 0) + 1);
-        expect(Object.fromEntries(kinds)).toEqual({ npc: 38, pickpocket: 2, rock: 6, tree: 9 });
+        expect(Object.fromEntries(kinds)).toEqual({ npc: 37, pickpocket: 2, rock: 6, tree: 9 });
     });
 });
 

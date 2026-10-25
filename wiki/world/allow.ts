@@ -371,17 +371,10 @@ export const STAND_ALLOW: readonly Allowed[] = [
     ),
     // Sites spanning West Ardougne's wall: their members inside it ask Biohazard, the stand is outside.
     ...all(
-        shutOff("West Ardougne's wall (Biohazard), whose doors lie past the walk's bound"),
+        shutOff("West Ardougne's wall doors (Biohazard done), the stand outside the wall"),
         'areas/area_ardougne_west/scripts/doors.rs2:26',
         [siteAt('npc', 2454, 3301), siteAt('tree', 2433, 3308)],
     ),
-    {
-        keys: [siteAt('npc', 3430, 3291)],
-        reason:
-            "Mort Myre's snails wander 20 tiles, and the free walk from the stand to three of them leaves the bbox grown by twice the npc radius the check walks: " +
-            `the walk round is that long, so ${RESTAND} moves the stand`,
-        source: 'maps/m53_51.jm2:5813',
-    },
     // No bank: the way out is a rolled crossing the build could not price.
     ...all(unpriced("Edgeville Dungeon's monkey bars (15 Agility)"), 'skill_agility/scripts/shortcuts.rs2:153', [
         siteAt('npc', 3116, 9992),

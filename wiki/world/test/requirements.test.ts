@@ -3,6 +3,7 @@ import {
     formatRequirement,
     canonicalSet,
     dominates,
+    joinUse,
     minimalSets,
     questFacts,
     parseRequirement,
@@ -83,6 +84,17 @@ describe('requirement sets', () => {
         expect(subsetOf([], ['members'])).toBe(true);
         expect(subsetOf(['members'], ['coins:30', 'members'])).toBe(true);
         expect(subsetOf(['coins:30', 'members'], ['members'])).toBe(false);
+    });
+
+    test('joinUse joins each walk set with each use set, the minimal ones; a use asking nothing keeps the walk', () => {
+        const walk = [['coins:30'], ['quest:zanaris']];
+        expect(joinUse(walk, [[]])).toEqual(walk);
+        expect(joinUse(walk, [['skill:ranged:40'], ['coins:20']])).toEqual([
+            ['coins:50'],
+            ['coins:20', 'quest:zanaris'],
+            ['coins:30', 'skill:ranged:40'],
+            ['quest:zanaris', 'skill:ranged:40'],
+        ]);
     });
 
     test('minimalSets drops a set that asks more than another, and duplicates, smallest first', () =>

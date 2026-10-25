@@ -5,7 +5,7 @@
 import { SINKS } from './distance';
 import { besideCluster, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
 import { coord, STEPS, type Reach, type ReachGraph } from './reach';
-import { dominates, minimalSets } from './requirements';
+import { dominates, joinUse } from './requirements';
 import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
 import type { Area, Feature, FeatureKind, Rect, Site, Tile } from './types';
 
@@ -193,7 +193,7 @@ export function applyAllow(findings: readonly Finding[], allow: readonly Allowed
 export interface StandWorld extends SiteKeyWorld {
     sites: readonly Pick<
         Site,
-        'id' | 'kind' | 'features' | 'bbox' | 'stand' | 'reach' | 'nearest' | 'wander' | 'movement'
+        'id' | 'kind' | 'features' | 'bbox' | 'stand' | 'reach' | 'nearest' | 'wander' | 'roam' | 'movement'
     >[];
     features: readonly Pick<Feature, 'source' | 'config' | 'tile' | 'shape' | 'rotation' | 'subtype'>[];
 }
@@ -238,27 +238,29 @@ function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: S
 
 /**
  * The tiles a walk from tile `start` gets to by steps and by crossings that need nothing (an edge or opened loc
- * whose alternatives hold the empty set), inside `bound` (x and z, any level), as tile indexes, handing each to
- * `done` as it is reached; the walk stops once `done` returns true. Read inside `graph.within`, as stepMask is.
+ * whose alternatives hold set 0, the empty set, as fillReach and priceCrossings test), inside `bound` (x and z,
+ * any level), as tile indexes, handing each to `done` as it is reached; the walk stops once `done` returns true.
+ * An opened loc's tile asks its requirement on the start too, as fillReach's arrive does. Read inside
+ * `graph.within`, as stepMask is.
  */
 function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: number) => boolean): void {
-    const { index, sets, edgeFrom, openAlts, stepMask } = graph;
-    const free = (alts: readonly number[]): boolean => alts.some(a => sets.size(a) === 0);
+    const { index, edgeFrom, openAlts, stepMask } = graph;
     const inside = (i: number): boolean => {
         const [x, z] = [index.x(i), index.z(i)];
         return x >= bound.x1 && x <= bound.x2 && z >= bound.z1 && z <= bound.z2;
     };
-    const seen = new Set([start]);
-    const queue = [start];
-    let stop = done(start);
+    const seen = new Set<number>();
+    const queue: number[] = [];
+    let stop = false;
     const visit = (i: number): void => {
-        if (stop || i < 0 || seen.has(i) || !inside(i)) return;
-        const alts = openAlts.get(i);
-        if (alts && !free(alts)) return;
+        // The start is the walk's own whatever the bound (a connector's stand is beside its 0-radius bbox).
+        if (stop || i < 0 || seen.has(i) || (i !== start && !inside(i))) return;
+        if (openAlts.get(i)?.includes(0) === false) return;
         seen.add(i);
         queue.push(i);
         stop = done(i);
     };
+    visit(start);
     while (queue.length) {
         if (stop) return;
         const i = queue.pop()!;
@@ -266,13 +268,53 @@ function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: 
         const [level, x, z] = [index.level(i), index.x(i), index.z(i)];
         for (let bit = 0; bit < 8; bit++)
             if (m & (1 << bit)) visit(index.of(level, x + STEPS[bit]![0], z + STEPS[bit]![1]));
-        for (const e of edgeFrom.get(i) ?? []) if (free(e.alts)) visit(e.to);
+        for (const e of edgeFrom.get(i) ?? []) if (e.alts.includes(0)) visit(e.to);
     }
 }
 
 /**
+ * The most an npc site wanders for which the stand check walks to its members. An npc's use tiles lie up to its
+ * wander past its spawn (useTiles), so the walk's bound grows with it; the sites tested today wander 63 at most,
+ * and a config wandering map-wide (quest_fluffs.npc:57, wanderrange=30000) would make the walk the whole map.
+ */
+const MAX_WANDER = 64;
+
+/**
+ * How many of a site's members (`tiles`, each member's use tiles) the free walk from tile `start` gets to a use tile
+ * of, bounded to the site's roam (its bbox when it has none) grown by twice its kind's SITE_RADIUS, the way round
+ * a wall. The walk stops once half are, so a count under half is exact. Undefined for a site wandering past
+ * MAX_WANDER, whose bound would be most of the map: it is not walked, so it is never found cut off on a walk
+ * capped short of its members.
+ */
+function usableFrom(
+    graph: ReachGraph,
+    site: StandWorld['sites'][number],
+    start: number,
+    tiles: readonly Tile[][],
+): number | undefined {
+    if ((site.wander ?? 0) > MAX_WANDER) return undefined;
+    const grow = 2 * SITE_RADIUS[site.kind];
+    const { x1, z1, x2, z2 } = site.roam ?? site.bbox;
+    // The members each tile is a use tile of.
+    const membersAt = new Map<number, number[]>();
+    tiles.forEach((ts, m) => {
+        for (const t of ts) {
+            const i = graph.index.of(t.level, t.x, t.z);
+            membersAt.set(i, [...(membersAt.get(i) ?? []), m]);
+        }
+    });
+    const usable = new Set<number>();
+    freeComponent(graph, start, { x1: x1 - grow, z1: z1 - grow, x2: x2 + grow, z2: z2 + grow }, i => {
+        for (const m of membersAt.get(i) ?? []) usable.add(m);
+        return usable.size * 2 >= tiles.length;
+    });
+    return usable.size;
+}
+
+/**
  * Check 4, stand connectivity (audit E4): a site with a stand some set reaches whose stand's free walk component
- * (freeComponent, bounded to the bbox grown by twice the kind's SITE_RADIUS) holds a use tile (useTiles) of fewer
+ * (freeComponent, bounded to the site's roam grown by twice the kind's SITE_RADIUS: usableFrom) holds a use tile
+ * (useTiles) of fewer
  * than half its members, or, for a kind that takes its products to a bank (distance.ts SINKS), whose stand has no
  * nearest bank or one whose way asks more than any member's own way in does: place.ts standTile takes the
  * walkable candidate nearest the centre, which can be a pocket the members are not in. A member is a feature with
@@ -292,12 +334,7 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
     const waysIn = (site: StandWorld['sites'][number], tiles: readonly Tile[][]): string[][] => {
         const gated = input.use?.(site) ?? [[]];
         const context = input.context ?? ((set: readonly string[]) => [...set]);
-        return tiles.flatMap(ts =>
-            minimalSets(
-                reach.setsAny(ts).flatMap(w => gated.map(g => [...w, ...g])),
-                graph.quests,
-            ).map(context),
-        );
+        return tiles.flatMap(ts => joinUse(reach.setsAny(ts), gated, graph.quests).map(context));
     };
     return graph.within(() =>
         sites.flatMap((site, n) => {
@@ -305,25 +342,10 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             const start = graph.index.of(stand.level, stand.x, stand.z);
             const tiles = uses[n]!;
             if (start < 0 || !tiles.length) return [];
-            const grow = 2 * SITE_RADIUS[site.kind];
-            const { x1, z1, x2, z2 } = site.bbox;
-            // The members each tile is a use tile of. The walk stops once half are usable, so only a failing site
-            // floods its whole bounded component, and the count it reports is exact.
-            const membersAt = new Map<number, number[]>();
-            tiles.forEach((ts, m) => {
-                for (const t of ts) {
-                    const i = graph.index.of(t.level, t.x, t.z);
-                    membersAt.set(i, [...(membersAt.get(i) ?? []), m]);
-                }
-            });
-            const usableSet = new Set<number>();
-            freeComponent(graph, start, { x1: x1 - grow, z1: z1 - grow, x2: x2 + grow, z2: z2 + grow }, i => {
-                for (const m of membersAt.get(i) ?? []) usableSet.add(m);
-                return usableSet.size * 2 >= tiles.length;
-            });
-            const usable = usableSet.size;
             const wrong: string[] = [];
-            if (usable * 2 < tiles.length) wrong.push(`${usable} of ${tiles.length} members usable from the stand`);
+            const usable = usableFrom(graph, site, start, tiles);
+            if (usable !== undefined && usable * 2 < tiles.length)
+                wrong.push(`${usable} of ${tiles.length} members usable from the stand`);
             if (SINKS[site.kind]?.includes('bank')) {
                 const bank = site.nearest?.bank;
                 if (!bank) wrong.push('no bank from the stand');

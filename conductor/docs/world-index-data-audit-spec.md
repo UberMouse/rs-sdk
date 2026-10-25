@@ -265,6 +265,15 @@ A site with a stand and a non-empty `reach` (unreached sites are the unreached r
   or needs a requirement no member's own use tile needs (the Catherby case: a stand inside Harry's shop, whose only
   way out is a ladder behind a dusty key, while the shore needs nothing).
 
+**Amended (implementation):** only a feature with a use tile some walk from the Lumbridge spawn gets to counts as
+a member; one used from nowhere (a duck mid-pond, a banker behind the counter) is not this check's to report, and a
+site with no members is skipped. The bank test compares by `requirements.ts` `dominates`: the bank's way must ask
+no more than one member's way in, that member's use tiles' sets joined with the use gates and in the came-from
+context the nearest sinks were searched under, as `build.ts` `addReach` joins them. The walk is bounded to the
+site's roam (its bbox when it has none) grown by `2 * SITE_RADIUS[kind]`, since an npc is used from up to its wander
+past its spawn; a site wandering more than 64 tiles (a map-wide `wanderrange`) is not walked, so it is never found
+cut off on a walk too short for it.
+
 ### Acceptance criteria
 
 - [ ] A scripted-world unit test builds the Catherby case the doc's E4 describes (a stand in a pocket entered only

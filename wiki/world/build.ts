@@ -36,7 +36,7 @@ import {
 } from './checks';
 import { classifier } from './classify';
 import { contentHash } from './content-hash';
-import { minimalSets, questFacts, type QuestFacts } from './requirements';
+import { joinUse, questFacts, type QuestFacts } from './requirements';
 import { formatDistance, nearestSinks, priceCrossings, SINKS, type DistanceReport } from './distance';
 import { METHODS } from './methods';
 import { methodModel, resolveMethods, toWorldMethod, type MethodModel } from './model/method';
@@ -492,16 +492,7 @@ export function addReach(
 ): { sites: Site[]; npcSpawns: NpcSpawn[]; unreached: Unreached[] } {
     const sites = placed.sites.map(s => {
         if (!s.stand) return { ...s, reach: [] };
-        const walk = reach.setsAt(s.stand);
-        const gated = use.sets(s);
-        if (gated.length === 1 && !gated[0]!.length) return { ...s, reach: walk };
-        return {
-            ...s,
-            reach: minimalSets(
-                walk.flatMap(w => gated.map(g => [...w, ...g])),
-                use.quests,
-            ),
-        };
+        return { ...s, reach: joinUse(reach.setsAt(s.stand), use.sets(s), use.quests) };
     });
     const npcSpawns = placed.npcSpawns.map(c => ({ ...c, reach: reach.setsAny(beside(c)) }));
     const unreached = sites

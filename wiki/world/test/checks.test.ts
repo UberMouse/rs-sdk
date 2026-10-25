@@ -335,6 +335,13 @@ const SHORE = at(0, 3206, 3211);
 /** The shop, and a pond round (3211, 3215) whose middle no walkable tile is beside. */
 const pond = () => shop().block(...[3210, 3211, 3212].flatMap(x => [3214, 3215, 3216].map(z => at(0, x, z))));
 
+/** The shop, and a line of trees blocking column 3216. */
+const line = () => {
+    const g = shop();
+    for (let z = 3200; z < 3232; z++) g.block(at(0, 3216, z));
+    return g;
+};
+
 describe('standConnectivity', () => {
     test('finds the Catherby case: a stand in a shop behind a locked door, its spots outside on the shore and free', () =>
         expect(run(shop(), [door([[KEY]])], [site(IN_SHOP, [[KEY]], [KEY])]).map(f => f.detail)).toEqual([
@@ -386,5 +393,81 @@ describe('standConnectivity', () => {
         expect(run(pond(), [], [near], features)).toEqual([]);
         const alone = { ...site(SHORE, [[]], undefined), features: [2, 3] };
         expect(run(pond(), [], [alone], features)).toEqual([]);
+    });
+
+    test("walks as far as an npc's roam: a snail penned in, its pen's door 27 tiles from its spawn", () => {
+        // The pen (3216-3220, 3202-3230) opens by a door in its north wall; the stand is south of it, outside. The
+        // tiles round its other sides are blocked, so none outside is beside the snail through the wall.
+        const SPAWN = at(0, 3218, 3203);
+        const pen = { ...door([[]]), tile: at(0, 3218, 3230), angle: 1 };
+        const snail = (wander: number, gates: Gate[]) =>
+            run(
+                new Grid()
+                    .room(3216, 3202, 3220, 3230)
+                    .block(
+                        ...[3215, 3221].flatMap(x => [...Array(30).keys()].map(dz => at(0, x, 3201 + dz))),
+                        ...[3216, 3217, 3218, 3219, 3220].map(x => at(0, x, 3201)),
+                    ),
+                gates,
+                [
+                    {
+                        id: 'npc:pen:0',
+                        kind: 'npc',
+                        features: [0],
+                        bbox: { ...SPAWN, x1: 3218, z1: 3203, x2: 3218, z2: 3203 },
+                        stand: at(0, 3218, 3200),
+                        reach: [[]],
+                        nearest: { bank: { site: 'bank:town:0', runTicks: 10, requires: [] } },
+                        wander,
+                        roam: { level: 0, x1: 3218 - wander, z1: 3203 - wander, x2: 3218 + wander, z2: 3203 + wander },
+                    },
+                ],
+                [{ source: 'npc', config: 'snail', tile: SPAWN, subtype: '' }],
+            ).map(f => f.detail);
+        // Wandering 20, the walk's bound reaches the door; not wandering, it is 12 tiles round the spawn.
+        expect(snail(20, [pen])).toEqual([]);
+        expect(snail(0, [pen])).toEqual(['npc:pen:0 stand (3218, 3200): 0 of 1 members usable from the stand']);
+        // Behind a locked door it is found, unless it wanders past MAX_WANDER, where it is not walked at all.
+        const locked = [{ ...pen, requires: [[KEY]] }];
+        expect(snail(20, locked)).toEqual(['npc:pen:0 stand (3218, 3200): 0 of 1 members usable from the stand']);
+        expect(snail(70, locked)).toEqual([]);
+    });
+
+    test("an opened loc's tile asking something stops the walk, on the stand too", () => {
+        // A line of trees down column 3216, the one at z 3211 cut through by what `requires` asks.
+        const TREE = at(0, 3216, 3211);
+        const tree = (requires: string[][]): Gate => ({
+            ...door(requires),
+            trigger: 'oploc1,tree',
+            loc: 'tree',
+            tile: TREE,
+            shape: 10,
+            opens: true,
+        });
+        const east = (requires: string[][], stand: Tile) =>
+            run(line(), [tree(requires)], [site(stand, requires, [])]).map(f => f.detail);
+        const EAST = at(0, 3218, 3211);
+        expect(east([[]], EAST)).toEqual([]);
+        expect(east([[KEY]], EAST)).toEqual([
+            'fishing-spot:shore:0 stand (3218, 3211): 0 of 2 members usable from the stand',
+        ]);
+        expect(east([[KEY]], TREE)).toEqual([
+            'fishing-spot:shore:0 stand (3216, 3211): 0 of 2 members usable from the stand',
+        ]);
+    });
+
+    test('half the members usable passes and less than half is found, the walk stopping at half or not', () => {
+        // Two spots in the locked shop, beside the stand there, that do not move; the net spots are outside.
+        const inShop = [at(0, 3221, 3221), at(0, 3223, 3223)].map(t => ({ ...spot(t), subtype: 'bait' }));
+        const features = [...SPOTS.map(spot), ...inShop];
+        const of = (members: number[]) =>
+            run(shop(), [door([[KEY]])], [{ ...site(IN_SHOP, [[KEY]], []), features: members }], features).map(
+                f => f.detail,
+            );
+        expect(of([0, 1, 2, 3])).toEqual([]);
+        expect(of([0, 2, 3])).toEqual([]);
+        expect(of([0, 1, 2])).toEqual([
+            'fishing-spot:shore:0 stand (3222, 3222): 1 of 3 members usable from the stand',
+        ]);
     });
 });
