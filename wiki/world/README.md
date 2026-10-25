@@ -290,17 +290,20 @@ some walk reaches.
   classify rule made a feature through (`classify.ts` `Classification.unclaimed`: an attackable npc's kind claims
   only its Attack ops, so a cow's Milk is unclaimed), whose body or the labels and procs it calls (`reach`, as
   classify follows them) has a gather or processing shape (`checks.ts` `SHAPES`): a `stat_advance` of a stat but
-  agility (an obstacle's xp is a crossing's), `~openshop`, `inv_add` with a `loc_change`/`loc_del`/`npc_changetype`
-  in one body or with a `p_delay`/`anim` while a body runs the op again (`p_oploc`, `p_opnpc`), `~pickup_loc_floor`,
-  or a use-item op that takes the item (`inv_del`) and gives one or animates. Ops labelled Talk-to or Attack are
-  left out, and a bare `inv_add` is no shape: dialogue handing out a quest item would flood the list (audit B1, B2,
-  C). One finding per config, `loc <config>` or `npc <config>`, naming each trigger's `file:line`. An entry is
+  agility, one of agility on a config the reach graph has no crossing by (`crossedConfigs`: a loc or npc of
+  `World.crossings` or a loc of `World.gates`; a crossed obstacle's xp is the crossing's), `~openshop`, `inv_add`
+  with a `loc_change`/`loc_del`/`npc_changetype` in one body or with a `p_delay`/`anim` while a body runs the op
+  again (`p_oploc`, `p_opnpc`), `~pickup_loc_floor`, or a use-item op that takes the item (`inv_del`) and gives one
+  or animates. Ops labelled Talk-to are left out, and an npc's labelled Attack (a loc's, a training dummy's, is a
+  use), and a bare `inv_add` is no shape: dialogue handing out a quest item would flood the list (audit B1, B2, C).
+  One finding per config, `loc <config>` or `npc <config>`, naming each trigger's `file:line`. An entry is
   `{ configs, reason, source }`: one config or a group sharing the reason, with one's trigger line as the source; it
   is invalid when it names no config or one no map places, and stale for each config it names that no finding is
-  about. The report counts the findings each reason allows. **The entries whose reason names a kind
-  (`well: 2.6`, `crop: 2.6`, `mill: 2.6`, ...) are plan 2.6's to-do list**: adding the kind or fixing the rule makes
-  the entry stale, and it goes. The other reasons say why the config is no feature (a quest one-off, a minigame, a
-  door).
+  about; one naming a config an earlier entry names is a stale duplicate, naming the configs they share. The report
+  counts the findings each reason allows. **The entries whose reason names a kind (`well: 2.6`, `crop: 2.6`,
+  `mill: 2.6`, ...) are plan 2.6's to-do list**: adding the kind or fixing the rule makes the entry stale, and it
+  goes. The other reasons say why the config is no feature (a quest one-off, a minigame, a door, a repeatable use
+  with no kind 2.6 plans), and an uncrossed agility obstacle's why the build has no crossing for it.
 - **`near-miss`** (`NEAR_MISS_ALLOW`): a site whose bbox lies outside every rect of a leaf area (one no area is the
   parent of) on its level, but 1-3 tiles (Chebyshev) from one, while its own leaf area is another: usually a rect
   drawn as a label square and never fitted to the place, with the site filed under the parent instead. A leaf drawn

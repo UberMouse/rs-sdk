@@ -129,15 +129,21 @@ Make these `--check` failures with a reviewed allowlist (each entry with a reaso
    shape (`inv_add`, `~pickup_loc_floor`, `stat_advance`, `~openshop`) and no feature kind. The output is the to-do
    list for 2.6. Built (`W/checks.ts` `unclaimedTriggers`, `W/README.md` "Build checks"): per trigger no rule claimed,
    over its reach. Measured on the placed configs: a bare `inv_add` caught 661 configs, most of them dialogue handing
-   out quest items, so the gather shape is `inv_add` with a `loc_change`/`loc_del`/`npc_changetype` in one body (67)
-   or with a `p_delay`/`anim` while a body re-runs the op (6); `stat_advance` caught 158 (145 past the label cut
-   below), 76 of those agility-only obstacles (cut: a crossing's xp), leaving 69; `~pickup_loc_floor` 4 (the crops); `~openshop` 0 (the shop rule
-   claims every one). Cows' milking and the mill hoppers have none of those, so a use-item shape was added: the item
-   taken (`inv_del`) with one given (104) or an `anim`/`p_delay` (103). Ops labelled Talk-to or Attack are cut (14
-   configs), and an attackable npc's kind claims only its Attack ops. 253 configs found: 164 quest one-offs, 28
-   minigame, 11 doors, 7 tutorial, 6 treasure-trail steps, 3 empty rocks, 7 with no planned kind (key chests,
-   repairs, dyes, a combat dummy), and 27 naming a 2.6 kind (stalls 6, wells 2, sand pit 1, crops 4, pickables 7,
-   mill 5, livestock 2).
+   out quest items, so the gather shape is `inv_add` with a `loc_change`/`loc_del`/`npc_changetype` in one body or
+   with a `p_delay`/`anim` while a body re-runs the op (70 configs); a `stat_advance` of a stat but agility 70; one of
+   agility 78, 62 of them on configs the reach graph crosses by (`World.crossings` or `World.gates`: the xp is the
+   crossing's, cut), leaving 16, obstacles the build has no crossing for; `~pickup_loc_floor` 4 (the crops);
+   `~openshop` 0 (the shop rule claims every one). Cows' milking and the mill hoppers have none of those, so a
+   use-item shape was added: the item taken (`inv_del`) with one given or an `anim`/`p_delay` (143). Ops labelled
+   Talk-to are cut, and an npc's labelled Attack (a loc's is a training dummy's use): 13 configs. An attackable npc's
+   kind claims only its Attack ops. 268 configs found: 133 quest one-offs, 29 minigame, 11 doors, 7 tutorial, 6
+   treasure-trail steps, 3 empty rocks, 13 uncrossed agility obstacles (each reason says why the build has no
+   crossing), 5 more with no feature (quest-only items and water, a ghast to fight), 28 with no planned kind (cat
+   buyers 3, chompy hunting 4, dig site finds 5, elemental workshop 3, key chests 3, combat dummies 2, repairs 2,
+   quest pickpockets 2, a beehive, a flour barrel, a dye maker, a monkey skinner), and 33 naming a 2.6 kind (stalls
+   6, wells 2, sand pit 1, crops 4, pickables 13 with Jungle Potion's 5 herbs, mill 5, livestock 2). 128 findings
+   are use-item only, 106 of them quest one-offs, quest items, treasure-trail steps and key chests (a key or item
+   used on a chest, a door or an npc): 2.6 can narrow the use shape before it adds kinds.
 2. **Near-miss area** (D): a covered non-tree site within 3 tiles of a named leaf area's rects but resolved to
    another area. Sites further off a rect than that, such as Port Sarim's shop row (6-15 tiles west of it), are not
    its findings: 2.5 refits them from its own list.

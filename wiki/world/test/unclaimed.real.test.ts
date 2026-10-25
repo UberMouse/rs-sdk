@@ -3,8 +3,9 @@
 // and UNCLAIMED_ALLOW leaves nothing and matches every entry.
 import { describe, expect, test } from 'bun:test';
 import { UNCLAIMED_ALLOW } from '../allow';
-import { applyConfigAllow, unclaimedTriggers } from '../checks';
+import { applyConfigAllow, crossedConfigs, placedConfigs, unclaimedTriggers } from '../checks';
 import { classification } from '../classify';
+import { loadWorld } from '../load';
 import { first, readConfigs } from '../sources/configs';
 import { readCourses } from '../sources/courses';
 import { readDbrows } from '../sources/dbrows';
@@ -26,11 +27,9 @@ const classified = classification({
 });
 const map = readAllMapSquares();
 const packs = { loc: readPack('loc'), npc: readPack('npc') };
-const placed = {
-    loc: new Set(map.locs.flatMap(l => packs.loc.name.get(l.id) ?? [])),
-    npc: new Set(map.npcs.flatMap(n => packs.npc.name.get(n.id) ?? [])),
-};
-const found = unclaimedTriggers({ placed, configs, classification: classified });
+const placed = placedConfigs(map, packs);
+// The crossings the build modelled, as world.json has them.
+const found = unclaimedTriggers({ placed, configs, classification: classified, crossed: crossedConfigs(loadWorld()) });
 const detail = new Map(found.map(f => [f.config, f.detail]));
 
 /** The placed configs of `on` with a trigger in `file`. */
@@ -73,6 +72,16 @@ describe('unclaimed triggers', () => {
     test("finds sheep to shear and cows to milk, a cow's Attack left to its npc kind (audit C5)", () => {
         expect(detail.get('npc sheepunsheered')).toContain('[opnpcu,sheepunsheered]');
         expect(detail.get('npc cow')).toBe('npc/scripts/cow_milking.rs2:1 [opnpcu,cow] use');
+    });
+
+    test("finds Varrock's sword dummy, an Attack op on a loc", () =>
+        expect(detail.get('loc sworddummy')).toBe(
+            'areas/area_varrock/scripts/attack_dummy.rs2:1 [oploc2,sworddummy] xp',
+        ));
+
+    test('finds the rope swing no gate row writes, but not its siblings World.gates has', () => {
+        expect(detail.get('loc tree_ropeswing2')).toContain('[oploc1,_island_rope_swing] agility');
+        for (const c of ['tree_ropeswing1', 'tree_ropeswing3']) expect(detail.has(`loc ${c}`)).toBe(false);
     });
 
     test('UNCLAIMED_ALLOW leaves no finding, and every entry names placed configs and matches', () => {

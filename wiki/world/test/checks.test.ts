@@ -512,6 +512,8 @@ describe('unclaimedTriggers', () => {
         ['yewtree', { name: ['Yew'], op1: ['Chop down'] }],
         ['odd_stall', { name: ['Stall'], op2: ['Steal-from'] }],
         ['log_balance', { name: ['Log'], op1: ['Walk-across'] }],
+        ['pipe', { name: ['Pipe'], op1: ['Squeeze-through'] }],
+        ['dummy', { name: ['Dummy'], op2: ['Attack'] }],
         ['bush', { name: ['Bush'], op1: ['Pick-from'] }],
         ['unplaced_stall', { name: ['Stall'], op2: ['Steal-from'] }],
     ]);
@@ -523,6 +525,8 @@ describe('unclaimedTriggers', () => {
         trig('skill_woodcutting/scripts/woodcutting.rs2', 'loc', 'yewtree', '1', 'stat_advance(woodcutting, 250);'),
         trig('quests/quest_x/scripts/market.rs2', 'loc', 'odd_stall', '2', 'stat_advance(thieving, 160);', 7),
         trig('skill_agility/scripts/shortcuts.rs2', 'loc', 'log_balance', '1', 'stat_advance(agility, 75);'),
+        trig('quests/quest_x/scripts/pipe.rs2', 'loc', 'pipe', '1', 'stat_advance(agility, 50);', 4),
+        trig('areas/area_x/scripts/dummy.rs2', 'loc', 'dummy', '2', 'stat_advance(attack, 5);'),
         trig('areas/area_x/scripts/bush.rs2', 'loc', 'bush', '1', '~pick_bush(berries);', 3),
         trig('quests/quest_x/scripts/quest_x.rs2', 'loc', 'unplaced_stall', '2', 'stat_advance(thieving, 160);'),
         trig(
@@ -558,23 +562,26 @@ describe('unclaimedTriggers', () => {
         callables,
     };
     const placed = {
-        loc: new Set(['yewtree', 'odd_stall', 'log_balance', 'bush']),
+        loc: new Set(['yewtree', 'odd_stall', 'log_balance', 'pipe', 'dummy', 'bush']),
         npc: new Set(['questgiver', 'cow']),
     };
     const found = unclaimedTriggers({
         placed,
         configs: { loc: locs, npc: npcs },
         classification: classification(input),
+        crossed: { loc: new Set(['log_balance']), npc: new Set<string>() },
     });
 
-    test('finds an unclaimed stat_advance loc, a gather through a called proc, and a use-item on an attackable npc', () =>
+    test('finds an unclaimed stat_advance loc, uncrossed agility, a loc Attack op, a gather through a proc and a use-item', () =>
         expect(found).toEqual([
             { config: 'loc bush', detail: 'areas/area_x/scripts/bush.rs2:3 [oploc1,bush] gather' },
+            { config: 'loc dummy', detail: 'areas/area_x/scripts/dummy.rs2:1 [oploc2,dummy] xp' },
             { config: 'loc odd_stall', detail: 'quests/quest_x/scripts/market.rs2:7 [oploc2,odd_stall] xp' },
+            { config: 'loc pipe', detail: 'quests/quest_x/scripts/pipe.rs2:4 [oploc1,pipe] agility' },
             { config: 'npc cow', detail: 'npc/scripts/cow_milking.rs2:1 [opnpcu,cow] use' },
         ]));
 
-    test('leaves out a claimed tree, agility xp, dialogue handing out an item, a monster attack and unplaced configs', () => {
+    test("leaves out a claimed tree, a crossing's agility xp, dialogue handing out an item, an npc's Attack op and unplaced configs", () => {
         const names = found.map(f => f.config);
         for (const c of ['loc yewtree', 'loc log_balance', 'npc questgiver', 'loc unplaced_stall'])
             expect(names).not.toContain(c);
@@ -640,7 +647,7 @@ describe('applyConfigAllow', () => {
             left: ['loc well: water_sources.rs2:69 [oplocu,_well] use'],
             allowed: 2,
             invalid: [],
-            stale: ['loc wheat (p.rs2:14): a duplicate of loc potato, loc wheat (p.rs2:2)'],
+            stale: ['loc wheat (p.rs2:14): a duplicate of loc potato, loc wheat (p.rs2:2) for loc wheat'],
             reasons: [['crop: 2.6', 2]],
         }));
 });

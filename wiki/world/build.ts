@@ -28,8 +28,10 @@ import { AREAS, EXPECTED_UNREACHED, type ExpectedUnreached } from './areas';
 import {
     applyAllow,
     applyConfigAllow,
+    crossedConfigs,
     NEAR_MISS_GAP,
     nearMissAreas,
+    placedConfigs,
     splitResources,
     standConnectivity,
     unclaimedTriggers,
@@ -470,8 +472,8 @@ export function useSets(
     gates: readonly UseGate[],
 ): (s: Pick<Site, 'features'>) => string[][] {
     const byConfig = new Map(gates.map(g => [g.config, g.requires]));
-    const placedConfigs = new Set(features.map(f => f.config));
-    const stale = gates.filter(g => !placedConfigs.has(g.config)).map(g => g.config);
+    const featureConfigs = new Set(features.map(f => f.config));
+    const stale = gates.filter(g => !featureConfigs.has(g.config)).map(g => g.config);
     if (stale.length) throw new Error(`USE_GATES names configs no feature is placed as: ${stale.join(', ')}`);
     return s => {
         const sets = s.features.map(i => byConfig.get(features[i]!.config) ?? []);
@@ -1090,17 +1092,18 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         TRANSPORTS_OUT_OF_SCOPE.filter(o => o.sailSite).map(o => o.script),
     );
     const checkWorld = { sites, features, areas };
-    // The configs the maps place, unpacked ids left out (they are in `unpacked`).
-    const placedConfigs = {
-        loc: new Set(map.locs.flatMap(l => packs.loc.name.get(l.id) ?? [])),
-        npc: new Set(map.npcs.flatMap(n => packs.npc.name.get(n.id) ?? [])),
-    };
-    const configs = { loc: locConfigs, npc: npcConfigs };
+    // Unpacked ids are left out: they are in `unpacked`.
+    const placed = placedConfigs(map, packs);
     const checks: Record<CheckId, CheckResult> = {
         unclaimed: applyConfigAllow(
-            unclaimedTriggers({ placed: placedConfigs, configs, classification: classified }),
+            unclaimedTriggers({
+                placed,
+                configs: { loc: locConfigs, npc: npcConfigs },
+                classification: classified,
+                crossed: crossedConfigs(reachInput.world),
+            }),
             UNCLAIMED_ALLOW,
-            placedConfigs,
+            placed,
         ),
         'near-miss': applyAllow(nearMissAreas(checkWorld, COVERED), NEAR_MISS_ALLOW, checkWorld),
         split: applyAllow(splitResources(checkWorld, COVERED), SPLIT_ALLOW, checkWorld),
