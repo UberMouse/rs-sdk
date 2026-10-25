@@ -373,6 +373,13 @@ const spot = (tile: Tile): StandWorld['features'][number] => ({
     tile,
     subtype: 'net',
 });
+/** An npc of `config` spawned at (x, z). */
+const npc = (config: string, x: number, z: number): StandWorld['features'][number] => ({
+    source: 'npc',
+    config,
+    tile: at(0, x, z),
+    subtype: '',
+});
 /** The spots' site: its stand and reach, and the nearest bank's way given as `bank` (undefined, none). */
 const site = (stand: Tile, reach: string[][], bank: string[] | undefined): StandWorld['sites'][number] => ({
     id: 'fishing-spot:shore:0',
@@ -395,8 +402,15 @@ const run = (
     const input = { world: { features: [], connectors: [], gates, transports: [] }, collision: grid, size };
     const graph = reachGraph(input);
     const reach = fillReach({ ...input, start: at(0, 3200, 3200) }, graph);
-    return standConnectivity({ sites, features }, { graph, collision: grid, size, reach, ...more });
+    return standConnectivity(
+        { sites, features },
+        { graph, collision: grid, size, reach, movement: wanders(), ...more },
+    );
 };
+/** The movement of npc configs wandering as `by` has them, the rest not. */
+const wanders =
+    (by: Record<string, number> = {}): StandInput['movement'] =>
+    config => ({ wander: by[config] ?? 0, respawnTicks: 100 });
 const IN_SHOP = at(0, 3222, 3222);
 const SHORE = at(0, 3206, 3211);
 /** The shop, and a pond round (3211, 3215) whose middle no walkable tile is beside. */
@@ -506,6 +520,7 @@ describe('standConnectivity', () => {
                     },
                 ],
                 [{ source: 'npc', config: 'snail', tile: SPAWN, subtype: '' }],
+                { movement: wanders({ snail: wander }) },
             ).map(f => f.detail);
         // Wandering 20, the walk's bound reaches the door; not wandering, it is 12 tiles round the spawn.
         expect(snail(20, [pen])).toEqual([]);
@@ -537,6 +552,40 @@ describe('standConnectivity', () => {
         expect(east([[KEY]], TREE)).toEqual([
             'fishing-spot:shore:0 stand (3216, 3211): 0 of 2 members usable from the stand',
         ]);
+    });
+
+    test("an npc is used from its own config's wander, not the most its site's members wander", () => {
+        // A line of trees down column 3216 but for an open tile at z 3211 that a gate asking the key opens: an npc
+        // steps across it, the stand's free walk does not. A snail east of the line, beside the stand, wanders 5;
+        // two slugs west of it wander 0, so a walk gets beside them only through the gate.
+        const GAP = at(0, 3216, 3211);
+        const grid = new Grid();
+        for (let z = 3200; z < 3232; z++) if (z !== GAP.z) grid.block(at(0, 3216, z));
+        const gate: Gate = { ...door([[KEY]]), trigger: 'oploc1,tree', loc: 'tree', tile: GAP, shape: 10, opens: true };
+        const lined: StandWorld['sites'][number] = {
+            id: 'npc:line:0',
+            kind: 'npc',
+            features: [0, 1, 2],
+            bbox: { level: 0, x1: 3214, z1: 3211, x2: 3218, z2: 3212 },
+            stand: at(0, 3218, 3210),
+            reach: [[]],
+            nearest: { bank: { site: 'bank:town:0', runTicks: 10, requires: [] } },
+            wander: 5,
+            roam: { level: 0, x1: 3209, z1: 3206, x2: 3223, z2: 3217 },
+        };
+        const features = [npc('snail', 3218, 3211), npc('slug', 3214, 3211), npc('slug', 3214, 3212)];
+        const of = (by: Record<string, number>) =>
+            run(grid, [gate], [lined], features, { movement: wanders(by) }).map(f => f.detail);
+        expect(of({ snail: 5 })).toEqual(['npc:line:0 stand (3218, 3210): 1 of 3 members usable from the stand']);
+        // Were the slugs to wander 5 too, they would step across the gap to beside the stand.
+        expect(of({ snail: 5, slug: 5 })).toEqual([]);
+    });
+
+    test('a reached stand the reach graph has no tile for throws', () => {
+        const off = { ...site(SHORE, [[]], []), stand: at(0, 9000, 9000) };
+        expect(() => run(shop(), [], [off])).toThrow(
+            'fishing-spot:shore:0 stand (9000, 9000) is reached but not in the reach graph',
+        );
     });
 
     test('half the members usable passes and less than half is found, the walk stopping at half or not', () => {

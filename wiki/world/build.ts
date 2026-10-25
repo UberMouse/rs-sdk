@@ -1113,7 +1113,15 @@ export function buildWorld({ generatedFrom, areas, collision }: BuildInput): {
         'near-miss': applyAllow(nearMissAreas(checkWorld, COVERED), NEAR_MISS_ALLOW, checkWorld),
         split: applyAllow(splitResources(checkWorld, COVERED), SPLIT_ALLOW, checkWorld),
         stand: applyAllow(
-            standConnectivity(checkWorld, { graph, collision, size: locSizes(locConfigs), reach: fill, use, context }),
+            standConnectivity(checkWorld, {
+                graph,
+                collision,
+                size: locSizes(locConfigs),
+                reach: fill,
+                movement,
+                use,
+                context,
+            }),
             STAND_ALLOW,
             checkWorld,
         ),

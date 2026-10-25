@@ -4,11 +4,20 @@
 // allowlist entry naming no site (invalid) or matching no finding (stale), as it does for EXPECTED_UNREACHED.
 import type { Classification } from './classify';
 import { SINKS } from './distance';
-import { besideCluster, besideSpot, reachTiles, SITE_RADIUS, type SiteOptions, type StepCollision } from './place';
+import {
+    besideCluster,
+    besideSpot,
+    reachTiles,
+    roamOf,
+    SITE_RADIUS,
+    type SiteOptions,
+    type StepCollision,
+} from './place';
 import { coord, STEPS, type Reach, type ReachGraph } from './reach';
 import { dominates, joinUse } from './requirements';
 import { resolveSiteKeys, siteKeyMatches, siteKeyName, type SiteKey, type SiteKeyWorld } from './site-key';
 import { first, type Config } from './sources/configs';
+import type { NpcMovement } from './sources/npc-movement';
 import type { Trigger } from './sources/triggers';
 import type { Area, Feature, FeatureKind, Rect, Site, Tile, World } from './types';
 import { cmp, uniqueTiles } from './util';
@@ -84,6 +93,12 @@ const looked = (world: CheckWorld, covered: ReadonlySet<FeatureKind>): CheckWorl
 
 /** How far outside a leaf area's rects a site may lie and still be a near miss. */
 export const NEAR_MISS_GAP = 3;
+
+/**
+ * The most items a list in a check's text names before it counts the rest: an allowlist entry's configs
+ * (configsName), a fishing site's spot tiles outside its area (movingFeatures).
+ */
+const NAMED_AT = 3;
 
 /**
  * Check 2, near-miss area (audit D): a site whose bbox lies outside every rect of a leaf area (one no area is the
@@ -233,6 +248,8 @@ export interface StandInput {
     size: SiteOptions['size'];
     /** The fill over `graph` from the Lumbridge spawn. */
     reach: Pick<Reach, 'setsAny' | 'reached'>;
+    /** Each npc config's movement (sources/npc-movement.ts), as SiteOptions.movement. */
+    movement: (config: string) => NpcMovement;
     /** What using a site asks, as alternatives (build.ts useSets); absent, nothing. */
     use?: (s: Pick<Site, 'features'>) => string[][];
     /** A reach set widened into the context its nearest sinks were searched under (distance.ts NearestOptions.context). */
@@ -243,7 +260,8 @@ const tileRect = (t: Tile, grow = 0): Rect => ({ x1: t.x - grow, z1: t.z - grow,
 
 /**
  * The tiles each of a site's features is used from: a loc's reachTiles; an npc's walkable tiles beside where it
- * walks (besideCluster, its roam the site's wander round its spawn); a fishing spot's, the tiles beside each tile its
+ * walks (besideCluster, its roam its own config's wander round its spawn, roamOf, as the engine bounds each npc by
+ * its own type's wanderrange); a fishing spot's, the tiles beside each tile its
  * subtype's spots can stand on (Site.movement, place.ts besideSpot, as standTile stands), as a spot moves to any of them.
  */
 function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: StandInput): Tile[][] {
@@ -257,7 +275,7 @@ function useTiles(site: StandWorld['sites'][number], world: StandWorld, input: S
         const f = world.features[i]!;
         if (f.source === 'loc') return reachTiles(f, collision, size);
         const spots = site.kind === 'fishing-spot' ? site.movement?.[f.subtype]?.tiles : undefined;
-        if (!spots) return beside(f.tile, site.wander ?? 0);
+        if (!spots) return beside(f.tile, roamOf([f.config], tileRect(f.tile), input.movement).wander);
         let tiles = bySubtype.get(f.subtype);
         if (!tiles) bySubtype.set(f.subtype, (tiles = spots.flatMap(t => besideSpot(t, collision))));
         return tiles;
@@ -301,9 +319,9 @@ function freeComponent(graph: ReachGraph, start: number, bound: Rect, done: (i: 
 
 /**
  * The most an npc site wanders for which the stand check walks to its members. An npc's use tiles lie up to its
- * wander past its spawn (useTiles), so the walk's bound grows with it; the sites tested today wander 63 at most,
- * and a config wandering map-wide (quest_fluffs.npc:57, wanderrange=30000) would make the walk the whole map. A
- * site wandering more is a finding of its own, not walked.
+ * wander past its spawn (useTiles), so the walk's bound grows with it, and a config wandering map-wide
+ * (quest_fluffs.npc:57, wanderrange=30000) would make the walk the whole map. A site wandering more is a finding of
+ * its own, not walked.
  */
 const MAX_WANDER = 64;
 
@@ -371,7 +389,9 @@ export function standConnectivity(world: StandWorld, input: StandInput): Finding
             const stand = site.stand!;
             const start = graph.index.of(stand.level, stand.x, stand.z);
             const tiles = uses[n]!;
-            if (start < 0 || !tiles.length) return [];
+            // The site's reach is the fill's at its stand (build.ts addReach), so the graph holds the stand.
+            if (start < 0) throw new Error(`${site.id} stand ${coord(stand)} is reached but not in the reach graph`);
+            if (!tiles.length) return [];
             const wrong: string[] = [];
             const wander = site.wander ?? 0;
             if (wander > MAX_WANDER) wrong.push(`wanders ${wander} > MAX_WANDER ${MAX_WANDER}, not walked`);
@@ -578,9 +598,6 @@ export function unclaimedTriggers(input: UnclaimedInput): ConfigFinding[] {
         }),
     );
 }
-
-/** The most configs an entry's name lists before it counts the rest. */
-const NAMED_AT = 3;
 
 const configsName = (keys: readonly ConfigKey[]): string =>
     keys.length > NAMED_AT

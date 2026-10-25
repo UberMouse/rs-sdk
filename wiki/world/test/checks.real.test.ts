@@ -11,20 +11,25 @@ import { locSizes } from '../place';
 import { fillReach, reachGraph } from '../reach';
 import { resolveSiteKeys, siteAt, type SiteKey } from '../site-key';
 import { readConfigs } from '../sources/configs';
+import { readConstants } from '../sources/constants';
+import { npcMovements, readMovementDefaults } from '../sources/npc-movement';
 import { cameFromContext } from '../sources/npc-teleports';
+import { readScripts } from '../sources/triggers';
 
 const world = loadWorld();
 const near = nearMissAreas(world, COVERED);
 const split = splitResources(world, COVERED);
 // As the build walks it: the graph over world.json's rows and the collision the SDK bundles, the fill from the
-// Lumbridge spawn, the use gates and the essence mine's came-from context.
+// Lumbridge spawn, the npc configs' movement, the use gates and the essence mine's came-from context.
 const size = locSizes(readConfigs('loc'));
+const movements = npcMovements(readConfigs('npc'), readScripts(), readMovementDefaults(), readConstants());
 const graph = reachGraph({ world, collision: reachCollision, size });
 const stand = standConnectivity(world, {
     graph,
     collision: reachCollision,
     size,
     reach: fillReach({ world, collision: reachCollision, size }, graph),
+    movement: c => movements.get(c)!,
     use: useSets(world.features, USE_GATES),
     context: cameFromContext(world.crossings),
 });
