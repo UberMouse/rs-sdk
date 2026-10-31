@@ -32,6 +32,16 @@ None.
 6. Travel to **Varrock**. Go to the **Blue Moon Inn** and climb to the 2nd floor. Use the key on the chest to find a note revealing the treasure's location.
 7. Go to **Falador Park** with a **spade**. Dig at the location indicated by the note (near the statue) to uncover the treasure.
 
+### Verified route
+
+Run by `conductor/plans/pirates-treasure.ts`: a fresh load of `lib:pirates-treasure-start` (Port Sarim (3047, 3236), Att/Str/Def 30, HP 30, 100 coins, white apron, spade, 6 swordfish) to quest done in 416 s: Frank, apron and Wydin's job, boat out (about 90 s); Luthas, rum, bananas and crate (about 120 s); boat back, Wydin's crate and Frank (about 60 s); the chest (about 90 s); the gardener and the dig. [v 2026-11-01 questw6 local]
+
+- The shop item is "Karamjan rum" (30 gp, Zambo). Carry none aboard: customs confiscates only rum carried. [v 2026-11-01 questw6 local]
+- The rum goes in the banana crate (2943, 3151) only after Luthas has employed you, and is retrievable only after he pays (30 gp) for the full 10-banana crate. Banana trees (2909-2912, 3158-3164) have only "Search" (the `pick` task cannot take them; use `interact` with `tile`), give 5 bananas each and stay empty for a few minutes. [v 2026-11-01 questw6 local]
+- Wydin's job needs the quest started and a white apron; his back door needs it worn. The right crate is (3009, 3207) among several "Crate" locs: give `interact` its `tile`. [v 2026-11-01 questw6 local]
+- The Blue Moon Inn chest (3218, 3396) level 1 is usable only from (3219, 3396): a wall edge separates it from (3219, 3397), and the walk goes round (about 25 tiles). Use `at` with `tolerance: 0` and `unreachable: true`. [v 2026-11-01 questw6 local]
+- Read the Pirate message (the task reports no effect because a scroll opens, but it sets `hunt` 3). The dig at (2999, 3383) gives the treasure only when no Falador gardener is within 10 tiles; otherwise the gardener attacks instead (`quest_hunt/scripts/dig.rs2:7-9`). Kill him and dig before he respawns. Reward: 450 coins, gold ring, emerald. [v 2026-11-01 questw6 local]
+
 ## Key NPCs & Locations
 
 | NPC / Location         | Where                                      |

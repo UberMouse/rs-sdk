@@ -1,0 +1,151 @@
+{
+    "name": "pirates-treasure-start",
+    "purpose": "Pirate's Treasure start: Port Sarim (3047,3236), Att/Str/Def 30, HP 30, 100 coins (fares 60, rum 30, Luthas repays 30), white apron and spade (sellers far from route), 6 swordfish (the Falador park gardener must be killed before the dig; the gardener branch hits hard for a low-level bot), hunt 0",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3047,
+                "z": 3236
+            },
+            "skills": {
+                "Attack": 30,
+                "Strength": 30,
+                "Defence": 30,
+                "Hitpoints": 30
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 100
+                },
+                {
+                    "id": 1005,
+                    "count": 1
+                },
+                {
+                    "id": 952,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "b641d42b21ddd34d5291dcdc3e27743b11f51aa7",
+    "createdAt": "2026-10-31T13:58:46.020Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3047,
+            "z": 3236,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 30,
+            "Defence": 30,
+            "Strength": 30,
+            "Hitpoints": 30
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 100
+            },
+            {
+                "id": 1005,
+                "name": "white_apron",
+                "count": 1
+            },
+            {
+                "id": 952,
+                "name": "spade",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
