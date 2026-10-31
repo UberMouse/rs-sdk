@@ -6,7 +6,8 @@
 //   Kandarin, and Yanille, Castle Wars and the places the seed put under it are Kandarin's. Regions
 //   overlap only where a smaller region lies under a larger one's rect: the islands, Crandor and
 //   Entrana under Asgarnia's and Kandarin's, Tutorial Island under Asgarnia's, Miscellania under
-//   Kandarin's, and the Barbarian agility course under the Barbarian Outpost's. The smaller rect wins
+//   Kandarin's, the Barbarian agility course under the Barbarian Outpost's, and the Entrana dungeon (an
+//   underground pocket) under the Taverley Dungeon's. The smaller rect wins
 //   every tile both hold at equal depth, its land included (area-resolve.ts).
 // - A bank's leaf rect is its booths, bankers and chests plus one tile, so the trees, stalls and
 //   shops beside it name the town instead.
@@ -1241,6 +1242,20 @@ export const AREAS: readonly Area[] = [
         name: 'Taverley Dungeon',
         rects: [{ x1: 2816, z1: 9664, x2: 2943, z2: 9855 }],
         notes: 'Ladder up south of Taverley at (2884, 3397).',
+    },
+    {
+        id: 'entrana-dungeon',
+        name: 'Entrana dungeon',
+        rects: [
+            { x1: 2851, z1: 9728, x2: 2868, z2: 9737 },
+            { x1: 2855, z1: 9734, x2: 2869, z2: 9745 },
+            { x1: 2836, z1: 9742, x2: 2878, z2: 9753 },
+            { x1: 2837, z1: 9751, x2: 2867, z2: 9760 },
+            { x1: 2820, z1: 9758, x2: 2851, z2: 9769 },
+            { x1: 2818, z1: 9766, x2: 2847, z2: 9777 },
+            { x1: 2821, z1: 9774, x2: 2845, z2: 9783 },
+        ],
+        notes: "A pocket of the Taverley Dungeon's map square, joined to it by no passage: Entrana's cave-monk ladder (areas/area_entrana/scripts/cave_monk.rs2:13) comes down at (2822, 9774) and its only way out is a portal to the Wilderness (entrana_dungeon.rs2:8). The rects are the collision flood fill from the landing plus a margin that stops short of the Taverley Dungeon's own tiles; conductor/lib/connectors.ts holds a copy of them (UNDERGROUND_AREAS), pinned together by conductor/test/lib/connectors.test.ts.",
     },
     {
         id: 'troll-caves',

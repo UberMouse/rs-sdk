@@ -48,7 +48,8 @@ export const UNDERGROUND_Z = 6400;
  * Dungeon, m48_149 (the Wizards' Tower basement), and four quest areas, each the bounding box (plus a margin of
  * 2 tiles) of a collision flood fill from its ladder's landing: the Paterdomus mausoleum dungeon (Priest in Peril),
  * the Tree Gnome Village cellar (Golrie's), Glarial's tomb and the Waterfall dungeon with the chalice room (Waterfall
- * Quest; the dungeon is joined to the surface by scripted moves, not a ladder). A box with a `level` holds tiles of
+ * Quest; the dungeon is joined to the surface by scripted moves, not a ladder), and three more by the same flood
+ * fill: the Temple of Ikov dungeon, the Draynor Manor basement and the Entrana dungeon. A box with a `level` holds tiles of
  * that level only; one without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
  * connector into them.
  */
@@ -62,6 +63,17 @@ const UNDERGROUND_AREAS: readonly {
 }[] = [
     // The Taverley Dungeon (collision flood fill from the ladder's landing: x 2817..2969, z 9671..9854). Its east
     // edge (x 2944..2969, z <= 9801) lies inside the mine's box, next to a mine pocket at z >= 9806; no passage joins them.
+    // The Entrana dungeon (flood fill x 2820..2876, z 9730..9781 from the landing (2822, 9774)): a pocket inside the
+    // Taverley box with no passage to it, so these rects come first. They cover every tile of the fill (2 tiles of
+    // margin, 1 or 0 where that would take a Taverley Dungeon tile) and none of the Taverley fill from (2884, 9797).
+    // wiki/world/areas.ts holds a copy of these rects (entrana-dungeon). No connector leaves it: its ladder is a one-way crossing in, its exit a portal to the Wilderness.
+    { id: 'entrana-dungeon', minX: 2851, maxX: 2868, minZ: 9728, maxZ: 9737 },
+    { id: 'entrana-dungeon', minX: 2855, maxX: 2869, minZ: 9734, maxZ: 9745 },
+    { id: 'entrana-dungeon', minX: 2836, maxX: 2878, minZ: 9742, maxZ: 9753 },
+    { id: 'entrana-dungeon', minX: 2837, maxX: 2867, minZ: 9751, maxZ: 9760 },
+    { id: 'entrana-dungeon', minX: 2820, maxX: 2851, minZ: 9758, maxZ: 9769 },
+    { id: 'entrana-dungeon', minX: 2818, maxX: 2847, minZ: 9766, maxZ: 9777 },
+    { id: 'entrana-dungeon', minX: 2821, maxX: 2845, minZ: 9774, maxZ: 9783 },
     { id: 'taverley', minX: 2816, maxX: 2943, minZ: 9664, maxZ: 9855 },
     { id: 'taverley', minX: 2944, maxX: 2975, minZ: 9728, maxZ: 9803 },
     { id: 'mine', minX: 2880, maxX: 3071, minZ: 9728, maxZ: 9855 },
@@ -82,6 +94,11 @@ const UNDERGROUND_AREAS: readonly {
     { id: 'glarial-tomb', minX: 2524, maxX: 2559, minZ: 9807, maxZ: 9850 },
     { id: 'waterfall', minX: 2559, maxX: 2597, minZ: 9859, maxZ: 9919 },
     { id: 'waterfall-chalice', minX: 2597, maxX: 2610, minZ: 9888, maxZ: 9918 },
+    // The Temple of Ikov dungeon (flood fill x 2639..2748, z 9793..9879 from the ladder's landing (2677, 9804), which
+    // also holds the trap ladder's landing (2665, 9849), ikov_dungeon.rs2:167).
+    { id: 'ikov', minX: 2637, maxX: 2750, minZ: 9791, maxZ: 9881 },
+    // The Draynor Manor basement (flood fill x 3075..3080, z 9768..9778 from the stairs' stand tile (3077, 9771)).
+    { id: 'draynor-basement', minX: 3073, maxX: 3082, minZ: 9766, maxZ: 9780 },
 ];
 
 /** The plane a tile is on: its level; at level 0 underground, `u` and the area appended. */
@@ -173,6 +190,15 @@ export const OVERRIDES: ReadonlyMap<string, Override> = new Map([
     [key(0, 2533, 9555), { name: 'Tree Gnome Village cellar ladder' }],
     // Glarial's tomb (Waterfall Quest), entered by the pebble on the tombstone: its ladder up to (2557, 3444).
     [key(0, 2556, 9844), { name: "Glarial's tomb ladder" }],
+    // Temple of Ikov: the ladder south of the Ranging Guild into the dungeon (ladders.rs2:85) and the ladder back
+    // (:94), and the dungeon's west ladder (2637, 9808), which comes out on the surface at (2637, 3407) and has no
+    // ladder down to it.
+    [key(0, 2677, 3405), { name: 'Temple of Ikov ladder' }],
+    [key(0, 2677, 9805), { name: 'Temple of Ikov ladder' }],
+    [key(0, 2637, 9808), { name: 'Temple of Ikov exit ladder' }],
+    // Draynor Manor: the basement stairs up to the manor's ground floor (stairs.rs2:423); the way down is the
+    // manor's staircase at (3115, 3357) (stairs.rs2:413).
+    [key(0, 3077, 9768), { name: 'Draynor Manor basement stairs' }],
     // Seers' Village, the spinning wheel's house (door at (2716, 3472)): the ladder to the first floor and back.
     [key(0, 2715, 3470), { name: "Seers' Village spinning house ladder" }],
     [key(1, 2715, 3470), { name: "Seers' Village spinning house ladder" }],

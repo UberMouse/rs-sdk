@@ -12,7 +12,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `hill-giants-edgeville` | [Edgeville Dungeon](../places/edgeville-dungeon.md) `npc:edgeville-dungeon:8` | 58.8k at 20 | 37.3k | 58.8k | 93.4k | 143k | 178k | 209k | 256k | 286k | 312k | 337k | 291 | 5.04k | player | - |
 | `moss-giants-varrock-sewers` † | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 75.1k at 20 | 51.2k | 75.1k | 113k | 168k | 208k | 242k | 296k | 330k | 360k | 389k | 196 | 7.53k | player | - |
 | `scorpions-dwarven-mine` † | [Dwarven Mine](../places/dwarven-mine.md) `npc:dwarven-mine:15` | 180k at 30 | 83.7k | 133k | 180k | 217k | 270k | 302k | 323k | 332k | 336k | 344k | 611 | 0 | resource | - |
-| `baby-blue-dragons-taverley` † | [Taverley Dungeon](../places/taverley-dungeon.md) `npc:taverley-dungeon:21` | 152k at 40 | 66.6k | 98.2k | 129k | 152k | 212k | 269k | 318k | 372k | 423k | 456k | 275 | 0 | player | - |
+| `baby-blue-dragons-taverley` † | [Taverley Dungeon](../places/taverley-dungeon.md) `npc:taverley-dungeon:19` | 152k at 40 | 66.6k | 98.2k | 129k | 152k | 212k | 269k | 318k | 372k | 423k | 456k | 275 | 0 | player | - |
 | `moss-giants-kandarin` † | [Kandarin](../places/kandarin.md) `npc:kandarin:46` | 236k at 40 | 108k | 159k | 208k | 236k | 295k | 352k | 405k | 457k | 508k | 536k | 270 | 10.4k | player | - |
 
 - `chickens-lumbridge`: Chickens north of Lumbridge, bones buried, feathers kept. Plans: melee-chickens. A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.

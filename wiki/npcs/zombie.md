@@ -28,6 +28,7 @@
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3139, 9885) | (3139, 9885) | 1 | 9 | x 3130-3148, z 9876-9894 | 70 ticks | - | `{ x: 3139, z: 9885, radius: 16 }` | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3147, 9888) | x 3140-3151, z 9883-9893 | 5 | 9 | x 3131-3160, z 9874-9902 | 70 ticks | - | `{ x: 3146, z: 9888, radius: 24 }` | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3147, 9904) | x 3143-3150, z 9899-9907 | 4 | 9 | x 3134-3159, z 9890-9916 | 70 ticks | - | `{ x: 3147, z: 9903, radius: 22 }` | yes |
+| [Entrana dungeon](../places/entrana-dungeon.md) | (2845, 9761) | x 2842-2849, z 9756-9766 | 5 | 9 | x 2833-2858, z 9747-9775 | 70 ticks | - | `{ x: 2846, z: 9761, radius: 23 }` | no |
 | [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | (3158, 3679) | x 3157-3158, z 3676-3681 | 2 | 9 | x 3148-3167, z 3667-3690 | 70 ticks | - | `{ x: 3158, z: 3679, radius: 19 }` | yes |
 | [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | (3165, 3667) | x 3162-3168, z 3665-3668 | 2 | 9 | x 3153-3177, z 3656-3677 | 70 ticks | - | `{ x: 3165, z: 3667, radius: 20 }` | yes |
 | [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | (3165, 3678) | (3165, 3678) | 1 | 9 | x 3156-3174, z 3669-3687 | 70 ticks | - | `{ x: 3165, z: 3678, radius: 16 }` | yes |
@@ -37,7 +38,6 @@
 | [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | (3176, 3682) | (3176, 3682) | 1 | 9 | x 3167-3185, z 3673-3691 | 70 ticks | - | `{ x: 3176, z: 3682, radius: 16 }` | yes |
 | [Kandarin](../places/kandarin.md) | (2497, 3292) | (2497, 3292) | 1 | 9 | x 2488-2506, z 3283-3301 | 70 ticks | - | `{ x: 2497, z: 3292, radius: 16 }` | no |
 | [Kandarin](../places/kandarin.md) | (2500, 3285) | x 2499-2500, z 3283-3286 | 2 | 9 | x 2490-2509, z 3274-3295 | 70 ticks | - | `{ x: 2500, z: 3285, radius: 18 }` | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2845, 9761) | x 2842-2849, z 9756-9766 | 5 | 9 | x 2833-2858, z 9747-9775 | 70 ticks | - | `{ x: 2846, z: 9761, radius: 23 }` | no |
 | [Underground Pass](../places/underground-pass.md) | (2397, 9704) | x 2394-2400, z 9701-9707 | 3 | 9 | x 2385-2409, z 9692-9716 | 70 ticks | - | `{ x: 2397, z: 9704, radius: 20 }` | no |
 | [Underground Pass](../places/underground-pass.md) | (2402, 9708) | x 2396-2409, z 9702-9714 | 9 | 9 | x 2387-2418, z 9693-9723 | 70 ticks | - | `{ x: 2403, z: 9708, radius: 25 }` | no |
 | [Underground Pass](../places/underground-pass.md) | (2408, 9710) | x 2405-2410, z 9707-9713 | 2 | 9 | x 2396-2419, z 9698-9722 | 70 ticks | - | `{ x: 2408, z: 9710, radius: 20 }` | no |

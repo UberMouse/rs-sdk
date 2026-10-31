@@ -37,10 +37,10 @@
 | [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3287, 3894) | (3287, 3894) | 1 | 6 | x 3281-3293, z 3888-3900 | 30 ticks | - | `{ x: 3287, z: 3894, radius: 12 }` | yes |
 | [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3296, 3872) | (3296, 3872) | 1 | 6 | x 3290-3302, z 3866-3878 | 30 ticks | - | `{ x: 3296, z: 3872, radius: 12 }` | yes |
 | [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | (3304, 3886) | (3304, 3886) | 1 | 6 | x 3298-3310, z 3880-3892 | 30 ticks | - | `{ x: 3304, z: 3886, radius: 12 }` | yes |
+| [Entrana dungeon](../places/entrana-dungeon.md) | (2862, 9749) | x 2861-2862, z 9747-9751 | 2 | 6 | x 2855-2868, z 9741-9757 | 30 ticks | - | `{ x: 2862, z: 9749, radius: 14 }` | no |
 | [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3028, 10250) | (3028, 10250) | 1 | 6 | x 3022-3034, z 10244-10256 | 30 ticks | - | `{ x: 3028, z: 10250, radius: 12 }` | no |
 | [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3030, 10259) | (3030, 10259) | 1 | 6 | x 3024-3036, z 10253-10265 | 30 ticks | - | `{ x: 3030, z: 10259, radius: 12 }` | no |
 | [Lava Maze dungeon](../places/lava-maze-dungeon.md) | (3035, 10245) | (3035, 10245) | 1 | 6 | x 3029-3041, z 10239-10251 | 30 ticks | - | `{ x: 3035, z: 10245, radius: 12 }` | no |
-| [Taverley Dungeon](../places/taverley-dungeon.md) | (2862, 9749) | x 2861-2862, z 9747-9751 | 2 | 6 | x 2855-2868, z 9741-9757 | 30 ticks | - | `{ x: 2862, z: 9749, radius: 14 }` | no |
 
 ## Drops
 

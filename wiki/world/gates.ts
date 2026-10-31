@@ -491,6 +491,18 @@ export const CURATED_CROSSINGS: readonly CuratedCrossing[] = [
         requires: [['item:baxtorian_key_waterfall_quest:held', 'quest:waterfall>=8']],
         source: 'quests/quest_waterfall/scripts/quest_waterfall.rs2:401',
     },
+    // Entrana's dungeon ladder: Climb-down starts the cave monk's warning (entrana_dungeon.rs2:2, cave_monk.rs2:3) and
+    // choosing to go climbs down and drains Prayer (cave_monk.rs2:11-14). One way: "this ladder only goes one way", the
+    // caves' only exit is a portal to the deep Wilderness (cave_monk.rs2:5-6), so there is no row back up.
+    {
+        via: 'teleport',
+        trigger: 'oploc1,entranaladdertop',
+        act: { kind: 'loc-op', loc: 'entranaladdertop', op: 1, choices: ['Well that is a risk I will have to take.'] },
+        to: ['0_44_152_6_46'],
+        requires: [[]],
+        source: 'areas/area_entrana/scripts/cave_monk.rs2:13',
+        notes: 'One way down; the dungeon is left by its Wilderness portal only.',
+    },
 ];
 
 /**

@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import { canTravel, CollisionType } from '../../../server/vendor/rsmod-pathfinder';
 import { initPathfinding } from '../../../sdk/pathfinding';
+import { areaResolver } from '../../../wiki/world/area-resolve';
+import { AREAS } from '../../../wiki/world/areas';
 import { WORLD_FORMAT, type Connector as Row, type World } from '../../../wiki/world/types';
 import { collisionPaths } from '../../actions/paths';
 import { NO_ACCOUNT } from '../../lib/account';
@@ -12,10 +14,12 @@ import {
     OVERRIDES,
     planConnectors,
     planeOf,
+    UNDERGROUND_Z,
     type Connector,
     type Tile,
 } from '../../lib/connectors';
 import { nearestWay } from '../../lib/walk-graph';
+import { isInWilderness } from '../../lib/wilderness';
 import { WORLD } from '../../lib/world-index';
 
 const at = (level: number, x: number, z: number): Tile => ({ level, x, z });
@@ -111,6 +115,20 @@ describe('planeOf', () => {
         // Neither the Ardougne cellars nor the Taverley Dungeon are in a quest area.
         expect(planeOf(0, 2565, 9627)).toBe('0u');
         expect(planeOf(0, 2885, 9797)).toBe('0u-taverley');
+    });
+
+    test('no tile of the Taverley Dungeon (the fill from (2884, 9797)) is in the Entrana dungeon', () => {
+        initPathfinding();
+        const tiles = fill({ x: 2884, z: 9797 });
+        expect(tiles.length).toBeGreaterThan(4000);
+        for (const [x, z] of tiles) expect(planeOf(0, x, z), `${x},${z}`).toBe('0u-taverley');
+        // The black demons' sites are in it.
+        for (const [x, z] of [
+            [2857, 9779],
+            [2863, 9769],
+            [2869, 9776],
+        ] as const)
+            expect(planeOf(0, x, z), `${x},${z}`).toBe('0u-taverley');
     });
 
     test('a quest area holds the whole collision flood fill of its landing, not only its ladder', () => {
@@ -490,6 +508,7 @@ const ONE_WAY = [
     'down 1:2544,3111',
     'up 0:2556,9844',
     'down 1:2631,3322',
+    'up 0:2637,9808',
     'up 1:2668,3428',
     'down 1:2784,3286',
     'up 0:2848,3235',
@@ -661,5 +680,99 @@ describe('Keep Le Faye: the locked front door', () => {
             const r = collisionPaths.findPath(at(0, 2764, z), at(0, 2761, z), []);
             expect(r.reachedDestination, `door tile z ${z}`).toBe(false);
         }
+    });
+});
+
+describe('the Temple of Ikov dungeon, the Draynor Manor basement and the Entrana dungeon', () => {
+    test('the quest dungeon areas hold the whole collision flood fill of their landing', () => {
+        initPathfinding();
+        for (const [from, plane] of [
+            [{ x: 2677, z: 9804 }, '0u-ikov'],
+            [{ x: 3077, z: 9771 }, '0u-draynor-basement'],
+            [{ x: 2822, z: 9774 }, '0u-entrana-dungeon'],
+        ] as const)
+            for (const [x, z] of fill(from)) expect(planeOf(0, x, z), `${plane} ${x},${z}`).toBe(plane);
+        // The trap ladder (ikov_dungeon.rs2:167) lands in the same dungeon.
+        expect(planeOf(0, 2665, 9849)).toBe('0u-ikov');
+        // The Entrana dungeon lies inside the Taverley box but is not the Taverley Dungeon.
+        expect(planeOf(0, 2885, 9797)).toBe('0u-taverley');
+    });
+
+    test('wiki/world/areas.ts holds the same Entrana dungeon rects as the connector table', () => {
+        initPathfinding();
+        const resolve = areaResolver(AREAS);
+        for (const [x, z] of fill({ x: 2822, z: 9774 }))
+            expect(resolve({ level: 0, x, z }), `${x},${z}`).toEqual(['entrana-dungeon']);
+        for (const [x, z] of fill({ x: 2884, z: 9797 }))
+            expect(resolve({ level: 0, x, z }), `${x},${z}`).not.toContain('entrana-dungeon');
+        expect(resolve({ level: 0, x: 2885, z: 9797 })).toEqual(['taverley-dungeon']);
+    });
+
+    test('the Ikov ladder is planned both ways (ladders.rs2:85 and :94)', () => {
+        expect(CONNECTORS.filter(c => c.loc.x === 2677 && c.loc.z % 6400 >= 3405).map(row)).toEqual([
+            'down Temple of Ikov ladder loc 0:2677,3405 stand 0:2677,3404 to 0:2677,9804',
+            'up Temple of Ikov ladder loc 0:2677,9805 stand 0:2677,9804 to 0:2677,3404',
+        ]);
+        expect(names(planConnectors(at(0, 2677, 3400), at(0, 2677, 9804)))).toHaveLength(1);
+        expect(planConnectors(at(0, 2677, 9804), at(0, 2677, 3400))?.map(c => c.direction)).toEqual(['up']);
+    });
+
+    test('the Draynor Manor basement stairs lead up to the manor and on to Lumbridge (stairs.rs2:423)', () => {
+        expect(CONNECTORS.filter(c => c.loc.x === 3077 && c.loc.z === 9768).map(row)).toEqual([
+            'up Draynor Manor basement stairs loc 0:3077,9768 stand 0:3077,9771 to 0:3115,3356',
+        ]);
+        expect(names(planConnectors(at(0, 3115, 3354), at(0, 3077, 9774)))).toEqual(['down Stairs, Draynor Manor']);
+        const chain = planConnectors(at(0, 3077, 9774), at(0, 3254, 3236));
+        expect(chain?.map(c => c.direction)).toEqual(['up']);
+        expect(chain?.[0]?.loc).toEqual(at(0, 3077, 9768));
+    });
+
+    test('the Entrana dungeon is entered by a one-way crossing and left by none', () => {
+        const down = nearestWay(at(0, 2825, 3372), [at(0, 2822, 9774)], {
+            account: NO_ACCOUNT,
+            connectors: CONNECTORS,
+            maxHops: MAX_HOPS,
+        });
+        expect(down?.hops.map(h => h.kind)).toEqual(['cross']);
+        expect(
+            WORLD.crossings.filter(c => c.act.kind === 'loc-op' && c.act.loc === 'entranaladdertop').map(c => c.source),
+        ).toEqual(['areas/area_entrana/scripts/cave_monk.rs2:13']);
+        const hop = down?.hops[0];
+        expect(hop?.kind === 'cross' && hop.landing).toEqual(at(0, 2822, 9774));
+        // No ladder up, and the table has no connector in that pocket: no walk leaves it.
+        const search = { account: NO_ACCOUNT, connectors: CONNECTORS, maxHops: MAX_HOPS };
+        for (const to of [
+            at(0, 2825, 3372),
+            at(0, 3222, 3218),
+            at(0, 3029, 3217),
+            at(0, 2884, 9797),
+            at(0, 2900, 9800),
+        ])
+            expect(nearestWay(at(0, 2822, 9774), [to], search), show(to)).toBeUndefined();
+        expect(planConnectors(at(0, 2822, 9774), at(0, 2825, 3372))).toBeNull();
+        expect(planConnectors(at(0, 2822, 9774), at(0, 3029, 3217))).toBeNull();
+        expect(planConnectors(at(0, 2822, 9774), at(0, 2884, 9797))).toBeNull();
+    });
+
+    test("the dungeon's Wilderness portal is a crossing, and a walk outside the Wilderness never plans it", () => {
+        const portal = WORLD.crossings.filter(c => c.act.kind === 'loc-op' && c.act.loc === 'zanarismagicdoor');
+        expect(portal.map(c => [c.at.x, c.at.z, c.landings.map(l => [l.tile.x, l.tile.z])])).toEqual([
+            [2874, 9750, [[3250, 3772]]],
+        ]);
+        expect(isInWilderness(0, 3250, 3772)).toBe(true);
+        const search = { account: NO_ACCOUNT, connectors: CONNECTORS, maxHops: MAX_HOPS };
+        for (const to of [at(0, 3222, 3218), at(0, 2825, 3372), at(0, 2884, 9797)])
+            expect(nearestWay(at(0, 2822, 9774), [to], search), show(to)).toBeUndefined();
+    });
+
+    test('a walk from Entrana takes the dungeon ladder only to a destination inside the dungeon', () => {
+        const search = { account: NO_ACCOUNT, connectors: CONNECTORS, maxHops: MAX_HOPS };
+        const laddered = (to: Tile) =>
+            nearestWay(at(0, 2825, 3372), [to], search)?.hops.some(
+                h => h.kind === 'cross' && h.landing.z >= UNDERGROUND_Z,
+            );
+        for (const to of [at(0, 2840, 3350), at(0, 3029, 3217), at(0, 3222, 3218), at(0, 2884, 9797)])
+            expect(laddered(to), show(to)).not.toBe(true);
+        expect(laddered(at(0, 2845, 9760))).toBe(true);
     });
 });
