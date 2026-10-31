@@ -217,8 +217,20 @@ interface CombatMemory {
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
-/** The bones `buryBones` picks up and buries: what F2P monsters drop (big bones from giants, bat bones from bats). */
-const BONE_NAMES = ['Bones', 'Big bones', 'Bat bones', 'Wolf bones'];
+/**
+ * The bones `buryBones` picks up and buries: the `bones` category items monsters drop that the bury script accepts
+ * (skill_prayer/configs/bones.obj, scripts/bury_bone.rs2). The burnt and pasted quest bones are left out.
+ */
+const BONE_NAMES = [
+    'Bones',
+    'Big bones',
+    'Bat bones',
+    'Wolf bones',
+    'Babydragon bones',
+    'Dragon bones',
+    'Jogre bones',
+    'Shaikahan bones',
+];
 const BURY_OPTION = /^bury$/i;
 const isBones = (i: { name: string }) => BONE_NAMES.some(n => exactName(n).test(i.name));
 const countBones = (s: BotWorldState) => s.inventory.filter(isBones).length;
@@ -530,7 +542,7 @@ export default defineTask({
         'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +
         'Magic: casts `spell` (free-to-play Strike/Bolt/Blast, e.g. "Wind Strike", 1 Mind + 1 Air rune per cast) at ' +
         "each target with runes from the inventory (a worn Staff of <element> replaces just that element's rune); fails when runes run out or the " +
-        'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones) and a loot list; an NPC already attacking the bot is fought first. ' +
+        'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones, Babydragon bones, Dragon bones, Jogre bones, Shaikahan bones) and a loot list; an NPC already attacking the bot is fought first. ' +
         'Refuses areas reaching the Wilderness and NPCs more than `maxLevelGap` (default 5) levels above the bot. ' +
         'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
         'Weapon/shield need the bot to meet their wield requirement. `level` (or `minLevel`/`maxLevel`) attacks only NPCs ' +

@@ -92,8 +92,14 @@ export const NOT_WALKER_DOORS: ReadonlyMap<string, string> = new Map([
  * (quest_waterfall.rs2:393-407; walked through with the A key on the worker conductor3w2, 2026-10-24, landing on the
  * door's own tile when used from the north). Only that north-to-south use was observed in play; the script has no
  * side check, so the reverse edge follows from it. Its other Doors move the player (:389, :401, :405).
+ * Taverley Dungeon's Dusty-key Gate (2924, 9803) (areas/area_taverly/dungeon/scripts/jail_doors.rs2:10-35): the key
+ * unlocks it and opens-and-closes it through the player's side, and Open from inside walks out (no side check on the
+ * key use), so one key edge each way.
  */
-const KEY_DOORS: ReadonlySet<string> = new Set(['baxtorian_door_2_waterfall_quest@2568,9893']);
+const KEY_DOORS: ReadonlySet<string> = new Set([
+    'baxtorian_door_2_waterfall_quest@2568,9893',
+    'deepdungeondoor@2924,9803',
+]);
 /** The one obj a gate row asks to be held, when that is all it asks. */
 const keyOf = (g: Gate): string | undefined => {
     const [only, ...rest] = g.requires;

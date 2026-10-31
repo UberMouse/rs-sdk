@@ -569,3 +569,24 @@ describe('the Waterfall dungeon: the ways out, on the world index', () => {
         ]);
     });
 });
+
+describe('Taverley Dungeon: the Dusty-key Gate (2924, 9803)', () => {
+    const KEY = 'dusty_key';
+    const GATE = 'deepdungeondoor';
+    const USE_KEY: Act = { kind: 'item-on-loc', obj: KEY, loc: GATE };
+    const keyed = (): Account => ({ ...NO_ACCOUNT, held: new Map([[KEY, 1]]) });
+    const OUTSIDE: [number, number] = [2924, 9802];
+    const ROOM: [number, number] = [2898, 9772];
+
+    test('with the key, the walker uses it on the Gate, in and out', () => {
+        const into = way(OUTSIDE, ROOM, keyed());
+        expect(crossed(into)).toContainEqual(USE_KEY);
+        const out = way(ROOM, OUTSIDE, keyed());
+        expect(crossed(out)).toContainEqual(USE_KEY);
+    });
+
+    test('without the key there is no way through either side', () => {
+        expect(way(OUTSIDE, ROOM, NO_ACCOUNT)).toBeUndefined();
+        expect(way(ROOM, OUTSIDE, NO_ACCOUNT)).toBeUndefined();
+    });
+});

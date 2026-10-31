@@ -563,6 +563,23 @@ describe('combat: bones and loot', () => {
         expect(buried.sends).toEqual(['Bury Big bones', ATTACK]);
     });
 
+    test('baby dragon and dragon bones are picked up and buried', async () => {
+        for (const name of ['Babydragon bones', 'Dragon bones']) {
+            const picked = await simulate(combat, {
+                params: { ...PARAMS, buryBones: true },
+                timeline: coop.ground(name, COOP.x + 1, COOP.z + 1, 1, { id: 534 }).series(1),
+                respond: a => (a.type === 'pickupItem' ? { success: false, message: 'stop here' } : undefined),
+            });
+            expect(picked.sends[0]).toBe(`take ${name}`);
+            const buried = await simulate(combat, {
+                params: { ...PARAMS, buryBones: true },
+                timeline: [coop.inv(name, 1, { ...bury, id: 534 }).build(), ...kill(coop).slice(1)],
+                stops: xp(25),
+            });
+            expect(buried.sends).toEqual([`Bury ${name}`, ATTACK]);
+        }
+    });
+
     test('bones that never bury fail after three tries', async () => {
         const r = await simulate(combat, {
             params: { ...PARAMS, buryBones: true },
