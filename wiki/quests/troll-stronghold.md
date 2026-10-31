@@ -71,6 +71,8 @@ Stage varp troll_quest (317): 10 started, 20 Dad beaten, 30 prison entered, 40 G
 - Prison: stairs level 2 to 1 at (2843,10108) land at (2841,10108); prison door (2848,10107) on level 1; stairs level 1 to 0 at (2852,10107) land at (2852,10105). Cells on level 0: Godric's Cell Door (2832,10078), Eadgar's (2832,10082); guards Twig (2832,10079) and Berry (2832,10083). Twig pickpocketed at Thieving 60 first try gives Cell key 1, which opens Godric's door; Godric freed. [v 2026-10-31 questw2 local]
 - Exit (2823,10048) puts you at (2827,3646). `travel` cannot cross the rocks (2833-2834,3628) southward from there ("No path"): `interact` them, then walk to (2857,3613) and climb the rocks (2857,3612) south to the secret path, stile, hut and Burthorpe; Dunstan (2919,3573) completes the quest. Rock climbs at Agility 30 fail about 22% and are retried. [v 2026-10-31 questw2 local]
 
+- The promoted plan frees only Godric (varp 318 = 62, troll_quest 50 after Dunstan). [Eadgar's Ruse](eadgars-ruse.md) needs Mad Eadgar freed first (bit 0 of 318, Berry's Cell key 2, cell (2832,10082)). [v 2026-10-31 questw2 local]
+
 ### Gotchas
 
 - `combat`'s return-to-area walked the bot back out through the Exit loc when the defend area was outside the room; keep the defend area inside. [v 2026-10-31 questw2 local]

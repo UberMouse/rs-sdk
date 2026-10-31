@@ -1,0 +1,394 @@
+{
+    "name": "eadgars-ruse-start",
+    "purpose": "Eadgar's Ruse start in Burthorpe (2897,3531): Death Plateau and Troll Stronghold done (varps 314=80, 315=201326600, 317=50, 318=63 with Mad Eadgar freed), Druidic Ritual at stage 3 (varp 80), Eadgar's Ruse not started. Att/Str/Def/HP 85, Prayer 99, Agility 30, Herblore 31; rune scimitar, full helm, platebody, platelegs, kiteshield and Climbing boots worn; pack of 27: drunk parrot, 2 logs, tinderbox, pestle and mortar, Ranarr potion (unf), 5 raw chickens, 10 grain, 6 swordfish, each in its own slot.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2897,
+                "z": 3531
+            },
+            "skills": {
+                "Attack": 85,
+                "Strength": 85,
+                "Defence": 85,
+                "Hitpoints": 85,
+                "Prayer": 99,
+                "Agility": 30,
+                "Herblore": 31
+            },
+            "inventory": [
+                {
+                    "id": 3266,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 1511,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 233,
+                    "count": 1
+                },
+                {
+                    "id": 99,
+                    "count": 1
+                },
+                {
+                    "id": 2138,
+                    "count": 1
+                },
+                {
+                    "id": 2138,
+                    "count": 1
+                },
+                {
+                    "id": 2138,
+                    "count": 1
+                },
+                {
+                    "id": 2138,
+                    "count": 1
+                },
+                {
+                    "id": 2138,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 1947,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 3105,
+                    "count": 1,
+                    "slot": 10
+                }
+            ],
+            "varps": {
+                "80": 3,
+                "314": 80,
+                "315": 201326600,
+                "317": 50,
+                "318": 63
+            }
+        }
+    },
+    "sha1": "715c88cd2cae812c9855426b2407e9a6c6a7f62f",
+    "createdAt": "2026-10-31T10:28:21.135Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2897,
+            "z": 3531,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 85,
+            "Defence": 85,
+            "Strength": 85,
+            "Hitpoints": 85,
+            "Prayer": 99,
+            "Herblore": 31,
+            "Agility": 30
+        },
+        "inventory": [
+            {
+                "id": 3266,
+                "name": "eadgar_drunk_parrot",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 1511,
+                "name": "logs",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 233,
+                "name": "pestle_and_mortar",
+                "count": 1
+            },
+            {
+                "id": 99,
+                "name": "ranarrvial",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 2138,
+                "name": "raw_chicken",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 1947,
+                "name": "grain",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 3105,
+                "name": "death_climbingboots",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "80": 3,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1,
+            "314": 80,
+            "315": 201326600,
+            "317": 50,
+            "318": 63
+        }
+    }
+}
