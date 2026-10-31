@@ -178,7 +178,7 @@ avoidable cost with a cheap detector (below).
 1. ~~Dragon Slayer~~ done 2026-10-31 (conductor3): Strength 91 -> 99, Defence 85 -> 96 (+529k / +466k in the final run's RESULT), total 1229 (40.7%). Cost: ~15 min of prep (ds-prep: silk, Barbarian Outpost planks, clay bowl, Dwarven Mine iron+coal, Falador steel, nails, pot, mind bomb), one death in the lair (the `elvarg` phase named a Rune scimitar; save rolled back, fixed 30a5d3535, run-end epilogue b24c5f09d), a Maze drift fix (96e923f16), final run 1,091 s. Lost City stretch not reached (budget).
 2. **Woodcutting 73 -> 99 filler** (`oak-draynor-drop` north oaks, `until` level:99, ~0.75 h, no prep) with willows + Firemaking 1-30
    beside it if a variant plan exists; also the slot to run Runecraft 1 -> 28 once (`earth-runecraft-28`, measure).
-3. **Dusty key then baby blue dragons** (new objective; Prayer 83 -> 99, HP, Attack tail): jailer kill at (2933,9693), Velrak's
+3. ~~**Dusty key then baby blue dragons**~~ key held and grind measured 2026-10-31 (retro #7); (new objective; Prayer 83 -> 99, HP, Attack tail): jailer kill at (2933,9693), Velrak's
    cell, Taverley dungeon site `baby-blue-dragons-taverley`; combat plan with bone burying and the anti-dragon shield. One runner,
    milestone "dusty key held", then "HP 80 + Prayer 90".
 4. **Ranged/Fletching/Herblore/Agility quest batch** (one runner, plans on main): Death Plateau (Att 75k, 1 QP) -> Troll Stronghold
@@ -189,6 +189,53 @@ avoidable cost with a cheap detector (below).
    Nature Spirit (needs PiP stage 61 done), Observatory.
 5. Mining 86-99 and Smithing 87-99 (superheat), Crafting remainder, Magic (Watchtower 382k), then Herblore from chaos druids.
 Each batch runner gets a prep line in its brief (below) and a stop rule for loops.
+
+**Account 2026-10-31 11:37 (retro #7):** total 1272 (46.5% of max XP). Thieving/Strength/Cooking/Fishing 99, Woodcutting 97, Defence 96,
+Attack 96, Smithing 87, Mining 87, Crafting 85, Prayer 85, HP 85, Herblore 57, Agility 53, Magic 44; Ranged/Fletching/Firemaking/
+Runecraft 1. Left: Prayer 601k, HP 614k, Herblore 942k, Agility 957k, Magic 977k, Mining 552k, Smithing 541k, Crafting 600k, Defence 134k,
+Attack 142k, Woodcutting 93k, and 998k each in the four level-1 skills. Dragon Slayer done (Dragonfire shield, Excalibur worn); the
+Dusty key is held; the dragon runner is on Attack then Defence to 99 with Prayer 90 as the stop.
+
+**Retro #7 findings (55 runs, 07:36-11:37; two runners, 11 task-author dispatches, 29 lens reviewers).**
+1. **Dragon Slayer cost 118 min of runner time against the plan's 1,022 s** (runner a659fcf30428c9f13, 07:33-09:31): ds-prep 4 runs
+   (planks looked up at a wiki spawn that is an NPC, `wiki/items/plank.md`; Razmire's shop closed), 6 failed quest-plan runs (klarense
+   gate read the coin count, 24.8k held against "exactly 12000"; maze-red-door), then the death. The plan was "proven" from `lib:dragon-slayer-start`
+   and carried that pack's assumptions into the real account: `weapon: 'Rune scimitar'` on the `elvarg` phase (since 2fe631eab) failed
+   preflight ("Rune scimitar is neither worn nor in the inventory"), the plan ended `no phase applies` in the lair mid-fight, HP 47/68,
+   and the bot died with nothing running. Fixed: weapon dropped (30a5d3535), `needs` start check, run-end epilogue (b24c5f09d). A
+   restore of `dragon-slayer-start` plus ~25 min of redo prep was the price.
+2. **The Dusty-key stretch was 38 journal runs for one objective** (dragons-prayer): 18 plan runs (14 failed, 2 SIGTERM), 8 `travel`, 8
+   `interact`, 4 other one-offs. Ten of the plan failures were one cause, **the bot started on Crandor**: the Dragon Slayer plan ends in
+   the lair, the walker has no connector off the island (`No connector from level 0 (2846, 9636) to (2932, 9700)` x8, 09:35-09:42).
+   The runner spent 8 min reading quest scripts, found the volcano secret door and the Musa Point ferry, and hand-walked it
+   (promoted as `karamja-home`, 5e8d86693). The second cause was the gate at (2924,9803) (`deepdungeondoor`, takes the Dusty key): the walker
+   called it locked, Lesser demons (82) camp it and break the by-hand `interact` ("in combat at (2924,9802)"), and the bones are
+   `Babydragon bones`, which `buryBones` did not know. The runner found the gate by reading the loc config and the nearby-object list (turns
+   247-266), stopped at 55 of 90 min with a DECISION NEEDED, and 0643ee05b fixed both. **Fix upstream: the Dragon Slayer plan should end
+   off Crandor** (rope, secret door, `karamja-home`) so the next objective starts at Port Sarim.
+3. **Strength was trained at 99 for 48 minutes (+660k Strength XP: 321.8k in the 09:51 run, 322.3k in the 11:09 run).** The conductor's
+   brief listed "Strength 99" in the stat line and asked the runner to report "the melee skill trained", but never named the style;
+   the runner's plan (turn 238, copied from the giants plans) hard-codes `skill: 'Strength'` (combat's own default is Attack). The conductor
+   caught it from the RESULT at 11:35, 25 min after the second run began. Combat has no maxed-skill check.
+4. **Host memory SIGTERM at 11:08** killed the 3-min baby-blues run, bot left mid-fight at 67/79 HP: another session's `bun test conductor wiki`
+   (pid 2636834, ~10.4 GB). Our own footprint is steady: each `run-task.ts` is 575-625 MB RSS and the 4-6 concurrent worker runs
+   (3.5 GB) plus `bun wiki/world/build.ts` (4.2 GB seen at retro time) are the baseline the host reaps against. SIGTERM skips the epilogue (below).
+5. **Epilogue gaps.** `needsEpilogue` is `status !== 'done'` and the signal handler prints the RESULT and exits in 6 s, so two bot-in-combat
+   states had no guard: the SIGTERM at 11:08 (0 epilogue lines in `2026-10-31T11-05-14-443Z-plan-baby-blues-prayer.ndjson`) and the `done: reached 25 min`
+   at 11:34 (the bot was idle in combat 66 s until the runner relaunched). Both were short only because a runner was awake.
+6. **A fail message read wrong:** `fight: Baby blue dragon is level 48, above limit 5` (10:14) is the food-out cap (`NO_FOOD_MAX_NPC_LEVEL`,
+   `combat.ts:276`), not a level problem; the runner took 30 s to see it. The plan had no restock trigger before the last food.
+
+**Queue (retro #7), in order.**
+1. **Dragons, now**: Prayer 90 stop kept, melee `skill` Attack then Defence to 99 (HP and Prayer ride along); one runner, milestone "Attack 99 + Defence 99
+   + Prayer 90", food from Falador West. Then Prayer 99 (~4 h) as the long pole: dispatch it in 90-min runner goals and use the waits for
+   the quest batch on workers, not the conductor's bot.
+2. **Plan guards (task-author, one batch, Backlog below)**: combat refuses a maxed `skill`; plans check `weapon` against held items at start;
+   epilogue for SIGTERM and for a `done` run that ends in combat; clearer food-out message.
+3. Woodcutting 97 -> 99 (93k, ~6 min) as a filler when any run waits.
+4. Quest batch (Death Plateau -> Troll Stronghold -> Eadgar's Ruse; Tourist Trap; Big Chompy -> Temple of Ikov; Grand Tree now that HP is 85) and Runecraft 1 -> 28
+   once, per the retro #6 queue below; peers have landed plans and saves for Troll Stronghold, Tribal Totem, Sea Slug, Scorpion Catcher, Big Chompy.
+5. Mining/Smithing 87 -> 99, Crafting remainder, Magic (Watchtower), Herblore: unchanged.
 
 **Adamant axe pays back; the rune pickaxe does not.** Rate model (`methodRate` with the tool forced), WC oaks at Draynor,
 dropped: steel -> adamant is 672k -> 1.00M/h at WC 15, 847k -> 1.25M at 30, 1.07M -> 1.57M at 50, 1.27M -> 1.88M at 70
@@ -307,6 +354,31 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   5/128) for five variants, but `goblin_greenarmour` / `goblin_redarmour` (Goblin Village) use `goblin_village_drop_table` with mail
   at 10/128 (`server/content/scripts/drop tables/scripts/goblin.rs2`, 96..105 of 128). Fix in the page generator so the two tables show
   separately; the quests README already says "10/128 in Goblin Village".
+- **Combat refuses a maxed style (retro #7, task-author)**: `combat` with `skill: 'Strength'` ran 48 min at Strength 99 and threw away ~660k XP
+  (`baby-blues-prayer`, runs 09:51 and 11:09; the plan was a runner's copy of the giants plans, the brief named no style). Preflight:
+  when `skill` is Attack/Strength/Defence/Ranged and the level (`levelForXp(xp)` from `conductor/lib/xp.ts`) is 99, fail `Strength is 99: train
+  Attack or Defence (allowMaxed: true to override)`; the plan loader warns the same for a phase literal. Brief rule (conductor): a combat goal names the
+  style and its cut-over (Attack until 99, then Defence).
+- **Plans check their weapons at start (retro #7, task-author)**: `needs` is hand-written, so DS's `weapon: 'Rune scimitar'` was never listed
+  (`needs` landed in 30a5d3535 after the death). At load, derive `needs` from every combat phase's `weapon`/`shield`/`ammo` (pack plus worn) minus
+  those a prior phase buys or takes, and fail before the first phase. Also: a combat preflight failure in a fight already under way (`inCombat`)
+  should fall back to the worn weapon rather than end the plan; `plans/` grep shows the same hard-coded-weapon pattern in giants-att-def, hill-giants (Mithril scimitar)
+  and temple-of-ikov (Yew shortbow).
+- **Epilogue covers signals and combat-ending done runs (retro #7, task-author, `run-task.ts` ~182-190)**: the signal handler prints the RESULT and exits
+  after 6 s with no epilogue; give a first SIGTERM/SIGHUP the epilogue (cap 20 s, second signal exits) and run it for `done` results whose final state is
+  `inCombat` with HP under 60%. Evidence: 11:08 reap (bot left at 67/79, 0 epilogue lines), 11:34 `done: reached 25 min` idle in combat 66 s. A harness
+  reap may SIGKILL: also start plan runs detached (`setsid -f`, up-sh-detach) so a reaped shell does not take them (already a retro #6 item, still open).
+- **Dragon Slayer plan ends on Crandor (retro #7, task-author)**: add a `leave-crandor` tail (rope (2833,9657), the secret door to the Karamja volcano,
+  `karamja-home`) so the account ends at Port Sarim; today the next objective's first 10 plan runs fail `No connector` from the island.
+- **Out-of-food message (retro #7, task-author)**: `chooseTarget` reports `${npc} is level 48, above limit 5` when the cap is `NO_FOOD_MAX_NPC_LEVEL`;
+  say `out of food (level cap 5 without food)`. Plans with a bank trip should restock at `foodN < 4 && bones === 0` AND at `foodN <= 1` mid-fight.
+- **`world.json`/`methods.ts` calibration for `baby-blue-dragons-taverley` (knowledge, wiki/world)**: add a CALIBRATIONS record from the 25.3-min run (8 Swordfish,
+  61 kills, 112k Prayer/h) so the page stops saying "unmeasured and uncalibrated"; the 206k/h floor is 1.8x the measurement.
+- **Memory (retro #7)**: `bun test conductor wiki` reached 10.4 GB (pid 2636834, another session) and reaped the dragon run; the quest-library
+  brief now says one test file at a time. For our side: a `run-task.ts` is ~600 MB RSS (six concurrent = 3.6 GB) and `bun wiki/world/build.ts` 4.2 GB;
+  profile what run-task loads (the world index JSON?) and lazy-load it, and add `free -g` + available >= 6 GB to the conductor skill's dispatch check.
+- **zsh flag variable (retro #7, agent prompt)**: runner turn 116 passed `$J` (journal flags) and zsh did not split it: `unknown flag --objective dragons-prayer --journal ...`.
+  Add to `.claude/agents/task-runner.md`: write `--objective X --journal PATH` out in full, never through a shell variable.
 - **Run-task auto-journal + plan nudge (idea)**: runners still journal in batches and chain plain runs
   after four prompt fixes; make it structural (see the retrospective #4 proposals): `run-task.ts
   --objective <title> --journal <path>` appends the mechanical journal line itself, and the RESULT
@@ -372,7 +444,7 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 |---|---|---|---|---|---|
 | Thieving | 99 | Man 1-25 -> Al-Kharid warrior 25-40 (476-633k) -> guards 40-55 (Falador or Ardougne, 0.76-1.13M) -> Knight of Ardougne 55-99 (2.0-7.0M; food 155 lobster-equivalents/h at 55, 52 at 99) | 0.28 | thieving-40: 1-40 in 11 min; Falador guards 40-62 ~678k/h; knights 72-99 in one 17-min run (plan knight-thieve-bankfood, area (2659,3308) r20, banked swordfish/tuna): 2.96M/h = 96.8% of floor, ~1,160 gp/min | done (conductor3 2026-10-23) |
 | Agility | 52 | gnome course 1-52 (319k) -> Wilderness course 52-99 (1.58-1.91M, salmon) | 0.66 | gnome 1-52 in 550 s of laps (+37.8k, ~247k/h, 77% of the 319k floor; plan agility-from-ardougne, travel from Ardougne 107 s by the west route) | Wilderness course 52-99 next time the account is north-east (needs food; hazards) |
-| Woodcutting | 68 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | plan `oak-draynor-drop` (steel axe, Draynor cluster, area (3112,3240) r16): 1-50 in 328 s; oaks phase 15-50 +30.9k in 143.6 s = ~775k/h, no idle waits; whole run 360k/h incl. the axe walk (conductor3 2026-10-24); **adamant axe** (smithed: Dwarven Mine ore + coal, Falador furnace, Dwarven Mine anvil): oaks WC 51-68 +81.6k in 270 s = ~1.09M/h, ~40% over steel; three runs there were stopped by the jail guards hitting through the fence; the plan moved to the north oaks `tree:draynor-village:1` area (3095,3283) r16 (552bf14cb): conductor3w1 WC 68-74 +67.5k in 247 s, ~1.1M/h chopping, no attacks | WC 68-99 on conductor3 (881k left, ~0.8 h): `oak-draynor-drop` north oaks, raise `until` to 99 (queue item 5); Monk's Friend 50k + Fremennik 70k |
+| Woodcutting | 68 | normal trees 1-15 -> oaks Draynor dropped 15-99 (672k-1.59M, steel axe); willows only beat oaks with an adamant (88+) or rune (69+) axe, which only Smithing 71/86 or drops give | 0.72 | plan `oak-draynor-drop` (steel axe, Draynor cluster, area (3112,3240) r16): 1-50 in 328 s; oaks phase 15-50 +30.9k in 143.6 s = ~775k/h, no idle waits; whole run 360k/h incl. the axe walk (conductor3 2026-10-24); **adamant axe** (smithed: Dwarven Mine ore + coal, Falador furnace, Dwarven Mine anvil): oaks WC 51-68 +81.6k in 270 s = ~1.09M/h, ~40% over steel; three runs there were stopped by the jail guards hitting through the fence; the plan moved to the north oaks `tree:draynor-village:1` area (3095,3283) r16 (552bf14cb): conductor3w1 WC 68-74 +67.5k in 247 s, ~1.1M/h chopping, no attacks | **WC 73 -> 97 on conductor3 (draft plan `wc-oaks-99`, north Draynor oaks, adamant axe, logs dropped, 2026-10-31): ~900k/h at 73-97** (15.6k XP/min seen at WC 77; the run's own RESULT is +727,500 in 35 min = 1.25M/h average incl. the axe fetch, so the rate climbs with level and the 900k/h is the conservative figure); stopped at 97 for the dragons. 93k left to 99 (~6 min): finish as a filler when the bot waits on anything; Monk's Friend 50k + Fremennik 70k |
 | Firemaking | 1 | trees-lumbridge-burn 1-30, willow-draynor-burn 30-99 (with WC) | 0.56 with WC | - | |
 | Fletching | 1 | cut + string at a bank 1-40, willow-seers-longbow-bank 40-99 (474 strings from flax) | 0.54 with WC | - | |
 | Mining | 85 | copper/tin 1-15 -> iron from a 3-rock stand tile, Al Kharid, dropped 15-99 (679k-1.07M, respawn-bound from 57); adamant pickaxe only (3.2k, rune doesn't pay back) | 0.98 | Digsite 1 -> 85 (382.5k quest lump, ~20.7 min incl. the quest) | adamant pickaxe bought (2026-10-24); 85-99: best floors now `iron-se-varrock-drop` 1.43M at 85, then `coal-mining-guild-drop` 1.16-1.30M (8e35c441e; mithril/adamantite are respawn-bound, 215k/77k); Plague City 60k and Doric 32k are quest lumps |
@@ -385,7 +457,7 @@ to 99, what conductor3 measured, and the next step. Explore goals target the lon
 | Runecraft | 1 | Rune Mysteries, then earth via Aubury's essence (140k flat, travel-bound) | 5.6 | - | **long pole**: altar and essence layout search |
 | Attack / Strength / Defence | 95/99/96 | cows Falador 1-25 -> scorpions Dwarven Mine 25-50 -> moss giants Kandarin (2549,3408) 50-99 (1.03-1.59M, rune scimitar); Waterfall Att/Str 83; maybe chaos druids alongside Herblore instead | 0.77 each | chickens 1-20 in 7 min (Att ~58k/h incl. the walk, Str ~110k, Def ~122k; melee-chickens); cows Falador (`melee40`, Zeke mithril scimitar, combat targetRange visible r22) Att 28-40 + Def 20-40 in 9.6 min: fight phases ~441k/h Att, ~403k/h Def, above the steel-scimitar floor (~430k at 40), no idle waits (conductor3 2026-10-24) | no scimitar hunt: mithril scimitar (Zeke), then the rune sword at 32 QP (Str 1,083k at 60 vs 1,098k for the rune scimitar); chaos druids for 50+ (herbs) |
 | Hitpoints | 57 | rides along melee (3 x 99 melee gives ~993k) | 0 | - | |
-| Prayer | 83 | Restless Ghost 47 (done: 20 -> 49 in 359 s) -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | 3-6 (retro #4: bones 109-206k/h at 99) | - | **long pole**: Holy Grail done (49 -> 81, +275k, 2026-10-24); 81-99 is ~692k of bones (+ PiP 35k) (hill giants 109k/h, baby blue dragons 206k/h at 99); start the dusty-key route early |
+| Prayer | 83 | Restless Ghost 47 (done: 20 -> 49 in 359 s) -> big bones at hill giants to ~60 -> baby blue dragons 60-99 (dusty key); Priest in Peril, Holy Grail lumps | 3-6 (retro #4: bones 109-206k/h at 99) | **baby-blue-dragons-taverley measured (conductor3 2026-10-31, plan `baby-blues-prayer`, one 25.3-min run, Prayer 83 -> 85, Def 96, HP ~80): ~112k Prayer/h (61 kills = 61 Babydragon bones at 750 XP, ~2.4 kills/min), ~253k HP/h, ~764k/h in the trained melee skill; 8 Swordfish in 25 min.** That is ~54% of the 206k/h floor. The run before it (23 min, 09:51) buried nothing (bones named `Babydragon bones`, fixed in 0643ee05b) and trained maxed Strength | **long pole**: Holy Grail done (49 -> 81, 2026-10-24); Dusty key held, gate walked (0643ee05b). 85 -> 99 is ~600k = ~5.4 h at 112k/h (HP 614k left is 2.4 h at 253k/h, Attack 142k + Defence 134k are 0.4 h at 764k/h, all in the same hours): the dragons are the critical path now, so every hour there must train a melee skill that is not 99. Experiment: Prayer/h with Attack 99 (kills die faster) |
 | Ranged | 1 | willow shortbow + mithril arrows on giants (by hand: 300k at 20 -> 1.48M at 99), ~72k gp arrows, 80% picked up | 0.81 | - | |
 
 Model gaps the research found (fix where a route row leans on them): no walk between a site's features is priced
@@ -409,6 +481,10 @@ their shapes. Miscellania's coal, maples and fish need the kingdom quest and los
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
+- Prayer rate with Attack 99 (retro #7): hypothesis, baby blues die faster once Attack 95 -> 99 and the style is not wasted on a 99 skill; 112k Prayer/h
+  (Prayer 83-85, Def 96, 61 kills in 25.3 min) is the baseline. Metric: Prayer/h and kills/min over the next two 25-min runs; also bones per food. If it stays
+  under ~130k/h, 600k Prayer is 4.6+ h: price the adult blue dragons (1,800 XP a bone, Dragonfire shield, same dungeon) and the Wilderness green dragons
+  (modelled 170k/h, out of bounds) before committing the hours.
 - Goblin mail source (retro #6): Lumbridge goblins (3254,3236) r20: mail 5/128 (3.9%), 1,241 damage / ~247 kills / 3 mails in 1,441 s (5.8 s
   = 9.7 ticks per kill, ~82 kills per mail against 26 expected: unlucky, p ~0.4%, other drops matched their rates: Water rune 16 seen
   vs 12, Bronze sq shield 9 vs 6; the questw1 461 s run was ~56 kills). Expected for 3 mails: 77 kills = ~10.5 min at that kill rate,
