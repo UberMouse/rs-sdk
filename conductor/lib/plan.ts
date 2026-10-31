@@ -96,6 +96,31 @@ export function phase<S extends z.ZodType, M extends object>(
     return { ...opts, name: opts.name ?? task.name, task, params };
 }
 
+/** An item a plan needs at its start: an exact name (case-insensitive) or a pattern, `count` of them (default 1). */
+export interface PlanNeed {
+    item: string | RegExp;
+    count?: number;
+    /** What the failure reason calls it; default the name, or the pattern's source. */
+    label?: string;
+}
+
+const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
+
+/** What a need is called in the start event and the failure reason: its label, else its name or pattern source. */
+export const needLabel = (n: PlanNeed): string => n.label ?? (typeof n.item === 'string' ? n.item : n.item.source);
+
+/** The needs a state is short of, as `N Label (held H)` phrases. */
+export function shortNeeds(s: BotWorldState, needs: PlanNeed[]): string[] {
+    const out: string[] = [];
+    for (const n of needs) {
+        const re = pattern(n.item);
+        const want = n.count ?? 1;
+        const held = countItems(s, re) + s.equipment.filter(i => re.test(i.name)).reduce((a, i) => a + i.count, 0);
+        if (held < want) out.push(`${want} ${needLabel(n)} (held ${held})`);
+    }
+    return out;
+}
+
 export interface PlanDef {
     name: string;
     description?: string;
@@ -108,6 +133,14 @@ export interface PlanDef {
      * `plan requires <key>`. A `when` on every phase would refuse the same, but as `no phase applies`.
      */
     requires?: Record<string, Predicate>;
+    /**
+     * Items the plan expects held when it starts and does not fetch itself (pack plus worn). Checked once, before any
+     * phase: a short one ends the plan `failed` with `plan needs 1 Pot (held 0), 12 Nails (held 0)`. Not `requires`,
+     * as the plan consumes them. `needsUnless` is the restart gate: when it holds at the start (the quest already
+     * started: a resumed plan has used some needs up), the needs are not checked.
+     */
+    needs?: PlanNeed[];
+    needsUnless?: Predicate;
     /**
      * The training method it runs: a method id of wiki/world/methods.ts, whose record lists this plan in its `plans`
      * (conductor/test/plans.test.ts checks both ways). `stats.ts --methods` sets its runs beside the method's floor.
@@ -317,8 +350,6 @@ function tally(
 class PredicateError extends Error {
     override name = 'PredicateError';
 }
-
-const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
 
 /** What a phase's predicates read at a selection: each call or field as written (`inv('Logs')`), with what it gave. */
 export type Reads = Record<string, unknown>;
@@ -610,6 +641,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         bot: botName,
         phases: params.phases,
         requires: Object.keys(def.requires ?? {}),
+        ...(def.needs?.length ? { needs: def.needs.map(needLabel) } : {}),
         stops,
     });
     say(
@@ -628,6 +660,19 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         validateStops(stops, first);
     } catch (e) {
         return finish('error', errMessage(e));
+    }
+
+    // Start-only needs: a resumed plan (the gate holds) has used some up.
+    if (def.needs?.length) {
+        try {
+            const fv = view(first);
+            const resumed = def.needsUnless ? ask(null, 'needsUnless', () => def.needsUnless!(fv)) : false;
+            const short = resumed ? [] : shortNeeds(first, def.needs);
+            if (short.length) return finish('failed', `plan needs ${short.join(', ')}`);
+        } catch (e) {
+            if (e instanceof PredicateError) return finish('error', e.message);
+            throw e;
+        }
     }
 
     /** Consecutive failures per phase, cleared when it ends `done`. */

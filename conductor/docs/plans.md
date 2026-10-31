@@ -109,6 +109,13 @@ export default definePlan({
   levels): each is checked before every phase choice, and one that does not hold ends the plan
   `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
   `no phase applies`.
+- `needs` (optional, with `needsUnless`) declares the items a plan expects held when it starts and does not
+  fetch: `[{ item: 'Pot' }, { item: 'Nails', count: 12 }, { item: /pickaxe$/i, label: 'pickaxe' }]` (a name
+  or pattern as `v.inv` takes; unlike `v.inv`, worn items count). Checked once at the start, before any phase: a short one ends the
+  plan `failed` with `plan needs 1 Pot (held 0), 12 Nails (held 0)`, which is what a runner reads (`--list` lists
+  tasks only; the RESULT's reason carries it). It is not `requires`, as the plan consumes the items. A plan is
+  restart-safe and resumed mid-quest with some needs already used, so `needsUnless(v)` skips the check when it holds, e.g.
+  `v => v.quest(ID) !== 'none'`. The `start` event lists the need labels.
 - `method` (optional) is the id of the training method the plan runs, a record of
   `wiki/world/methods.ts` whose `plans` lists this plan back. `conductor/test/plans.test.ts` fails
   when the two disagree either way (a method world.json lacks, or one that doesn't list the plan; a

@@ -428,6 +428,69 @@ describe('selection', () => {
     });
 });
 
+const withNeeds = (list: PlanDef['needs'], needsUnless?: Predicate) =>
+    definePlan({
+        name: 'test-plan',
+        phases: [phase(train, {})],
+        needs: list,
+        needsUnless,
+        until: v => v.runs('train') > 0,
+    });
+
+describe('needs', () => {
+    const EMPTY = world().skill('Woodcutting', 1, 0).skill('Firemaking', 1, 0);
+    const NEEDS = [{ item: 'Pot' }, { item: 'Nails', count: 12 }, { item: /pickaxe$/i, label: 'pickaxe' }];
+
+    test('a short need fails the plan at once, naming each shortfall, before any phase', async () => {
+        const r = await sim(withNeeds(NEEDS), { timeline: [EMPTY.inv('Nails', 5, { id: 1539 }).build()] });
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'plan needs 1 Pot (held 0), 12 Nails (held 5), 1 pickaxe (held 0)',
+        });
+        expect(r.runs).toEqual([]);
+        expect(r.events[0]!.needs).toEqual(['Pot', 'Nails', 'pickaxe']);
+    });
+
+    test('needs held (a worn pickaxe counts) let the plan start', async () => {
+        const w = EMPTY.inv('Pot').inv('Nails', 12, { id: 1539 }).equipment({ name: 'Bronze pickaxe' });
+        const r = await sim(withNeeds(NEEDS), { timeline: [w.build()] });
+        expect(r.result.status).toBe('done');
+        expect(selected(r)).toEqual(['train']);
+    });
+
+    test('a resumed plan (needsUnless holds) is not checked', async () => {
+        const r = await sim(
+            withNeeds(NEEDS, v => v.quest('imp') !== 'none'),
+            { timeline: [EMPTY.quests({ imp: 'started' }).build()] },
+        );
+        expect(r.result.status).toBe('done');
+        const fresh = await sim(
+            withNeeds(NEEDS, v => v.quest('imp') !== 'none'),
+            {
+                timeline: [EMPTY.quests({}).build()],
+            },
+        );
+        expect(fresh.result.reason).toStartWith('plan needs ');
+    });
+
+    test('an unlabelled pattern need is named by its source in the event and the reason', async () => {
+        const r = await sim(withNeeds([{ item: /pickaxe$/i }]), { timeline: [EMPTY.build()] });
+        expect(r.result.reason).toBe('plan needs 1 pickaxe$ (held 0)');
+        expect(r.events[0]!.needs).toEqual(['pickaxe$']);
+    });
+
+    test('a throwing needsUnless ends the plan error, not a rejection', async () => {
+        const r = await sim(
+            withNeeds(NEEDS, () => {
+                throw new Error('x');
+            }),
+            { timeline: [EMPTY.build()] },
+        );
+        expect(r.result).toMatchObject({ status: 'error', reason: 'plan needsUnless threw: x' });
+        expect(r.runs).toEqual([]);
+    });
+});
+
 describe('requires', () => {
     test('a requirement that does not hold fails the plan naming it, before any phase', async () => {
         const r = await sim(needs({ 'woodcutting 5+': v => v.level('Woodcutting') >= 5 }));

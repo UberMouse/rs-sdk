@@ -90,6 +90,9 @@ export default definePlan({
         'a Pot (stage marker) unless the quest is started': v => v.quest(ID) !== 'none' || v.inv('Pot') > 0,
         'no Bucket before the quest starts': v => v.quest(ID) !== 'none' || id(v, BUCKET) === 0,
     },
+    // Start-only: the essence trips and the shop use them up or swap them once the quest has started.
+    needs: [{ item: 'Pot' }, { item: /pickaxe$/i, label: 'pickaxe' }, { item: 'Coins', count: 2 }],
+    needsUnless: v => v.quest(ID) !== 'none',
     phases: [
         // --- done: the stage 61 talk, then through the barrier ---
         phase(interact, barrier, {

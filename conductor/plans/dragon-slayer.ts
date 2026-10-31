@@ -14,8 +14,9 @@
 // to the south-east room and the funnel Ladder (2932,3240) into the dungeon: Zombie -> blue, Melzar the mad -> magenta,
 // Lesser demon -> green, Chest (2935,9657). The ladder (2939,3257) only leads up out of the dungeon.
 // The Port Sarim quay Gangplank (3047,3205) is served on level 0 since the client bridge-loc fix 8c1819d62.
-// Start: lib:dragon-slayer-start. Needs: 32 QP (varp 101), melee ~70, 12000 coins, the four oracle items, 3 planks,
-// 12 nails, a hammer, food.
+// Start: lib:dragon-slayer-start. Elvarg is fought with whatever weapon is worn. Needs: 32 QP (varp 101), melee ~70,
+// exactly 12000 coins (the Wormbrain and Klarense gates read the coin count: 2000-9999 after Wormbrain, under 2000
+// after the ship), the four oracle items, 3 planks, 12 nails, a hammer, food.
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
 import { QUEST_TAB_REQUIRED } from '@conductor/lib/quests';
 import combat from '@conductor/tasks/combat';
@@ -113,6 +114,18 @@ export default definePlan({
     description:
         "Dragon Slayer: Guild master, Oziach, Oracle + Dwarven mine door + chest, Wormbrain, Klarense, ship repair, Melzar's Maze chest, Duke's shield, Ned, Crandor, Elvarg.",
     requires: { ...QUEST_TAB_REQUIRED },
+    // Start-only: the quest takes the coins and the oracle items; a started quest has paid or used them.
+    needs: [
+        { item: 'Coins', count: 12000 },
+        { item: 'Silk' },
+        { item: 'Unfired bowl' },
+        { item: 'Lobster pot' },
+        { item: "Wizard's mind bomb" },
+        { item: 'Plank', count: 3 },
+        { item: 'Nails', count: 12 },
+        { item: 'Hammer' },
+    ],
+    needsUnless: v => v.quest(ID) !== 'none',
     phases: [
         // --- Crandor: the lair, then the island ---
         // The lair: the armed Skeletons and Giant skeletons stand between the rope (2833,9657) and the double Gate
@@ -132,7 +145,6 @@ export default definePlan({
                 target: 'Elvarg',
                 skill: 'Strength',
                 area: { x: 2852, z: 9637, radius: 30 },
-                weapon: 'Rune scimitar',
                 shield: SHIELD,
                 food: ['Swordfish'],
                 eatBelow: 0.5,

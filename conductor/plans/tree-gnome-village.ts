@@ -52,6 +52,9 @@ export default definePlan({
     description:
         'Tree Gnome Village: Bolren, six logs and the plan to Montai, ballista (4,3,5), wall, ladder, chest orb, Bolren, the Khazard warlord, Bolren.',
     requires: { ...QUEST_TAB_REQUIRED },
+    // Start-only: the six Logs go to Montai; a started quest has them or has used them.
+    needs: [{ item: 'Logs', count: 6 }],
+    needsUnless: v => v.quest(ID) !== 'none',
     phases: [
         // Troopers and commanders in the stronghold and on the battlefield attack: whatever hits is fought first.
         phase(
