@@ -165,3 +165,4 @@ if (sdk.getState()?.dialog.isOpen) {
   continue;
 }
 ```
+- Engine view lag: inventory and position views lag a tick or more after a step, so a gate reading just-changed state re-fires the previous phase. Settle phases (a no-op travel) keyed on the last-phase marker and message markers fix it; the idle rail ended the Biohazard plan after a third same-position phase, and a talk phase between a cupboard Open and Search fixed that case. [v 2026-10-31 questw1 local]
