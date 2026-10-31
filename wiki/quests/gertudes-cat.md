@@ -41,14 +41,15 @@
 
 7. **Complete the quest.** Use Fluffs' kitten on "Gertrudes cat" upstairs, then talk to Gertrude. [v 2026-11-01 questw1 local]
 
-### Bot notes (parked 2026-11-01)
+### Verified route
 
-Draft `conductor/runs/questw1/plans/gertrudes-cat.ts` (start save `lib:gertrudes-cat-start`: by the doogle leaves (3153, 3403), 150 coins, bucket of milk, raw sardine) proved every step but never the whole quest in one run: after the kitten, walks to the ladder fail intermittently with "Stuck at (3307, 3506)" beside the Crate NPCs, from `interact` and `travel` alike. [v 2026-11-01 questw1 local]
+Run by `conductor/plans/gertrudes-cat.ts`: a fresh load of `lib:gertrudes-cat-start` (by the doogle leaves (3153, 3403), 150 coins, bucket of milk, raw sardine) to quest done in 208 s: leaves and seasoning 11 s, Gertrude 10 s, the boys 48 s (incl. the walk to Varrock square), to the yard and up the ladder 58 s, feeding 10 s, crates 36 s, kitten returned 28 s, Gertrude 4 s. [v 2026-11-01 questw1 local]
 
-- Gertrude (3151, 3410) is behind a closed door (3150, 3412) the walker does not open: `interact` Open it first, on each visit. [v 2026-11-01 questw1 local]
+- Gertrude (3151, 3410) is behind a door (3150, 3412) the walker does not open: `interact` Open it before each visit (`onFail: 'continue'`, it is sometimes already open). [v 2026-11-01 questw1 local]
+- The player's level reads stale just after a ladder: end a ladder phase with an `until` on the level. [v 2026-11-01 questw1 local]
 - Shilop or Wilough (same dialog, Varrock square): "What will make you tell me?" then "Okay then, I'll pay." (100 coins). The first talk after the quest starts sometimes closes before its choices; give it a retry phase. [v 2026-11-01 questw1 local]
 - Doogle leaves are ground spawns at (3151-3157, 3399-3401); "Doogle leaves" on "Raw sardine" gives "Seasoned sardine". [v 2026-11-01 questw1 local]
-- The lumber yard's south entrance is the Broken fence (3305, 3493), "Climb-over" (members). The walker crosses it but then reports "Repeating the same hops 4 times without arriving"; cross with an explicit `interact` instead. [v 2026-11-01 questw1 local]
+- The lumber yard's south entrance is the Broken fence (3305, 3493), "Climb-over" (members); `travel` crosses it (since 4d0b70fab, which also routes round the blockwalk Crate NPCs in the yard). [v 2026-11-01 questw1 local]
 - The cat is upstairs: ladder (3310, 3509), stand tile (3309, 3509), cat roams (3301-3311, 3507-3517) on level 1. Milk first, then the sardine; the cat hits for about 3, so HP 10 is enough. [v 2026-11-01 questw1 local]
 
 ## Key NPCs & Locations
