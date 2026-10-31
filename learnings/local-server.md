@@ -49,3 +49,5 @@ Tag server-dependent numbers elsewhere with `local` / `hosted` (see `.claude/ski
 - Skill make menus (fletching) take Make 10 batches at one log per 2 ticks; a level-up dialog stops the batch, and at 25x XP early levels come every log or two, so batching pays from the mid levels. See `learnings/fletching.md`. [v 2026-10-11 conductor2w4 local]
 
 - Death: the bot kept its 3 most valuable items (Adamant pickaxe, bronze sword, wooden shield) and lost the rest (5 anchovies); it reappeared near (3226, 3330) at full hp, observed after a death at the Varrock stone circle (3223, 3373), not the Lumbridge spawn. [v 2026-10-11 conductor2 local]
+
+- Death item rule (`player_death_lose_items`, `death.rs2`): an unskulled player keeps its 3 most valuable items (worn or carried), 4 with Protect Item; the rest drops where it died (`inv_dropall`, lootdrop_duration). [server data; v 2026-10-31 conductor3 local]
