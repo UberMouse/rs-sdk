@@ -1,0 +1,281 @@
+{
+    "name": "death-plateau-start",
+    "purpose": "Death Plateau start in Burthorpe (2897,3531) near Denulth: Att 40 Str 54 Def 40 HP 47 Prayer 49, mithril scimitar worn, 5000 coins (Harold's dice), 3 swordfish (first slots, eaten first), 10 bread, 10 trout (cooked, for Tenzing), 1 iron bar, each in its own slot (27 of 28 used: the quest hands out one item at a time)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2897,
+                "z": 3531
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 2309,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 333,
+                    "count": 1
+                },
+                {
+                    "id": 2351,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 5000
+        }
+    },
+    "sha1": "54aac78e0937d780deb391c682253a60b20e6494",
+    "createdAt": "2026-10-24T04:37:33.744Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2897,
+            "z": 3531,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 5000
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 2309,
+                "name": "bread",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 333,
+                "name": "trout",
+                "count": 1
+            },
+            {
+                "id": 2351,
+                "name": "iron_bar",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000
+        }
+    }
+}
