@@ -1,0 +1,265 @@
+{
+    "name": "prince-ali-rescue-start",
+    "purpose": "Prince Ali Rescue start: fresh quest, Att/Str/Def 60 HP 65, rune scimitar and 12 swordfish in the pack (the Draynor jail guards, level 26, hit the bot during Joe's dialog and close it, so the plan kills them first; the combat task refuses level-26 targets without food), 250 coins, 3 balls of wool, pot of flour, ashes, bucket of water, soft clay, bronze bar (no cheap source), beside Hassan in Al Kharid palace (3302,3165); onions, redberries, pink skirt, rope and beers are gathered or bought by the plan",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3302,
+                "z": 3165
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 65
+            },
+            "inventory": [
+                {
+                    "id": 1333,
+                    "count": 1
+                },
+                {
+                    "id": 1759,
+                    "count": 1
+                },
+                {
+                    "id": 1759,
+                    "count": 1
+                },
+                {
+                    "id": 1759,
+                    "count": 1
+                },
+                {
+                    "id": 1933,
+                    "count": 1
+                },
+                {
+                    "id": 592,
+                    "count": 1
+                },
+                {
+                    "id": 1929,
+                    "count": 1
+                },
+                {
+                    "id": 1761,
+                    "count": 1
+                },
+                {
+                    "id": 2349,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "coins": 250
+        }
+    },
+    "sha1": "7dacc45f3dd5a22bfcc5f9682dcea90a9d24842d",
+    "createdAt": "2026-10-31T12:20:29.822Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3302,
+            "z": 3165,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 65
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 250
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1759,
+                "name": "ball_of_wool",
+                "count": 1
+            },
+            {
+                "id": 1759,
+                "name": "ball_of_wool",
+                "count": 1
+            },
+            {
+                "id": 1759,
+                "name": "ball_of_wool",
+                "count": 1
+            },
+            {
+                "id": 1933,
+                "name": "pot_flour",
+                "count": 1
+            },
+            {
+                "id": 592,
+                "name": "ashes",
+                "count": 1
+            },
+            {
+                "id": 1929,
+                "name": "bucket_water",
+                "count": 1
+            },
+            {
+                "id": 1761,
+                "name": "softclay",
+                "count": 1
+            },
+            {
+                "id": 2349,
+                "name": "bronze_bar",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
