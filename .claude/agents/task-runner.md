@@ -274,6 +274,11 @@ then journals the run itself when it ends.
   (the last 3 phase runs: `runId`, `logFile`, `status`, `reason`). Its `logFile` is the plan's
   log, `conductor/runs/<bot>/<stamp>-plan-<name>.ndjson`, with the source as it ran beside it
   (`<runId>.plan.ts`); each phase run has its own log and recording.
+- A run that ends not `done` while the bot is under attack gets a safety epilogue (up to 60 s: eat, walk away,
+  teleport once, or hold and defend; it never starts a fight) before the RESULT prints. Its `epilogue` field says what
+  it did (`actions`) and how it `ended`: `safe` (not under attack at the last read), `timeout`, `died`, or cut short.
+  Anything but `safe` means the bot may still be in danger: check `hp`/`inCombat` and act before anything else (eat
+  or fight with a task, teleport); `died` means report it (`learnings/hazards.md`).
 - `bun conductor/tools/stats.ts <bot>` counts a plan once, as `plan:<name>`, with XP/hr
   comparable to single tasks; `--phases` adds its phase runs.
 - `bun run test:integration plan` is the plan smoke test for authors changing the plan runner;
