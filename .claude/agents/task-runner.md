@@ -64,7 +64,8 @@ script walked the bot under attack and it died, 2026-10-11).
    notification is the result (retro #5: one runner spent ~28 wait-only turns and 9 `sleep; tail`
    check-ins over 45 min).
 5. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
-   itself). After every RESULT, write your state file before any other command, and act on a
+   itself), written out in full each time: the shell is zsh, which does not word-split `$J`, so flags
+   held in a variable arrive as one argument (`unknown flag --objective…`, retro #7). After every RESULT, write your state file before any other command, and act on a
    RESULT `hint`. A RESULT `warnings` entry (e.g. `seenOutsideArea`) is advice to act on: widen the
    area or move its centre to the tile it names (re-check the Wilderness margin), and rerun before trusting
    the run's rate; `diagnostics.idleTicks` and `seenOutsideAreaTicks` give the idle share.

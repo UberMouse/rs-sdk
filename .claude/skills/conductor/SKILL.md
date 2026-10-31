@@ -293,7 +293,9 @@ Report per your instructions: DECISION NEEDED, or GOAL with RESULT lines, plans,
 Every fact in Knowledge comes from a page or the account as observed now; name the page. A
 brief that said "Falador has an anvil" (no page did) cost a runner its first runs (2026-10-11).
 Name Methods as the plan to write, not a sequence of steps: "smith the bars, then a loop" read as
-plain task runs.
+plain task runs. A combat goal names the melee or ranged `skill` to train and its cut-over (Attack
+until 99, then Defence), never a 99 one: a brief that named none let a runner train Strength at 99
+for 48 min, ~660k XP lost (retro #7).
 
 A goal is a few plans' worth, such as a couple of levels in one or two skills or one resource
 target, not hours of open-ended play. One that needs errands first (withdraw a tool, buy food)
