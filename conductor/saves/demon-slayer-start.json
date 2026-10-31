@@ -1,0 +1,375 @@
+{
+    "name": "demon-slayer-start",
+    "purpose": "Demon Slayer start: Att/Str/Def 60 HP 65, rune full helm/platebody/platelegs/kiteshield and rune scimitar worn, 25 bones and 20 coins in the pack (26 slots), a bucket and 15 swordfish in the bank, demonstart 0, in Varrock square at (3216,3433)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3216,
+                "z": 3433
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 60,
+                "Hitpoints": 65
+            },
+            "inventory": [
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                }
+            ],
+            "bank": [
+                {
+                    "id": 1925,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 15
+                }
+            ],
+            "coins": 20
+        }
+    },
+    "sha1": "3f691e325c06e5a244a90d00855e8210f6a5304f",
+    "createdAt": "2026-10-31T11:19:04.299Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3216,
+            "z": 3433,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 60,
+            "Strength": 60,
+            "Hitpoints": 65
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 20
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [
+            {
+                "id": 1925,
+                "name": "bucket_empty",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 15
+            }
+        ],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
