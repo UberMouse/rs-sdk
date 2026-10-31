@@ -1,0 +1,84 @@
+{
+    "name": "sea-slug-start",
+    "purpose": "Sea Slug start: fresh quest, Firemaking 30, Att/Str/Def 20, HP 30, one swamp paste (skips the Lumbridge swamp tar), at the Holgart shore (2722,3305) beside Caroline and Holgart",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2722,
+                "z": 3305
+            },
+            "skills": {
+                "Firemaking": 30,
+                "Attack": 20,
+                "Strength": 20,
+                "Defence": 20,
+                "Hitpoints": 30
+            },
+            "inventory": [
+                {
+                    "id": 1941,
+                    "count": 1
+                }
+            ],
+            "equipment": [],
+            "coins": 0,
+            "varps": {}
+        }
+    },
+    "sha1": "5db5f7bb776700cf8280bbc829f9e37e8b152f8e",
+    "createdAt": "2026-10-31T10:44:27.148Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2722,
+            "z": 3305,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 20,
+            "Defence": 20,
+            "Strength": 20,
+            "Hitpoints": 30,
+            "Firemaking": 30
+        },
+        "inventory": [
+            {
+                "id": 1941,
+                "name": "swamppaste",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
