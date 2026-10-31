@@ -1,0 +1,251 @@
+{
+    "name": "fishing-contest-start",
+    "purpose": "Fishing Contest start: fresh quest, Fishing 15, Att/Str/Def/HP 40, iron scimitar and iron armour worn, 10 swordfish in separate slots, Fishing rod, Spade, 2 Garlic, 200 coins, west of White Wolf Mountain outside the dwarf hut at (2810,3480)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2810,
+                "z": 3480,
+                "level": 0
+            },
+            "skills": {
+                "Fishing": 15,
+                "Attack": 40,
+                "Strength": 40,
+                "Defence": 40,
+                "Hitpoints": 40
+            },
+            "inventory": [
+                {
+                    "id": 307,
+                    "count": 1
+                },
+                {
+                    "id": 952,
+                    "count": 1
+                },
+                {
+                    "id": 1550,
+                    "count": 1
+                },
+                {
+                    "id": 1550,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 995,
+                    "count": 200
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1323,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1153,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1115,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1067,
+                    "count": 1,
+                    "slot": 7
+                }
+            ]
+        }
+    },
+    "sha1": "da380d04034c1ccdb1e62b9e4af52f28b0cdb045",
+    "createdAt": "2026-10-31T09:56:35.872Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2810,
+            "z": 3480,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 40,
+            "Hitpoints": 40,
+            "Fishing": 15
+        },
+        "inventory": [
+            {
+                "id": 307,
+                "name": "fishing_rod",
+                "count": 1
+            },
+            {
+                "id": 952,
+                "name": "spade",
+                "count": 1
+            },
+            {
+                "id": 1550,
+                "name": "garlic",
+                "count": 1
+            },
+            {
+                "id": 1550,
+                "name": "garlic",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 200
+            }
+        ],
+        "worn": [
+            {
+                "id": 1153,
+                "name": "iron_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1323,
+                "name": "iron_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1115,
+                "name": "iron_platebody",
+                "count": 1
+            },
+            {
+                "id": 1067,
+                "name": "iron_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
