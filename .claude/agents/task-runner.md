@@ -43,7 +43,8 @@ script walked the bot under attack and it died, 2026-10-11).
    foreground run, no foreground `sleep`, no `pgrep` loop: a runner blocked on a foreground command can't
    receive the conductor's messages (the user had to kill a run to get a correction through,
    2026-10-11). A message that arrives mid-run and changes the plan: stop the run (`kill <pid>` of
-   the anchored `pgrep` match below; it prints its RESULT on SIGTERM), then act on it.
+   the anchored `pgrep` match below; the first SIGTERM runs a capped safety epilogue, then prints its RESULT and
+   exits 143: allow about 35 s before SIGKILL), then act on it.
 4. **One check-in on a plan's first run** (a new draft, or one you changed; a promoted plan run
    unchanged gets none): right after starting it, start one check-in in the background, its sleep
    sized to when the riskiest untried phase should have run (the errands and the first loop: 120 to
@@ -275,9 +276,11 @@ then journals the run itself when it ends.
   (the last 3 phase runs: `runId`, `logFile`, `status`, `reason`). Its `logFile` is the plan's
   log, `conductor/runs/<bot>/<stamp>-plan-<name>.ndjson`, with the source as it ran beside it
   (`<runId>.plan.ts`); each phase run has its own log and recording.
-- A run that ends not `done` while the bot is under attack gets a safety epilogue (up to 60 s: eat, walk away,
-  teleport once, or hold and defend; it never starts a fight) before the RESULT prints. Its `epilogue` field says what
-  it did (`actions`) and how it `ended`: `safe` (not under attack at the last read), `timeout`, `died`, or cut short.
+- A run of any status that ends while the bot is under attack gets a safety epilogue (eat, walk away, teleport once,
+  or hold and defend; it never starts a fight) before the RESULT prints: up to 60 s, 20 s for a `done` run and
+  after the first SIGTERM/SIGHUP (about 35 s at most, then the RESULT and exit 143/129). Its `epilogue` field says what
+  it did (`actions`) and how it `ended`: `safe` (not under attack and no hit for 10 ticks at the last read), `timeout`,
+  `died` (also a death earlier in the run), or cut short.
   Anything but `safe` means the bot may still be in danger: check `hp`/`inCombat` and act before anything else (eat
   or fight with a task, teleport); `died` means report it (`learnings/hazards.md`).
 - `bun conductor/tools/stats.ts <bot>` counts a plan once, as `plan:<name>`, with XP/hr

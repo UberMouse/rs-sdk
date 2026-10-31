@@ -319,7 +319,12 @@ export const GUARDS: readonly TaskGuard<object, GuardName>[] = [
  * else) cannot be told from the real attacker: it is treated as the attacker.
  */
 export function attackers(s: BotWorldState): BotWorldState['nearbyNpcs'] {
-    return s.nearbyNpcs.filter(n => n.targetIndex >= PLAYER_TARGET_OFFSET && n.distance <= ATTACKER_REACH);
+    return facingPlayer(s).filter(n => n.distance <= ATTACKER_REACH);
+}
+
+/** The NPCs facing some player, at any distance (the client does not publish which player; ranged attackers stand off). */
+export function facingPlayer(s: BotWorldState): BotWorldState['nearbyNpcs'] {
+    return s.nearbyNpcs.filter(n => n.targetIndex >= PLAYER_TARGET_OFFSET);
 }
 
 /** The highest combat level among `npcs`, or undefined with none. */

@@ -1,37 +1,54 @@
-// The end-of-run safety step: a run that ends not `done` with the bot under attack must not leave it
-// defenceless. Nothing runs once the process exits, so the low-HP and death guards stop with it and a fight
-// the run left open goes on unwatched.
+// The end-of-run safety step: a run that ends with the bot under attack (any status, `done` included: a plan that
+// reaches its time limit mid-fight) must not leave it defenceless. Nothing runs once the process exits, so the
+// low-HP and death guards stop with it and a fight the run left open goes on unwatched.
 //
 // It runs from run-task.ts after the plan or task has its result, under no guards and no stops, bounded by
-// EPILOGUE_TICKS, and only adds an `epilogue` to the RESULT: the run's status and reason are the run's own.
-// In order, each pass: eat while HP is under the eat line and food is held; teleport (a standard-spellbook
-// town teleport the bot can cast) when HP is low with no food, or when walking away has not ended the fight
-// and HP has fallen meaningfully; hold and defend when the only foe is the bot's own fight and HP is fine;
-// otherwise walk away from the attacker (a few legs, ended early once HP falls with the fight still on; a
-// foe that follows is then fought where the bot stands), toward the last place the bot stood out of combat
-// when that lies away from the fight, else directly away, never deeper into the Wilderness. With
-// auto-retaliate off the bot would not defend itself where it stands, so it teleports at once when it can
-// and otherwise keeps walking. It never attacks, picks nothing up, and does nothing at all when the bot is
-// not under attack.
+// EPILOGUE_TICKS (a done run, and the first SIGTERM or SIGHUP, get SIGNAL_EPILOGUE_TICKS), and only adds an
+// `epilogue` to the RESULT: the run's status and reason are the run's own.
+// In order, each pass: eat while HP is under the eat line and food is held; when nothing is attacking any more,
+// wait out the hit-recency window (RECENT_HIT_TICKS without a hit is what makes it `safe`) with no flee or teleport;
+// teleport (a standard-spellbook town teleport the bot can cast) when HP is low with no food, or when walking away
+// has not ended the fight and HP has fallen meaningfully; hold and defend when the only foe is the bot's own fight
+// and HP is fine; otherwise walk away from the attacker (a few legs, ended early once HP falls with the fight still
+// on; a foe that follows is then fought where the bot stands), toward the last place the bot stood out of combat
+// when that lies away from the fight, else directly away, never deeper into the Wilderness. With auto-retaliate
+// off the bot would not defend itself where it stands, so it teleports at once when it can and otherwise keeps
+// walking. It never attacks, picks nothing up, and does nothing at all when the bot is not under attack. A death
+// earlier in the run (runStartTick) ends it `died` at once: the state shown is a respawn.
 import type { BotWorldState } from '../../sdk/types';
 import type { ActionContext } from '../actions/context';
 import { dismiss } from '../actions/dismiss';
+import { closeBank } from '../actions/bank';
 import { EAT_ATTEMPT_TICKS, eat } from '../actions/eat';
 import type { Pathfinder } from '../actions/paths';
+import { closeShop } from '../actions/shop';
 import { castTeleport, missingRunes, TELEPORT_WAIT_TICKS, TELEPORTS, type TeleportName } from '../actions/teleport';
 import { walkTo } from '../actions/walk';
 import { type Driver, interpret } from '../core/interpret';
 import { log, type Op, ticks } from '../core/op';
-import { attackers, diedSince, findFood, isAttacked, lowForAttackers, ownFight } from './interrupts';
+import {
+    attackers,
+    diedSince,
+    facingPlayer,
+    findFood,
+    isAttacked,
+    lowForAttackers,
+    ownFight,
+    recentlyHit,
+} from './interrupts';
 import type { TaskResult } from './task';
 import { errMessage, findSkill, TICK_MS } from './util';
 import type { WalkWorld } from './walk-graph';
 import { wildernessLevel } from './wilderness';
 
-/** The whole epilogue's budget: 60 s of game time. */
+/** The whole epilogue's budget: 60 s of game time (a run that did not finish, `done` aside). */
 export const EPILOGUE_TICKS = Math.ceil(60_000 / TICK_MS);
+/** The budget when the process is being killed (SIGTERM, SIGHUP) and for a `done` run: 20 s of game time. */
+export const SIGNAL_EPILOGUE_TICKS = Math.ceil(20_000 / TICK_MS);
 /** Ticks past the budget before the interpreter cancels whatever op is running (an eat or a cast that began inside it). */
 export const EPILOGUE_GRACE_TICKS = 12;
+/** An NPC facing a player farther than this (tiles) is taken as someone else's fight, not a ranged attacker. */
+export const RANGED_REACH = 10;
 /** Tiles to run from the attacker when walking directly away. */
 export const FLEE_DISTANCE = 14;
 /** Ticks one walk leg may take; HP and the fight are re-read between legs. */
@@ -60,13 +77,13 @@ export type SafeSpot = Point & { level: number };
 
 /**
  * Why the epilogue stopped, one of:
- * - `safe`: not under attack at the last state read (not hit, not fighting). A chaser outside attack reach that has
- *   not hit yet counts, so `safe` is not proof the chase is over. The epilogue also runs for `stopped` runs (an
- *   `--until` stop mid-fight), holding or defending up to 60 s of process time, deliberately. It cannot set
+ * - `safe`: not under attack at the last state read (not fighting, and no hit for RECENT_HIT_TICKS). A chaser outside
+ *   attack reach that has not hit yet counts, so `safe` is not proof the chase is over. The epilogue also runs for
+ *   `stopped` runs (an `--until` stop mid-fight), holding or defending up to its budget, deliberately. It cannot set
  *   auto-retaliate (no op for it). Ranged or fire attackers (Elvarg's dragonfire) are not solved by walking:
  *   eating or teleporting is the defence;
- * - `timeout`: still under attack when EPILOGUE_TICKS ran out;
- * - `died`: the bot died during it (the respawn clears combat, so this is not `safe`);
+ * - `timeout`: still under attack when the budget (EPILOGUE_TICKS, or SIGNAL_EPILOGUE_TICKS) ran out;
+ * - `died`: the bot died during it, or earlier in the run (the respawn clears combat, so this is not `safe`);
  * - `no player in state`: the client published no player;
  * - `out of time`: the interpreter cancelled it past the budget plus EPILOGUE_GRACE_TICKS;
  * - `cut short`: it was aborted by something else (the reason is in `cutShort`).
@@ -98,16 +115,29 @@ export interface EpilogueProgress {
 /** Under attack: something hits the bot or it fights something. The epilogue works only on this. */
 export const endangered = (s: BotWorldState): boolean => isAttacked(s) || ownFight(s);
 
-/** Whether a result is one the epilogue follows: any run that did not end `done`, unless the client is gone. */
-export const needsEpilogue = (r: Pick<TaskResult, 'status' | 'reason'>): boolean =>
-    r.status !== 'done' && !CLIENT_GONE.test(r.reason);
+/**
+ * Whether a result is one the epilogue follows: any run, `done` included, unless the client is gone. The epilogue
+ * itself does nothing when the bot is not under attack, so a done run out of combat is untouched.
+ */
+export const needsEpilogue = (r: Pick<TaskResult, 'status' | 'reason'>): boolean => !CLIENT_GONE.test(r.reason);
 
 const tileOf = (n: BotWorldState['nearbyNpcs'][number]): Point => ({ x: n.tileX ?? n.x, z: n.tileZ ?? n.z });
 
-/** The NPC to run from: the nearest of those hitting the bot, else the one the bot fights. */
+/**
+ * The NPC to run from: the nearest of those hitting the bot, else (after a recent hit) the nearest facing a player
+ * within RANGED_REACH, else the one the bot fights. The ranged guess is a heuristic: the client does not publish
+ * whom an NPC faces, so a far NPC fighting someone else beside the bot is indistinguishable from a ranged attacker.
+ */
 function foeOf(s: BotWorldState): Point | null {
     const hitting = attackers(s).sort((a, b) => a.distance - b.distance)[0];
     if (hitting) return tileOf(hitting);
+    // A ranged or magic attacker faces the bot from beyond melee reach.
+    const shooting = recentlyHit(s)
+        ? facingPlayer(s)
+              .filter(n => n.distance <= RANGED_REACH)
+              .sort((a, b) => a.distance - b.distance)[0]
+        : undefined;
+    if (shooting) return tileOf(shooting);
     const c = s.player?.combat;
     const own = c?.targetType === 'npc' ? s.nearbyNpcs.find(n => n.index === c.targetIndex) : undefined;
     return own ? tileOf(own) : null;
@@ -193,18 +223,34 @@ const onlyOwnFight = (s: BotWorldState): boolean =>
 
 /**
  * The epilogue as an op; `safe` is where the bot last stood out of combat. Null when the bot is not under attack
- * (nothing was done). Bounded by EPILOGUE_TICKS from the first state: an eat or a cast may finish a few ticks past it.
+ * (nothing was done). Bounded by `budgetTicks` from the first state: an eat or a cast may finish a few ticks past it.
  * `progress` is filled as it goes, for a caller that cuts it short.
  */
 export function* epilogue(
     ctx: ActionContext,
     safe: SafeSpot | null = null,
     progress: EpilogueProgress = { actions: [], hpBefore: null },
+    budgetTicks: number = EPILOGUE_TICKS,
+    runStartTick?: number,
 ): Op<Epilogue | null> {
     const first = ctx.state();
-    if (!first.player || !endangered(first)) return null;
+    if (!first.player) return null;
     const startTick = first.tick;
-    const deadline = startTick + EPILOGUE_TICKS;
+    // The bot died during the run (the death guard ended it): what the state shows now is the respawn, whose combat
+    // flag and full HP say nothing about a fight. Nothing to defend.
+    if (runStartTick !== undefined && diedSince(first, runStartTick)) {
+        return {
+            actions: [],
+            ended: 'died',
+            hpBefore: first.player.hp,
+            hpAfter: first.player.hp,
+            maxHp: first.player.maxHp,
+            inCombat: first.player.combat.inCombat,
+            ticks: 0,
+        };
+    }
+    if (!endangered(first)) return null;
+    const deadline = startTick + budgetTicks;
     const actions = progress.actions;
     const hpBefore = first.player.hp;
     progress.hpBefore = hpBefore;
@@ -219,10 +265,15 @@ export function* epilogue(
     let hpMark = hpBefore;
     let ended: EpilogueEnd = 'timeout';
     yield* log(
-        `epilogue: bot under attack after a run that did not end done (hp ${hpBefore}/${first.player.maxHp}); keeping it alive`,
+        `epilogue: bot under attack at the end of the run (hp ${hpBefore}/${first.player.maxHp}); keeping it alive`,
     );
+    // A bank or shop left open (a kill mid-banking) hides the inventory: the server drops the eat and the walk
+    // under it. Close it first (dismiss leaves both alone).
+    if (first.bank.isOpen) yield* closeBank(ctx);
+    if (ctx.state().shop.isOpen) yield* closeShop(ctx);
     // A dialog swallows the eat and the walk; if it will not clear, the passes below meet that.
-    yield* dismiss(ctx);
+    const cleared = yield* dismiss(ctx);
+    if (!cleared.ok && cleared.reason === 'choice') yield* log(`epilogue: ${cleared.message}; proceeding`);
 
     for (;;) {
         const s = ctx.state();
@@ -236,7 +287,9 @@ export function* epilogue(
             ended = 'died';
             break;
         }
-        if (!endangered(s)) {
+        // Out of combat is not safe while hits still land (a ranged attacker out of reach): wait for RECENT_HIT_TICKS
+        // without one.
+        if (!endangered(s) && !recentlyHit(s)) {
             ended = 'safe';
             break;
         }
@@ -251,6 +304,12 @@ export function* epilogue(
             if (r.ok) actions.push('ate');
             // The eat's HP is not a fall or a rise of the fight's making.
             hpMark = ctx.state().player?.hp ?? hpMark;
+            continue;
+        }
+        // Nothing attacks any more and only the hit-recency window is left (a won fight, no foe in view): there is
+        // nothing to flee or teleport from.
+        if (!endangered(s)) {
+            yield* ticks(1);
             continue;
         }
         // The fight came along a walk leg when HP fell by a real amount, or is under the eat line and still falling.
@@ -330,12 +389,19 @@ export function* epilogue(
 }
 
 /**
- * Runs the epilogue on `driver` (no guards, no stops), at most EPILOGUE_TICKS plus the grace. Never throws: a driver
- * that fails (the client gone) gives null, with the error logged.
+ * Runs the epilogue on `driver` (no guards, no stops), at most `opts.budgetTicks` (default EPILOGUE_TICKS) plus the
+ * grace. Never throws: a driver that fails (the client gone) gives null, with the error logged.
  */
 export async function runEpilogue(
     driver: Driver,
-    opts: { safe?: SafeSpot | null; pathfinder?: Pathfinder; walkWorld?: WalkWorld } = {},
+    opts: {
+        safe?: SafeSpot | null;
+        pathfinder?: Pathfinder;
+        walkWorld?: WalkWorld;
+        budgetTicks?: number;
+        /** The tick the run began: a death since then means the state shown is a respawn. */
+        runStartTick?: number;
+    } = {},
 ): Promise<Epilogue | null> {
     let startTick: number;
     try {
@@ -349,10 +415,11 @@ export async function runEpilogue(
         ...(opts.walkWorld && { walkWorld: opts.walkWorld }),
     };
     const progress: EpilogueProgress = { actions: [], hpBefore: null };
+    const budget = opts.budgetTicks ?? EPILOGUE_TICKS;
     try {
-        const r = await interpret(epilogue(ctx, opts.safe ?? null, progress), {
+        const r = await interpret(epilogue(ctx, opts.safe ?? null, progress, budget, opts.runStartTick), {
             driver,
-            onTick: s => (s.tick - startTick > EPILOGUE_TICKS + EPILOGUE_GRACE_TICKS ? 'epilogue out of time' : null),
+            onTick: s => (s.tick - startTick > budget + EPILOGUE_GRACE_TICKS ? 'epilogue out of time' : null),
         });
         if (r.kind === 'returned') return r.value;
         const s = driver.state();

@@ -13,6 +13,8 @@ import {
     runEpilogue,
     epilogueSummary,
     safeSpotTracker,
+    RANGED_REACH,
+    SIGNAL_EPILOGUE_TICKS,
     trackSafeSpot,
     withEpilogueResult,
 } from '../../lib/epilogue';
@@ -67,8 +69,8 @@ async function run(
 }
 
 describe('needsEpilogue', () => {
-    test('a done run never gets one', () => {
-        expect(needsEpilogue({ status: 'done', reason: 'x' })).toBe(false);
+    test('a done run follows too: the epilogue itself does nothing out of combat', () => {
+        expect(needsEpilogue({ status: 'done', reason: 'reached 25 min' })).toBe(true);
     });
     test('failed, stuck and error runs do', () => {
         for (const status of ['failed', 'stuck', 'error'] as const)
@@ -80,7 +82,108 @@ describe('needsEpilogue', () => {
     });
 });
 
-describe('epilogue: under attack at the end of a failed run', () => {
+describe('epilogue: a done run', () => {
+    test('ended mid-fight on its own target with HP fine: holds and finishes the fight, never walks', async () => {
+        const { epilogue, sends } = await run(
+            own(35).series(30, (w, i) => (i >= 20 ? w.player({ inCombat: false }) : w)),
+        );
+        expect(epilogue?.ended).toBe('safe');
+        expect(epilogue?.actions).toEqual([]);
+        expect(sends).toEqual([]);
+    });
+    test('ended out of combat: nothing done, no result', async () => {
+        const { epilogue, sends } = await run(calm(40).series(3, w => w));
+        expect(epilogue).toBeNull();
+        expect(sends).toEqual([]);
+    });
+    test('a kill budget bounds it: still in the fight when the 20 s are up', async () => {
+        const driver = new TimelineDriver(
+            own(35).series(300, w => w),
+            { react: walking() },
+        );
+        const e = await runEpilogue(driver, { budgetTicks: SIGNAL_EPILOGUE_TICKS });
+        expect(e?.ended).toBe('timeout');
+        expect(e?.ticks).toBeLessThanOrEqual(SIGNAL_EPILOGUE_TICKS + 2);
+        expect(SIGNAL_EPILOGUE_TICKS).toBe(50);
+    });
+});
+
+/** A troll throwing from 5 tiles, hp falling, no food. */
+const thrown = () =>
+    world()
+        .npc('Thrower Troll', AT.x + 5, AT.z, { attacking: true, inCombat: true })
+        .player({ hp: 55, maxHp: 85, inCombat: true })
+        .series(40, (w, i) => w.player({ hp: 55, lastDamageTick: i }));
+
+describe('epilogue: field bug, ranged attacker and a death before it', () => {
+    test('a ranged attacker out of melee reach is fled from, not reported safe', async () => {
+        const walk = walking();
+        const driver = new TimelineDriver(thrown(), { react: walk });
+        const e = await runEpilogue(driver, {});
+        expect(e?.actions.some(a => a.startsWith('walked'))).toBe(true);
+        // Hits landed to tick 39; it is safe only once none has for RECENT_HIT_TICKS.
+        expect(e?.ticks).toBeGreaterThanOrEqual(40);
+    });
+    test('out of combat but still being hit is not safe until the hits stop', async () => {
+        const e = await runEpilogue(
+            new TimelineDriver(
+                calm(30)
+                    .player({ lastDamageTick: 0, inCombat: true })
+                    .series(40, (w, i) =>
+                        i < 3 ? w.player({ inCombat: true, lastDamageTick: i }) : w.player({ inCombat: false }),
+                    ),
+                { react: walking() },
+            ),
+            {},
+        );
+        expect(e?.ticks).toBeGreaterThanOrEqual(10);
+        expect(e?.ended).toBe('safe');
+    });
+    test('a won fight with a recent hit and no foe in view only waits it out: no walk, no teleport', async () => {
+        const { epilogue, sends } = await run(
+            own(35)
+                .skill('Magic', 31, 0)
+                .inv('Air rune', 3)
+                .inv('Earth rune', 1)
+                .inv('Law rune', 1)
+                .series(40, (w, i) =>
+                    i < 3 ? w : world().player({ hp: 35, maxHp: 40, inCombat: false, lastDamageTick: 2 }),
+                ),
+            // A safe spot to run to would be taken if the epilogue still fled.
+            { safe: { x: AT.x - 10, z: AT.z, level: 0 } },
+        );
+        expect(epilogue?.ended).toBe('safe');
+        expect(epilogue?.actions).toEqual([]);
+        expect(sends).toEqual([]);
+        expect(epilogue?.ticks).toBeGreaterThanOrEqual(10);
+    });
+    test('an NPC facing a player far beyond ranged reach is not the foe', () => {
+        const far = world()
+            .npc('Goblin', AT.x + RANGED_REACH + 5, AT.z, { attacking: true, inCombat: true })
+            .player({ hp: 30, maxHp: 40, inCombat: true, lastDamageTick: 0 })
+            .build();
+        expect(fleeDestinations(far, null)).toEqual([]);
+        const near = world()
+            .npc('Goblin', AT.x + 5, AT.z, { attacking: true, inCombat: true })
+            .player({ hp: 30, maxHp: 40, inCombat: true, lastDamageTick: 0 })
+            .build();
+        expect(fleeDestinations(near, null).length).toBeGreaterThan(0);
+    });
+    test('the bot died during the run: the respawn state (full HP, combat flag stale) is left alone', async () => {
+        const startTick = 0;
+        const timeline = world()
+            .player({ hp: 85, maxHp: 85, inCombat: true })
+            .message('Oh dear, you are dead!')
+            .series(5, w => w);
+        const driver = new TimelineDriver(timeline, { react: walking() });
+        const e = await runEpilogue(driver, { runStartTick: startTick });
+        expect(e?.ended).toBe('died');
+        expect(e?.actions).toEqual([]);
+        expect(driver.commands.filter(c => c.type === 'send')).toEqual([]);
+    });
+});
+
+describe('epilogue: under attack at the end of a run', () => {
     test('low HP with food: eats, then walks away until out of the fight', async () => {
         // The goblin's reach is lost once the bot has walked off; HP is back up from the second tick (the eat).
         const { epilogue, sends } = await run(
@@ -480,5 +583,21 @@ describe('result helpers', () => {
         expect(t.spot()).toEqual({ x: 3200, z: 3200, level: 0 });
         t.stop();
         expect(unsubscribed).toBe(true);
+    });
+});
+
+describe('epilogue: a bank left open', () => {
+    test('is closed before any eat or walk', async () => {
+        const opened = fighting(10).bank([{ name: 'Coins', count: 5 }]);
+        const driver = new TimelineDriver(
+            opened.series(60, (w, i) => w.player({ hp: 10, lastDamageTick: i })),
+            {
+                react: (a, s) => (a.type === 'closeModal' ? st => world(st).bank(false).build() : walking()(a, s)),
+            },
+        );
+        await runEpilogue(driver, { pathfinder: straightPaths(), walkWorld: noCrossings(), budgetTicks: 20 });
+        const sends = driver.commands.flatMap(c => (c.type === 'send' ? [c.action.type] : []));
+        expect(sends[0]).toBe('closeModal');
+        expect(sends.length).toBeGreaterThan(1);
     });
 });

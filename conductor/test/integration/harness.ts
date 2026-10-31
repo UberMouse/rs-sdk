@@ -25,8 +25,11 @@ const NAME_PREFIX = 'it';
 const NAME_RANDOM_CHARS = 10;
 const STOP_GRACE_MS = 5000;
 const LOG_TAIL_LINES = 40;
-/** run-task prints its RESULT and exits within ~6s of SIGTERM; SIGKILL after this. */
-const TASK_TERM_GRACE_MS = 8000;
+/**
+ * run-task answers the first SIGTERM with a capped epilogue (up to ~30 s wall), then its RESULT and an exit
+ * within 5 s; SIGKILL after this.
+ */
+const TASK_TERM_GRACE_MS = 40_000;
 /** Slack over a task's own `minutes:N` stop for startup, the final RESULT and teardown. */
 const TASK_MARGIN_MS = 2 * 60_000;
 const TASK_FALLBACK_TIMEOUT_MS = 10 * 60_000;
