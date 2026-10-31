@@ -1,0 +1,378 @@
+{
+    "name": "shilo-village-start",
+    "purpose": "Shilo Village start: fresh quest (zombiequeen 0), Jungle Potion done (varp 175 = 12), Att/Str/Def 80 HP 85 Prayer 55 Agility 70 Crafting 25, rune scimitar/platebody/platelegs/full helm/kiteshield and amulet of power worn, pack: Wampum belt, spade, rope, lit candle, chisel, bronze craft wire, 3 bones, 17 swordfish (separate slots), at Tai Bwo Wannai next to Trufitus (2806,3088)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2806,
+                "z": 3088,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 80,
+                "Strength": 80,
+                "Defence": 80,
+                "Hitpoints": 85,
+                "Prayer": 55,
+                "Agility": 70,
+                "Crafting": 25
+            },
+            "inventory": [
+                {
+                    "id": 625,
+                    "count": 1
+                },
+                {
+                    "id": 952,
+                    "count": 1
+                },
+                {
+                    "id": 954,
+                    "count": 1
+                },
+                {
+                    "id": 33,
+                    "count": 1
+                },
+                {
+                    "id": 1755,
+                    "count": 1
+                },
+                {
+                    "id": 1794,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1731,
+                    "count": 1,
+                    "slot": 2
+                }
+            ],
+            "varps": {
+                "175": 12
+            }
+        }
+    },
+    "sha1": "75e3445a7a9dae6620f389500bfecc297cd0935a",
+    "createdAt": "2026-10-31T11:06:56.556Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2806,
+            "z": 3088,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 80,
+            "Defence": 80,
+            "Strength": 80,
+            "Hitpoints": 85,
+            "Prayer": 55,
+            "Crafting": 25,
+            "Agility": 70
+        },
+        "inventory": [
+            {
+                "id": 625,
+                "name": "mosol_wampum_belt",
+                "count": 1
+            },
+            {
+                "id": 952,
+                "name": "spade",
+                "count": 1
+            },
+            {
+                "id": 954,
+                "name": "rope",
+                "count": 1
+            },
+            {
+                "id": 33,
+                "name": "lit_candle",
+                "count": 1
+            },
+            {
+                "id": 1755,
+                "name": "chisel",
+                "count": 1
+            },
+            {
+                "id": 1794,
+                "name": "bronzecraftwire",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1731,
+                "name": "amulet_of_power",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "175": 12,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
