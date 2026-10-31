@@ -1,0 +1,104 @@
+{
+    "name": "sheep-herder-prod-ready",
+    "purpose": "Sheep Herder quest started (varp 60=1), plague suit worn, cattle prod wielded, east of the sheep pasture (2628,3367); tests the herd task",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2628,
+                "z": 3367
+            },
+            "skills": {
+                "Attack": 10,
+                "Strength": 10,
+                "Defence": 10,
+                "Hitpoints": 20
+            },
+            "equipment": [
+                {
+                    "id": 284,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 285,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 278,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "varps": {
+                "60": 1
+            }
+        }
+    },
+    "sha1": "c6cda081532d708743967a49c19257aa26db3cdb",
+    "createdAt": "2026-10-31T11:17:15.802Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2628,
+            "z": 3367,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 10,
+            "Defence": 10,
+            "Strength": 10,
+            "Hitpoints": 20
+        },
+        "inventory": [],
+        "worn": [
+            {
+                "id": 278,
+                "name": "cattleprod",
+                "count": 1
+            },
+            {
+                "id": 284,
+                "name": "plague_jacket",
+                "count": 1
+            },
+            {
+                "id": 285,
+                "name": "plague_trousers",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "60": 1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
