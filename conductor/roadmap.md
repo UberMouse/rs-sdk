@@ -273,7 +273,7 @@ each in the three level-1 skills. Bank ~48k coins, adamant pickaxe and axe; pack
    Run the adult-blue-dragon experiment only if a 25-min melee run falls under 100k/h.
 3. **Explore the long poles on a worker NOW, while the bot trains Prayer** (nothing yet exists for them): Herblore (942k; no plan, herbs from chaos druids
    at Edgeville; melee 99 makes the kills safe) and Runecraft (998k, 5.6 h floor; `earth-runecraft(-28)` plans exist, nothing run on conductor3). Dispatch two
-   authors (worker `conductor3w*`), each ending in a promoted plan with a measured rate.
+   authors (worker `conductor3w*`), each ending in a promoted plan with a measured rate. **Research 2026-10-31 (server content):** Herblore = Edgeville chaos druids (0.445 herbs/kill, ~247 herbs/h measured at melee 85) + bought eye of newt (3 gp Jatix), chocolate dust (Funch's), vials of water (2 gp Aemad's): ~643 XP/herb avg, ~7 h to 99 (~4.9 h after Eadgar's Ruse 275k), <5k gp; no herbs/unf sold, no toadflax/snapdragon/torstol drops; needs a `herblore` task (authoring, conductor3w1) and a herblore world-index family. Runecraft = existing earth plans (no quest lumps, no pure essence, higher altars lose the XP to walking), ~5.4-7 h, 0 gp; natures for superheat are bought (20 gp, Lundail's or Magic Guild at Magic 66), not crafted.
 4. **Smithing 87 -> 99 + Magic 44 -> 99 (superheat at Varrock East)**: `iron-varrock-99` / `superheat-banked` / `khazard-superheat`; ~1,055 natures (~22k gp, bank has it);
    also gives both skills in ~1-1.5 h. Natures at Magic Guild need Magic 66: buy elsewhere (Rune shops) and verify the supply before the run.
 5. **Fletching + Firemaking 1 -> 99 as WC pairs** (WC is 99, so logs are free): `chop-fletch`, `chop-burn` at 0.5-0.6 h each; run before Crafting.
