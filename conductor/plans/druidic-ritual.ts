@@ -26,7 +26,7 @@ const atSanfewOrBelow = (v: PlanView) => {
 const hunt = (name: string, target: string, meat: string, area: { x: number; z: number; radius: number }) =>
     phase(
         combat,
-        { target, area, food: FOOD, loot: [meat], skill: 'Strength' },
+        { target, area, food: FOOD, loot: [meat], skill: 'Strength', allowMaxed: true },
         {
             name,
             when: v => v.inv(meat) === 0 && !anyEnch(v) && food(v) >= 3 && v.quest('druid') !== 'done',
@@ -49,7 +49,13 @@ export default definePlan({
         // The animated suit at the cauldron door: fight it before anything else underground.
         phase(
             combat,
-            { target: 'Suit of armour', area: { x: 2887, z: 9830, radius: 6 }, food: FOOD, skill: 'Strength' },
+            {
+                target: 'Suit of armour',
+                area: { x: 2887, z: 9830, radius: 6 },
+                food: FOOD,
+                skill: 'Strength',
+                allowMaxed: true,
+            },
             {
                 name: 'suit',
                 when: v =>

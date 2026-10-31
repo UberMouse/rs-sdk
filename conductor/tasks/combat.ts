@@ -23,6 +23,7 @@ import { squareReachesWilderness } from '../lib/wilderness';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
+import { MAX_XP } from '../lib/xp';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const SKILLS = ['Attack', 'Strength', 'Defence', 'Ranged', 'Magic'] as const;
@@ -116,6 +117,8 @@ const Params = z
          * as `weapon` and `ammo`; Magic needs a `spell`.
          */
         skill: z.enum(SKILLS).default('Attack'),
+        /** Train `skill` even at level 99 (preflight otherwise refuses an Attack/Strength/Defence/Ranged style that is maxed). */
+        allowMaxed: z.boolean().optional(),
         /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
         area: AreaSchema,
         /**
@@ -274,9 +277,16 @@ function refuseSpell(s: BotWorldState, p: CombatParams): string | null {
 
 /** Highest NPC combat level to fight; without food the engine can only wait out low HP, so it is capped. */
 function levelLimit(s: BotWorldState, p: CombatParams) {
-    const limit = (s.player?.combatLevel ?? 0) + p.maxLevelGap;
+    const limit = uncappedLimit(s, p);
     return foodInInventory(s, p) ? limit : Math.min(limit, NO_FOOD_MAX_NPC_LEVEL);
 }
+
+/** The level limit before the no-food cap: combat level + `maxLevelGap`. */
+const uncappedLimit = (s: BotWorldState, p: CombatParams) => (s.player?.combatLevel ?? 0) + p.maxLevelGap;
+
+/** True when the no-food cap, not combat level + `maxLevelGap`, is what holds the limit down. */
+const cappedWithoutFood = (s: BotWorldState, p: CombatParams) =>
+    !foodInInventory(s, p) && uncappedLimit(s, p) > NO_FOOD_MAX_NPC_LEVEL;
 
 /** The first inventory item that is configured food. */
 const foodInInventory = (s: BotWorldState, p: CombatParams) =>
@@ -471,12 +481,16 @@ function* chooseTarget(ctx: Ctx, engaged?: NearbyNpc): Op<{ target: NearbyNpc } 
         noTarget.reset();
         return { target };
     }
-    if (picked?.tooStrong)
+    if (picked?.tooStrong) {
+        const limitLabel = cappedWithoutFood(ctx.state(), ctx.params)
+            ? `no-food limit ${picked.limit} (no food held; restock)`
+            : `limit ${picked.limit}`;
         return {
             outcome: {
-                fail: `${picked.tooStrong.name} is level ${picked.tooStrong.combatLevel}, above limit ${picked.limit}`,
+                fail: `${picked.tooStrong.name} is level ${picked.tooStrong.combatLevel}, above the ${limitLabel}`,
             },
         };
+    }
     const lookLimit = Math.max(NO_TARGET_LIMIT, Math.ceil(ctx.params.respawnWaitTicks / NO_TARGET_WAIT_TICKS));
     if (noTarget.add() >= lookLimit)
         return {
@@ -545,6 +559,7 @@ export default defineTask({
         'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones, Babydragon bones, Dragon bones, Jogre bones, Shaikahan bones) and a loot list; an NPC already attacking the bot is fought first. ' +
         'Refuses areas reaching the Wilderness and NPCs more than `maxLevelGap` (default 5) levels above the bot. ' +
         'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
+        'Refuses (preflight) a `skill` already at level 99 unless `allowMaxed: true`. ' +
         'Weapon/shield need the bot to meet their wield requirement. `level` (or `minLevel`/`maxLevel`) attacks only NPCs ' +
         'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
         'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, unless `keepPrayersOn` or an open `stopOnDialog` dialog (below), failing when the prayer points run out; ' +
@@ -610,6 +625,10 @@ export default defineTask({
         }
         if (!s.player) return 'no player state';
         if (p.skill === 'Ranged' && (!p.weapon || !p.ammo)) return 'Ranged needs `weapon` (a bow) and `ammo`';
+        if (p.skill !== 'Magic' && !p.allowMaxed) {
+            const xp = findSkill(s, p.skill)?.experience ?? 0;
+            if (xp >= MAX_XP) return `${p.skill} is level 99; pick an unmaxed skill (allowMaxed: true to override)`;
+        }
         if (p.skill === 'Magic') {
             const refusal = refuseSpell(s, p);
             if (refusal) return refusal;

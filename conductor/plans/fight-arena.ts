@@ -45,6 +45,7 @@ const PROTECT = ['Protect from Melee'];
 const fight = (target: string, prayers: string[] = []) => ({
     target,
     skill: 'Strength' as const,
+    allowMaxed: true,
     area: { x: 2595, z: 3161, radius: 20 },
     food: FOOD,
     eatBelow: 0.5,

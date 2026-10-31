@@ -32,7 +32,13 @@ export default definePlan({
         ),
         phase(
             combat,
-            { target: 'Man', area: { x: 3238, z: 3404, radius: 14 }, skill: 'Strength', weapon: 'Steel scimitar' },
+            {
+                target: 'Man',
+                area: { x: 3238, z: 3404, radius: 14 },
+                skill: 'Strength',
+                allowMaxed: true,
+                weapon: 'Steel scimitar',
+            },
             { name: 'wield', when: v => v.inv(SCIM) > 0 && !scimWorn(v), until: scimWorn },
         ),
         phase(

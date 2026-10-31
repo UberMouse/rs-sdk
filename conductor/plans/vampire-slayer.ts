@@ -49,6 +49,7 @@ export default definePlan({
             {
                 target: 'Count Draynor',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3078, z: 9772, radius: 12 },
                 food: ['Swordfish'],
                 eatBelow: 0.4,

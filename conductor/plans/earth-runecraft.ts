@@ -48,7 +48,13 @@ export default definePlan({
         ),
         phase(
             combat,
-            { target: 'Man', area: { x: 3238, z: 3404, radius: 14 }, skill: 'Strength', loot: ['Earth talisman'] },
+            {
+                target: 'Man',
+                area: { x: 3238, z: 3404, radius: 14 },
+                skill: 'Strength',
+                allowMaxed: true,
+                loot: ['Earth talisman'],
+            },
             {
                 name: 'hunt',
                 when: v => v.runs('bank') > 0 && v.level('Runecraft') >= 9 && v.inv('Earth talisman') === 0,

@@ -43,6 +43,7 @@ export default definePlan({
             {
                 target: 'Forester',
                 skill: 'Strength',
+                allowMaxed: true,
                 targetRange: 'visible',
                 area: { x: 2655, z: 3485, radius: 40 },
                 food: ['Swordfish'],
@@ -62,6 +63,7 @@ export default definePlan({
             {
                 target: 'Guard dog',
                 skill: 'Strength',
+                allowMaxed: true,
                 targetRange: 'visible',
                 area: { x: 2655, z: 3485, radius: 40 },
                 food: ['Swordfish'],

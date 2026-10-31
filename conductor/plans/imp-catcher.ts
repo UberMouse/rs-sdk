@@ -51,6 +51,7 @@ export default definePlan({
                     loot: BEADS,
                     respawnWaitTicks: s.wait,
                     skill: 'Strength',
+                    allowMaxed: true,
                 },
                 {
                     name: s.name,

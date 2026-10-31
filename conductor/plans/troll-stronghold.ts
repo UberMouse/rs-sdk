@@ -73,6 +73,7 @@ export default definePlan({
             {
                 target: 'Mountain Troll',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2916, z: 3632, radius: 8 },
                 food: ['Swordfish'],
                 eatBelow: 0.6,
@@ -90,6 +91,7 @@ export default definePlan({
             {
                 target: 'Mountain Troll',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2835, z: 10091, radius: 6, level: 2 },
                 food: ['Swordfish'],
                 eatBelow: 0.6,
@@ -116,6 +118,7 @@ export default definePlan({
             {
                 target: 'Dad',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2910, z: 3614, radius: 10 },
                 food: ['Swordfish'],
                 eatBelow: 0.6,
@@ -397,6 +400,7 @@ export default definePlan({
             {
                 target: 'Troll General',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2831, z: 10090, radius: 12, level: 2 },
                 food: ['Swordfish'],
                 eatBelow: 0.6,
@@ -445,6 +449,7 @@ export default definePlan({
             {
                 target: 'Troll General',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2831, z: 10090, radius: 12, level: 2 },
                 food: ['Swordfish'],
                 eatBelow: 0.6,

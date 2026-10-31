@@ -99,6 +99,7 @@ export default definePlan({
             {
                 target: 'Mercenary Captain',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3270, z: 3029, radius: 8 },
                 food: ['Swordfish'],
                 eatBelow: 0.5,
@@ -129,6 +130,7 @@ export default definePlan({
             {
                 target: 'Rowdy Guard',
                 skill: 'Strength',
+                allowMaxed: true,
                 targetRange: 'visible',
                 area: { x: 3290, z: 3025, radius: 20 },
                 weapon: 'Mithril scimitar',
@@ -148,6 +150,7 @@ export default definePlan({
             {
                 target: 'Rowdy Guard',
                 skill: 'Strength',
+                allowMaxed: true,
                 targetRange: 'visible',
                 area: { x: 3295, z: 9440, radius: 40 },
                 food: ['Swordfish'],

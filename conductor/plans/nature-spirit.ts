@@ -204,6 +204,7 @@ export default definePlan({
                 target: 'Ghast',
                 level: 30,
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3436, z: 3350, radius: 16 },
                 food: FOOD,
                 eatBelow: 0.5,

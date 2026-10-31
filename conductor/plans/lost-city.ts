@@ -95,6 +95,7 @@ export default definePlan({
             {
                 target: 'Tree spirit',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: TREE.x, z: TREE.z, radius: 8 },
                 food: ['Swordfish'],
                 eatBelow: 0.5,
@@ -123,6 +124,7 @@ export default definePlan({
             {
                 target: 'Zombie',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2845, z: 9761, radius: 14 },
                 food: ['Swordfish'],
                 loot: ['Bronze axe', 'Iron axe'],

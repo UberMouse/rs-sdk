@@ -234,6 +234,7 @@ export default definePlan({
                 target: 'Monk of Zamorak',
                 level: 30,
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3413, z: 3488, radius: 6 },
                 food: FOOD,
                 loot: ['Golden key'],
@@ -304,6 +305,7 @@ export default definePlan({
             {
                 target: 'Temple guardian',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3405, z: 9902, radius: 8 },
                 food: FOOD,
                 maxLevelGap: 20,

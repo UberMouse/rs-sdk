@@ -149,6 +149,7 @@ export default definePlan({
             {
                 target: 'Elvarg',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2852, z: 9637, radius: 30 },
                 shield: SHIELD,
                 food: ['Swordfish'],
@@ -165,6 +166,7 @@ export default definePlan({
             {
                 target: 'Skeleton',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2843, z: 9640, radius: 14 },
                 food: ['Swordfish'],
                 prayers: ['Protect from Melee'],
@@ -297,6 +299,7 @@ export default definePlan({
             {
                 target: 'Lesser demon',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2936, z: 9650, radius: 7 },
                 food: ['Swordfish'],
                 loot: ['Key'],
@@ -331,6 +334,7 @@ export default definePlan({
             {
                 target: 'Melzar the mad',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2929, z: 9649, radius: 6 },
                 food: ['Swordfish'],
                 loot: ['Key'],
@@ -365,6 +369,7 @@ export default definePlan({
             {
                 target: 'Zombie',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2932, z: 9642, radius: 4 },
                 food: ['Swordfish'],
                 loot: ['Key'],
@@ -414,6 +419,7 @@ export default definePlan({
             {
                 target: 'Skeleton',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2925, z: 3253, radius: 8 },
                 food: ['Swordfish'],
                 loot: ['Key'],
@@ -455,6 +461,7 @@ export default definePlan({
             {
                 target: 'Ghost',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2928, z: 3251, radius: 7 },
                 food: ['Swordfish'],
                 loot: ['Key'],
@@ -495,6 +502,7 @@ export default definePlan({
             {
                 target: 'Giant rat',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2930, z: 3252, radius: 8 },
                 food: ['Swordfish'],
                 loot: ['Key'],

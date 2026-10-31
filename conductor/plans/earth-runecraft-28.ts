@@ -34,7 +34,13 @@ export default definePlan({
         ),
         phase(
             combat,
-            { target: 'Man', area: { x: 3238, z: 3404, radius: 14 }, skill: 'Strength', weapon: 'Adamant pickaxe' },
+            {
+                target: 'Man',
+                area: { x: 3238, z: 3404, radius: 14 },
+                skill: 'Strength',
+                allowMaxed: true,
+                weapon: 'Adamant pickaxe',
+            },
             {
                 name: 'wield',
                 when: v => v.runs('bank-1') > 0 && v.inv(PICK) > 0 && !inEssenceMine(v.state),

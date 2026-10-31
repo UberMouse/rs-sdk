@@ -170,7 +170,15 @@ describe('combat: fighting', () => {
             params: PARAMS,
             timeline: base.series(5, (w, i) => (i >= 1 ? chickenAt(w, COOP.x + 1, COOP.z, { combatLevel: 20 }) : w)),
         });
-        expect(r.result.reason).toBe('fight: Chicken is level 20, above limit 5');
+        expect(r.result.reason).toBe('fight: Chicken is level 20, above the no-food limit 5 (no food held; restock)');
+    });
+
+    test('a too-strong chicken with no food and a low combat-level limit gets the plain limit label', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, maxLevelGap: 0 },
+            timeline: base.series(5, (w, i) => (i >= 1 ? chickenAt(w, COOP.x + 1, COOP.z, { combatLevel: 20 }) : w)),
+        });
+        expect(r.result.reason).toMatch(/^fight: Chicken is level 20, above the limit \d+$/);
     });
 
     test('a fight that never ends fails after 90 s of game time', async () => {
@@ -718,6 +726,21 @@ describe('combat: preflight', () => {
         const fed = chickenAt(base.inv('Shrimps', 1), COOP.x + 1, COOP.z, { combatLevel: 9 });
         expect(await refusal(fed, { ...PARAMS, food: ['Shrimps'] })).toBe(
             'preflight: Chicken is level 9, above the limit 8 (combat 3 + 5)',
+        );
+    });
+
+    test('refuses a maxed melee or ranged skill unless allowMaxed', async () => {
+        const maxed = base.skill('Strength', 99, 998_458);
+        for (const skill of ['Strength', 'Attack', 'Defence'] as const) {
+            const w = base.skill(skill, 99, 998_458);
+            expect(await refusal(w, { ...PARAMS, skill })).toBe(
+                `preflight: ${skill} is level 99; pick an unmaxed skill (allowMaxed: true to override)`,
+            );
+        }
+        expect(await refusal(maxed, { ...PARAMS, skill: 'Strength', allowMaxed: true })).not.toContain('is 99');
+        expect(await refusal(maxed, PARAMS)).not.toContain('is 99');
+        expect(await refusal(base.skill('Strength', 98, 900_000), { ...PARAMS, skill: 'Strength' })).not.toContain(
+            'is 99',
         );
     });
 

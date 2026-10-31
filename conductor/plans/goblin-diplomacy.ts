@@ -202,6 +202,7 @@ export default definePlan({
                 food: FOOD,
                 loot: ['Goblin mail'],
                 skill: 'Strength',
+                allowMaxed: true,
             },
             {
                 name: 'mails',

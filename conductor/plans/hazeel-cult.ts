@@ -129,6 +129,7 @@ export default definePlan({
             {
                 target: 'Alomone',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 2608, z: 9672, radius: 10 },
                 food: ['Swordfish'],
                 eatBelow: 0.5,
