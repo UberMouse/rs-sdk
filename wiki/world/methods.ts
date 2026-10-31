@@ -836,7 +836,7 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 2895, z: 9765 },
         area: 12,
         params: { npc: 'babybluedragon' },
-        plans: ['baby-blues-prayer', 'ranged-dragons'],
+        plans: ['baby-blues-prayer', 'ranged-dragons', 'prayer-99'],
         gear: ['rune_scimitar', 'amulet_of_strength'],
         food: 'lobster',
         loot: { bones: 'bury' },
