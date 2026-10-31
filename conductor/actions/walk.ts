@@ -135,6 +135,7 @@ export type WalkResult =
               | 'dead-end'
               | 'stuck'
               | 'gave-up'
+              | 'no-progress'
               | 'timeout'
               | 'no-time';
           message: string;
@@ -250,6 +251,9 @@ function* pause(w: Walk, n: number): Op<void> {
  * climb that did not change the plane (the loc missing, refused or out of reach); `cross-failed` no way left once
  * the moves refused on the way are given up on. The one tick budget covers the legs and the hops, and a `timeout`
  * in the middle (`advancing`) is carried on by walking again.
+ *
+ * `no-progress` is a run's walks to this target whose net distance to it (or plane change, or made move) has not
+ * improved for NO_PROGRESS_TICKS: a bounce nothing else catches; the record clears on arrival, a new target or an idle gap.
  *
  * `no-blade` is a slashable web on the route and no slash weapon wielded: final, do not retry.
  *
@@ -452,6 +456,80 @@ function repeatedHops(ctx: ActionContext, entry: string): string | undefined {
     return undefined;
 }
 
+/**
+ * Ticks a run's walks to one target may go without getting closer (or changing plane, or making a move) before they
+ * end `no-progress`. The longest legitimate silence is one walk along a plane to a staircase or move that leads away
+ * from the target (WALK_MAX_TICKS, 200, caps a whole walk), which ends in a plane change or a made move, both
+ * progress; 450 outlasts two such walks back to back.
+ */
+export const NO_PROGRESS_TICKS = 450;
+/** A walk starting more than this many idle ticks after the run's last walk ended starts a fresh record (other work in between). */
+const NO_PROGRESS_GAP_TICKS = 100;
+/** The hops named in a `no-progress` message: the newest of those the walks tried. */
+const NO_PROGRESS_TRIED = 6;
+
+interface Progress {
+    key: string;
+    /** The plane the best distance was taken on, and the best chebyshev distance to the target on it. */
+    plane: string;
+    best: number;
+    bestTick: number;
+    lastTick: number;
+    tried: string[];
+}
+const progressOf = new WeakMap<object, Progress>();
+
+/**
+ * Notes where a walk stands relative to its target in the run's record, which spans the run's walks to the same target:
+ * a closer tile on the target's plane, a plane change or a made move (`moved`) is progress. Fails with `no-progress`
+ * once the best has not improved for NO_PROGRESS_TICKS: a walk that bounces between tiles (the gnome maze railing and
+ * the Ent) never times out or repeats a hop, each walk and hop ending differently.
+ *
+ * The record starts afresh on a new target, or when `first` (a walk's first hop) finds more than NO_PROGRESS_GAP_TICKS
+ * since the last walk ended (walkRoute stamps `lastTick` on every exit). A failed walk keeps the record, so a retry to
+ * the same target within that gap fails at once; it clears after the idle gap, a target change, or arrival. Callers
+ * (travel, spot) count the failure in their fail streak.
+ */
+function noProgress(
+    ctx: ActionContext,
+    dest: Tile,
+    here: Tile,
+    tick: number,
+    moved: boolean,
+    first: boolean,
+): WalkResult | undefined {
+    const key = `${dest.level},${dest.x},${dest.z}`;
+    const plane = planeOf(here.level, here.x, here.z);
+    const onDest = plane === planeOf(dest.level, dest.x, dest.z);
+    const dist = onDest ? chebyshev(here, dest) : Infinity;
+    let r = progressOf.get(ctx);
+    if (!r || r.key !== key || (first && tick - r.lastTick > NO_PROGRESS_GAP_TICKS))
+        progressOf.set(ctx, (r = { key, plane, best: dist, bestTick: tick, lastTick: tick, tried: [] }));
+    r.lastTick = tick;
+    if (moved || plane !== r.plane || dist < r.best) {
+        r.plane = plane;
+        r.best = dist;
+        r.bestTick = tick;
+    } else if (tick - r.bestTick > NO_PROGRESS_TICKS) {
+        const tried = r.tried.length ? `; tried ${r.tried.join('; ')}` : '';
+        const best = r.best === Infinity ? 'never on its plane' : `${r.best} tiles`;
+        return {
+            ok: false,
+            reason: 'no-progress',
+            message: `No progress toward (${dest.x}, ${dest.z}) level ${dest.level} in ${tick - r.bestTick} ticks (best distance ${best}), now at (${here.x}, ${here.z}) level ${here.level}${tried}`,
+        };
+    }
+    return undefined;
+}
+
+/** Records a hop the walk tried (made or failed) for a `no-progress` message. */
+function triedHop(ctx: ActionContext, entry: string): void {
+    const r = progressOf.get(ctx);
+    if (!r) return;
+    r.tried.push(entry);
+    if (r.tried.length > NO_PROGRESS_TRIED) r.tried.shift();
+}
+
 const stuckOnHops = (cycle: string): WalkResult => ({
     ok: false,
     reason: 'stuck',
@@ -565,6 +643,16 @@ const isGnomeGate = (m: Move) => m.act.kind === 'loc-op' && m.act.loc === GNOME_
  * before the walk's reserve, else the walk ends `no-time` (an advancing `timeout` once it has moved).
  */
 function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
+    try {
+        return yield* walkHops(ctx, dest, tolerance, opts);
+    } finally {
+        // Whatever ended the walk, the idle gap to the next one counts from here.
+        const r = progressOf.get(ctx);
+        if (r) r.lastTick = ctx.state().tick;
+    }
+}
+
+function* walkHops(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
     const start = ctx.state();
     const what = `(${dest.x}, ${dest.z}) on level ${dest.level}`;
     const p0 = start.player;
@@ -574,6 +662,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         chebyshev(posOf(p0), dest) <= tolerance
     ) {
         hopHistory.delete(ctx);
+        progressOf.delete(ctx);
         return { ok: true, message: 'Already at destination' };
     }
     // On its own level a walk names the destination as walkOnPlane does.
@@ -588,6 +677,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         absent: new Set(),
         falls: new Map(),
     };
+    let madeMove = false;
     for (let hop = 0; hop <= MAX_WALK_HOPS; hop++) {
         const s = ctx.state();
         const p = s.player;
@@ -603,8 +693,12 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
         const samePlane = planeOf(here.level, here.x, here.z) === planeOf(dest.level, dest.x, dest.z);
         if (samePlane && chebyshev(here, dest) <= tolerance) {
             hopHistory.delete(ctx);
+            progressOf.delete(ctx);
             return { ok: true, message: 'Arrived' };
         }
+        const stalled = noProgress(ctx, dest, here, s.tick, madeMove, hop === 0);
+        if (stalled) return stalled;
+        madeMove = false;
         const way = planRoute(ctx, s, dest, tolerance, rec);
         const next = firstHop(way?.hops);
         if (!next) {
@@ -621,6 +715,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                 });
                 if (last.ok) {
                     hopHistory.delete(ctx);
+                    progressOf.delete(ctx);
                     return last;
                 }
                 // A fallback after the graph's way was given up on says why it was, as cross-failed would.
@@ -655,6 +750,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
             );
             if (again) return stuckOnHops(again);
             rec.failed = `walking to the ${name}: ${walked.message}`;
+            triedHop(ctx, `${name} (${walked.reason})`);
             giveUp(next, rec, rec.failed);
             rec.unreached = true;
             yield* log(`walk: ${rec.failed}; planning without it`);
@@ -679,7 +775,12 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                 return again?.kind === 'cross' && moveKey(again.move) === moveKey(next.move);
             });
         // A move that fell or was refused has its own limits (MAX_FALLS, giving the move up).
-        if (!crossed) continue;
+        if (!crossed) {
+            triedHop(ctx, `${name} (${rec.failed ?? 'failed'})`);
+            continue;
+        }
+        madeMove = true;
+        triedHop(ctx, `${name} (made)`);
         const after = ctx.state().player;
         const landed = after ? `(${after.worldX}, ${after.worldZ}) level ${after.level}` : 'nowhere';
         const cycle = repeatedHops(ctx, `${name} from (${here.x}, ${here.z}) level ${here.level} to ${landed}`);
