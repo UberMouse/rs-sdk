@@ -16,12 +16,19 @@ const catherbyRange = { x: 2817, z: 3444, radius: 5 };
 const food = /^lobster$/i;
 const px = (v: PlanView): number => v.state.player?.worldX ?? 0;
 const nearArdougne = (v: PlanView): boolean => px(v) < 2720;
+// A success pays into the Coins stack or a free slot; a full pack with no Coins stack loses every payout.
+const coinsLost = (v: PlanView): boolean => v.inv('Coins') === 0 && v.state.inventory.length >= 28;
 
 export default definePlan({
     name: 'knight-thieve',
     description: 'Knights of Ardougne with Lobsters (fished at Catherby); coins banked at Ardougne South',
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
+        phase(
+            bank,
+            { area: bankArea, deposit: [], depositAllExcept: ['Lobster'] },
+            { name: 'clear-pack', when: v => nearArdougne(v) && coinsLost(v) },
+        ),
         phase(
             bank,
             { area: bankArea, deposit: [{ item: 'Coins' }, { item: 'Lobster', count: 14 }], withdraw: [] },

@@ -10,6 +10,8 @@ const bankArea = { x: 2657, z: 3285, radius: 4 };
 const food = /^(swordfish|tuna|salmon|trout)$/i;
 const px = (v: PlanView): number => v.state.player?.worldX ?? 0;
 const nearArdougne = (v: PlanView): boolean => px(v) < 2720;
+// A success pays into the Coins stack or a free slot; a full pack with no Coins stack loses every payout.
+const coinsLost = (v: PlanView): boolean => v.inv('Coins') === 0 && v.state.inventory.length >= 28;
 const bankFood = (v: PlanView): number =>
     (v.bank('Swordfish') ?? 0) + (v.bank('Tuna') ?? 0) + (v.bank('Salmon') ?? 0) + (v.bank('Trout') ?? 0);
 
@@ -21,6 +23,11 @@ export default definePlan({
     requires: { 'combat level 5+': v => (v.state.player?.combatLevel ?? 0) >= 5 },
     phases: [
         phase(
+            bank,
+            { area: bankArea, deposit: [], depositAllExcept: ['Swordfish', 'Tuna', 'Salmon', 'Trout'] },
+            { name: 'clear-pack', when: v => nearArdougne(v) && coinsLost(v) },
+        ),
+        phase(
             thieving,
             { npc: 'Knight of Ardougne', area, food: ['Swordfish', 'Tuna', 'Salmon', 'Trout'], eatBelow: 0.6 },
             { when: v => v.inv(food) > 0 && nearArdougne(v), until: v => v.inv(food) === 0 },
@@ -29,7 +36,8 @@ export default definePlan({
             bank,
             {
                 area: bankArea,
-                deposit: [{ item: 'Coins' }],
+                deposit: [],
+                depositAllExcept: [],
                 withdraw: [
                     { item: 'Swordfish', count: 16, upTo: true },
                     { item: 'Tuna', count: 8, upTo: true },

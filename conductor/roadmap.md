@@ -48,7 +48,7 @@ chaos druids + Herblore + melee + Prayer.
    superheat at 43), Waterfall (Att/Str 83). Druidic Ritual is optional (Herblore is not gated in this revision).
 4. (done, Thieving 99 at 09:00; knights 72-99 in 17 min, 2.96M/h) Thieving 40-55 guards (Falador: guard-thieve; measured 40 -> 62 in 5.8 min, +65,520 XP, ~678k/h, ~280 gp/min, 9 trout), 55-99
    knights (in progress, 07:30: bot at Catherby (2834,3443) after `travel` Falador -> Ardougne crossed White Wolf Mountain
-   and a lvl 38 wolf took ~10 HP in 30 s at combat 32; Catherby -> Ardougne is west of the wolves; to 25k coins banked); stay on knights for the gp (166k/h at 99) the route needs: adamant
+   and a lvl 38 wolf took ~10 HP in 30 s at combat 32; Catherby -> Ardougne is west of the wolves; to 25k coins banked); stay on knights for the gp (~100k/h thieving, ~70k/h with trips; a full pack without a Coins stack loses every payout) the route needs: adamant
    pickaxe 3.2k, staff of fire 1.5k, natures (Magic Guild at Magic 66), mithril arrows ~72k.
 5. Agility: gnome course 1-52, Wilderness course 52-99.
 6. Gathering 99s with their pairings. Melee: mithril scimitar (Zeke, 1,040), then the rune sword once at 32 QP. No

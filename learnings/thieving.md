@@ -50,6 +50,12 @@ await new Promise(r => setTimeout(r, 1500));  // Wait for result
   and chance per NPC are in `server/content/scripts/skill_thieving/configs/pickpocking/pickpocket.dbrow`
   (Man 1 / 3 gp, Farmer 10 / 9 gp, Warrior 25 / 18 gp, Guard 40 / 30 gp, Knight of Ardougne
   55 / 50 gp, Paladin 70 / 80 gp, Hero 80 / 200-300 gp). [v 2026-10-10 conductor2 local; read from content]
+- A full pack with no Coins stack loses every coin payout, silently: the reward goes through
+  `inv_add` (`thieving.rs2:182`), which drops it when no slot is free, and the success message and
+  XP still come. One knight run started 28/28 full of tools and logs and banked 1,650 gp for 502
+  successes (33 paid, after eating freed a slot). Every success pays exactly 50 gp at a knight (the
+  loot roll's weight equals its denominator). Clear the pack before thieving: plans
+  `knight-thieve` and `knight-thieve-bankfood` have a `clear-pack` phase. [v 2026-10-31 conductor3 local; ticks log]
 
 ### Handling Stuns
 
