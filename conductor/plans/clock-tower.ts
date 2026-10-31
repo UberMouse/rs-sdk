@@ -55,7 +55,7 @@ const spindle = (id: number, tile: { x: number; z: number; level: number }) =>
         tile,
         at: { x: tile.x, z: tile.z + 1, level: tile.level, tolerance: 2 },
     }) as const;
-const grab = (x: number, z: number) => ({ area: { x, z, radius: 2 }, items: [{ item: 'Cog', count: 1 }] }) as const;
+const grab = (x: number, z: number) => ({ area: { x, z, radius: 2 }, items: [{ item: 'Cog', count: 1 }] });
 
 export default definePlan({
     name: 'clock-tower',
