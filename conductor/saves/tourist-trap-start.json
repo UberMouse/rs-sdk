@@ -1,0 +1,252 @@
+{
+    "name": "tourist-trap-start",
+    "purpose": "Tourist Trap start: Att 40 Str 54 Def 40 HP 47 Prayer 49 Crafting 85 Smithing 87 Fletching 10 Thieving 80 (conductor3 levels plus Thieving: the slave lock roll, three fails in a row near a guard jail the bot; ~81% a try at 80, 62% at 60), mithril scimitar worn, 13 swordfish (the Rowdy Guards of the camp attack anyone passing: they cost 3-6 each), 1000 coins, Hammer, 2 Bronze bars, 100 Feathers (dart making; the Shantay shop sells them but its stock runs out), at the Shantay Pass shop north of the gate; the plan buys the pass, desert clothes and waterskins there",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3306,
+                "z": 3121
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49,
+                "Crafting": 85,
+                "Smithing": 87,
+                "Fletching": 10,
+                "Thieving": 80
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 2349,
+                    "count": 1
+                },
+                {
+                    "id": 2349,
+                    "count": 1
+                },
+                {
+                    "id": 314,
+                    "count": 100
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 1000
+        }
+    },
+    "sha1": "f260580af96877595dab722231ca709ec733749a",
+    "createdAt": "2026-10-31T06:39:14.776Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3306,
+            "z": 3121,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49,
+            "Fletching": 10,
+            "Crafting": 85,
+            "Smithing": 87,
+            "Thieving": 80
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1000
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 2349,
+                "name": "bronze_bar",
+                "count": 1
+            },
+            {
+                "id": 2349,
+                "name": "bronze_bar",
+                "count": 1
+            },
+            {
+                "id": 314,
+                "name": "feather",
+                "count": 100
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
