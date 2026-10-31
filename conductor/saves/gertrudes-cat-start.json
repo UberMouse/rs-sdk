@@ -1,0 +1,91 @@
+{
+    "name": "gertrudes-cat-start",
+    "purpose": "Gertrude's Cat start: HP 10, 150 coins, a bucket of milk and a raw sardine in the pack, beside the doogle leaves south of Gertrude's house (3153,3403), fluffs 0",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3153,
+                "z": 3403
+            },
+            "skills": {
+                "Hitpoints": 10
+            },
+            "inventory": [
+                {
+                    "id": 995,
+                    "count": 150
+                },
+                {
+                    "id": 1927,
+                    "count": 1
+                },
+                {
+                    "id": 327,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "688de4396e769054520e27500d027e8f04ce6ba0",
+    "createdAt": "2026-10-31T12:14:38.803Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3153,
+            "z": 3403,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 150
+            },
+            {
+                "id": 1927,
+                "name": "bucket_milk",
+                "count": 1
+            },
+            {
+                "id": 327,
+                "name": "raw_sardine",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
