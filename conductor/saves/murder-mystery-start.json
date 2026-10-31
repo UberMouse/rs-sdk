@@ -1,0 +1,82 @@
+{
+    "name": "murder-mystery-start",
+    "purpose": "Murder Mystery start: just south of the Sinclair mansion (2741,3556), one empty pot, murderquest 0 (the murderer rolls at the guard's start)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2741,
+                "z": 3556
+            },
+            "skills": {
+                "Attack": 20,
+                "Strength": 20,
+                "Defence": 20,
+                "Hitpoints": 30
+            },
+            "inventory": [
+                {
+                    "id": 1931,
+                    "count": 1
+                }
+            ],
+            "equipment": [],
+            "coins": 0,
+            "varps": {}
+        }
+    },
+    "sha1": "8233d1c56e9ba59977baa8de739dcbbb86cb84cf",
+    "createdAt": "2026-10-31T10:05:24.347Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2741,
+            "z": 3556,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 20,
+            "Defence": 20,
+            "Strength": 20,
+            "Hitpoints": 30
+        },
+        "inventory": [
+            {
+                "id": 1931,
+                "name": "pot_empty",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
