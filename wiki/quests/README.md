@@ -92,7 +92,7 @@ file names under `server/content/scripts/` with a line number (`find server/cont
 | [Watch Tower](watchtower.md) (`itwatchtower`) | 4 | M | Start: Agility 18 for the wall (`quest_itwatchtower.rs2:2`); mid: Agility 25, Thieving 15, Herblore 14, Magic 14, Mining 40 (`:393,483`) | Magic 382,500 -> 85 (`:533`) | 5,000 coins; Watchtower Teleport (scroll read, Magic 58) | Gorad 68; 6 ogre shamans 113 are killed with the potion, not fought | |
 | [Waterfall Quest](waterfall-quest.md) (`waterfall`) | 1 | M | none | Attack 343,750 -> 83; Strength 343,750 -> 83 (`quest_waterfall.rs2:491-492`) | 2 diamonds, 2 gold bars, 40 mithril seeds; Legends prerequisite | none | promoted |
 | [Witch's House](witchs-house.md) (`ball`) | 4 | M | none | Hitpoints 158,125 -> 72 (`quest_ball.rs2:202`) | none | Witch's experiment 19, 30, 42, 53 | promoted: `conductor/plans/witchs-house.ts`, fresh load of `lib:witchs-house-start` to done in 428 s |
-| [Witch's Potion](witchs-potion.md) (`hetty`) | 1 | F | none | Magic 8,125 -> 31 (`quest_hetty.rs2:11`) | none | A rat 1 for its tail | |
+| [Witch's Potion](witchs-potion.md) (`hetty`) | 1 | F | none | Magic 8,125 -> 31 (`quest_hetty.rs2:11`) | none | A rat 1 for its tail | promoted: `conductor/plans/witchs-potion.ts`, fresh load of `lib:witchs-potion-start` to done in 110 s |
 
 Two accounts: Shield of Arrav needs one player in each gang, so a solo bot can't finish it, or the quests behind it:
 Hero's Quest, Throne of Miscellania and Legends Quest.
