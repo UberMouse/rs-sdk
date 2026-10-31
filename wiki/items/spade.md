@@ -11,12 +11,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Camelot area | Ground | 1 |
-| Varrock (north) | Floor 1 | 1 |
-| Wilderness (low) | Ground | 1 |
-| m40_52 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | Ground | 1 | (3120, 3359) |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Ground | 1 | (2574, 3331) |
+| [Falador (Asgarnia)](../places/falador.md) | Ground | 1 | (2981, 3369) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3218, 3412) |
 
 ## Sources
 

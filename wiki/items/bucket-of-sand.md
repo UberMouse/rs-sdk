@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m38_49 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2461, 3178) |

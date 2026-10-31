@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Karamja | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Karamja](../places/karamja.md) | Ground | 1 | (2907, 3146) |
 
 ## Sources
 

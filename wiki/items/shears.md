@@ -11,11 +11,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Barbarian Village | Ground | 1 |
-| Falador (west) | Floor 1 | 1 |
-| Wilderness (low) | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | Floor 1 | 1 | (2930, 3285) |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | Ground | 1 | (3126, 3356) |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3152, 3306) |
 
 ## Sources
 

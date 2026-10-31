@@ -11,8 +11,8 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Ardougne | Ground | 1 |
-| Varrock (north) | Floor 1 | 1 |
-| m39_48 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2598, 3211) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3208, 3395) |
+| [Yanille (Kandarin)](../places/yanille.md) | Ground | 1 | (2547, 3114) |

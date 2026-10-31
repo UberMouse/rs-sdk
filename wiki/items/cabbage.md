@@ -11,11 +11,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Ground | 1 |
-| Wilderness (low) | Ground | 1 |
-| m50_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | Ground | 1 | (3285, 3175) |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | Ground | 7 | (3084, 3363), (3085, 3363), (3085, 3364), (3085, 3365), (3086, 3363), (3086, 3364), (3086, 3365) |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | Ground | 1 | (3217, 9622) |
 
 ## Sources
 

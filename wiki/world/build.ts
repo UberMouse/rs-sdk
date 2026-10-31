@@ -1778,7 +1778,7 @@ if (import.meta.main) {
     // In order: shops and items take the README as the step before left it, and items reads the npc pages.
     const npcs = npcPages(world);
     const shops = shopPages(world, npcs.files);
-    const items = itemPages(new Map([...npcs.files, ...shops.files]));
+    const items = itemPages(world, new Map([...npcs.files, ...shops.files]));
     const files = new Map([...worldFiles, ...npcs.files, ...shops.files, ...items.files]);
     const removals = [...npcs.stale, ...shops.stale, ...items.stale];
     // Every world file but world.json is a page, the README included.

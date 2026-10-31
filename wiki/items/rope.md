@@ -11,12 +11,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Gnome Stronghold | Ground | 1 |
-| Karamja | Ground | 1 |
-| m37_150 | Ground | 1 |
-| m40_47 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Feldip Hills](../places/feldip-hills.md) | Ground | 1 | (2571, 3026) |
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | Ground | 3 | (2785, 3279), (2786, 3286), (2786, 3287) |
+| [Karamja](../places/karamja.md) | Ground | 1 | (2904, 3152) |
+| [Underground Pass](../places/underground-pass.md) | Ground | 1 | (2403, 9660) |
 
 ## Sources
 

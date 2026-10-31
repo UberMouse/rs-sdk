@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m39_147 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 2 | (2528, 9415), (2530, 9462) |

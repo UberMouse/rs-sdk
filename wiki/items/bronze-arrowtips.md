@@ -12,9 +12,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_53 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | Ground | 1 | (2672, 3433) |
 
 ## Sources
 

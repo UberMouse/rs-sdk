@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m54_51 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Mort'ton (Morytania)](../places/mortton.md) | Ground | 3 | (3481, 3277), (3482, 3276), (3482, 3279) |

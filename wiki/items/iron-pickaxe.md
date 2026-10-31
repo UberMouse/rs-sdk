@@ -23,12 +23,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_58 | Ground | 1 |
-| m43_70 | Ground | 1 |
-| m52_152 | Ground | 1 |
-| m52_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 1 | (2770, 4515) |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | Ground | 6 | (3348, 9754), (3348, 9818), (3349, 9753), (3349, 9817), (3350, 9816), (3351, 9752) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2672, 3728) |
 
 ## Sources
 

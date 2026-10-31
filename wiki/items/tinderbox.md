@@ -11,11 +11,13 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness (low) | Floor 2 | 1 |
-| m37_48 | Ground | 1 |
-| m37_48 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Castle Wars (Kandarin)](../places/castle-wars.md) | Ground | 1 | (2431, 3072) |
+| [Castle Wars (Kandarin)](../places/castle-wars.md) | Floor 1 | 1 | (2423, 3080) |
+| [Kandarin](../places/kandarin.md) | Floor 1 | 1 | (2376, 3127) |
+| [Misthalin](../places/misthalin.md) | Floor 2 | 1 | (3112, 3369) |
+| [Tirannwn](../places/tirannwn.md) | Ground | 1 | (2368, 3135) |
 
 ## Sources
 

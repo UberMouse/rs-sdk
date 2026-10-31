@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Floor 1 | 1 |
-| m46_57 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Misthalin](../places/misthalin.md) | Floor 1 | 1 | (3141, 3452) |
+| [Wilderness](../places/wilderness.md) | Ground | 1 | (2987, 3686) |
 
 ## Sources
 

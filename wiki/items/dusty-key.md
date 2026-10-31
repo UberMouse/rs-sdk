@@ -12,9 +12,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m45_152 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | Ground | 1 | (2900, 9766) |
 
 ## Sources
 

@@ -20,10 +20,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador (east) | Floor 1 | 1 |
-| m48_57 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Asgarnia](../places/asgarnia.md) | Floor 1 | 2 | (3016, 3244), (3028, 3259) |
+| [Wilderness](../places/wilderness.md) | Ground | 11 | (3097, 3695), (3099, 3684), (3099, 3688), (3101, 3702), (3105, 3679), (3105, 3694), (3109, 3691), (3109, 3697), (3112, 3682), (3114, 3690), (3116, 3701) |
 
 ## Sources
 

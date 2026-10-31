@@ -23,12 +23,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Lumbridge | Ground | 1 |
-| Varrock | Floor 1 | 1 |
-| m49_57 | Ground | 1 |
-| m51_61 | Floor 3 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | Ground | 1 | (3156, 3683) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3248, 3245) |
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | Floor 3 | 1 | (3279, 3938) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3242, 3383) |
 
 ## Sources
 

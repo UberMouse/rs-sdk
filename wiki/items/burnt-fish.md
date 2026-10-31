@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m44_53 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Catherby (Kandarin)](../places/catherby.md) | Ground | 1 | (2820, 3453) |

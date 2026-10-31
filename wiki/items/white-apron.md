@@ -12,9 +12,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador (east) | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Asgarnia](../places/asgarnia.md) | Ground | 1 | (3010, 3208) |
 
 ## Sources
 

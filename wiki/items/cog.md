@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m40_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Clock Tower dungeon](../places/clock-tower-dungeon.md) | Ground | 4 | (2574, 9633), (2577, 9655), (2583, 9613), (2613, 9639) |

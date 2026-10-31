@@ -11,10 +11,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m43_60 | Ground | 1 |
-| m50_58 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Bone Yard (Wilderness)](../places/bone-yard.md) | Ground | 2 | (3243, 3742), (3253, 3736) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2767, 3855) |
+| [Wilderness](../places/wilderness.md) | Ground | 4 | (3214, 3733), (3220, 3746), (3226, 3745), (3263, 3735) |
 
 ## Sources
 

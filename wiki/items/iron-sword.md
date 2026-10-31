@@ -23,9 +23,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Varrock (north) | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Varrock (Misthalin)](../places/varrock.md) | Ground | 1 | (3254, 3451) |
 
 ## Sources
 

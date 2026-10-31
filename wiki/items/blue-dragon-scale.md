@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m45_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Taverley Dungeon](../places/taverley-dungeon.md) | Ground | 5 | (2902, 9806), (2905, 9801), (2906, 9796), (2908, 9805), (2910, 9809) |

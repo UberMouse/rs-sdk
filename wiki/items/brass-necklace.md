@@ -12,10 +12,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m48_154 | Ground | 1 |
-| m49_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 1 | (3191, 9820) |
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | Ground | 1 | (3122, 9881) |
 
 ## Sources
 

@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m42_52 | Ground | 1 |
-| m51_47 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | Floor 1 | 1 | (3290, 3033) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2724, 3367) |
 
 ## Sources
 

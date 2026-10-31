@@ -11,15 +11,16 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador (west) | Ground | 1 |
-| Karamja | Ground | 1 |
-| Lumbridge | Ground | 1 |
-| Wilderness | Floor 2 | 1 |
-| Wilderness | Ground | 1 |
-| m44_53 | Ground | 1 |
-| m50_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Asgarnia](../places/asgarnia.md) | Ground | 1 | (2936, 3292) |
+| [Catherby (Kandarin)](../places/catherby.md) | Ground | 1 | (2820, 3449) |
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | Floor 2 | 1 | (3141, 3447) |
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | Ground | 1 | (2928, 3289) |
+| [Karamja](../places/karamja.md) | Ground | 1 | (2905, 3146) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3212, 3212) |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | Ground | 1 | (3211, 9625) |
+| [Varrock (Misthalin)](../places/varrock.md) | Ground | 1 | (3272, 3409) |
 
 ## Sources
 

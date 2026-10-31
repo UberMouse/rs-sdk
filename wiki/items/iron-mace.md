@@ -23,10 +23,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
-| m41_51 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Ground | 1 | (2675, 3299) |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3111, 3517) |
 
 ## Sources
 

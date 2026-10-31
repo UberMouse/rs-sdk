@@ -24,9 +24,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m48_60 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Lava Maze (Wilderness)](../places/lava-maze.md) | Ground | 1 | (3085, 3859) |
 
 ## Sources
 

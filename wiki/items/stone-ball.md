@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m45_55 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Burthorpe (Asgarnia)](../places/burthorpe.md) | Ground | 5 | (2893, 3561), (2893, 3562), (2893, 3563), (2893, 3564), (2893, 3565) |

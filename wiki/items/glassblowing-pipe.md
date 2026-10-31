@@ -9,7 +9,7 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_53 | Ground | 1 |
-| m44_52 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Entrana](../places/entrana.md) | Ground | 1 | (2822, 3355) |
+| [Hemenster (Kandarin)](../places/hemenster.md) | Ground | 1 | (2652, 3454) |

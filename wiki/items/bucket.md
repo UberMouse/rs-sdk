@@ -11,24 +11,24 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Ground | 1 |
-| Ardougne | Ground | 1 |
-| Taverley | Ground | 1 |
-| Varrock (south) | Ground | 1 |
-| Wilderness | Floor 1 | 1 |
-| Wilderness (low) | Ground | 1 |
-| m36_153 | Ground | 1 |
-| m37_48 | Ground | 1 |
-| m41_154 | Ground | 1 |
-| m43_53 | Ground | 1 |
-| m44_56 | Ground | 1 |
-| m46_54 | Ground | 1 |
-| m49_149 | Ground | 1 |
-| m50_150 | Ground | 1 |
-| m52_152 | Ground | 1 |
-| m52_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 2 | (2309, 9801), (2633, 9908) |
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | Ground | 1 | (3307, 3195) |
+| [Asgarnia](../places/asgarnia.md) | Ground | 2 | (3020, 3291), (3026, 3289) |
+| [Beehives (Kandarin)](../places/beehives.md) | Ground | 1 | (2766, 3441) |
+| [Castle Wars (Kandarin)](../places/castle-wars.md) | Ground | 2 | (2428, 3079), (2428, 3080) |
+| [Death Plateau (Asgarnia)](../places/death-plateau.md) | Ground | 2 | (2858, 3586), (2864, 3585) |
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | Ground | 6 | (3355, 9760), (3355, 9824), (3356, 9755), (3356, 9819), (3358, 9757), (3358, 9821) |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | Ground | 1 | (3121, 3359) |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Ground | 1 | (2616, 3255) |
+| [Goblin Village (Asgarnia)](../places/goblin-village.md) | Ground | 1 | (2958, 3510) |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | Ground | 1 | (3216, 9625) |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3225, 3294) |
+| [Tirannwn](../places/tirannwn.md) | Ground | 2 | (2371, 3127), (2371, 3128) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3221, 3497) |
+| [Varrock Palace (Varrock)](../places/palace.md) | Floor 1 | 1 | (3222, 3491) |
+| [Zanaris](../places/zanaris.md) | Ground | 1 | (3165, 9581) |
 
 ## Sources
 

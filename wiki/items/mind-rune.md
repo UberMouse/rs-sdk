@@ -12,12 +12,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Lumbridge | Ground | 1 |
-| m47_56 | Ground | 5 |
-| m50_154 | Ground | 1 |
-| m51_58 | Ground | 6 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3023, 3640) x5 |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3206, 3208) |
+| [Varrock Sewers](../places/varrock-sewers.md) | Ground | 1 | (3224, 9910) |
+| [Wilderness](../places/wilderness.md) | Ground | 6 | (3283, 3728) x6 |
 
 ## Sources
 

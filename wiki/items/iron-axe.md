@@ -23,9 +23,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m49_154 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Varrock Sewers](../places/varrock-sewers.md) | Ground | 1 | (3162, 9888) |
 
 ## Sources
 

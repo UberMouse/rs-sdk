@@ -22,6 +22,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m40_51 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Floor 1 | 1 | (2572, 3284) |

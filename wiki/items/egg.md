@@ -11,12 +11,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Taverley | Ground | 1 |
-| Varrock (south) | Ground | 1 |
-| m44_52 | Ground | 1 |
-| m50_149 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Asgarnia](../places/asgarnia.md) | Ground | 2 | (3016, 3295), (3017, 3295) |
+| [Entrana](../places/entrana.md) | Ground | 3 | (2851, 3372), (2852, 3369), (2853, 3370) |
+| [Misthalin](../places/misthalin.md) | Ground | 2 | (3226, 3301), (3229, 3299) |
+| [Zanaris](../places/zanaris.md) | Ground | 1 | (3221, 9596) |
 
 ## Sources
 

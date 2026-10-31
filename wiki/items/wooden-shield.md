@@ -22,9 +22,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3204, 3515) |
 
 ## Sources
 

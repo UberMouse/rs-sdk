@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m45_54 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Chaos Temple (Asgarnia)](../places/asgarnia-chaos-temple.md) | Ground | 1 | (2930, 3515) |

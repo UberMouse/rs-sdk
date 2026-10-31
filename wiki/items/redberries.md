@@ -11,9 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Varrock (east) | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Misthalin](../places/misthalin.md) | Ground | 2 | (3267, 3371), (3271, 3366) |
+| [Varrock East mine (Misthalin)](../places/varrock-east-mine.md) | Ground | 1 | (3278, 3374) |
 
 ## Sources
 

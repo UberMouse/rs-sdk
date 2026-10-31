@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
-| m49_149 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3143, 3452) |
+| [Zanaris](../places/zanaris.md) | Ground | 1 | (3152, 9560) |
 
 ## Sources
 

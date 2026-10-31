@@ -11,11 +11,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Floor 1 | 1 |
-| Wilderness | Floor 2 | 1 |
-| m41_52 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | Floor 1 | 2 | (3140, 3447), (3141, 3447) |
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | Floor 2 | 1 | (3140, 3447) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2648, 3363) |
 
 ## Sources
 

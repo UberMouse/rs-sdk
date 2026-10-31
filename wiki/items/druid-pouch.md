@@ -12,7 +12,7 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m53_152 | Ground | 1 |
-| m53_152 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 1 | (3443, 9741) |
+| - | Floor 1 | 1 | (3443, 9741) |

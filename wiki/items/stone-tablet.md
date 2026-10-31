@@ -12,7 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m52_152 | Ground | 1 |
-| m52_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dig Site dungeon](../places/dig-site-dungeon.md) | Ground | 2 | (3374, 9747), (3374, 9811) |

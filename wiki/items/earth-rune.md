@@ -12,11 +12,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
-| m47_56 | Ground | 5 |
-| m49_154 | Ground | 6 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3032, 3637) x5 |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3195, 3515) |
+| [Varrock Sewers](../places/varrock-sewers.md) | Ground | 6 | (3185, 9888) x6 |
 
 ## Sources
 

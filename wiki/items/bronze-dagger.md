@@ -23,10 +23,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Lumbridge | Floor 1 | 1 |
-| m43_71 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Haunted Mine](../places/haunted-mine.md) | Ground | 2 | (2801, 4572), (2806, 4569) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Floor 1 | 1 | (3213, 3216) |
 
 ## Sources
 

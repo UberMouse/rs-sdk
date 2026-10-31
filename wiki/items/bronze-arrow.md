@@ -20,14 +20,14 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Camelot area | Ground | 2 |
-| Falador | Ground | 1 |
-| Lumbridge | Ground | 1 |
-| m41_53 | Ground | 1 |
-| m48_154 | Ground | 3 |
-| m48_56 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Edgeville Dungeon](../places/edgeville-dungeon.md) | Ground | 4 | (3130, 9903) x3, (3135, 9916) |
+| [Falador (Asgarnia)](../places/falador.md) | Ground | 2 | (2944, 3332) x2 |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3205, 3227) |
+| [Ranging Guild (Kandarin)](../places/ranging-guild.md) | Ground | 2 | (2678, 3426), (2680, 3424) |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | Ground | 1 | (2959, 3205) |
+| [Wilderness](../places/wilderness.md) | Ground | 16 | (3098, 3596), (3098, 3600) x2, (3101, 3592) x2, (3101, 3606) x2, (3103, 3596) x2, (3103, 3600) x2, (3105, 3607) x2, (3109, 3604) x2, (3110, 3611) |
 
 ## Sources
 

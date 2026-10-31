@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Gnome Stronghold | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Fishing Platform (Kandarin)](../places/fishing-platform.md) | Ground | 1 | (2784, 3289) |

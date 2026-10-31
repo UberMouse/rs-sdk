@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m35_49 | Ground | 1 |
-| m50_59 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Isafdar (Tirannwn)](../places/isafdar.md) | Ground | 1 | (2262, 3168) |
+| [Wilderness](../places/wilderness.md) | Ground | 2 | (3214, 3809), (3218, 3814) |
 
 ## Sources
 

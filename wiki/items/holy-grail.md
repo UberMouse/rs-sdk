@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_73 | Floor 2 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Fisher Realm](../places/fisher-realm.md) | Floor 2 | 1 | (2649, 4684) |

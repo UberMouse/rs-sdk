@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador (west) | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Crafting Guild (Asgarnia)](../places/crafting-guild.md) | Ground | 1 | (2928, 3290) |
 
 ## Sources
 

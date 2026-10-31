@@ -19,11 +19,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Ground | 1 |
-| Varrock | Floor 1 | 1 |
-| Wilderness | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Edgeville (Misthalin)](../places/edgeville.md) | Ground | 1 | (3097, 3486) |
+| [Lumbridge Swamp (Misthalin)](../places/lumbridge-swamp.md) | Ground | 1 | (3234, 3151) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3242, 3385) |
 
 ## Sources
 

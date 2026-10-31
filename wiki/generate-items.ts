@@ -9,6 +9,10 @@ import { readFileSync, readdirSync, existsSync } from 'fs';
 import { basename, dirname, join, relative } from 'path';
 import { ROOT } from './world/paths';
 import { priorReadme, stalePages, WIKI_README, writePages, type Pages } from './world/stale';
+import { areaCell, areasOf, type Areas } from './world/render/common';
+import { areaResolver } from './world/area-resolve';
+import { loadFreshWorld } from './world/load';
+import type { Tile, World } from './world/types';
 import { cmp, packId } from './world/util';
 
 const CONTENT_DIR = join(import.meta.dir, '..', 'server', 'content');
@@ -51,8 +55,8 @@ interface NpcDropSource {
 }
 
 interface SpawnLocation {
-    mapSquare: string;
-    area: string;
+    x: number;
+    z: number;
     level: number;
     quantity: number;
 }
@@ -374,67 +378,6 @@ function parseNpcDropData(pages: ReadonlyMap<string, string>): Map<string, NpcDr
 
 // ─── Map Spawn Parser ───────────────────────────────────────────────────────
 
-const MAP_SQUARE_AREAS: Record<string, string> = {
-    'm50_50': 'Lumbridge',
-    'm49_50': 'Lumbridge (west)',
-    'm51_50': 'Lumbridge (east)',
-    'm50_49': 'Al Kharid',
-    'm51_49': 'Al Kharid',
-    'm49_49': 'Al Kharid (south)',
-    'm48_50': 'Edgeville area',
-    'm48_51': 'Edgeville area',
-    'm49_51': 'Barbarian Village',
-    'm49_52': 'Barbarian Village',
-    'm50_51': 'Varrock (south)',
-    'm50_52': 'Varrock',
-    'm51_51': 'Varrock (east)',
-    'm51_52': 'Varrock (east)',
-    'm50_53': 'Varrock (north)',
-    'm45_50': 'Falador (south)',
-    'm46_50': 'Falador',
-    'm46_51': 'Falador (north)',
-    'm47_50': 'Falador (east)',
-    'm45_51': 'Falador (west)',
-    'm44_50': 'Rimmington',
-    'm44_49': 'Karamja',
-    'm45_49': 'Karamja',
-    'm43_49': 'Karamja (west)',
-    'm44_48': 'Brimhaven',
-    'm47_51': 'Taverley',
-    'm47_52': 'Taverley (north)',
-    'm41_50': "Seers' Village area",
-    'm42_50': 'Catherby',
-    'm40_50': 'Ardougne',
-    'm40_49': 'Ardougne (south)',
-    'm39_50': 'Ardougne (west)',
-    'm40_48': 'Ardougne area',
-    'm39_49': 'West Ardougne',
-    'm41_49': 'Yanille area',
-    'm41_48': 'Yanille',
-    'm48_52': 'Wilderness (low)',
-    'm48_53': 'Wilderness',
-    'm48_54': 'Wilderness',
-    'm49_53': 'Wilderness',
-    'm49_54': 'Wilderness',
-    'm50_54': 'Wilderness',
-    'm50_55': 'Wilderness (deep)',
-    'm51_53': 'Wilderness',
-    'm51_54': 'Wilderness',
-    'm46_52': 'Camelot area',
-    'm43_50': 'Gnome Stronghold',
-    'm43_51': 'Gnome Stronghold',
-    'm42_49': 'Fight Arena area',
-    'm52_50': 'Canifis area',
-    'm53_50': 'Canifis',
-    'm53_51': 'Morytania',
-    'm44_51': 'Entrana',
-    'm45_48': 'Shilo Village area',
-    'm46_48': 'Shilo Village area',
-    'm43_48': 'Feldip Hills',
-    'm48_49': 'Desert',
-    'm49_48': 'Desert',
-};
-
 function parseObjSpawns(
     mapsDir: string,
     objIdToName: Map<number, string>
@@ -447,8 +390,6 @@ function parseObjSpawns(
         if (!match) continue;
         const mapX = parseInt(match[1]!);
         const mapZ = parseInt(match[2]!);
-        const mapSquare = `m${mapX}_${mapZ}`;
-        const area = MAP_SQUARE_AREAS[mapSquare] || mapSquare;
 
         const content = readFileSync(join(mapsDir, file), 'utf-8');
         const objSectionStart = content.indexOf('==== OBJ ====');
@@ -465,6 +406,8 @@ function parseObjSpawns(
             const m = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+):\s*(\d+)\s+(\d+)$/);
             if (!m) continue;
             const level = parseInt(m[1]!);
+            const x = mapX * 64 + parseInt(m[2]!);
+            const z = mapZ * 64 + parseInt(m[3]!);
             const objId = parseInt(m[4]!);
             const quantity = parseInt(m[5]!);
 
@@ -472,7 +415,7 @@ function parseObjSpawns(
             if (!configName) continue;
 
             if (!spawns.has(configName)) spawns.set(configName, []);
-            spawns.get(configName)!.push({ mapSquare, area, level, quantity });
+            spawns.get(configName)!.push({ x, z, level, quantity });
         }
     }
 
@@ -552,7 +495,7 @@ function hasCombatStats(config: ItemConfig): boolean {
  * files), as is the README when an earlier step rewrote it (else it is read from disk). `log` gets the
  * progress lines.
  */
-export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string) => void = () => {}): Pages {
+export function itemPages(world: World, prior: ReadonlyMap<string, string>, log: (line: string) => void = () => {}): Pages {
     log('Item Wiki Generator');
     log('===================\n');
 
@@ -784,7 +727,7 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
             const variantSpawns = itemSpawns.get(variant.configName);
             if (variantSpawns) {
                 for (const spawn of variantSpawns) {
-                    const key = `${spawn.mapSquare}_${spawn.level}`;
+                    const key = `${spawn.x}_${spawn.z}_${spawn.level}_${variant.configName}`;
                     if (!seenSpawnAreas.has(key)) {
                         seenSpawnAreas.add(key);
                         spawns.push(spawn);
@@ -823,11 +766,13 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
 
     const pageIndex: { name: string; file: string; category: ItemCategory }[] = [];
     const files = new Map<string, string>();
+    const areas = areasOf(world);
+    const areaAt = areaResolver(world.areas);
 
     for (const page of built) {
         const slug = slugify(page.displayName);
         const fileName = `${slug}.md`;
-        files.set(`${ITEM_DIR}/${fileName}`, generateItemMarkdown(page));
+        files.set(`${ITEM_DIR}/${fileName}`, generateItemMarkdown(page, `${ITEM_DIR}/${fileName}`, areas, areaAt));
 
         pageIndex.push({ name: page.displayName, file: fileName, category: page.category });
     }
@@ -850,7 +795,12 @@ export function itemPages(prior: ReadonlyMap<string, string>, log: (line: string
 
 // ─── Generate Markdown ───────────────────────────────────────────────────────
 
-function generateItemMarkdown(page: ItemPage): string {
+function generateItemMarkdown(
+    page: ItemPage,
+    pagePath: string,
+    areas: Areas,
+    areaAt: (t: Tile) => string[],
+): string {
     const lines: string[] = [];
     const config = page.config;
     const isEquipment = page.equipSlot !== null;
@@ -924,23 +874,30 @@ function generateItemMarkdown(page: ItemPage): string {
     if (page.spawns.length > 0) {
         lines.push('## Spawn Locations');
         lines.push('');
-        lines.push('| Area | Floor | Quantity |');
-        lines.push('|------|-------|----------|');
+        lines.push('| Area | Floor | Quantity | Tiles (x, z) |');
+        lines.push('|------|-------|----------|--------------|');
 
-        // Group by area + level, sum quantities
-        const byAreaLevel = new Map<string, { area: string; level: number; count: number }>();
+        // One row per area and floor: the quantities summed, every tile listed (x then z), `xN` for a stack
+        const rows = new Map<string, { path: string[]; level: number; count: number; tiles: SpawnLocation[] }>();
         for (const spawn of page.spawns) {
-            const key = `${spawn.area}_${spawn.level}`;
-            if (!byAreaLevel.has(key)) {
-                byAreaLevel.set(key, { area: spawn.area, level: spawn.level, count: 0 });
-            }
-            byAreaLevel.get(key)!.count += spawn.quantity;
+            const path = areaAt({ x: spawn.x, z: spawn.z, level: spawn.level });
+            const key = `${path.join('/')}\u0000${spawn.level}`;
+            if (!rows.has(key)) rows.set(key, { path, level: spawn.level, count: 0, tiles: [] });
+            const row = rows.get(key)!;
+            row.count += spawn.quantity;
+            row.tiles.push(spawn);
         }
 
-        const sortedAreas = [...byAreaLevel.values()].sort((a, b) => cmp(a.area, b.area));
-        for (const data of sortedAreas) {
+        const sorted = [...rows.values()].sort(
+            (a, b) => cmp(areas.label(a.path), areas.label(b.path)) || cmp(a.path.join('/'), b.path.join('/')) || a.level - b.level,
+        );
+        for (const data of sorted) {
             const floorStr = data.level === 0 ? 'Ground' : `Floor ${data.level}`;
-            lines.push(`| ${data.area} | ${floorStr} | ${data.count} |`);
+            const tiles = data.tiles
+                .sort((a, b) => a.x - b.x || a.z - b.z)
+                .map(t => `(${t.x}, ${t.z})${t.quantity > 1 ? ` x${t.quantity}` : ''}`)
+                .join(', ');
+            lines.push(`| ${areaCell(pagePath, areas, data.path)} | ${floorStr} | ${data.count} | ${tiles} |`);
         }
 
         lines.push('');
@@ -1033,7 +990,7 @@ if (import.meta.main) {
               .filter(f => f.endsWith('.md'))
               .map((f): [string, string] => [`${NPC_DIR}/${f}`, readFileSync(join(ROOT, NPC_DIR, f), 'utf-8')])
         : [];
-    const pages = itemPages(new Map(npcs), console.log);
+    const pages = itemPages(loadFreshWorld(), new Map(npcs), console.log);
     writePages(pages);
     for (const p of pages.stale) console.log(`  Removed stale ${basename(p)}`);
 }

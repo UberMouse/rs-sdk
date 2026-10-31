@@ -23,9 +23,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m46_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dwarven Mine](../places/dwarven-mine.md) | Ground | 1 | (2985, 9817) |
 
 ## Sources
 

@@ -12,9 +12,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m46_57 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Wilderness](../places/wilderness.md) | Ground | 2 | (2988, 3683), (2998, 3705) |
 
 ## Sources
 

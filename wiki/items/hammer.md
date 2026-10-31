@@ -11,14 +11,14 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Camelot area | Floor 1 | 1 |
-| Falador (west) | Ground | 1 |
-| m37_147 | Ground | 1 |
-| m40_71 | Ground | 1 |
-| m41_51 | Ground | 1 |
-| m46_47 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 5 | (2415, 9447), (2570, 4569), (2579, 4594), (2602, 4584), (2605, 4597) |
+| [Asgarnia](../places/asgarnia.md) | Ground | 1 | (2934, 3286) |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Ground | 1 | (2684, 3318) |
+| [Falador (Asgarnia)](../places/falador.md) | Floor 1 | 1 | (2975, 3368) |
+| [Karamja](../places/karamja.md) | Ground | 2 | (2954, 3060), (2963, 3058) |
+| [Ship Yard (Karamja)](../places/ship-yard.md) | Ground | 2 | (2986, 3048), (2989, 3061) |
 
 ## Sources
 

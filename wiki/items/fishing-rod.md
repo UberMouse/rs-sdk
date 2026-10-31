@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m44_52 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Entrana](../places/entrana.md) | Ground | 1 | (2860, 3335) |
 
 ## Sources
 

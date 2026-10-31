@@ -24,9 +24,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m43_71 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Haunted Mine](../places/haunted-mine.md) | Ground | 1 | (2812, 4566) |
 
 ## Sources
 

@@ -23,15 +23,15 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador | Ground | 1 |
-| Lumbridge | Floor 2 | 1 |
-| Taverley (north) | Ground | 1 |
-| Wilderness | Ground | 1 |
-| m43_70 | Ground | 1 |
-| m43_71 | Ground | 1 |
-| m51_147 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 2 | (2801, 4493), (2801, 4513) |
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | Ground | 1 | (3081, 3429) |
+| [Desert Mining Camp mine](../places/desert-mining-camp-mine.md) | Ground | 2 | (3288, 9431), (3288, 9442) |
+| [Falador (Asgarnia)](../places/falador.md) | Ground | 1 | (3009, 3342) |
+| [Haunted Mine](../places/haunted-mine.md) | Ground | 2 | (2795, 4579), (2811, 4572) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Floor 2 | 2 | (3229, 3215), (3229, 3223) |
+| [Rimmington (Asgarnia)](../places/rimmington.md) | Ground | 1 | (2963, 3216) |
 
 ## Sources
 

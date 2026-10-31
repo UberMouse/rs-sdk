@@ -12,14 +12,13 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Floor 1 | 1 |
-| Wilderness | Ground | 2 |
-| Wilderness (deep) | Ground | 2 |
-| m47_56 | Ground | 5 |
-| m48_60 | Ground | 15 |
-| m50_154 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | Floor 1 | 1 | (3290, 3191) |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3021, 3637) x5 |
+| [Varrock (Misthalin)](../places/varrock.md) | Ground | 2 | (3194, 3495) x2 |
+| [Varrock Sewers](../places/varrock-sewers.md) | Ground | 1 | (3226, 9910) |
+| [Wilderness](../places/wilderness.md) | Ground | 21 | (3091, 3865) x15, (3223, 3583) x2, (3229, 3566) x2, (3232, 3574) x2 |
 
 ## Sources
 

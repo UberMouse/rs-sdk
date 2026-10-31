@@ -22,9 +22,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Rimmington (Asgarnia)](../places/rimmington.md) | Floor 1 | 1 | (2963, 3212) |
 
 ## Sources
 

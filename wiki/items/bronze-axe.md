@@ -23,11 +23,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Camelot area | Floor 1 | 1 |
-| Karamja (west) | Ground | 1 |
-| m41_58 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Brimhaven (Karamja)](../places/brimhaven.md) | Ground | 1 | (2795, 3161) |
+| [Falador (Asgarnia)](../places/falador.md) | Floor 1 | 1 | (2970, 3376) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2678, 3731) |
 
 ## Sources
 

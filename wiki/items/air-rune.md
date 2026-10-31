@@ -12,11 +12,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Karamja | Ground | 1 |
-| Lumbridge (west) | Ground | 1 |
-| m47_56 | Ground | 5 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3030, 3637) x5 |
+| [Karamja](../places/karamja.md) | Ground | 1 | (2938, 3158) |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3150, 3247) |
 
 ## Sources
 

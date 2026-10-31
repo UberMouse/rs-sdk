@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m51_47 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kharidian Desert](../places/kharidian-desert.md) | Ground | 1 | (3291, 3034) |
 
 ## Sources
 

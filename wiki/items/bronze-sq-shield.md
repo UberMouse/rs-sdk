@@ -23,9 +23,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m51_61 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Rogues' Castle (Wilderness)](../places/rogues-castle.md) | Floor 1 | 1 | (3294, 3935) |
 
 ## Sources
 

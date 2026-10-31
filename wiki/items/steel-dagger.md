@@ -23,10 +23,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m49_57 | Ground | 1 |
-| m51_58 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | Ground | 1 | (3158, 3672) |
+| [Wilderness](../places/wilderness.md) | Ground | 2 | (3292, 3762), (3312, 3769) |
 
 ## Sources
 

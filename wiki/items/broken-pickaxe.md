@@ -23,6 +23,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m43_43 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Ape Atoll](../places/ape-atoll.md) | Ground | 1 | (2800, 2797) |

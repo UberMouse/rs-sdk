@@ -11,14 +11,14 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Lumbridge | Ground | 1 |
-| Lumbridge (west) | Ground | 1 |
-| Varrock (north) | Ground | 1 |
-| Wilderness | Ground | 1 |
-| Wilderness | Floor 2 | 1 |
-| m34_50 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | Ground | 1 | (3074, 3431) |
+| [Elf Camp (Tirannwn)](../places/elf-camp.md) | Ground | 1 | (2199, 3257) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3210, 3212) |
+| [Misthalin](../places/misthalin.md) | Ground | 1 | (3148, 3211) |
+| [Misthalin](../places/misthalin.md) | Floor 2 | 1 | (3144, 3449) |
+| [Varrock (Misthalin)](../places/varrock.md) | Ground | 1 | (3232, 3399) |
 
 ## Sources
 

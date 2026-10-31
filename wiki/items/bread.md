@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m40_151 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Ardougne Sewers](../places/ardougne-sewers.md) | Ground | 1 | (2564, 9670) |
 
 ## Sources
 

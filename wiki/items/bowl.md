@@ -11,11 +11,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Floor 1 | 1 |
-| m41_52 | Ground | 1 |
-| m44_52 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Entrana](../places/entrana.md) | Floor 1 | 1 | (2816, 3351) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2667, 3387) |
+| [Misthalin](../places/misthalin.md) | Floor 1 | 1 | (3140, 3452) |
 
 ## Sources
 

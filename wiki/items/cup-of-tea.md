@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
-| m45_53 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Asgarnia](../places/asgarnia.md) | Ground | 2 | (2886, 3412), (2903, 3441) |
+| [Varrock (Misthalin)](../places/varrock.md) | Ground | 1 | (3271, 3413) |
 
 ## Sources
 

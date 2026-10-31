@@ -19,13 +19,13 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Ground | 1 |
-| Desert | Ground | 1 |
-| Desert | Floor 1 | 1 |
-| Varrock | Floor 1 | 1 |
-| m50_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | Ground | 1 | (3302, 3190) |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | Ground | 2 | (3208, 9620), (3210, 9615) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3244, 3386) |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | Ground | 1 | (3111, 3159) |
+| [Wizards' Tower (Misthalin)](../places/wizards-tower.md) | Floor 1 | 1 | (3112, 3155) |
 
 ## Sources
 

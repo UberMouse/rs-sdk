@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m38_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Underground Pass](../places/underground-pass.md) | Ground | 2 | (2443, 9653), (2448, 9639) |
 
 ## Sources
 

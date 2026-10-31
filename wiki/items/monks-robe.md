@@ -18,6 +18,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m47_54 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Monastery (Asgarnia)](../places/monastery.md) | Floor 1 | 2 | (3059, 3487), (3059, 3488) |

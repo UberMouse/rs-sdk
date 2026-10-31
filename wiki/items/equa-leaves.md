@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_46 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Feldip Hills](../places/feldip-hills.md) | Ground | 3 | (2639, 2952), (2648, 2963), (2649, 2956) |
 
 ## Sources
 

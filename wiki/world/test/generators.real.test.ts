@@ -23,7 +23,7 @@ function generate(reverse: boolean) {
         const world = loadWorld();
         const npcs = npcPages(world);
         const shops = shopPages(world, npcs.files);
-        const items = itemPages(new Map([...npcs.files, ...shops.files]));
+        const items = itemPages(world, new Map([...npcs.files, ...shops.files]));
         return {
             files: new Map([...npcs.files, ...shops.files, ...items.files]),
             stale: [npcs.stale, shops.stale, items.stale],
@@ -46,15 +46,22 @@ describe('the npc, shop and item generators', () => {
 describe('itemPages on the real content', () => {
     test('reads drops from the npc pages it is given, not those on disk', () => {
         const npc = '# Zz Test\n\nAlways drops: Bones\n';
-        const bones = itemPages(new Map([['wiki/npcs/zz-test.md', npc]])).files.get('wiki/items/bones.md');
+        const bones = itemPages(loadWorld(), new Map([['wiki/npcs/zz-test.md', npc]])).files.get('wiki/items/bones.md');
         expect(bones?.split('\n').filter(l => l.startsWith('- Dropped by:'))).toEqual([
             '- Dropped by: [Zz Test](../npcs/zz-test.md) (Always)',
         ]);
     });
 
+    test('lists ground spawns as world tiles under world-index area names', () => {
+        const plank = itemPages(loadWorld(), new Map()).files.get('wiki/items/plank.md') ?? '';
+        expect(plank).toContain('(2552, 3574)');
+        expect(plank).toContain('(2556, 3573)');
+        expect(plank).not.toMatch(/\bm\d+_\d+\b/);
+    }, 30_000);
+
     test('rewrites the Items section of the README an earlier step left, above its Shops section', () => {
         const readme = '# Wiki\n\n## Shops\n\nshops\n';
-        const out = itemPages(new Map([['wiki/README.md', readme]])).files.get('wiki/README.md') ?? '';
+        const out = itemPages(loadWorld(), new Map([['wiki/README.md', readme]])).files.get('wiki/README.md') ?? '';
         expect(out.startsWith('# Wiki\n\n## Items\n\n| Item | Type |\n')).toBe(true);
         expect(out.endsWith('\n## Shops\n\nshops\n')).toBe(true);
     });

@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Karamja (west) | Ground | 1 |
-| m44_53 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Catherby (Kandarin)](../places/catherby.md) | Ground | 2 | (2820, 3452), (2823, 3449) |
+| [Karamja](../places/karamja.md) | Ground | 1 | (2790, 3199) |
 
 ## Sources
 

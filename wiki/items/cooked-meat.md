@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | Ground | 2 | (3077, 3441), (3080, 3443) |
 
 ## Sources
 

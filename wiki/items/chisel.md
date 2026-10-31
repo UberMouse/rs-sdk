@@ -11,12 +11,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Falador (west) | Ground | 1 |
-| m39_51 | Ground | 1 |
-| m41_51 | Ground | 1 |
-| m43_70 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 2 | (2800, 4500), (2803, 4491) |
+| [Asgarnia](../places/asgarnia.md) | Ground | 1 | (2935, 3286) |
+| [East Ardougne (Kandarin)](../places/east-ardougne.md) | Ground | 1 | (2683, 3318) |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | Ground | 1 | (2543, 3287) |
 
 ## Sources
 

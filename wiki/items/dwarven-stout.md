@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m44_154 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [White Wolf Mountain caves](../places/white-wolf-mountain-caves.md) | Ground | 3 | (2861, 9878), (2863, 9875), (2870, 9878) |
 
 ## Sources
 

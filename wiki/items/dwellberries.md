@@ -11,9 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_54 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kandarin](../places/kandarin.md) | Ground | 4 | (2633, 3496), (2645, 3498), (2664, 3476), (2667, 3494) |
+| [McGrubor's Wood (Kandarin)](../places/mcgrubors-wood.md) | Ground | 1 | (2638, 3479) |
 
 ## Sources
 

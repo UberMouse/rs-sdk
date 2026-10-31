@@ -12,10 +12,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m51_59 | Ground | 1 |
-| m51_60 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Demonic Ruins (Wilderness)](../places/demonic-ruins.md) | Ground | 1 | (3297, 3890) |
+| [Wilderness](../places/wilderness.md) | Ground | 3 | (3283, 3819), (3290, 3806), (3305, 3816) |
 
 ## Sources
 

@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m43_53 | Floor 1 | 1 |
-| m51_47 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Catherby (Kandarin)](../places/catherby.md) | Floor 1 | 1 | (2806, 3449) |
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | Floor 1 | 1 | (3291, 3033) |
 
 ## Sources
 

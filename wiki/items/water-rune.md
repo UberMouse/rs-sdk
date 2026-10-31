@@ -12,11 +12,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Varrock (east) | Ground | 4 |
-| m46_60 | Ground | 5 |
-| m47_56 | Ground | 5 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid mine (Kharidian Desert)](../places/al-kharid-mine.md) | Ground | 4 | (3298, 3316) x4 |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3028, 3637) x5 |
+| [Wilderness](../places/wilderness.md) | Ground | 5 | (2960, 3899) x5 |
 
 ## Sources
 

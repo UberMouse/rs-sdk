@@ -24,10 +24,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness (low) | Ground | 1 |
-| m48_152 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 1 | (3076, 9777) |
+| [Draynor Manor (Misthalin)](../places/draynor-manor.md) | Ground | 1 | (3122, 3360) |
 
 ## Sources
 

@@ -11,6 +11,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m47_61 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Pirates' Hideout (Wilderness)](../places/pirates-hideout.md) | Ground | 1 | (3042, 3952) |

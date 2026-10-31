@@ -20,6 +20,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m37_73 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Legends' Quest cavern](../places/legends-quest-cavern.md) | Ground | 1 | (2379, 4712) |

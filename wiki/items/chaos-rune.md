@@ -12,13 +12,11 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m43_58 | Ground | 1 |
-| m43_59 | Ground | 1 |
-| m43_60 | Ground | 1 |
-| m47_56 | Ground | 5 |
-| m49_59 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3021, 3640) x5 |
+| [Kandarin](../places/kandarin.md) | Ground | 3 | (2761, 3845), (2802, 3780), (2806, 3770) |
+| [Wilderness](../places/wilderness.md) | Ground | 6 | (3137, 3833), (3139, 3814), (3144, 3826), (3145, 3814), (3149, 3823), (3151, 3831) |
 
 ## Sources
 

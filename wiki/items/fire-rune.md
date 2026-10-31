@@ -12,12 +12,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Varrock (east) | Ground | 3 |
-| m43_54 | Floor 1 | 2 |
-| m44_149 | Ground | 1 |
-| m47_56 | Ground | 5 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid mine (Kharidian Desert)](../places/al-kharid-mine.md) | Ground | 3 | (3304, 3311) x3 |
+| [Camelot Castle (Kandarin)](../places/camelot-castle.md) | Floor 1 | 2 | (2768, 3500) x2 |
+| [Dark Knights' Fortress (Wilderness)](../places/dark-knight-fortress.md) | Ground | 5 | (3026, 3637) x5 |
+| [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | Ground | 5 | (2833, 9561), (2836, 9566), (2838, 9552), (2842, 9552), (2843, 9560) |
 
 ## Sources
 

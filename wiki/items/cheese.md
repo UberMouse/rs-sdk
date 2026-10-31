@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Edgeville area | Ground | 1 |
-| m47_57 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Draynor Market (Draynor Village)](../places/draynor-market.md) | Ground | 1 | (3084, 3261) |
+| [Wilderness](../places/wilderness.md) | Ground | 1 | (3039, 3707) |
 
 ## Sources
 

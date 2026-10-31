@@ -11,13 +11,13 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Wilderness | Floor 1 | 1 |
-| Wilderness | Ground | 1 |
-| m43_53 | Floor 1 | 1 |
-| m44_53 | Ground | 1 |
-| m46_153 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Catherby (Kandarin)](../places/catherby.md) | Ground | 1 | (2820, 3455) |
+| [Catherby (Kandarin)](../places/catherby.md) | Floor 1 | 1 | (2813, 3449) |
+| [Cooks' Guild (Misthalin)](../places/cooks-guild.md) | Floor 1 | 1 | (3142, 3447) |
+| [Dwarven Mine](../places/dwarven-mine.md) | Ground | 1 | (2993, 9847) |
+| [Varrock Palace (Varrock)](../places/palace.md) | Ground | 1 | (3222, 3494) |
 
 ## Sources
 

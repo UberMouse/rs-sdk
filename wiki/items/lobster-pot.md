@@ -11,9 +11,9 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m40_53 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Fishing Guild (Kandarin)](../places/fishing-guild.md) | Ground | 1 | (2608, 3397) |
 
 ## Sources
 

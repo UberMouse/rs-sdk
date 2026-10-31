@@ -11,21 +11,19 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Karamja | Ground | 1 |
-| Lumbridge | Ground | 1 |
-| Varrock (north) | Floor 1 | 1 |
-| m39_47 | Ground | 1 |
-| m39_51 | Ground | 1 |
-| m40_148 | Ground | 1 |
-| m40_151 | Ground | 1 |
-| m41_152 | Ground | 1 |
-| m41_58 | Ground | 1 |
-| m42_53 | Ground | 1 |
-| m42_54 | Ground | 1 |
-| m44_53 | Ground | 1 |
-| m50_150 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| - | Ground | 2 | (2567, 9526), (2653, 9767) |
+| [Ardougne Sewers](../places/ardougne-sewers.md) | Ground | 1 | (2564, 9669) |
+| [Catherby (Kandarin)](../places/catherby.md) | Ground | 1 | (2820, 3450) |
+| [Feldip Hills](../places/feldip-hills.md) | Ground | 1 | (2529, 3030) |
+| [Kandarin](../places/kandarin.md) | Ground | 2 | (2681, 3717), (2700, 3407) |
+| [Karamja](../places/karamja.md) | Ground | 1 | (2903, 3148) |
+| [Lumbridge (Misthalin)](../places/lumbridge.md) | Ground | 1 | (3224, 3202) |
+| [Lumbridge castle cellar](../places/lumbridge-castle-cellar.md) | Ground | 1 | (3215, 9625) |
+| [Seers' Village (Kandarin)](../places/seers-village.md) | Ground | 1 | (2704, 3475) |
+| [Varrock (Misthalin)](../places/varrock.md) | Floor 1 | 1 | (3218, 3418) |
+| [West Ardougne (Kandarin)](../places/west-ardougne.md) | Ground | 1 | (2543, 3288) |
 
 ## Sources
 

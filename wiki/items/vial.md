@@ -11,13 +11,12 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Ardougne area | Floor 2 | 1 |
-| m43_52 | Ground | 1 |
-| m49_59 | Ground | 1 |
-| m49_60 | Ground | 1 |
-| m54_51 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kandarin](../places/kandarin.md) | Ground | 2 | (2808, 3343), (2809, 3342) |
+| [Mort'ton (Morytania)](../places/mortton.md) | Ground | 2 | (3481, 3278), (3481, 3279) |
+| [Wilderness](../places/wilderness.md) | Ground | 2 | (3188, 3839), (3196, 3849) |
+| [Yanille (Kandarin)](../places/yanille.md) | Floor 2 | 2 | (2587, 3090), (2588, 3090) |
 
 ## Sources
 

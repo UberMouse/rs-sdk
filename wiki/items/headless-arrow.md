@@ -12,6 +12,6 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m50_61 | Ground | 3 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Scorpion Pit (Wilderness)](../places/scorpion-pit.md) | Ground | 8 | (3235, 3950) x3, (3237, 3949) x2, (3240, 3940) x3 |

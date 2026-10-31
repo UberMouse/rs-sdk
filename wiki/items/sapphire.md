@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| m41_58 | Ground | 1 |
-| m49_60 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2679, 3740) |
+| [Wilderness](../places/wilderness.md) | Ground | 1 | (3170, 3885) |
 
 ## Sources
 

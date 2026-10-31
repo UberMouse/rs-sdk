@@ -11,10 +11,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Al Kharid | Ground | 1 |
-| Ardougne area | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Al Kharid (Kharidian Desert)](../places/al-kharid.md) | Ground | 1 | (3302, 3170) |
+| [Yanille (Kandarin)](../places/yanille.md) | Ground | 1 | (2568, 3102) |
 
 ## Sources
 

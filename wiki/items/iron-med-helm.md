@@ -24,10 +24,10 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Ardougne (west) | Ground | 1 |
-| m49_57 | Ground | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Graveyard of Shadows (Wilderness)](../places/graveyard-of-shadows.md) | Ground | 1 | (3178, 3684) |
+| [Kandarin](../places/kandarin.md) | Ground | 1 | (2540, 3249) |
 
 ## Sources
 

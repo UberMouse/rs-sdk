@@ -11,13 +11,13 @@
 
 ## Spawn Locations
 
-| Area | Floor | Quantity |
-|------|-------|----------|
-| Karamja (west) | Ground | 1 |
-| Wilderness | Ground | 1 |
-| m39_52 | Ground | 1 |
-| m41_57 | Ground | 1 |
-| m51_47 | Floor 1 | 1 |
+| Area | Floor | Quantity | Tiles (x, z) |
+|------|-------|----------|--------------|
+| [Barbarian Village (Misthalin)](../places/barbarian-village.md) | Ground | 3 | (3077, 3439), (3077, 3443), (3080, 3441) |
+| [Brimhaven (Karamja)](../places/brimhaven.md) | Ground | 2 | (2796, 3165), (2799, 3156) |
+| [Combat Training Camp (Kandarin)](../places/combat-training-camp.md) | Ground | 3 | (2517, 3378), (2521, 3379), (2525, 3365) |
+| [Desert Mining Camp (Kharidian Desert)](../places/desert-mining-camp.md) | Floor 1 | 1 | (3286, 3033) |
+| [Rellekka (Kandarin)](../places/rellekka.md) | Ground | 1 | (2658, 3676) |
 
 ## Sources
 
