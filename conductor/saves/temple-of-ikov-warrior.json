@@ -1,0 +1,342 @@
+{
+    "name": "temple-of-ikov-warrior",
+    "purpose": "Temple of Ikov, the Fire Warrior fight: standing at (2646,9868) south of its door (ikov varp 30 = trap lever pulled, lever bit set), boots of lightness and Pendant of lucien worn, yew shortbow with 1000 rune arrows, 30 ice arrows, 20 limpwurt roots and 5 swordfish in the pack, Ranged 90 Def 90 HP 90 Prayer 99",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2646,
+                "z": 9868,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 60,
+                "Strength": 60,
+                "Defence": 90,
+                "Hitpoints": 90,
+                "Ranged": 90,
+                "Thieving": 45,
+                "Prayer": 99
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 225,
+                    "count": 1
+                },
+                {
+                    "id": 78,
+                    "count": 30
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 857,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 892,
+                    "count": 1000,
+                    "slot": 13
+                },
+                {
+                    "id": 86,
+                    "count": 1,
+                    "slot": 2
+                },
+                {
+                    "id": 88,
+                    "count": 1,
+                    "slot": 10
+                }
+            ],
+            "coins": 500,
+            "varps": {
+                "26": 30,
+                "27": 1,
+                "28": -1
+            }
+        }
+    },
+    "sha1": "231de174fd56209c391271739e67340b8ec37cb0",
+    "createdAt": "2026-10-24T04:44:46.831Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2646,
+            "z": 9868,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 60,
+            "Defence": 90,
+            "Strength": 60,
+            "Hitpoints": 90,
+            "Ranged": 90,
+            "Prayer": 99,
+            "Thieving": 45
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 500
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 225,
+                "name": "limpwurt_root",
+                "count": 1
+            },
+            {
+                "id": 78,
+                "name": "ice_arrow",
+                "count": 30
+            }
+        ],
+        "worn": [
+            {
+                "id": 86,
+                "name": "ikov_pendantoflucien",
+                "count": 1
+            },
+            {
+                "id": 857,
+                "name": "yew_shortbow",
+                "count": 1
+            },
+            {
+                "id": 88,
+                "name": "ikov_bootsoflightness",
+                "count": 1
+            },
+            {
+                "id": 892,
+                "name": "rune_arrow",
+                "count": 1000
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "26": 30,
+            "27": 1,
+            "28": -1,
+            "281": 1000
+        }
+    }
+}
