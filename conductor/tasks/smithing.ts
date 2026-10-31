@@ -16,6 +16,7 @@ import {
     type SmithingProduct,
     smithingProduct,
     HAMMER,
+    barOnlyRefusal,
 } from '../actions/smith';
 import { drop } from '../actions/drop';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
@@ -73,7 +74,12 @@ interface Product {
     bars: number;
     /** Smithing level per metal, in BARS order. */
     levels: readonly [number, number, number, number, number, number];
+    /** The made item's exact name when it is not "<Metal> <product>". */
+    item?: string;
 }
+
+/** Level that stands for "this metal cannot make it" in `levels`; those slots are refused by the BAR_ONLY check (`barOnlyRefusal`) before the level is compared. */
+const NEVER = 99;
 
 /**
  * Bars and levels per product, from server/content/scripts/skill_smithing/configs/smithing/smithing.dbrow
@@ -97,6 +103,8 @@ export const PRODUCTS: Record<SmithingProduct, Product> = {
     platelegs: { bars: 3, levels: [16, 31, 46, 66, 86, 99] },
     plateskirt: { bars: 3, levels: [16, 31, 46, 66, 86, 99] },
     platebody: { bars: 5, levels: [18, 33, 48, 68, 88, 99] },
+    // Steel only (BAR_ONLY): smithing.dbrow [nails], 1 bar -> 2 Nails at Smithing 34; the other metals' column 5 has no nails.
+    nails: { bars: 1, levels: [NEVER, NEVER, 34, NEVER, NEVER, NEVER], item: 'Nails' },
 };
 
 const FURNACE = /furnace/i;
@@ -167,7 +175,10 @@ const countOf = (state: BotWorldState, name: string) => countItems(state, exactN
 
 /** The exact name of the item `product` makes from `bar`: "Iron platebody", "Adamant 2h sword" (the game's own typo "Adamnt warhammer"). */
 const productItem = (bar: Metal, product: SmithingProduct) =>
-    exactName(bar === 'adamant' && product === 'warhammer' ? 'Adamnt warhammer' : `${SMELT[bar].menuLabel} ${product}`);
+    exactName(
+        PRODUCTS[product].item ??
+            (bar === 'adamant' && product === 'warhammer' ? 'Adamnt warhammer' : `${SMELT[bar].menuLabel} ${product}`),
+    );
 
 /** Fewer bars than one `product` takes: nothing more can be forged. */
 const outOfBars = (s: BotWorldState, bar: Metal, product: { bars: number }) =>
@@ -236,7 +247,7 @@ export default defineTask({
         'Smithing in two modes. mode "smelt": at a furnace, smelt `bar` one at a time through its Smelt menu (bronze needs copper + tin 1:1; iron; ' +
         'steel/mithril/adamant/runite also need coal) until the ores run out. mode "smith": at an anvil with a hammer, ' +
         'forge `product` (dagger, axe, mace, med helm, sword, scimitar, longsword, full helm, sq shield, warhammer, battleaxe, ' +
-        'chainbody, kiteshield, 2h sword, platelegs, plateskirt, platebody) from `bar` until the bars run out. ' +
+        'chainbody, kiteshield, 2h sword, platelegs, plateskirt, platebody, and nails: steel bar only, 2 Nails a bar, stacked, Smithing 34) from `bar` until the bars run out. ' +
         'Needs the Smithing level for the bar/product (checked against the engine configs) and, to smith, a hammer. ' +
         'Smelting takes about 8 ticks a bar; iron has a 50% failure chance. ' +
         '`area` centres on the furnace/anvil; it walks there when far away. Known spots: Lumbridge furnace (3225,3256), ' +
@@ -261,7 +272,9 @@ export default defineTask({
         } else {
             const product = lookupProduct(ctx.params.product);
             if (!product) return `unknown product "${ctx.params.product}" (known: ${Object.keys(PRODUCTS).join(', ')})`;
-            const need = product.levels[metalIndex(bar)] ?? 99;
+            const barRefusal = barOnlyRefusal(product.name, SMELT[bar].bar);
+            if (barRefusal) return barRefusal;
+            const need = product.levels[metalIndex(bar)] ?? NEVER;
             if (level < need) return `${bar} ${ctx.params.product} needs smithing ${need}, bot has ${level}`;
             if (!s.inventory.some(i => HAMMER.test(i.name))) return 'no hammer in inventory';
             if (outOfBars(s, bar, product))

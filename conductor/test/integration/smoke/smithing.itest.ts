@@ -144,3 +144,35 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+test(
+    'smithing task forges steel bars into stacked nails (two a bar)',
+    async () => {
+        await withFixtureBot(
+            {
+                position: ANVIL,
+                skills: { Smithing: 40 },
+                inventory: [
+                    { id: Items.HAMMER, count: 1 },
+                    { id: Items.STEEL_BAR, count: 1 },
+                    { id: Items.STEEL_BAR, count: 1 },
+                ],
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'smithing',
+                    { mode: 'smith', bar: 'steel', product: 'nails', area: { x: ANVIL.x, z: ANVIL.z, radius: 6 } },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta['Steel bar'], detail).toBe(-2);
+                expect(run.result.inventoryDelta['Nails'], detail).toBe(4);
+                expect(run.result.xpGained.Smithing, detail).toBeGreaterThan(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);

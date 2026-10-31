@@ -207,7 +207,8 @@ export const shopReact =
 /** What one smithing action takes from the inventory and gives back, with the Smithing XP it pays. */
 export interface SmithyWork {
     takes: { name: string; count: number }[];
-    gives: { name: string; id: number };
+    /** `count` items per action (default 1): nails come two to a bar, in one stack. */
+    gives: { name: string; id: number; count?: number };
     xp: number;
 }
 
@@ -243,7 +244,7 @@ export function smithyReact(work: SmithyWork | null, menu: string[] = []) {
             const item = s.inventory.find(i => i.name.toLowerCase() === t.name.toLowerCase());
             if (item) w = w.inv(t.name, Math.max(0, heldOf(s, item.id) - t.count * made), { id: item.id });
         }
-        w = w.inv(work.gives.name, heldOf(s, work.gives.id) + made, { id: work.gives.id });
+        w = w.inv(work.gives.name, heldOf(s, work.gives.id) + made * (work.gives.count ?? 1), { id: work.gives.id });
         const skill = s.skills.find(k => k.name === 'Smithing');
         return w.skill('Smithing', skill?.baseLevel ?? 1, (skill?.experience ?? 0) + work.xp * made).build();
     };

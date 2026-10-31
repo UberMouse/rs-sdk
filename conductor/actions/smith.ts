@@ -73,7 +73,9 @@ const NO_ORE = /you need at least|you don't have any|run out of|don't have enoug
  * The anvil interface's product buttons in columns 1-4: inventory components smithing:column1..4 (ids
  * 1119-1122 in server/content/pack/interface.pack), each slot a product in the order skill_smithing/
  * configs/smithing/smithing.inv stocks them, the same for every metal. Column 5 (ammunition, and wire,
- * nails or studs depending on the metal) is not offered. The client publishes no labels for these, so a
+ * nails or studs depending on the metal) is offered only for nails (smithing:column5 is 1123, slot 3 of
+ * smithing_steel5 in smithing.inv): the other slots are not, and the slot 3 of the other metals is not nails
+ * (see BAR_ONLY). The client publishes no labels for these, so a
  * product is found by name: `name` is the op's own, `aliases` other spellings upstream accepts.
  */
 const SMITHING_BUTTONS = [
@@ -94,7 +96,21 @@ const SMITHING_BUTTONS = [
     { name: 'full helm', aliases: [], component: 1122, slot: 1 },
     { name: 'sq shield', aliases: ['square shield'], component: 1122, slot: 2 },
     { name: 'kiteshield', aliases: [], component: 1122, slot: 3 },
+    { name: 'nails', aliases: [], component: 1123, slot: 3 },
 ] as const;
+
+/** A product only one bar makes at its button: nails are steel's (bronze's column 5 slot 3 is wire, other metals have none). */
+export const BAR_ONLY: Partial<Record<SmithingProduct, { pattern: RegExp; label: string }>> = {
+    nails: { pattern: /^steel bar$/i, label: 'steel' },
+};
+
+/** Why `product` cannot be smithed from the bar item named `barName`, or undefined when it can (one wording for the op and the task). */
+export const barOnlyRefusal = (product: SmithingProduct, barName: string): string | undefined => {
+    const only = BAR_ONLY[product];
+    return only && !only.pattern.test(barName)
+        ? `${product} can only be smithed from ${only.label} bars, not ${barName}s`
+        : undefined;
+};
 
 /** A product the anvil interface offers, by the op's own name for it. */
 export type SmithingProduct = (typeof SMITHING_BUTTONS)[number]['name'];
@@ -253,6 +269,8 @@ export function* smith(ctx: ActionContext, anvil: NearbyLoc, product: string, ba
     if (!barItem) return { ok: false, reason: 'no-bars', message: `No bars matching ${bar} in inventory` };
     const button = smithingButton(product);
     if (!button) return { ok: false, reason: 'unknown-product', message: `Unknown smithing product: ${product}` };
+    const barRefusal = barOnlyRefusal(button.name, barItem.name);
+    if (barRefusal) return { ok: false, reason: 'unknown-product', message: barRefusal };
 
     // An interface already open would satisfy the wait for the new one on the send tick, and the click
     // would smith with whatever bar opened it: take it away first.

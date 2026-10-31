@@ -355,6 +355,47 @@ describe('smithing: smith', () => {
         expect(r.result.xpGained.Smithing).toBe(250);
     });
 
+    test('nails: steel bars make a stack of 2 a bar, and the run ends on the bars, not the stack', async () => {
+        const work = {
+            takes: [{ name: 'Steel bar', count: 1 }],
+            gives: { name: 'Nails', id: 4819, count: 2 },
+            xp: 925,
+        };
+        const r = await simulate(smithing, {
+            params: { mode: 'smith', bar: 'steel', product: 'nails' },
+            timeline: smithy(world()).inv('Steel bar', 3).skill('Smithing', 34, 20000).series(1),
+            react: smithyReact(work),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: out of Steel bars for nails');
+        expect(r.sends).toEqual(times(3, 'use Steel bar on Anvil', 'smith nails'));
+        expect(r.result.inventoryDelta).toEqual({ 'Steel bar': -3, Nails: 6 });
+    });
+
+    test('nails with onDone drop drop the whole stack', async () => {
+        const work = {
+            takes: [{ name: 'Steel bar', count: 1 }],
+            gives: { name: 'Nails', id: 4819, count: 2 },
+            xp: 925,
+        };
+        const r = await simulate(smithing, {
+            params: { mode: 'smith', bar: 'steel', product: 'nails', onDone: 'drop' },
+            timeline: smithy(world()).inv('Steel bar', 2).skill('Smithing', 34, 20000).series(1),
+            react: smithyReact(work),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends.at(-1)).toBe('drop Nails');
+        expect(r.result.inventoryDelta).toEqual({ 'Steel bar': -2 });
+    });
+
+    test('nails are refused for any other bar and below Smithing 34', async () => {
+        const w = smithy(world()).inv('Iron bar', 1).inv('Steel bar', 1);
+        const iron = await refusal({ mode: 'smith', bar: 'iron', product: 'nails' }, w.skill('Smithing', 99, 0));
+        expect(iron.reason).toBe('preflight: nails can only be smithed from steel bars, not Iron bars');
+        const low = await refusal({ mode: 'smith', bar: 'steel', product: 'nails' }, w.skill('Smithing', 33, 0));
+        expect(low.reason).toContain('needs smithing 34');
+    });
+
     test('a product of several bars uses that many per item and stops when too few are left', async () => {
         const work = {
             takes: [{ name: 'Bronze bar', count: 5 }],

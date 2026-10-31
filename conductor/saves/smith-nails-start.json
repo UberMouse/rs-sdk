@@ -1,0 +1,110 @@
+{
+    "name": "smith-nails-start",
+    "purpose": "Smithing 87 at the Varrock west anvil (3188,3421), hammer, 4 steel bars in separate slots. Tests smithing task product nails.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3188,
+                "z": 3424
+            },
+            "skills": {
+                "Smithing": 87
+            },
+            "inventory": [
+                {
+                    "id": 2347,
+                    "count": 1
+                },
+                {
+                    "id": 2353,
+                    "count": 1
+                },
+                {
+                    "id": 2353,
+                    "count": 1
+                },
+                {
+                    "id": 2353,
+                    "count": 1
+                },
+                {
+                    "id": 2353,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "2f7040a0f4ca64bc8112f40548ff646164bf8daa",
+    "createdAt": "2026-10-31T07:41:19.377Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3188,
+            "z": 3424,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10,
+            "Smithing": 87
+        },
+        "inventory": [
+            {
+                "id": 2347,
+                "name": "hammer",
+                "count": 1
+            },
+            {
+                "id": 2353,
+                "name": "steel_bar",
+                "count": 1
+            },
+            {
+                "id": 2353,
+                "name": "steel_bar",
+                "count": 1
+            },
+            {
+                "id": 2353,
+                "name": "steel_bar",
+                "count": 1
+            },
+            {
+                "id": 2353,
+                "name": "steel_bar",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}

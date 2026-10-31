@@ -101,14 +101,15 @@ describe('smith', () => {
         expect(smithingButton('swor')).toBeUndefined();
     });
 
-    test("other spellings resolve to the op's own name; column 5 is not offered", () => {
+    test("other spellings resolve to the op's own name; column 5 offers nails only", () => {
         expect(smithingProduct('Square shield')).toBe('sq shield');
         expect(smithingProduct('two handed sword')).toBe('2h sword');
         expect(smithingProduct('Two-handed sword')).toBe('2h sword');
         expect(smithingProduct('medium helm')).toBe('med helm');
         expect(smithingProduct('Kite shield')).toBe('kiteshield');
-        // Column 5 differs by metal (wire, nails, studs) and is not offered at all.
-        for (const p of ['nails', 'arrowheads', 'dart tips', 'throwing knives'])
+        // Column 5 differs by metal (wire, nails, studs): only nails (slot 3 of smithing:column5) are offered.
+        expect(smithingButton('Nails')).toMatchObject({ component: 1123, slot: 3 });
+        for (const p of ['arrowheads', 'dart tips', 'throwing knives', 'studs'])
             expect(smithingButton(p)).toBeUndefined();
     });
 
@@ -130,6 +131,35 @@ describe('smith', () => {
             message: 'Unknown smithing product: claws',
         });
         for (const r of [noHammer, noBars, unknown]) expect(r.sends).toEqual([]);
+    });
+
+    test('nails are steel only: an iron bar is refused with no send, a steel bar clicks the nails button', async () => {
+        const iron = await runOp(world().inv('Hammer', 1).inv('Iron bar', 1).series(1), ctx =>
+            smith(ctx, anvil, 'nails', /^iron bar$/i),
+        );
+        expect(iron.result).toEqual({
+            ok: false,
+            reason: 'unknown-product',
+            message: 'nails can only be smithed from steel bars, not Iron bars',
+        });
+        expect(iron.sends).toEqual([]);
+        const steelKit = anvilKit.inv('Bronze bar', 0).inv('Steel bar', 1);
+        const steel = await runOp(
+            [
+                steelKit.build(),
+                steelKit.tick(1).build(),
+                anvilOpen(steelKit.tick(2)).build(),
+                anvilOpen(steelKit.tick(3)).build(),
+            ],
+            ctx => smith(ctx, anvil, 'nails', /^steel bar$/i),
+        );
+        expect(steel.sends[1]).toEqual({
+            type: 'clickComponentWithOption',
+            componentId: 1123,
+            optionIndex: 1,
+            slot: 3,
+            reason: 'smith nails',
+        });
     });
 
     test('no interface within its wait is no-interface, and a close goes after the open in case it lands late', async () => {
