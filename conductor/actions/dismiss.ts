@@ -171,7 +171,7 @@ export type DismissResult =
     | { ok: false; reason: 'choice' | 'stuck' | 'send-failed'; message: string };
 
 /** What a dialog shows, to tell that a click moved it to another page. */
-const pageOf = (d: DialogState): string =>
+export const pageOf = (d: DialogState): string =>
     JSON.stringify([d.text ?? '', d.options.map(o => o.text), (d.allComponents ?? []).map(c => c.text)]);
 
 const optionTexts = (d: DialogState) => d.options.map(o => o.text).join(' | ');

@@ -182,6 +182,65 @@ describe('walkTo through moves', () => {
     });
 });
 
+/** Open ground except that the east side cannot be walked to (the blocked column), so only a crossing gets there. */
+const eastBlocked = fakePaths((from, to) =>
+    to.x === EAST.x && to.z === EAST.z
+        ? { success: false, waypoints: [], error: 'no route east' }
+        : { success: true, reachedDestination: true, waypoints: [{ ...to, level: from.level }] },
+);
+
+/** Two walks to the east side, each with the ctx `runs` gives it: one ctx is one run of a task, two are two runs. */
+async function twoWalks(first: BotWorldState, react: ReturnType<typeof game>, runs: (mk: () => WalkCtx) => WalkCtx[]) {
+    const driver = new TimelineDriver([first], { react });
+    const mk = (): WalkCtx => ({
+        state: () => driver.state(),
+        pathfinder: eastBlocked,
+        walkWorld: island([talisman()]),
+    });
+    const results: WalkResult[] = [];
+    for (const ctx of runs(mk)) {
+        const run = await interpret(walkTo(ctx, EAST.x, EAST.z, 0), { driver });
+        if (run.kind !== 'returned') throw new Error('walk did not return');
+        results.push(run.value as WalkResult);
+    }
+    const sends = driver.commands.flatMap(c =>
+        c.type === 'send' && c.action.type === 'useItemOnLoc' ? [c.action.reason] : [],
+    );
+    return { results, sends };
+}
+type WalkCtx = Parameters<typeof walkTo>[0];
+const oneRun = (mk: () => WalkCtx) => {
+    const ctx = mk();
+    return [ctx, ctx];
+};
+const twoRuns = (mk: () => WalkCtx) => [mk(), mk()];
+
+describe('a failed crossing across the walk steps of one run', () => {
+    // The talisman teleport is refused (game refuse). Walk steps of one run (one ctx) must not plan through it again; a new run may.
+    test('the next walk step of the same run does not try a refused move again, and says why it has no way', async () => {
+        const w = await twoWalks(base.inv('Air talisman').build(), game({ refuse: true }), oneRun);
+        expect(w.results[0]!.ok).toBe(false);
+        expect(w.results[1]!.ok).toBe(false);
+        expect(w.results[1]!.message).toContain('given up on earlier in this run');
+        expect(w.results[1]!.message).toContain('Nothing interesting happens');
+        expect(w.sends).toHaveLength(1);
+    });
+
+    test('a new run starts with a clean slate', async () => {
+        const w = await twoWalks(base.inv('Air talisman').build(), game({ refuse: true }), twoRuns);
+        expect(w.sends).toHaveLength(2);
+    });
+
+    test('a move that failed for want of its target is tried again by the next walk step', async () => {
+        // No ruins in sight: nothing is sent, the move is passed up for that walk only.
+        const noRuins = world().player({ at: START }).inv('Air talisman').build();
+        const w = await twoWalks(noRuins, game({}), oneRun);
+        expect(w.results.map(r => r.ok)).toEqual([false, false]);
+        for (const r of w.results) expect(r.message).toContain('in sight');
+        expect(w.results[1]!.message).not.toContain('given up on earlier');
+    });
+});
+
 describe("a move's stand the walk cannot walk to", () => {
     // The pathfinder has no route to the ruins' approach tile (3215, 3220): the graph's way there is not the collision's.
     const paths = fakePaths((from, to) =>

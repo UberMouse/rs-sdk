@@ -4,7 +4,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { ATTACK_OPTION } from '../actions/attack';
 import type { ActionContext } from '../actions/context';
-import { clearStrayChoice, closableInterface, dismiss, isSkillMenu } from '../actions/dismiss';
+import { clearStrayChoice, closableInterface, dismiss, isSkillMenu, pageOf } from '../actions/dismiss';
 import { EAT_ATTEMPT_TICKS, eat } from '../actions/eat';
 import type { GuardOutcome } from '../core/interpret';
 import { log, type Op, ticks } from '../core/op';
@@ -31,7 +31,10 @@ const HOLD_WAIT_TICKS = 20;
 const REGEN_SLICE_TICKS = 5;
 /** Ticks of regeneration waiting per low-HP episode before giving up. */
 const REGEN_CAP_TICKS = 500;
-/** The run fails on the dialog guard's Nth run within one episode that does not clear the dialog. */
+/**
+ * The run fails on the dialog guard's Nth consecutive stuck pass (stuckRuns) within one episode: a pass that does not
+ * clear the dialog; one that moves it on to another page resets the count.
+ */
 const DIALOG_STUCK_LIMIT = 6;
 /** Ticks one fight with an attacker the state does not name may last while the bot waits for auto-retaliate. */
 const UNKNOWN_ATTACKER_TICK_LIMIT = 40;
@@ -233,16 +236,26 @@ export const lowHpGuard: TaskGuard<LowHpEpisode, GuardName> = {
 /**
  * Clears level-up and other "click to continue" dialogs. Most BotActions methods do this themselves
  * (dismissBlockingUI); ops send raw, so this guard does, through the dismiss op. It answers no
- * choice itself (one nobody answers after DIALOG_STUCK_LIMIT runs is declined or closed, clearStrayChoice), and does not fire on a skill make menu, which the op that opened it answers. A task that
+ * choice itself (one nobody answers in DIALOG_STUCK_LIMIT consecutive stuck passes is declined or closed, clearStrayChoice), and does not fire on a skill make menu, which the op that opened it answers. A task that
  * drives dialogs on purpose sets `allow: ['dialog']`.
  */
-export const dialogGuard: TaskGuard<{ stuckRuns: number }, GuardName> = {
+export const dialogGuard: TaskGuard<{ stuckRuns: number; seen: Set<string> }, GuardName> = {
     name: 'dialog',
     policy: 'suspend',
-    episode: () => ({ stuckRuns: 0 }),
+    episode: () => ({ stuckRuns: 0, seen: new Set<string>() }),
     when: s => s.dialog.isOpen && !isSkillMenu(s.dialog),
     *run(_fired, run, episode) {
+        const page = pageOf(run.state().dialog);
         const r = yield* dismiss(run, { modals: false });
+        // A page cleared is progress: a conversation of pages and choices (a spirit tree's) is not a stuck dialog,
+        // so the stuck count restarts when the dialog closed or moved on to a page not yet seen in this episode.
+        // Pages already seen do not reset it, so a dialog cycling through the same few pages forever still reaches
+        // DIALOG_STUCK_LIMIT and fails.
+        const now = pageOf(run.state().dialog);
+        episode.seen.add(page);
+        const fresh = now !== page && !episode.seen.has(now);
+        episode.seen.add(now);
+        if (r.ok || fresh) episode.stuckRuns = 0;
         if (r.ok) return;
         // A choice is left alone (and a refused send waits for nothing): wait a tick so the loop
         // yields; a stray one is cleared once the stuck limit is reached.

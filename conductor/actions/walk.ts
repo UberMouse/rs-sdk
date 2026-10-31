@@ -384,10 +384,17 @@ function failedLeg(r: Extract<WalkResult, { ok: false }>, progressed: boolean, p
     return { ...r, message };
 }
 
-/** What one walk has learned on its way: what it came in by, the moves it gave up on, the bank objs not there. */
+/**
+ * What a walk knows on its way. Per walk: what it came in by (`met`), the moves it passed up for now (`skipped`:
+ * a target out of sight, an item missing, a send that failed, the gnome gate), the bank objs not there (`absent`)
+ * and the rolls fallen. Per run: `avoid`, the moves given up on for good (avoidedFor), with the reason.
+ */
 interface Learned {
     met: Set<string>;
-    avoid: Set<string>;
+    /** The run's hard give-ups (by moveKey) and why; shared by all the walks of the run. */
+    avoid: Map<string, string>;
+    /** Moves given up on for this walk only, by moveKey: a transient failure that a later walk may not meet. */
+    skipped: Set<string>;
     absent: Set<string>;
     /** The failed rolls of each move (by moveKey) that cross() did not try again. */
     falls: Map<string, number>;
@@ -397,7 +404,7 @@ interface Learned {
     unreached?: boolean;
 }
 
-/** A rolled move that fell this many times on one walk, with no retry left, is given up on for the rest of it. */
+/** A rolled move that fell this many times on one walk, with no retry left, is given up on for the rest of the run. */
 export const MAX_FALLS = 3;
 
 /** A leg's failures that end the walk however optional its hop: the budget spent, a web, no player. */
@@ -407,6 +414,21 @@ const FINAL_LEG: ReadonlySet<string> = new Set(['timeout', 'no-time', 'no-blade'
 export const HOP_REPEAT_LIMIT = 4;
 /** The longest hop cycle looked for: a hop and its way back, or a hop, a landing fix and the way back. */
 const HOP_CYCLE_MAX = 3;
+/**
+ * The moves a run's walks have hard given up on (by moveKey, with the reason): the game refused them, the bot fell
+ * off them MAX_FALLS times, nothing moved the bot, or their stand cannot be walked to. Kept across the run's walk
+ * steps, so the next walk step does not plan through them again (a task that walks in several steps would otherwise re-plan
+ * and retry a given-up move on every step). A run is one ctx.
+ */
+const runAvoided = new WeakMap<object, Map<string, string>>();
+
+/** The run's hard give-ups, which every walk of the run plans without. */
+function avoidedFor(ctx: ActionContext): Map<string, string> {
+    let a = runAvoided.get(ctx);
+    if (!a) runAvoided.set(ctx, (a = new Map()));
+    return a;
+}
+
 /** The hops a run has made since a walk last arrived, as `name from -> to` (or `name failed: reason`), newest last. */
 const hopHistory = new WeakMap<object, string[]>();
 
@@ -436,9 +458,12 @@ const stuckOnHops = (cycle: string): WalkResult => ({
     message: `Repeating the same hops ${HOP_REPEAT_LIMIT} times without arriving: ${cycle}`,
 });
 
-/** Gives up on a move or a bank detour for the rest of the walk: the move avoided, the detour's objs absent. */
-function giveUp(h: Extract<Hop, { kind: 'cross' | 'bank' }>, rec: Learned): void {
-    if (h.kind === 'cross') rec.avoid.add(moveKey(h.move));
+/**
+ * Gives up on a move for the rest of the run (`why` kept for the walks that find no way without it) or a bank detour
+ * for the rest of the walk: the move avoided, the detour's objs absent.
+ */
+function giveUp(h: Extract<Hop, { kind: 'cross' | 'bank' }>, rec: Learned, why: string): void {
+    if (h.kind === 'cross') rec.avoid.set(moveKey(h.move), why);
     else for (const w of h.withdraw) rec.absent.add(w.obj);
 }
 
@@ -481,7 +506,7 @@ function planRoute(ctx: ActionContext, s: BotWorldState, dest: Tile, tolerance: 
         connectors: world.connectors,
         maxHops: MAX_HOPS,
         graph: world.graph,
-        avoid: m => rec.avoid.has(moveKey(m)),
+        avoid: m => rec.avoid.has(moveKey(m)) || rec.skipped.has(moveKey(m)),
         ...(detour && { detour }),
     });
 }
@@ -503,6 +528,21 @@ function hopName(h: Exclude<Hop, { kind: 'door' }>): string {
     return `${actName(h.move)} at (${h.move.at.x}, ${h.move.at.z})`;
 }
 
+/**
+ * What an earlier walk of the run gave up on that this walk has no way without, for a failure's message: the plan with
+ * the run's give-ups lifted, and the hop in it that was given up on. Empty when lifting them finds no such hop.
+ */
+function lostWay(ctx: ActionContext, dest: Tile, tolerance: number, rec: Learned): string {
+    if (!rec.avoid.size) return '';
+    const lifted = { ...rec, avoid: new Map<string, string>() };
+    for (const h of planRoute(ctx, ctx.state(), dest, tolerance, lifted)?.hops ?? []) {
+        if (h.kind !== 'cross') continue;
+        const why = rec.avoid.get(moveKey(h.move));
+        if (why) return `; the way by ${hopName(h)} was given up on earlier in this run: ${why}`;
+    }
+    return '';
+}
+
 /** The ticks a hop takes once the walk is at its stand, which the walk to it keeps back. */
 function hopTicks(h: Exclude<Hop, { kind: 'door' }>): number {
     if (h.kind === 'climb') return CLIMB_MAX_TICKS;
@@ -519,9 +559,9 @@ const isGnomeGate = (m: Move) => m.act.kind === 'loc-op' && m.act.loc === GNOME_
  * first hop (a connector, a move, a bank detour) and makes it, then plans again from where the bot stands, so a
  * random landing or a failed roll is walked on from wherever it left the bot. A way with no hop is walked on the
  * plane (walkOnPlane), as is a destination the graph has no way to on the bot's own plane, unless the walk gave up on
- * a move on the way (`cross-failed`). A move the game refuses is given up on for the rest of the walk, a bank obj
- * found missing too, and so is a move or a bank whose stand the walk could not walk to (then a destination on the
- * plane with no way left is walked on the plane). Inside a step a hop starts only with its ticks (hopTicks) left
+ * a move on the way (`cross-failed`). A move the game refuses (or that did nothing, or the bot fell off MAX_FALLS times) is
+ * given up on (see runAvoided and Learned for how long), and a destination on the plane with no way left after
+ * that is walked on the plane. Inside a step a hop starts only with its ticks (hopTicks) left
  * before the walk's reserve, else the walk ends `no-time` (an advancing `timeout` once it has moved).
  */
 function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: WalkOptions): Op<WalkResult> {
@@ -541,7 +581,13 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
     const { maxTicks, reserve, noTime } = walkBudget(ctx, opts, own);
     if (noTime) return noTime;
     const deadline = start.tick + maxTicks;
-    const rec: Learned = { met: new Set(opts.met ?? []), avoid: new Set(), absent: new Set(), falls: new Map() };
+    const rec: Learned = {
+        met: new Set(opts.met ?? []),
+        avoid: avoidedFor(ctx),
+        skipped: new Set(),
+        absent: new Set(),
+        falls: new Map(),
+    };
     for (let hop = 0; hop <= MAX_WALK_HOPS; hop++) {
         const s = ctx.state();
         const p = s.player;
@@ -578,13 +624,17 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                     return last;
                 }
                 // A fallback after the graph's way was given up on says why it was, as cross-failed would.
-                const why = !way && rec.failed ? `; no way left to ${what}: ${rec.failed}` : '';
+                const why = !way
+                    ? rec.failed
+                        ? `; no way left to ${what}: ${rec.failed}`
+                        : lostWay(ctx, dest, tolerance, rec)
+                    : '';
                 return failedLeg({ ...last, message: last.message + why }, hop > 0);
             }
             return {
                 ok: false,
                 reason: 'no-connector',
-                message: `No connector from level ${here.level} (${here.x}, ${here.z}) to ${what}`,
+                message: `No connector from level ${here.level} (${here.x}, ${here.z}) to ${what}${rec.failed ? `; the last hop that failed: ${rec.failed}` : lostWay(ctx, dest, tolerance, rec)}`,
             };
         }
         const name = hopName(next);
@@ -604,8 +654,8 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
                 `${name} failed at (${here.x}, ${here.z}) level ${here.level}: ${walked.reason}`,
             );
             if (again) return stuckOnHops(again);
-            giveUp(next, rec);
             rec.failed = `walking to the ${name}: ${walked.message}`;
+            giveUp(next, rec, rec.failed);
             rec.unreached = true;
             yield* log(`walk: ${rec.failed}; planning without it`);
             continue;
@@ -642,7 +692,7 @@ function* walkRoute(ctx: ActionContext, dest: Tile, tolerance: number, opts: Wal
 /**
  * Makes a move of the way (cross.ts; the Gnome Stronghold gate by gate.ts's passGate), noting what the walk learns:
  * the wizard it came in by (an npc the graph's came-from requirements name), a move refused (given up on for the rest
- * of the walk). A failed roll is tried again where it leaves the bot while `stillBest` holds and another attempt ends
+ * of the run; one that failed for want of a target or an item, for the rest of the walk). A failed roll is tried again where it leaves the bot while `stillBest` holds and another attempt ends
  * by `deadline`; one that leaves it elsewhere (or is not tried again) is planned again from there, until the move has
  * fallen MAX_FALLS times on the walk, when it is given up on and named as the hop that failed. Returns whether the
  * move was made.
@@ -660,7 +710,7 @@ function* crossHop(
         const r = yield* passGate(ctx, GNOME_GATE, h.landing.z > m.at.z ? 'in' : 'out');
         if (r.ok) yield* log('walk: passed the Gnome Stronghold gate');
         else {
-            rec.avoid.add(moveKey(m));
+            rec.skipped.add(moveKey(m));
             rec.failed = `${name}: ${r.message}`;
             yield* log(`walk: ${rec.failed}; planning without it`);
         }
@@ -689,13 +739,15 @@ function* crossHop(
             yield* log(`walk: ${r.message}; planning again from here`);
             return false;
         }
-        rec.avoid.add(key);
         rec.failed = `${r.message} (fell ${falls} times)`;
+        rec.avoid.set(key, rec.failed);
         yield* log(`walk: fell: ${rec.failed}; planning without it`);
         return false;
     }
-    rec.avoid.add(moveKey(m));
     rec.failed = r.message;
+    // Only a refusal or a move that did nothing is certain; a target out of sight, a missing item or a failed send may not recur.
+    if (r.reason === 'refused' || r.reason === 'no-move') rec.avoid.set(moveKey(m), r.message);
+    else rec.skipped.add(moveKey(m));
     yield* log(`walk: ${r.reason}: ${r.message}; planning without it`);
     return false;
 }
