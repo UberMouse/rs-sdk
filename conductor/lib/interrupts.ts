@@ -16,6 +16,10 @@ type InventoryItem = BotWorldState['inventory'][number];
 /** GameMessage.type for system/game messages (sdk/types.ts). */
 const GAME_MESSAGE_SYSTEM = 0;
 const DEATH = /oh dear,? you are dead/i;
+
+/** The bot died on or after `tick`: the server's death message is among the game messages. */
+export const diedSince = (s: BotWorldState, tick: number): boolean =>
+    s.gameMessages.some(m => m.tick >= tick && m.type === GAME_MESSAGE_SYSTEM && DEATH.test(m.text));
 /** How many of the latest game messages go into a death reason. */
 const DEATH_REASON_MESSAGES = 3;
 
@@ -101,8 +105,7 @@ export const deathGuard: TaskGuard<object, GuardName> = {
     policy: 'abort',
     critical: true,
     episode: noEpisode,
-    when: (s, run) =>
-        s.gameMessages.some(m => m.tick >= run.startTick && m.type === GAME_MESSAGE_SYSTEM && DEATH.test(m.text)),
+    when: (s, run) => diedSince(s, run.startTick),
     run: (s, run) => {
         const p = s.player;
         const recent = s.gameMessages
@@ -156,7 +159,7 @@ function* waitHoldEnd(): Op<boolean> {
 }
 
 /** HP is under the eat line; the line rises with attackers only while the bot is under fire (an NPC fighting someone else beside it must not raise it). */
-function lowForAttackers(s: BotWorldState): boolean {
+export function lowForAttackers(s: BotWorldState): boolean {
     return isLowHp(s, underFire(s) ? attackers(s).length : 0);
 }
 

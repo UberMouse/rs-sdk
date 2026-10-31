@@ -14,6 +14,7 @@ import type { BotWorldState } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { WalkWorld } from './walk-graph';
 import type { Op, Outcome } from '../core/op';
+import type { Epilogue } from './epilogue';
 import type { AllowableGuard, TaskGuard } from './interrupts';
 import { TICK_MS } from './util';
 
@@ -212,6 +213,13 @@ export interface TaskResult {
     diagnostics?: Record<string, unknown>;
     /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
     warnings?: string[];
+    /**
+     * What run-task did to keep the bot alive after a run that did not end `done` left it under attack
+     * (lib/epilogue.ts); absent when the bot was not under attack. The status, reason, `durationMs` and `xp` are the
+     * run's own and exclude the epilogue; `hp`, `finalPos` and `inCombat` are re-read after it. The NDJSON `result`
+     * event is written before the epilogue runs: the epilogue is in the RESULT line and in a separate `epilogue` event.
+     */
+    epilogue?: Epilogue;
     /** A nudge run-task adds for the runner reading the RESULT (a chain of plain runs); absent normally. */
     hint?: string;
 }

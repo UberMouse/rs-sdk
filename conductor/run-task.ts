@@ -24,9 +24,19 @@
 import { copyFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'zod/v4';
+import type { BotSDK } from '../sdk/index';
 import { runScript } from '../sdk/runner';
 import { loadTask, taskNames } from './lib/catalog';
-import { executeTask } from './lib/engine';
+import { LiveDriver } from './core/drivers/live';
+import { executeTask, TICK_STALL_MS } from './lib/engine';
+import {
+    epilogueSummary,
+    needsEpilogue,
+    runEpilogue,
+    type SafeSpot,
+    trackSafeSpot,
+    withEpilogueResult,
+} from './lib/epilogue';
 import { controllerCount, loadBotEnv, type BotEnv } from './lib/env';
 import { type PlanDef, planParams, type PlanResult, runPlan } from './lib/plan';
 import {
@@ -214,6 +224,37 @@ const print = (line: string) => {
 };
 const warn = (msg: string) => console.error(`run-task: ${msg}`);
 
+/**
+ * A run that did not end `done` with the bot under attack gets lib/epilogue.ts: eat, run, teleport, for up to a
+ * minute, before the process exits and the guards with it. The result keeps its status and reason and gains an
+ * `epilogue`. Skipped when the client is gone or another controller took the bot over (no connection to act through).
+ */
+async function withEpilogue(
+    sdk: BotSDK,
+    result: TaskResult,
+    safe: { spot(): SafeSpot | null },
+    append: (event: Record<string, unknown>) => void,
+    say: (line: string) => void,
+): Promise<TaskResult> {
+    if (!needsEpilogue(result) || sdk.getConnectionState() !== 'connected' || resultLine.printed) return result;
+    // Its own driver, unrecorded: a recording replays the run's decisions, which end where the run did.
+    const driver = new LiveDriver(
+        sdk,
+        { event: append, print: say, screenshot: label => captureScreenshot(sdk, botName, undefined, label) },
+        TICK_STALL_MS,
+    );
+    try {
+        const epilogue = await runEpilogue(driver, { safe: safe.spot() });
+        if (!epilogue) return result;
+        append({ type: 'epilogue', ...epilogue });
+        say(epilogueSummary(epilogue));
+        // The final position, HP and combat state are the bot's now.
+        return withEpilogueResult(result, epilogue, sdk.getState());
+    } finally {
+        driver.close();
+    }
+}
+
 const run = await runScript(
     async ({ sdk }) => {
         if ('task' in job) {
@@ -228,6 +269,7 @@ const run = await runScript(
                 warn,
             });
             current = live;
+            const safe = trackSafeSpot(sdk);
             try {
                 live.append(sourceEvent(null));
                 ranResult = await executeTask(task, {
@@ -239,7 +281,10 @@ const run = await runScript(
                     rawParams,
                     stops,
                 });
+                // `ranResult` already holds the run's own result: a signal during the epilogue prints that.
+                ranResult = await withEpilogue(sdk, ranResult, safe, live.append, print);
             } finally {
+                safe.stop();
                 try {
                     live.close();
                 } finally {
@@ -257,58 +302,65 @@ const run = await runScript(
         const copy = join(dir, `${runId}.plan.ts`);
         copyFileSync(path, copy);
         log.append(sourceEvent({ file: path, copy }));
-        ranResult = await runPlan(def, {
-            botName,
-            runId,
-            logFile: log.logFile,
-            sinks: {
-                event: event => log.append(event),
-                print,
-                screenshot: label => captureScreenshot(sdk, botName, undefined, label),
-            },
-            stops,
-            onKillable: killed => {
-                killPlan = killed;
-            },
-            // Through the running phase's driver, so each phase's recording holds every clock read its
-            // run made and replays them; the wall clock directly between phases.
-            now: () => current?.driver.now() ?? Date.now(),
-            state: () => {
-                const s = sdk.getState();
-                if (!s) throw new Error('no world state from client');
-                return s;
-            },
-            nextTick: () => sdk.waitForTicks(1),
-            newPhaseRun: (p, _index, inputs) => {
-                // A killed plan starts nothing more: the next phase would log a run that never was.
-                if (resultLine.printed) throw new Error('the run was killed');
-                const phase = openLiveRun(sdk, {
-                    dir,
-                    task: p.task.name,
-                    bot: botName,
-                    params: p.params,
-                    stops: [],
-                    partOf: runId,
-                    ...(inputs?.bank && { bank: inputs.bank }),
+        const safe = trackSafeSpot(sdk);
+        try {
+            // The plan's own result is held before the epilogue runs: a signal during it prints this one.
+            ranResult = await runPlan(def, {
+                botName,
+                runId,
+                logFile: log.logFile,
+                sinks: {
+                    event: event => log.append(event),
                     print,
-                    warn,
-                });
-                current = phase;
-                return {
-                    driver: phase.driver,
-                    sinks: phase.sinks,
-                    runId: phase.runId,
-                    logFile: phase.logFile,
-                    close: () => {
-                        try {
-                            phase.close();
-                        } finally {
-                            current = null;
-                        }
-                    },
-                };
-            },
-        });
+                    screenshot: label => captureScreenshot(sdk, botName, undefined, label),
+                },
+                stops,
+                onKillable: killed => {
+                    killPlan = killed;
+                },
+                // Through the running phase's driver, so each phase's recording holds every clock read its
+                // run made and replays them; the wall clock directly between phases.
+                now: () => current?.driver.now() ?? Date.now(),
+                state: () => {
+                    const s = sdk.getState();
+                    if (!s) throw new Error('no world state from client');
+                    return s;
+                },
+                nextTick: () => sdk.waitForTicks(1),
+                newPhaseRun: (p, _index, inputs) => {
+                    // A killed plan starts nothing more: the next phase would log a run that never was.
+                    if (resultLine.printed) throw new Error('the run was killed');
+                    const phase = openLiveRun(sdk, {
+                        dir,
+                        task: p.task.name,
+                        bot: botName,
+                        params: p.params,
+                        stops: [],
+                        partOf: runId,
+                        ...(inputs?.bank && { bank: inputs.bank }),
+                        print,
+                        warn,
+                    });
+                    current = phase;
+                    return {
+                        driver: phase.driver,
+                        sinks: phase.sinks,
+                        runId: phase.runId,
+                        logFile: phase.logFile,
+                        close: () => {
+                            try {
+                                phase.close();
+                            } finally {
+                                current = null;
+                            }
+                        },
+                    };
+                },
+            });
+            ranResult = await withEpilogue(sdk, ranResult, safe, log.append, print);
+        } finally {
+            safe.stop();
+        }
     },
     { printState: false, takeover },
 );
