@@ -110,7 +110,7 @@ Vegetables: potato (2640, 2958), (2642, 2959); cabbage (2645, 2958); onions (258
 - A burn at the spit (`stat_random(cooking, 200, 255)`) wastes the chompy and needs another kill.
 - On completion `%chompybird_kills` is reset to 0 (afterwards it counts kills).
 
-### Route outline (designed, not run)
+### Route outline (as designed; the verified run is below)
 
 1. Talk to Rantz ("Ok, I'll make you some 'stabbers'"), stage 5.
 2. Buy a knife and chisel from Bugs.
@@ -121,4 +121,32 @@ Vegetables: potato (2640, 2958), (2642, 2959); cabbage (2645, 2958); onions (258
 7. Ask him for the bow; place another toad; kill the chompy; pluck it.
 8. Show it to Rantz; ask Fycie and Bugs their flavours; gather the vegetables; cook at the spit; hand it in.
 
-Library save `big-chompy-start`: (2631, 2976), Att 40, Str 54, Def 40, HP 47, Prayer 49, Crafting 85, Smithing 87, Fletching 5, Cooking 30, Ranged 30; mithril scimitar worn; 10 swordfish, bronze axe, 60 feathers, 300 coins.
+Library save `big-chompy-start`: (2631, 2976), 300 coins, Att 40, Str 54, Def 40, HP 47, Prayer 49, Crafting 85, Smithing 87, Fletching 5, Cooking 50, Ranged 30; mithril scimitar worn; pack 10 swordfish, bronze axe, 100 feathers, 5 wolf bones, and one each of potato, onion, cabbage, tomato, equa leaves, doogle leaves. Cooking is 50 because a spit-roast burn at 30 wasted the only chompy on one run. The wolves are level 64 and the combat task refuses them, so wolf bones come from the save; tomato, onion and doogle leaves lie in an aggressive ogre pen beside wolves, so the save holds them. [v 2026-11-01 questw3 local]
+
+## Verified route (plan `conductor/plans/big-chompy-bird-hunting.ts`)
+
+Fresh load of `lib:big-chompy-start` to quest done in one run, 724 s, on questw3. XP gained: Attack 6000, Hitpoints 2300, Ranged 19375, Cooking 37105, Woodcutting 2500, Fletching 8902, Crafting 1062. Final position (2632, 2980). [v 2026-11-01 questw3 local]
+
+Phase seconds: chop-achey 47, catch-toad 90 (5 runs), wait-bait 100, shoot 162 (3 runs), retreat 62. The bait waits and the bait-and-shoot cycles dominate (a placed toad brings a chompy only about 59% of the time). [v 2026-11-01 questw3 local]
+
+### Quest stages (varp `chompybird`, 293)
+
+5 on starting with Rantz; 10 after Rantz takes 6 arrows; 15 after asking "How do we make the chompys come"; 25 after a toad is shown; then 30, 40 and 45 (Rantz misses and lends the bow); 50 on the kill; 55 after showing the chompy; 60 when cooked; then done. [v 2026-11-01 questw3 local]
+
+### Places confirmed
+
+- Rantz (2630, 2981); spit roast (2630, 2990); cave entrance (2629, 2998); cave chest (2637, 9398); Bugs (2640, 9391); Fycie (2650, 9393); achey trees within (2624-2629, 2948-2977); swamp toads and bubbles (2595-2603, 2962-2970). [v 2026-11-01 questw3 local]
+- Bait zone x2631-2639 z2962-2971; a tile at z 2972 is outside it and placing does nothing there. [v 2026-11-01 questw3 local]
+- Danger beside the swamp: see `learnings/hazards.md` (Feldip swamp row).
+
+### Game behaviour seen
+
+- Rantz, Fycie and Bugs offer "Talk", not "Talk-to". Bugs sells a knife and chisel for 10 coins. [v 2026-11-01 questw3 local]
+- A single achey-tree chop gives "you get some" logs. [v 2026-11-01 questw3 local]
+- Placing bait: the bloated toad item's "Drop" op, message "carefully place the bloated toad". The placed toad shows as the NPC "Bloated Toad" with no options, a tick or two later. [v 2026-11-01 questw3 local]
+- The ogre bow needs ogre arrows in the quiver; a chompy takes several arrows. The ogre bow auto-retaliates on attackers and wastes arrows, so the plan re-wields the scimitar when no bait or chompy is near. [v 2026-11-01 questw3 local]
+- A Chompy corpse lasts about 100 ticks. The kill dropped 3 Ogre arrows plus Raw chompy and Bones; plucking leaves the Raw chompy on the ground and puts feathers in the pack. [v 2026-11-01 questw3 local]
+- Bugs's dialog page is not recorded in `recentDialogs`, so his seasoning request cannot be read back; the plan holds all six seasonings. Rantz asks potato or onion, Bugs equa leaves or cabbage, Fycie tomato or doogle leaves; cooking consumes the three named ones and leaves the rest. [v 2026-11-01 questw3 local]
+- A burn consumed the seasonings and left a Ruined chompy, so a new chompy must be hunted. [v 2026-11-01 questw3 local]
+- The cave chest's strength roll (`stat_random(strength, 30, 254)`, `ogre_chest.rs2:12`) fails often; the plan alternates a two-tile nudge walk so the idle rail does not end the run. [v 2026-11-01 questw3 local]
+- The spit-roast success roll is `stat_random(cooking, 200, 255)` (`raw_chompy.rs2:69`, `:192`). [server data, unverified in game 2026-11-01]
