@@ -130,6 +130,8 @@ everything (`monuments.rs2:45-48`).
 | Item | Need | Where |
 |---|---|---|
 | Bucket (empty) | 1 | Varrock General Store (3218, 3413), Shop keeper, 2 gp; Lumbridge General Store; the Coffin step gives it back |
+| Pot | 1 (stage marker the plan drops and re-reads; it does not buy it) | Varrock General Store (3218, 3413), Shop keeper, 1 gp (`shop` buy "Pot" 1) [v 2026-10-31 conductor3 local] |
+| Pickaxe | 1 (essence mining) | the plan does not fetch one: withdraw it from the Varrock west bank (3185, 3436) (`bank` withdraw "Adamant pickaxe") [v 2026-10-31 conductor3 local] |
 | Weapon, armour | melee or ranged (the dog ignores magic) | bank, or any weapon shop |
 | Food | 5-10 cooked fish | the account's bank |
 | Rune essence (unnoted) | 50, at most 28 a trip | Rune Essence Mine via Aubury, Varrock (3252, 3402): `essence-mine` + `mining` rock "essence" |

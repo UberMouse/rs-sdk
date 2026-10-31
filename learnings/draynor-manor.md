@@ -39,6 +39,14 @@ Avoid routing through Draynor Manor entirely. If you need to pass through the ar
 - Crypt is a separate area from the puzzle basement — no walking connection between them
 - **Magic door** exit at (2874, 9750) leads to the Wilderness — avoid unless you know what you're doing
 
+## Walks that fail after a quest here
+
+The walker has dead ends in and around the manor. The way out is by `interact`, then plain walks work again. [v 2026-10-31 conductor3 local]
+
+- Manor top floor / whistle room: `walk` fails "3 walks in a row failed toward (3098,3268); last: Stuck at (3106, 3362)". Take the stairs by hand: Staircase Climb-down at (3105,3363) level 2 lands (3106,3363) level 1. On level 1 the staircase near (3104,3361) offers only Climb-up ("no Climb-down option on Staircase; it offers: Climb-up" means the wrong staircase); the way to the ground is the Walk-down at (3108,3364) (see [walking](walking.md#stairs-and-ladders-walkto-between-levels)).
+- Morgan's house level 1 (Draynor, (3102,3266)): `talk` fails "no reachable /^Morgan$/". Staircase Climb-down: with `at` (3100,3266) tolerance 1 the walk fails "destination tile is blocked"; `at` (3102,3266) tolerance 3 (any tolerance of 3 or more, not on the staircase tile) goes down to (3098,3266).
+- Vampire crypt (3077,9774): `travel`/`walk` to the surface fails "No connector from level 0 (3077, 9774) to (3254, 3236)" (and a Staircase at (3115,9756) fails "no waypoints": wrong loc). Interact `^Stairs$` `^Walk-Up$` with `at` (3078,9770) tolerance 2: lands (3115,3356) on the surface. A connector fix is in review. See [Vampire Slayer](../wiki/quests/vampire-slayer.md).
+
 ## Key Coordinates
 
 | Location | Coordinates | Notes |

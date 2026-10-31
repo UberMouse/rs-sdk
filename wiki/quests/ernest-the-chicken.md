@@ -57,6 +57,8 @@ A spade (the other items are found during the quest).
 
 `conductor/plans/ernest-the-chicken.ts` ran the whole quest on worker questw1 in 343 s: Veronica 48, spade 18, poison 15, fish food 8, fountain ~41, basement steps 1.5-5 s each. The plan needs a weapon and 10 Salmon (dropped as step markers in the lever basement). [v 2026-10-23 questw1 local]
 
+Step markers must be unstackable. A copy that dropped Law runes as markers failed: `items` drop of "Law rune" x1 took the whole stack (inventory delta -8), so the marker count was wrong and the plan stopped ("nothing left to do") twice in the basement. A copy with 13 Swordfish as markers (`SALMON = 13`, `MARK` drop `^Swordfish$`) finished the quest in 144 s. Use an unstackable food. [v 2026-10-31 conductor3 local]
+
 Item and NPC tiles (Draynor Manor map and the door/lever notes: `learnings/draynor-manor.md`):
 
 | Thing | Tile | Notes |

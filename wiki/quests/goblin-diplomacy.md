@@ -65,5 +65,7 @@ None.
 | Orange dye, dyed mail | red on yellow dye; dye on mail; all item-on-item (`items` task, combine) | [v 2026-10-23 questw1 local] |
 | Generals | Wartface/Bentnoze at (2957, 3511) | see below |
 
+Time varies with the mail drops: on conductor3 the same plan took 1,874 s, of which the `mails` grind (`combat`, Goblin, area (3254,3236) radius 20, loot Goblin mail, Strength 87 to 91) was 1,441 s (574 fight steps, 3 mails; the other phases summed to about 430 s). The plan stops the grind as soon as 3 mails are held; kills are the only source, so the grind time is luck on the drop. Other phases: onions 27, to-berries 42, berries 7, to-draynor 63, woad 62, Aggie red 70 + yellow 10 + blue 10, Port Sarim bartender 28, General Wartface 80 + 8 + 6. [v 2026-10-31 conductor3 local]
+
 - Generals: option 3 "Do you want me to pick an armour colour for you?" exists only at stage 1. Stage 2 takes the orange mail, stage 3 the blue, stage 4 the plain (brown) one. The plan hands in orange, blue, then plain. [v 2026-10-23 questw1 local]
 - The Port Sarim bartender starts the quest; the plan is restart-safe (phases come from held items, quest tab and position). [v 2026-10-23 questw1 local]
