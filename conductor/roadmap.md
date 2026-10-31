@@ -116,7 +116,7 @@ adapts a promoted plan spends ~10 M cache reads (grail-chain, 175 turns, 45 min)
 
 **Queue now (retro #5), in order.**
 1. Finish Merlin + Holy Grail (runner in flight; Defence ~85, Prayer ~80 expected; record the measured XP).
-2. **Coins goal: Knights of Ardougne thieving to 60k gp** (plan knight-thieve-bankfood, ~1,160 gp/min, so ~45 min after the
+2. ~~Coins goal~~ done 2026-10-24: bank + pack >= 60k in 32 min (knight-thieve-bankfood with `until` on `v.bank('Coins') + v.inv('Coins')`, a one-line copy; pack +11,126). **Coins goal: Knights of Ardougne thieving to 60k gp** (plan knight-thieve-bankfood, ~1,160 gp/min, so ~45 min after the
    walk). Needed for: the rune sword (20.8k), Dragon Slayer costs, Plague City / Observatory pack items, Fremennik. One runner,
    milestone "60k banked", not a level. Do it before Dragon Slayer, and batch the Kandarin errands (Monk's Friend starts E
    Ardougne; Plague City; Observatory's dome is Kandarin) while at Ardougne.
