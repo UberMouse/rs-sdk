@@ -226,6 +226,8 @@ Dusty key is held; the dragon runner is on Attack then Defence to 99 with Prayer
 6. **A fail message read wrong:** `fight: Baby blue dragon is level 48, above limit 5` (10:14) is the food-out cap (`NO_FOOD_MAX_NPC_LEVEL`,
    `combat.ts:276`), not a level problem; the runner took 30 s to see it. The plan had no restock trigger before the last food.
 
+**Ranged + Prayer route (research 2026-10-31 13:20Z, after the dragons closed at Prayer 90 / melee 99).** Melee at the dragons now wastes ~700k/h of combat XP, so train Ranged there while burying: (1) `knight-thieve-bankfood` 2-3 runs for ~40-60k gp (measured ~70k gp/h), willow shortbow (Ranged 20) + ~500 mithril arrows (32 gp) at Dargaud, Ranged 1 -> 40 on Lumbridge chickens (~20 min, bronze arrows); (2) a Ranged variant of `baby-blues-prayer` (`skill: Ranged`, `weapon`, `ammo`, arrows in `loot`, `buryBones`) 60-90 min: measure Prayer/h, Ranged/h, arrows lost, kills/h (estimates: ~500-650k Ranged/h, ~85-105k Prayer/h, ~10k gp/h mithril lost); (3) repeat to Ranged 99 (~2 h), then melee to finish Prayer 99. Magic comes with Smithing superheat; Fletching by willow longbows (~971k/h) separately. Adult blue dragons only ~15-20% over baby blues on Prayer (estimate). Gaps: no Ranged method record or combat model in the index; 100 XP/damage Ranged rule, arrow pickup, Dargaud stock unverified.
+
 **Queue (retro #7), in order.**
 1. **Dragons, now**: Prayer 90 stop kept, melee `skill` Attack then Defence to 99 (HP and Prayer ride along); one runner, milestone "Attack 99 + Defence 99
    + Prayer 90", food from Falador West. Then Prayer 99 (~4 h) as the long pole: dispatch it in 90-min runner goals and use the waits for
