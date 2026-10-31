@@ -48,3 +48,16 @@
 | Dramen tree          | Entrana dungeon, past the Greater Demons       |
 | Tree Spirit          | Spawns when chopping the Dramen tree (level 101) |
 | Zanaris entrance     | Shed in Lumbridge Swamp (requires Dramen staff)  |
+
+## Verified route (plan `conductor/plans/lost-city.ts`)
+
+Proven on questw5 from a fresh load (Att/Str/Def 70, HP 80, Woodcutting 36, Crafting 31, Magic 31, 16 swordfish, bronze axe, knife, runes for Lumbridge Teleport): quest done in 332 s. [v 2026-10-31 questw5 local]
+
+- The swamp camp NPC "Warrior" starts the quest; choices "What are you camped here for", "Who's Zanaris", "If it's hidden...", "Looks like you don't know...". [v 2026-10-31 questw5 local]
+- The leprechaun tree is the loc "Tree" with option "Chop" (normal trees show "Chop down") at (3138,3212). Shamus spawns at (3139,3211); the single choice "How does it fit" is enough. The chop reports `no-effect` because Shamus appearing is not a chop effect; treat it as non-fatal or `expect` Shamus. [v 2026-10-31 questw5 local]
+- Drop the axe at the swamp after Shamus: the Entrana boat refuses axes. A knife passes the check. [v 2026-10-31 questw5 local]
+- Port Sarim boat lands at (2834,3331). The cave monk at (2822,3374) with the choice "risk" sends you down a one-way ladder to about (2822,9774); it drains Prayer by 95%. [v 2026-10-31 questw5 local; the Prayer drain from `cave_monk.rs2:14`]
+- Entrana zombies (level 25) roam around (2845,9761); a bronze axe dropped after about 40-120 s of fighting. The greater demons at (2862,9749) did not interfere. [v 2026-10-31 questw5 local]
+- Dramen tree at (2860,9737): the first chop spawns the Tree Spirit, killed unarmed at Att/Str/Def 70 with food in about 50 s (11-13 swordfish eaten, ending about 50/80 HP; a 12-fish pack ended 44/80, so 12 is marginal). The second chop gives the branch. [v 2026-10-31 questw5 local]
+- Knife on the branch carves the staff. Lumbridge Teleport cast in the dungeon lands near (3222,3218) and costs 3 air, 1 earth, 1 law; a cast sent right after the carve was dropped once with nothing spent, so retry it. [v 2026-10-31 questw5 local]
+- With the staff worn, opening the shed door at (3202,3169) from (3202,3171) teleports to Zanaris (3220,9592) and completes the quest. [v 2026-10-31 questw5 local]
