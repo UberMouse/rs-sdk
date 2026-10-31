@@ -8,7 +8,7 @@ import { expectedTicks, statRandomChance } from '../../../wiki/world/roll';
 import { ANY_CAME_FROM } from '../../../wiki/world/requirements';
 import type { Act, Crossing, Gate, Roll, Transport, World } from '../../../wiki/world/types';
 import { type Account, NO_ACCOUNT } from '../../lib/account';
-import { CONNECTORS, MAX_HOPS } from '../../lib/connectors';
+import { CONNECTORS, MAX_HOPS, type Tile } from '../../lib/connectors';
 import {
     BANK_DETOUR_TICKS,
     crossingRefusal,
@@ -104,6 +104,14 @@ describe('doorRefusal: the door rows a walk crosses are those the walker opens',
     });
 });
 
+/** The way from one tile to another at a Ranged level, nothing else met. */
+const rangedWay = (ranged: number, from: Tile, to: Tile) =>
+    nearestWay(from, [to], {
+        account: { levels: { ranged }, coins: 0 },
+        connectors: CONNECTORS,
+        maxHops: MAX_HOPS,
+    });
+
 describe('the walk search crosses a door only when the walker opens it, or makes its move', () => {
     test('a pick-lock door is a move (cross sends Pick-lock), taken at the Thieving level it asks, not below', () => {
         const door = row('loc_2551');
@@ -119,6 +127,30 @@ describe('the walk search crosses a door only when the walker opens it, or makes
         expect(across(door, maxed())).toBe(CROSSED);
         const below = across(door, { levels: { magic: 65 }, coins: 0 });
         expect(below === undefined || below > CROSSED).toBe(true);
+    });
+
+    test("a guild's skill-gated door is crossed at the level it asks, not one below: the Mining Guild's", () => {
+        const door = row('miningguilddoor');
+        expect(across(door, { levels: { mining: 60 }, coins: 0 })).toBe(CROSSED);
+        const below = across(door, { levels: { mining: 59 }, coins: 0 });
+        expect(below === undefined || below > CROSSED).toBe(true);
+    });
+
+    test("the Ranging Guild's diagonal door is a move (the ground pathfinder keeps its wall), planned at Ranged 40, not 39", () => {
+        const door = row('ranging_guild_door');
+        expect(door.shape).toBe(9);
+        expect(doorRefusal(door, opName)).toBeUndefined();
+        expect(moveRefusal(door)).toBeUndefined();
+        const [outside, inside] = wallTiles(door)!;
+        const entered = rangedWay(40, outside, inside);
+        expect(entered?.hops.map(h => h.kind)).toEqual(['cross']);
+        const move = entered!.hops[0]!;
+        if (move.kind !== 'cross') throw new Error('not a move');
+        expect(move.move.act).toEqual({ kind: 'loc-op', loc: 'ranging_guild_door', op: 1 });
+        expect(move.landing).toEqual(inside);
+        expect(rangedWay(39, outside, inside)).toBeUndefined();
+        // From inside, out is free whatever the level (ranging_guild_door.rs2:2-16).
+        expect(rangedWay(1, inside, outside)?.hops.map(h => h.kind)).toEqual(['cross']);
     });
 
     test('the toll gate is crossed with 10 coins, gone round without', () => {

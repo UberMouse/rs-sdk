@@ -66,6 +66,14 @@ const sig = (graph: ReachGraph, alts: readonly number[]): string =>
         .sort()
         .join('\0');
 
+/**
+ * The wall shapes of a diagonal door (sdk/collision-data.json lists only shapes 0-3 as doors): the ground pathfinder
+ * keeps a wall on its tile, so a walk cannot pass it by walking and opening. Its row is a move (cross.ts sends the
+ * door's op from the stand, and the script walks the player through). The Ranging Guild door (2658, 3438) is the one
+ * with a skill check (minigames/game_ranging/scripts/ranging_guild_door.rs2).
+ */
+const DIAGONAL_DOORS: ReadonlySet<number> = new Set([9]);
+
 /** The op actions/walk.ts sends on a closed door (its `OPEN`); actions/toll.ts handles the Al Kharid toll gate. */
 const WALKER_OPENS = /^(open|unlock)$/i;
 /** A trigger an op on the loc runs (`oploc1,x`), and its op; a use-item trigger (`oplocu`) has none. */
@@ -277,7 +285,7 @@ export function walkGraph(input: {
             addMove(tiles[1], tiles[0], sigs, cross(tiles[0]));
             continue;
         }
-        if (door && !g.roll && !doorRefusal(g, opName)) {
+        if (door && !DIAGONAL_DOORS.has(g.shape) && !g.roll && !doorRefusal(g, opName)) {
             const tiles = wallTiles(g);
             if (!tiles) continue;
             const [a, b] = tiles.map(at) as [number, number];
