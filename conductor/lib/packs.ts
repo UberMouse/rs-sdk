@@ -66,3 +66,20 @@ export function objInfo(obj: string): ObjInfo | undefined {
     }
     return objs.get(obj);
 }
+
+let blockers: Set<number> | undefined;
+
+/**
+ * An npc type (NearbyNpc.id) whose config says `blockwalk=all`: players cannot walk through it. The engine's default
+ * is `npc` (NpcType.blockwalk), which blocks other npcs only, so a player walks through a cow or a guard.
+ */
+export function npcBlocksPlayers(id: number): boolean {
+    if (!blockers) {
+        blockers = new Set();
+        for (const [name, c] of readConfigs('npc')) {
+            const npcId = c.blockwalk?.[0] === 'all' ? configId('npc', name) : undefined;
+            if (npcId !== undefined) blockers.add(npcId);
+        }
+    }
+    return blockers.has(id);
+}

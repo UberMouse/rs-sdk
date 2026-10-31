@@ -3,6 +3,7 @@ import type { BotWorldState } from '../../../sdk/types';
 import { type WalkResult, npcTiles, walkTo } from '../../actions/walk';
 import { TimelineDriver } from '../../core/drivers/timeline';
 import { interpret } from '../../core/interpret';
+import { configId } from '../../lib/packs';
 import { type Router, fakePaths } from '../paths';
 import { walking } from '../react';
 import { world } from '../world';
@@ -14,9 +15,12 @@ type Tile = { x: number; z: number };
 const START = { x: 3307, z: 3506 };
 const DEST = { x: 3309, z: 3509 };
 const CRATE = { x: 3307, z: 3507 };
+// kittens_mew is the Crate (blockwalk=all); cow has the default, which players walk through.
+const CRATE_ID = configId('npc', 'kittens_mew')!;
+const COW_ID = configId('npc', 'cow')!;
 const lv = (t: Tile) => ({ ...t, level: 0 });
 
-const crateWorld = () => world().player({ at: START }).npc('Crate', CRATE.x, CRATE.z).series(1);
+const crateWorld = () => world().player({ at: START }).npc('Crate', CRATE.x, CRATE.z, { id: CRATE_ID }).series(1);
 /** An NPC's tile refuses the step, as the server does. */
 const blockedByNpc = (_from: Tile, to: Tile, s: BotWorldState) => s.nearbyNpcs.some(n => n.x === to.x && n.z === to.z);
 
@@ -56,13 +60,26 @@ describe('walkTo: blockwalk NPCs on the route', () => {
         const driver = new TimelineDriver(
             world()
                 .player({ at: START })
-                .series(40, (w, i) => (i < 4 ? w.npc('Crate', CRATE.x, CRATE.z) : w)),
+                .series(40, (w, i) => (i < 4 ? w.npc('Crate', CRATE.x, CRATE.z, { id: CRATE_ID }) : w)),
             { react: walking(undefined, blockedByNpc) },
         );
         const ctx = { state: () => driver.state(), pathfinder: plain };
         const run = await interpret(walkTo(ctx, DEST.x, DEST.z, 0), { driver });
         expect(run.kind).toBe('returned');
         expect(plain.queries.some(q => q.occupied.length === 0 && q.from.x === START.x)).toBe(true);
+    });
+
+    test('an NPC that players walk through (a cow) is not walled: the route stays straight', async () => {
+        const paths = fakePaths(router);
+        const driver = new TimelineDriver(
+            world().player({ at: START }).npc('Cow', CRATE.x, CRATE.z, { id: COW_ID }).series(1),
+            { react: walking() },
+        );
+        const ctx = { state: () => driver.state(), pathfinder: paths };
+        const run = await interpret(walkTo(ctx, DEST.x, DEST.z, 0), { driver });
+        expect(run.kind).toBe('returned');
+        expect(paths.queries.every(q => q.occupied.length === 0)).toBe(true);
+        expect(paths.queries[0]!.to).toEqual(DEST);
     });
 
     test('no NPCs: the pathfinder is asked once without occupied tiles', async () => {
@@ -77,7 +94,11 @@ describe('walkTo: blockwalk NPCs on the route', () => {
 
 describe('npcTiles', () => {
     test('uses the route tile, not the render position, and a larger NPC covers its footprint', () => {
-        const state = world().player({ at: START }).npc('Crate', 3300, 3500).npc('Giant', 3310, 3510).build();
+        const state = world()
+            .player({ at: START })
+            .npc('Crate', 3300, 3500, { id: CRATE_ID })
+            .npc('Giant', 3310, 3510, { id: CRATE_ID })
+            .build();
         const [crate, giant] = state.nearbyNpcs;
         // A moving NPC's render position trails its route tile; a 2x2 one is offset by floor(size/2).
         Object.assign(crate!, { x: 3299, tileX: 3300, tileZ: 3500 });

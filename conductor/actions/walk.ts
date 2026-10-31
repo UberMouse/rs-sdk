@@ -36,7 +36,7 @@ import { log, type Op, send, wait } from '../core/op';
 import { type Account, accountOf, meetsOneOf } from '../lib/account';
 import { BANK_STAND_RADIUS, BANKS } from '../lib/banks';
 import { chebyshev, CONNECTORS, MAX_HOPS, planeOf, type Tile, UNDERGROUND_Z } from '../lib/connectors';
-import { configId, objInfo } from '../lib/packs';
+import { configId, npcBlocksPlayers, objInfo } from '../lib/packs';
 import { INVENTORY_SLOTS, TICK_MS } from '../lib/util';
 import { type Detour, type Hop, type Move, planWay, type WalkWorld, worldGraph } from '../lib/walk-graph';
 import { isInWilderness } from '../lib/wilderness';
@@ -1087,12 +1087,13 @@ function route(w: Walk): PathResult {
 }
 
 /**
- * The tiles the NPCs near the bot stand on (a larger NPC's whole footprint from its south-west tile). `x`/`z` are
+ * The tiles the NPCs near the bot that block players (`blockwalk=all`; a cow or a guard is walked through) stand on (a larger NPC's whole footprint from its south-west tile). `x`/`z` are
  * the render position, which trails a moving NPC and is offset for a larger one: the route tile is `tileX`/`tileZ`.
  */
 export function npcTiles(state: BotWorldState): Point[] {
     const out: Point[] = [];
     for (const n of state.nearbyNpcs ?? []) {
+        if (!npcBlocksPlayers(n.id)) continue;
         const size = Math.max(1, n.size ?? 1);
         const sw = { x: n.tileX ?? n.x, z: n.tileZ ?? n.z };
         for (let dx = 0; dx < size; dx++) for (let dz = 0; dz < size; dz++) out.push({ x: sw.x + dx, z: sw.z + dz });
