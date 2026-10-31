@@ -717,7 +717,7 @@ export function deriveScriptedMoves(input: ScriptedInput): ScriptedMoves {
         const s = input.scanOf(t);
         const block = s && 'candidate' in s ? blocks.get(s.candidate.trigger) : undefined;
         if (!s || ('candidate' in s && !block)) continue;
-        if (CONNECTOR_SCRIPTS.some(dir => inSource(t.file, dir))) {
+        if (CONNECTOR_SCRIPTS.some(dir => inSource(t.file, dir, t.target))) {
             tally('connector-scripts');
             continue;
         }

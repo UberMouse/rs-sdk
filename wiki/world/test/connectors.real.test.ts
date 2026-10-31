@@ -155,7 +155,10 @@ describe('the build report', () => {
         // Glarial's tomb ladder is curated for its name but genuinely one-way: the tomb is entered by using Glarial's
         // pebble on the tombstone (oplocu glarials_tombstone_waterfall_quest, quest_waterfall.rs2:103), an item-on-loc
         // move that is no connector row.
-        const ONE_WAY_BY_DESIGN = new Set(['0,2556,9844']);
+        // The Temple of Ikov dungeon's west ladder (2637, 9808) climbs out to the surface at (2637, 3407)
+        // (ladder_from_cellar, ladders.rs2:94); the surface has no ladder down to it, the dungeon is entered by the
+        // ladder at (2677, 3405) (ladders.rs2:85).
+        const ONE_WAY_BY_DESIGN = new Set(['0,2556,9844', '0,2637,9808']);
         const locs = [...OVERRIDES.keys()]
             .filter(k => !ONE_WAY_BY_DESIGN.has(k.split(' ')[0]!))
             .map(k => {

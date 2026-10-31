@@ -83,6 +83,11 @@ const ONE_WAY_DOORS = new Set<string>([
     // Crystal's jetty crate.
     '0,2763,3401', // Keep Le Faye front door (south tile)
     '0,2763,3402', // Keep Le Faye front door (north tile)
+    // McGrubor's Wood south gate (loc mcgruborgatel/mcgruborgater, category mcgrubor_gate): "The gate is locked" from
+    // inside (north); from outside the Forester turns the player away (areas/area_seers/scripts/mcgrubors_wood.rs2:1-8). The
+    // wood is entered and left by the Loose Railing (2662,3500), a scripted move (wiki/world crossings).
+    '0,2649,3469', // McGrubor's Wood gate (west tile)
+    '0,2650,3469', // McGrubor's Wood gate (east tile)
 ]);
 
 function doorKey(level: number, x: number, z: number): string {

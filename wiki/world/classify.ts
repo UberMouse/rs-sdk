@@ -73,11 +73,21 @@ export const CONNECTOR_SCRIPTS: readonly string[] = [
     // Priest in Peril's east trapdoor (`pipeastsidetrapdoor`: Open, then Climb-down into the mausoleum dungeon) has
     // its own scripts, shaped as the generic trapdoor's; the holy barrier (the way back up) is in the same file.
     'areas/area_mausoleum/scripts/holy_barrier.rs2',
+    // The Troll Stronghold's custom stairs: two triggers of a quest file whose other triggers are doors and gates, so
+    // named (`file#target`, inSource). Their landings are loc-relative by loc_angle, a level up or down.
+    'quests/quest_troll/scripts/quest_troll.rs2#troll_stronghold_stairs',
+    'quests/quest_troll/scripts/quest_troll.rs2#troll_stronghold_stairstop',
 ];
 
-/** Whether a script file is in a source: a directory (ending in `/`) that holds it, or that one file. */
-export const inSource = (file: string, source: string): boolean =>
-    source.endsWith('/') ? file.startsWith(source) : file === source;
+/**
+ * Whether a script file is in a source: a directory (ending in `/`) that holds it, or that one file; a source
+ * `<file>#<target>` holds only the triggers on that config or category (`target`, Trigger.target).
+ */
+export const inSource = (file: string, source: string, target?: string): boolean => {
+    const [path, only] = source.split('#');
+    if (only !== undefined && target !== only) return false;
+    return path!.endsWith('/') ? file.startsWith(path!) : file === path;
+};
 
 const COMBAT_PARAMS = new Set([
     'attackbonus',
@@ -326,7 +336,7 @@ export function classification(input: ClassifyInput): Classification {
     };
     /** The triggers on a config in any of `sources` (inSource). */
     const under = (sources: readonly string[]) => (on: 'loc' | 'npc', config: string, cfg: Config) =>
-        triggersOn(on, config, cfg).filter(t => sources.some(s => inSource(t.file, s)));
+        triggersOn(on, config, cfg).filter(t => sources.some(s => inSource(t.file, s, t.target)));
 
     const reached = new Map<string, Reached[]>();
     /**

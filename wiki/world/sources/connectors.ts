@@ -508,7 +508,8 @@ export function deriveConnectors(input: ConnectorInput): Connectors {
     for (const t of input.triggers) {
         if (t.on !== 'loc') continue;
         if (!t.category) own.add(`${t.target} ${t.kind}loc${t.op}`);
-        if (CONNECTOR_SCRIPTS.some(s => inSource(t.file, s))) push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
+        if (CONNECTOR_SCRIPTS.some(s => inSource(t.file, s, t.target)))
+            push(byTarget, `${t.category ? '_' : ''}${t.target}`, t);
     }
     /** A config's triggers in CONNECTOR_SCRIPTS, by op. */
     const triggersOf = (config: string): Trigger[] => {

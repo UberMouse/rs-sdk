@@ -48,8 +48,8 @@ export const UNDERGROUND_Z = 6400;
  * Dungeon, m48_149 (the Wizards' Tower basement), and four quest areas, each the bounding box (plus a margin of
  * 2 tiles) of a collision flood fill from its ladder's landing: the Paterdomus mausoleum dungeon (Priest in Peril),
  * the Tree Gnome Village cellar (Golrie's), Glarial's tomb and the Waterfall dungeon with the chalice room (Waterfall
- * Quest; the dungeon is joined to the surface by scripted moves, not a ladder), and three more by the same flood
- * fill: the Temple of Ikov dungeon, the Draynor Manor basement and the Entrana dungeon. A box with a `level` holds tiles of
+ * Quest; the dungeon is joined to the surface by scripted moves, not a ladder), and four more by the same flood
+ * fill: the Temple of Ikov dungeon, the Draynor Manor basement, the Entrana dungeon and the Troll Stronghold. A box with a `level` holds tiles of
  * that level only; one without holds every level. Other underground tiles count as one area, `u`, so the table leaves out every
  * connector into them.
  */
@@ -99,6 +99,10 @@ const UNDERGROUND_AREAS: readonly {
     { id: 'ikov', minX: 2637, maxX: 2750, minZ: 9791, maxZ: 9881 },
     // The Draynor Manor basement (flood fill x 3075..3080, z 9768..9778 from the stairs' stand tile (3077, 9771)).
     { id: 'draynor-basement', minX: 3073, maxX: 3082, minZ: 9766, maxZ: 9780 },
+    // The Troll Stronghold interior, levels 0..2 (collision flood fills from the custom stairs' landings,
+    // quest_troll.rs2:204-220: x 2821..2870, z 10049..10110; level 0 is two pockets, the prison side and the
+    // Rack side, 2 tiles of margin). Its Exit (2823, 10048) and door are scripted moves, not connectors.
+    { id: 'troll-stronghold', minX: 2819, maxX: 2872, minZ: 10047, maxZ: 10112 },
 ];
 
 /** The plane a tile is on: its level; at level 0 underground, `u` and the area appended. */
