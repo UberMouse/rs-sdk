@@ -42,7 +42,10 @@ the bot can't run the task (missing gear, dead), say so in the evidence so revie
 on it.
 
 If the change touches only a task's `description` or comments, run `contract` and
-`code-quality` alone. Otherwise run all five. The lenses are written for the generator-step
+`code-quality` alone. If it changes one file and fewer than ~80 lines (tests aside), run
+`contract`, `robustness` and `safety`, plus `game-semantics` when it encodes a game rule (a
+requirement, a loc's behaviour, a drop). Otherwise run all five. Retro #8: 62% of findings were
+C/D and dropped, and a one-file walker change got 7 findings and 0 fixes from all five. The lenses are written for the generator-step
 pattern in `.claude/agents/task-author.md`.
 
 ## 1. Find

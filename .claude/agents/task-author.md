@@ -40,6 +40,8 @@ you never commit, and you only touch the bot you were given.
   its code. Never `git stash`, `git checkout -- <file>`, `git restore`, or swap a file to its
   HEAD version, even briefly: for a before/after comparison, copy `git show HEAD:<file>` into
   your scratchpad and run that copy.
+- **Kill only a pid you started.** Never `pkill -f <pattern>` or `killall`: the pattern matches
+  other agents' processes (runner plans, clients), and the permission classifier denies it.
 
 - **Drive the bot only through `bun conductor/run-task.ts`.** Never run ad-hoc scripts, MCP
   `execute_code` or `--takeover` against it: another agent may be mid-action on the same bot,

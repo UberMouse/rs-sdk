@@ -226,7 +226,7 @@ Dusty key is held; the dragon runner is on Attack then Defence to 99 with Prayer
 6. **A fail message read wrong:** `fight: Baby blue dragon is level 48, above limit 5` (10:14) is the food-out cap (`NO_FOOD_MAX_NPC_LEVEL`,
    `combat.ts:276`), not a level problem; the runner took 30 s to see it. The plan had no restock trigger before the last food.
 
-**Ranged + Prayer route (research 2026-10-31 13:20Z, after the dragons closed at Prayer 90 / melee 99).** Melee at the dragons now wastes ~700k/h of combat XP, so train Ranged there while burying: (1) `knight-thieve-bankfood` 2-3 runs for ~40-60k gp (measured ~70k gp/h), willow shortbow (Ranged 20) + ~500 mithril arrows (32 gp) at Dargaud, Ranged 1 -> 40 on Lumbridge chickens (~20 min, bronze arrows); (2) a Ranged variant of `baby-blues-prayer` (`skill: Ranged`, `weapon`, `ammo`, arrows in `loot`, `buryBones`) 60-90 min: measure Prayer/h, Ranged/h, arrows lost, kills/h (estimates: ~500-650k Ranged/h, ~85-105k Prayer/h, ~10k gp/h mithril lost); (3) repeat to Ranged 99 (~2 h), then melee to finish Prayer 99. Magic comes with Smithing superheat; Fletching by willow longbows (~971k/h) separately. Adult blue dragons only ~15-20% over baby blues on Prayer (estimate). Gaps: no Ranged method record or combat model in the index; 100 XP/damage Ranged rule, arrow pickup, Dargaud stock unverified.
+**Ranged + Prayer route (research 2026-10-31 13:20Z, after the dragons closed at Prayer 90 / melee 99).** Melee at the dragons now wastes ~700k/h of combat XP, so train Ranged there while burying: (1) `knight-thieve-bankfood` 2-3 runs for ~40-60k gp (~70k gp/h measured on 2026-10-23 with an empty pack; a full pack gave 1,526 coins in 15 min on 2026-10-31, retro #8), willow shortbow (Ranged 20) + ~500 mithril arrows (32 gp) at Dargaud, Ranged 1 -> 40 on Lumbridge chickens (~20 min, bronze arrows); (2) a Ranged variant of `baby-blues-prayer` (`skill: Ranged`, `weapon`, `ammo`, arrows in `loot`, `buryBones`) 60-90 min: measure Prayer/h, Ranged/h, arrows lost, kills/h (estimates: ~500-650k Ranged/h, ~85-105k Prayer/h, ~10k gp/h mithril lost); (3) repeat to Ranged 99 (~2 h), then melee to finish Prayer 99. Magic comes with Smithing superheat; Fletching by willow longbows (~971k/h) separately. Adult blue dragons only ~15-20% over baby blues on Prayer (estimate). Gaps: no Ranged method record or combat model in the index; 100 XP/damage Ranged rule, arrow pickup, Dargaud stock unverified.
 
 **Queue (retro #7), in order.**
 1. **Dragons, now**: Prayer 90 stop kept, melee `skill` Attack then Defence to 99 (HP and Prayer ride along); one runner, milestone "Attack 99 + Defence 99
@@ -238,6 +238,48 @@ Dusty key is held; the dragon runner is on Attack then Defence to 99 with Prayer
 4. Quest batch (Death Plateau -> Troll Stronghold -> Eadgar's Ruse; Tourist Trap; Big Chompy -> Temple of Ikov; Grand Tree now that HP is 85) and Runecraft 1 -> 28
    once, per the retro #6 queue below; peers have landed plans and saves for Troll Stronghold, Tribal Totem, Sea Slug, Scorpion Catcher, Big Chompy.
 5. Mining/Smithing 87 -> 99, Crafting remainder, Magic (Watchtower), Herblore: unchanged.
+
+**Account 2026-11-01 17:00 (retro #8):** total 1406 (59.8% of max XP). 99: Thieving, Strength, Mining, Defence, Attack, Cooking,
+Woodcutting, Fishing. HP 98, Ranged 95, Prayer 92, Smithing 87, Crafting 85, Herblore 57, Agility 53, Magic 44; Fletching/Firemaking/
+Runecraft 1. Left: Prayer 353k, Ranged 226k, HP 42k, Smithing 541k, Crafting 600k, Herblore 942k, Agility 955k, Magic 977k, and 998k
+each in the three level-1 skills. Bank ~48k coins, adamant pickaxe and axe; pack 9.7k coins, Excalibur, Dragonfire shield; at Falador West.
+
+**Retro #8 findings (17 runs, 11:43-17:00; one runner for 222 min, 10 author dispatches, 29 lens reviewers).**
+1. **Spend (cache reads, window): main 20.3 M (36%, 116 turns, ~175k context each), authors 16.5 M (29%, 10 dispatches), reviews 13.1 M
+   (23%: 6 task-review orchestrators 7.3 M + 29 lens reviewers 4.6 M + 5 verifiers 1.1 M), the one runner 7.2 M (13%, 252 turns, ~28k a turn).**
+   Against the Oct 9-18 baseline (implementers 32.5%, main 29.8%, reviews 18%): authors are level, main is up 6 points, reviews up 5.
+   The runner is cheap: it slept through 70-min runs in 2 turns (`echo ok` then the completion notification) and the 17 `echo ok`
+   turns are the wait, not polling. Reviews are where to cut: 26 of 42 findings in five reviews were dropped as C/D (guild-doors 7 of 7,
+   engine-guard 7 of 9, spinning 5 of 7, combat 5 of 8), each review costing 1-2.3 M. All subagent cache writes are 5 m TTL (lever holds).
+2. **Wrong numbers in briefs cost real runs.** (a) The ranged-prep brief said 11k coins banked; the bank held 48k (runner lessons). So
+   `knight-coins-50k` (14:37-14:56, 18 min of runner play) was not needed, and it earned 1,526 coins: the pack was full with no Coins stack, so
+   502 successes dropped 469 payouts (242cafe2f; investigation 1.0 M reads). The fixed plans have not been re-run: the "~100k gp/h" in the
+   Now queue is unconfirmed after the fix. Thieving was already 99, so the 1.06 M Thieving XP was waste too. (b) The 12k arrow budget came
+   from the same wrong 11k, and stopped Ranged at 95; 48k was banked. (c) The plan assumed the Ranging Guild door: 3 of the 4 ranged-prep
+   failures (14:58-15:12) were Dargaud's shop (x2) and `to-guild`, the fourth `no-inventory-space` at Lowe's; two `wc-oaks-99` runs (14:30) failed preflight `no axe` (the pickaxe-only pack); the walker fix (e6bcec877, 3.9 M author + 0.45 M
+   review) landed but the dragons plan never used Dargaud, it bought at Lowe's. Fix landed, no consumer yet.
+3. **Mining 87 -> 99 ran 75 min, ~25 min past 99** (the iron phase had no level `until`): `iron-varrock-99` carries one now. +1.44 M Mining XP.
+4. **Ranged at the dragons trains Prayer slower than melee**: 71k/h Prayer (94.5k in 80 min) against 104-112k/h with melee; Ranged 480k/h,
+   HP 160k/h. Steel arrows 300 lasted 36 min, ~800 arrows in 90 min; shop price ramps ~1% per unit (500 iron = 4,954 gp, oak bow + 300 steel =
+   8,875). The first run failed at Ranged 45 on combat's 90 s fight cap (`FIGHT_TIMEOUT_MS`), then ran clean for 80 min. The epilogue works, but the plan itself ends mid-fight at HP 50/98 when `until minutes` fires.
+5. **Plan-gate pitfall written to runner lessons only**: `/axe$/` also matches "pickaxe"; a phase needs its own level `until`.
+
+**Queue (retro #8), in order.**
+1. **Ranged 95 -> 99** (226k, ~28 min at 480k/h): rerun `ranged-dragons` with a 40k coin arrow budget (about 600 iron arrows or a steel/iron mix,
+   buy two Lowe's trips because the ramp is 1%/unit); give the brief the true bank (read it with a `bank` withdraw `upTo`, not a remembered number).
+   Prayer rides along (~33k).
+2. **Prayer 92 -> 99 (~320k) with melee `allowMaxed`** on `baby-blues-prayer`: 104-112k/h (3 h) beats Ranged's 71k/h (4.5 h). Finish HP 98 -> 99 on the way (42k).
+   Magic at the dragons is not worth it: Magic 44 -> 99 comes from superheat (below) and combat spells would be slower than a bow (Prayer ~70k/h or less) and cost runes.
+   Run the adult-blue-dragon experiment only if a 25-min melee run falls under 100k/h.
+3. **Explore the long poles on a worker NOW, while the bot trains Prayer** (nothing yet exists for them): Herblore (942k; no plan, herbs from chaos druids
+   at Edgeville; melee 99 makes the kills safe) and Runecraft (998k, 5.6 h floor; `earth-runecraft(-28)` plans exist, nothing run on conductor3). Dispatch two
+   authors (worker `conductor3w*`), each ending in a promoted plan with a measured rate.
+4. **Smithing 87 -> 99 + Magic 44 -> 99 (superheat at Varrock East)**: `iron-varrock-99` / `superheat-banked` / `khazard-superheat`; ~1,055 natures (~22k gp, bank has it);
+   also gives both skills in ~1-1.5 h. Natures at Magic Guild need Magic 66: buy elsewhere (Rune shops) and verify the supply before the run.
+5. **Fletching + Firemaking 1 -> 99 as WC pairs** (WC is 99, so logs are free): `chop-fletch`, `chop-burn` at 0.5-0.6 h each; run before Crafting.
+6. **Crafting 85 -> 99** (600k): quest lumps first (Shilo, Nature Spirit, Fremennik, Observatory, Murder Mystery listed in retro #4), then flax at ~330k/h (~1.8 h) for the rest.
+7. **Agility 53 -> 99** (955k): Wilderness course, ~1 h; needs food (stocked) and the 15-minute-run guard.
+Total: ~25-30 h of bot time left, of which Herblore 7-11 h and Runecraft 5.6 h are unplanned; exploring them early is the point of item 3.
 
 **Adamant axe pays back; the rune pickaxe does not.** Rate model (`methodRate` with the tool forced), WC oaks at Draynor,
 dropped: steel -> adamant is 672k -> 1.00M/h at WC 15, 847k -> 1.25M at 30, 1.07M -> 1.57M at 50, 1.27M -> 1.88M at 70
@@ -287,6 +329,11 @@ Plague City's dig blocks Plague City. Other top quest XP after the route: Dragon
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
+- Retro #8 (task-author / curator): (1) `combat` caps one fight at 90 s (`FIGHT_TIMEOUT_MS`), which killed `ranged-dragons` at Ranged 45 with an oak
+  shortbow (`fight lasted over 90s`): make the cap scale or retry once (runner 15:21 and the ranged-prep lessons). (2) Plans that end on `until minutes` finish in combat at
+  HP 50/98; add a tail phase `leave` (flee to Falador West) to `ranged-dragons` / `baby-blues-prayer`. (3) A plan gate `/axe$/` matches "pickaxe": add a note and a
+  lint in `plan-lint` for unanchored item regexes. (4) Re-run `knight-thieve-bankfood` for one run to confirm the clear-pack fix pays (~100k gp/h) before it is quoted again.
+  (5) Rate model: baby-blue-dragons Ranged record has a measured 480k/h; add Magic and melee records so `bestMethods` offers Prayer paths.
 - Walker: `lgancientwalldoor` (Legends dungeon, shape 9) is a cross move planned to a diagonal landing that its `enter_marked_wall` teleport never produces; check `cross.ts` replans or is bounded before a Legends' Quest plan uses it (review of e6bcec877). idea
 - In catalog: `woodcutting`, `pickup`, `firemaking` (line burn with wall-edge check), `fletching`,
   `mining`, `combat` (melee, Ranged, Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
