@@ -59,7 +59,12 @@ const given = (v: PlanView) => started(v) && shieldHeld(v) && !map(v) && p1(v) +
 const inDungeon = (v: PlanView) => lvl(v) === 0 && pz(v) >= 9636 && pz(v) <= 9664 && px(v) >= 2915 && px(v) <= 2945;
 // Inside the building (walls x 2923-2940, z 3240-3257): the corridor z=3258 north of it and the yard are outside.
 const inMazeSurface = (v: PlanView) =>
-    pz(v) >= 3240 && pz(v) <= 3257 && px(v) >= 2923 && px(v) <= 2940 && lvl(v) <= 2 && !inDungeon(v);
+    pz(v) >= 3240 &&
+    pz(v) <= 3257 &&
+    px(v) >= (lvl(v) === 2 ? 2919 : 2923) &&
+    px(v) <= 2940 &&
+    lvl(v) <= 2 &&
+    !inDungeon(v);
 // The dungeon zones (collision flood fills, keys opening one door at a time): the strip below the blue Door, Melzar's
 // room beyond it, the north side (corridor z 9653-9655 and the demon's room) beyond the magenta Door, the Chest side.
 const dStrip = (v: PlanView) => px(v) >= 2931 && px(v) <= 2933 && pz(v) <= 9644;
