@@ -1,7 +1,13 @@
 import { describe, expect, test } from 'bun:test';
 import { SPIN_MENU_TICKS } from '../../actions/spin';
 import { stepBudgetTicks } from '../../lib/task';
-import spinning, { ATTEMPT_SILENT_TICKS, FAIL_LIMIT, SPIN_MAX_TICKS, WHEEL_WALK_TICKS } from '../../tasks/spinning';
+import spinning, {
+    ATTEMPT_SILENT_TICKS,
+    FAIL_LIMIT,
+    SPIN_MAX_TICKS,
+    standTile,
+    WHEEL_WALK_TICKS,
+} from '../../tasks/spinning';
 import { fakePaths } from '../paths';
 import { consume, walking } from '../react';
 import { simulate, type Simulation } from '../simulate';
@@ -170,6 +176,39 @@ describe('spinning: walking to the wheel', () => {
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toMatch(/^walk-to-wheel: can't reach the wheel/);
         expect(r.sends).toEqual([]);
+    });
+
+    test('a bot two tiles off the wheel tile diagonally is already in reach: no walk, no loop', async () => {
+        // Euclidean distance 2.83 once read as "away" while walkTo judged it arrived (Chebyshev 2): a hot loop.
+        const diagonal = kit(5)
+            .player({ at: { x: WHEEL.x + 2, z: WHEEL.z - 2, level: 1 } })
+            .series(80, (w, i) => (i === 2 || i === 3 ? menu(w) : i > 8 ? w.inv('Flax', 0) : w));
+        const r = await simulate(spinning, { params: PARAMS, timeline: diagonal, react: walking(consume) });
+        expect(r.result.status).toBe('done');
+        expect(r.steps).not.toContain('walk-to-wheel');
+        expect(r.steps.length).toBeLessThan(10);
+    });
+
+    test('a wheel given by its loc tile resolves to the index stand tile; an unknown tile stays', () => {
+        expect(standTile({ x: 3209, z: 3212, level: 1 })).toEqual({ level: 1, x: 3209, z: 3213 });
+        expect(standTile({ x: 1, z: 2, level: 0 })).toEqual({ x: 1, z: 2, level: 0 });
+    });
+
+    test('shut out of the wheel beside its loc tile (it reads unreachable), the run fails cleanly, never loops', async () => {
+        const lumbridge = { x: 3209, z: 3212, level: 1 };
+        const shut = world()
+            .player({ at: { x: 3209, z: 3211, level: 1 } })
+            .loc('Spinning wheel', lumbridge.x, lumbridge.z, { id: 2644, options: ['Spin'], reachable: false })
+            .skill('Crafting', 35, 0)
+            .inv('Flax', 5);
+        const r = await simulate(spinning, {
+            params: { wheel: lumbridge },
+            timeline: shut.series(1),
+            react: walking(consume),
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toMatch(/wheel/);
+        expect(r.steps.length).toBeLessThan(30);
     });
 
     test('the wrong floor counts as away from the wheel even when the tile is close', async () => {

@@ -10,7 +10,9 @@ import {
     spin,
 } from '../actions/spin';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
-import { log, wait } from '../core/op';
+import { log, ticks, wait } from '../core/op';
+import { chebyshev } from '../lib/connectors';
+import { WORLD } from '../lib/world-index';
 import { underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill, INVENTORY_SLOTS } from '../lib/util';
@@ -19,8 +21,10 @@ import { squareReachesWilderness } from '../lib/wilderness';
 
 const WHEEL = /^spinning wheel$/i;
 export const FAIL_LIMIT = 4;
-/** Within this many tiles of the wheel (on its floor) the client's own pathing reaches it; further, the task walks first. */
+/** Within this many tiles of the wheel's stand tile (on its floor) the client's own pathing reaches it; further, the task walks first. */
 const STATION_REACH = 2;
+/** The walk's tolerance, tighter than STATION_REACH on purpose: the walk lands beside the wheel, while awayFromWheel tolerates the wider ring. Close enough that the wheel's own side of a wall or door is reached, not just its range. */
+const STAND_REACH = 1;
 /** Ticks a missing wheel is waited for before the miss counts as a failure (the loc list can lose it for a tick). */
 export const STATION_WAIT_TICKS = 3;
 const STEP_TIMEOUT_MS = 180_000;
@@ -55,12 +59,38 @@ function findWheel(state: BotWorldState): NearbyLoc | null {
     return match && match.reachable !== false ? match : null;
 }
 
-/** Not within reach of the wheel's tile on its floor. */
+/**
+ * Where to stand for the wheel at `wheel`: the world index's stand tile for the wheel site holding that tile (a
+ * wheel is used from one side only, and a runner copies the loc tile from the services page), else the tile itself.
+ */
+export function standTile(wheel: { x: number; z: number; level: number }): { x: number; z: number; level: number } {
+    const site = WORLD.sites.find(
+        s =>
+            s.kind === 'spinning-wheel' &&
+            s.stand &&
+            s.bbox.level === wheel.level &&
+            wheel.x >= s.bbox.x1 &&
+            wheel.x <= s.bbox.x2 &&
+            wheel.z >= s.bbox.z1 &&
+            wheel.z <= s.bbox.z2,
+    );
+    return site?.stand ?? wheel;
+}
+
+/** Away from the wheel: on another floor, more than STATION_REACH (Chebyshev) from its stand tile, or in view but unreachable. */
 function awayFromWheel(ctx: Ctx): boolean {
     const wheel = ctx.params.wheel;
-    const player = ctx.state().player;
+    const state = ctx.state();
+    const player = state.player;
     if (!wheel || !player) return false;
-    return player.level !== wheel.level || ctx.distanceTo(wheel.x, wheel.z) > STATION_REACH;
+    const stand = standTile(wheel);
+    // Chebyshev, as walkTo judges arrival: a Euclidean distance reads a diagonal tile 2 away as 2.8, so a walk that
+    // had arrived was sent again at once (a hot loop when `wheel` was the wheel's own tile).
+    if (player.level !== wheel.level || chebyshev({ x: player.worldX, z: player.worldZ }, stand) > STATION_REACH)
+        return true;
+    // Within reach but shut out (the wheel reads unreachable from here): walk on, to its stand tile.
+    const seen = shortestNameMatch(state.nearbyLocs, WHEEL);
+    return seen !== null && seen.reachable === false;
 }
 
 export default defineTask({
@@ -68,7 +98,7 @@ export default defineTask({
     description:
         'Spin flax into bow strings (or wool into balls of wool) at a spinning wheel: opens the wheel\'s menu, picks "Make X" and spins everything held in one go ' +
         '(about 2 ticks per item). Ends done when none is left. Needs Crafting 10 for flax (members world), the material in the inventory and a wheel: ' +
-        '`wheel` gives its tile and floor and the task walks there, up the stairs or ladder if needed; omit it to use a wheel in view. ' +
+        '`wheel` gives its tile (the loc tile of services/spinning-wheel is fine: the task stands on the stand tile of the world index beside it) and floor and the task walks there, up the stairs or ladder if needed; omit it to use a wheel in view. ' +
         "Known wheel: Seers' Village {x:2711,z:3471,level:1} (ladder in the house at (2715,3470), door at (2716,3472); bank 25 tiles away). " +
         'Flax comes from the `pick` task; the strings go to a `bank` run.',
     params: Params,
@@ -102,18 +132,27 @@ export default defineTask({
                 const wheel = ctx.params.wheel;
                 if (!wheel) return;
                 const fails = ctx.streak('walkFails');
-                const before = ctx.distanceTo(wheel.x, wheel.z);
-                const w = yield* walkTo(ctx, wheel.x, wheel.z, STATION_REACH, {
+                const stand = standTile(wheel);
+                const before = ctx.distanceTo(stand.x, stand.z);
+                const w = yield* walkTo(ctx, stand.x, stand.z, STAND_REACH, {
                     level: wheel.level,
                     reserveTicks: SPIN_MAX_TICKS,
                 });
                 if (w.ok) {
-                    fails.reset();
+                    // A walk that arrived yet leaves the bot away from the wheel changed nothing: count it, never loop.
+                    if (!awayFromWheel(ctx)) {
+                        fails.reset();
+                        return;
+                    }
+                    yield* log(`walk to the wheel ended away from it: ${w.message}`);
+                    if (fails.add() >= FAIL_LIMIT)
+                        return { fail: `can't get within reach of the wheel (${w.message})` };
+                    yield* ticks(1);
                     return;
                 }
                 yield* log(`walk to the wheel failed: ${w.message}`);
                 // A walk that ran out of ticks closer than it started is progress (a far wheel, a floor change).
-                if (timedOutAdvancing(w, before, ctx.distanceTo(wheel.x, wheel.z))) return;
+                if (timedOutAdvancing(w, before, ctx.distanceTo(stand.x, stand.z))) return;
                 if (fails.add() >= FAIL_LIMIT) return { fail: `can't reach the wheel (${w.message})` };
             },
         },
