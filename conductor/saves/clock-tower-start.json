@@ -1,0 +1,157 @@
+{
+    "name": "clock-tower-start",
+    "purpose": "Clock Tower start: fresh quest, Att/Str/Def 20, HP 30, ice gloves worn (cool the black cog), 8 swordfish, beside Brother Kojo at the Ardougne clock tower (2572,3250)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2572,
+                "z": 3250
+            },
+            "skills": {
+                "Attack": 20,
+                "Strength": 20,
+                "Defence": 20,
+                "Hitpoints": 30
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1580,
+                    "count": 1,
+                    "slot": 9
+                }
+            ],
+            "coins": 0,
+            "varps": {}
+        }
+    },
+    "sha1": "c78bce3e7db7cf0aa8e226caa0ccf5043dbbf96f",
+    "createdAt": "2026-10-31T11:37:44.989Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2572,
+            "z": 3250,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 20,
+            "Defence": 20,
+            "Strength": 20,
+            "Hitpoints": 30
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1580,
+                "name": "ice_gloves",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
