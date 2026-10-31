@@ -60,3 +60,15 @@ Pray at any church altar to fully restore prayer points.
 
 - Lumbridge chickens (3231, 3295) train Prayer as a by-product of melee and bone burying: about a third of the melee XP; details in [strength](strength.md#verified-training-spots). [v 2026-10-09 conductor1 local]
 - Edgeville Dungeon hill giants (3100-3114, 9827-9840): burying their Big bones (always dropped; 375 XP each at the local 25x rate) while training Mithril-scimitar Strength gave 57k Prayer/h (+9,525, Prayer 1->33 in 10 min), at ~7 ticks per bury and 575k Strength/h, against 619k/h without burying. Hazard below combat 56: [hazards](../../learnings/hazards.md). [v 2026-10-16 conductor2w3 local]
+
+## Dusty key and baby blue dragons (Taverley Dungeon)
+
+Dusty key (dusty-key plan draft, conductor3): the Jailer is combat 47, so the plan requires that level.
+- Velrak's cell Door is at (2931, 9690). `travel` to (2932, 9700) has no connector; (2925, 9700) works (~52 s from Port Sarim).
+- Recipe: `combat` Jailer (area (2932, 9696) radius 6, `loot: ['Jail key']`; killed in 30-40 s at Att/Str/Def 70), `interact` use Jail key on Door (2931, 9690) from (2931, 9691), then `talk` Velrak (choices "know anywhere good", "Yes please") gives the Dusty key. The Jailer respawns and is aggressive. The plan's `talk` phase with `use:` walked to (2931, 9685) and failed "No path ... no waypoints" on the closed door, so the door step is its own `interact`. [v 2026-10-31 conductor3 local]
+- Baby blue dragons (room ~(2898, 9766)) are behind the Gate (2924, 9803): `interact` use Dusty key on Gate from (2924, 9802) opens it (server: `jail_doors.rs2`, `deepdungeondoor` accepts `dusty_key`); the log reports "the loc is gone" on success. The walker does not pass this key door as of 2026-10-31. [v 2026-10-31 conductor3 local]
+- Baby blue dragons are level 48. At Defence 96 / HP 70 they cost ~3 HP/min; 6 swordfish went in the first ~23 min (~28 kills, ~47 s each with walking), so carry ~16 food for 25 min. Strength +314,800 and HP +104,195 in that run. [v 2026-10-31 conductor3 local]
+- The bone is "Babydragon bones" (exact name). combat `buryBones` did not list it as of 2026-10-31, so the first run looted 0 bones and Prayer did not move. [v 2026-10-31 conductor3 local]
+- Banking for this trip: 12 Swordfish + 12 Tuna + Salmon filled all 28 slots; a deposit keeping only Dusty key and Coins also banks the Hammer and Maze key (re-take them if a later quest needs them). [v 2026-10-31 conductor3 local]
+- Lesser demons attack at the gate: see `learnings/hazards.md` (Taverley Dungeon dragon gate).
+
