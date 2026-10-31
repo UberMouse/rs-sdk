@@ -39,5 +39,12 @@ the browser client opened by MCP running: standalone scripts do not start a clie
 - `getInventory().length` counts occupied slots. An `InventoryItem.count` is the
   quantity in that slot; `findInventoryItem()` returns only the first matching
   slot.
+- An inventory item's op 1 can be a quest action that the cache labels
+  "Drop": the bloated toad of [Big Chompy Bird Hunting](../wiki/quests/big-chompy-bird-hunting.md)
+  has `[opheld1,bloated_toad]` = place the bait, with iop1=Drop, iop4=Release
+  All, iop5=Release. The client's drop and `items drop` send op 5 (Release), so
+  the toad hops away and the quest action never runs; `interact` with
+  `target:'item'` refuses a "Drop" label. Check an item's `[opheld1,...]` script before
+  dropping a quest item. [server data, unverified in game 2026-10-24]
 
 See [`../sdk/API.md`](../sdk/API.md) for exact signatures.
