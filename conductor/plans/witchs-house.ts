@@ -100,6 +100,7 @@ const FIGHT = (form: string, i: number) =>
         {
             target: form,
             skill: 'Strength',
+            allowMaxed: true,
             area: SHED,
             food: ['Swordfish'],
             eatBelow: 0.5,

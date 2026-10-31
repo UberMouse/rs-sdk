@@ -58,6 +58,7 @@ export default definePlan({
             {
                 target: 'Delrith',
                 skill: 'Strength',
+                allowMaxed: true,
                 area: { x: 3229, z: 3369, radius: 10 },
                 food: ['Swordfish'],
                 eatBelow: 0.5,
