@@ -142,3 +142,5 @@ async function bankTrip(itemPattern, bankCoords, returnCoords) {
    inspect its current options, call `openDoor(gate)` when `Open` is present,
    then retry `walkTo`
 4. **Banking works at Varrock West**: (3185, 3436) confirmed working (see the table above)
+
+- `bank` withdraw `count` is the number to take out, not a held total: with `upTo` it takes the lesser of `count`, what the bank has and the free room, on top of what the pack already holds. A pack holding 10 swordfish with `{item:"Swordfish", count:13, upTo:true}` ended at 23 and blocked the next shop buy ("no inventory space to buy Silk"). For an exact held count, deposit the item first in the same `bank` run, then withdraw the count (deposit-all Coins then withdraw 12000 left exactly 12,000). [v 2026-10-31 conductor3 local]
