@@ -117,7 +117,7 @@ describe('stand connectivity', () => {
 
     test('finds stands on the wrong side of a gated door from their members', () => {
         expect(of(siteAt('npc', 2546, 3560))?.detail).toBe(
-            'npc:barbarian-outpost:0 stand (2554, 3559): 0 of 8 members usable from the stand',
+            'npc:barbarian-outpost:1 stand (2554, 3559): 0 of 8 members usable from the stand',
         );
         expect(of(siteAt('tree', 2577, 3086))?.detail).toBe(
             'tree:wizards-guild:1 stand (2589, 3076): 8 of 17 members usable from the stand',

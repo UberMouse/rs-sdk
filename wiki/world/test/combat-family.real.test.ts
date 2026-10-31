@@ -181,7 +181,7 @@ describe('moss giants, 5 spawns in Kandarin', () => {
         // (44 + 64) = 7668; 7988 / 640 = 12.
         const swing = { hit: 1 - 2498 / (2 * 7413), max: 12 };
         const m = kill(
-            'npc:kandarin:108',
+            'npc:kandarin:107',
             { npc: 'mossgiant', style: 'aggressive' },
             profile({ attack: 60, strength: 60, defence: 60, hitpoints: 60 }, ['rune_scimitar']),
             2,
