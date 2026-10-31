@@ -26,6 +26,16 @@ const zReaches = (lo: number, hi: number) => Z_BANDS.some(([bLo, bHi]) => hi >= 
 export const isInWilderness = (level: number, worldX: number, worldZ: number): boolean =>
     level === 0 && worldX >= WILDERNESS_MIN_X && worldX <= WILDERNESS_MAX_X && isWildernessZ(worldZ);
 
+/**
+ * The Wilderness level at a point on plane 0 (as `isInWilderness`; 0 on any other plane): 0 outside, else
+ * (z - the band's first z) / 8 + 1, the server's formula. Teleport spells are refused above level 20.
+ */
+export function wildernessLevel(level: number, worldX: number, worldZ: number): number {
+    if (!isInWilderness(level, worldX, worldZ)) return 0;
+    const [lo] = Z_BANDS.find(([bLo, bHi]) => worldZ >= bLo && worldZ <= bHi)!;
+    return Math.floor((worldZ - lo) / 8) + 1;
+}
+
 /** True when the square of `radius` around (x, z) on plane 0 overlaps the Wilderness. */
 export const squareReachesWilderness = (x: number, z: number, radius: number): boolean =>
     x + radius >= WILDERNESS_MIN_X && x - radius <= WILDERNESS_MAX_X && zReaches(z - radius, z + radius);

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { isInWilderness, squareReachesWilderness } from '../../lib/wilderness';
+import { isInWilderness, squareReachesWilderness, wildernessLevel } from '../../lib/wilderness';
 
 describe('isInWilderness', () => {
     test('the surface Wilderness: x 2944..3391, z 3520..6399, level 0', () => {
@@ -23,5 +23,16 @@ describe('squareReachesWilderness', () => {
         expect(squareReachesWilderness(3090, 3500, 15)).toBe(false);
         expect(squareReachesWilderness(2998, 9844, 15)).toBe(false);
         expect(squareReachesWilderness(3100, 9930, 5)).toBe(true);
+    });
+});
+
+describe('wildernessLevel', () => {
+    test('0 outside, (z - 3520) / 8 + 1 on the surface, from z 9920 underground', () => {
+        expect(wildernessLevel(0, 3100, 3519)).toBe(0);
+        expect(wildernessLevel(0, 3100, 3520)).toBe(1);
+        expect(wildernessLevel(0, 3100, 3679)).toBe(20);
+        expect(wildernessLevel(0, 3100, 3680)).toBe(21);
+        expect(wildernessLevel(0, 3100, 9920)).toBe(1);
+        expect(wildernessLevel(1, 3100, 3700)).toBe(0);
     });
 });

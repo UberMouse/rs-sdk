@@ -1,0 +1,110 @@
+{
+    "name": "teleport-test",
+    "purpose": "Magic 40 in Falador (3012,3355) with air, earth, law, fire and water runes in stacks; tests the teleport task (Lumbridge, Varrock, Falador)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3012,
+                "z": 3355
+            },
+            "skills": {
+                "Magic": 40
+            },
+            "inventory": [
+                {
+                    "id": 556,
+                    "count": 30
+                },
+                {
+                    "id": 557,
+                    "count": 10
+                },
+                {
+                    "id": 563,
+                    "count": 10
+                },
+                {
+                    "id": 554,
+                    "count": 10
+                },
+                {
+                    "id": 555,
+                    "count": 10
+                }
+            ]
+        }
+    },
+    "sha1": "be0d43627fd5145e6111e1b2ee696a54369a7faf",
+    "createdAt": "2026-10-31T06:39:38.379Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3012,
+            "z": 3355,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10,
+            "Magic": 40
+        },
+        "inventory": [
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 30
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 10
+            },
+            {
+                "id": 563,
+                "name": "lawrune",
+                "count": 10
+            },
+            {
+                "id": 554,
+                "name": "firerune",
+                "count": 10
+            },
+            {
+                "id": 555,
+                "name": "waterrune",
+                "count": 10
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
