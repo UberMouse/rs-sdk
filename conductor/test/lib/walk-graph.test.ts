@@ -74,6 +74,21 @@ describe('doorRefusal: the door rows a walk crosses are those the walker opens',
         expect(doorRefusal(row('crumbled_wall'), opName)).toBe('op Jump-over, not Open');
     });
 
+    test('Unlock is an op the walker sends: the Troll Stronghold prison door is crossed, a key-only door still is not', () => {
+        const prison = row('troll_stronghold_prison_door_closed');
+        expect(opName(prison.loc, 1)).toBe('Unlock');
+        expect(doorRefusal(prison, opName)).toBeUndefined();
+        // The Dusty-key gate (2924, 9803) and the Waterfall doors open only by the key used on them (oplocu), whatever
+        // op1 is named: they stay refused here and planned as key-only moves (the Waterfall tests below).
+        const unlock = (loc: string, op: number) => (op === 1 ? 'Unlock' : opName(loc, op));
+        for (const loc of ['deepdungeondoor', 'baxtorian_door_2_waterfall_quest'])
+            expect(doorRefusal(row(loc), unlock), loc).toBe('a oplocu trigger (an item used on it)');
+        const dusty = row('deepdungeondoor');
+        const [a, b] = wallTiles(dusty)!;
+        const way = (account: Account) => nearestWay(a, [b], { account, connectors: CONNECTORS, maxHops: MAX_HOPS });
+        expect(way(NO_ACCOUNT)).toBeUndefined();
+    });
+
     test('crossed: the guild doors and member gates opened by Open, and the Al Kharid toll gate', () => {
         for (const loc of ['magicguild_door_r', 'ranging_guild_door', 'crafting_guild_door', 'chefdoor'])
             expect(doorRefusal(row(loc), opName), loc).toBeUndefined();

@@ -271,7 +271,9 @@ const corridor = (opts: { doorOptions?: string[] | null } = {}) => {
     return w.series(1);
 };
 const isShut = (s: BotWorldState, at: Tile) =>
-    s.nearbyLocs.some(l => l.x === at.x && l.z === at.z && l.optionsWithIndex.some(o => o.text === 'Open'));
+    s.nearbyLocs.some(
+        l => l.x === at.x && l.z === at.z && l.optionsWithIndex.some(o => o.text === 'Open' || o.text === 'Unlock'),
+    );
 /** The wall: crossing z 3205 needs the gap, or the door's tile while the door is not shut. */
 const wall: Blocked = (from, to, s) => {
     const crosses = from.z < DOOR.z !== to.z < DOOR.z;
@@ -285,7 +287,7 @@ const openDoor = world()
 
 const openAt = (l: NearbyLoc): NearbyLoc => ({ ...openDoor, distance: l.distance });
 
-type DoorAnswer = 'open' | 'locked' | 'cant-reach' | 'ignore';
+type DoorAnswer = 'open' | 'locked' | 'no-key' | 'cant-reach' | 'ignore';
 /**
  * The door answers each Open in turn (the last answer repeats): it opens from the next tick on, or the
  * game says it is locked or out of reach, or nothing happens.
@@ -294,7 +296,7 @@ function doorAnswers(...answers: DoorAnswer[]) {
     let n = 0;
     let opened = false;
     return (action: BotAction): Effect | undefined => {
-        if (action.type !== 'interactLoc' || action.reason !== 'Open Door') return undefined;
+        if (action.type !== 'interactLoc' || !/^(Open|Unlock) Door$/.test(action.reason ?? '')) return undefined;
         const answer = answers[Math.min(n++, answers.length - 1)];
         if (answer === 'ignore') return undefined;
         if (answer === 'open') {
@@ -305,7 +307,12 @@ function doorAnswers(...answers: DoorAnswer[]) {
                 nearbyLocs: s.nearbyLocs.map(l => (l.x === DOOR.x && l.z === DOOR.z ? openAt(l) : l)),
             });
         }
-        const text = answer === 'locked' ? 'The door is locked.' : "I can't reach that!";
+        const text =
+            answer === 'locked'
+                ? 'The door is locked.'
+                : answer === 'no-key'
+                  ? 'You need a key.'
+                  : "I can't reach that!";
         let said = false;
         // Said once, on the next tick.
         return s => {
@@ -363,6 +370,38 @@ describe('walkTo: doors', () => {
         expect(paths.queries.map(q => q.avoid)).toEqual([[], [DOOR]]);
         expect(w.logs).toEqual(['walk: door at (3200, 3205) is locked; routing around it']);
         expect(w.sends.filter(s => s === 'Open Door')).toHaveLength(1);
+    });
+
+    test('a door whose op is Unlock is unlocked like an Open', async () => {
+        const w = await walk(corridor({ doorOptions: ['Unlock'] }), DEST.x, DEST.z, 0, {
+            paths: throughDoor,
+            blocked: wall,
+            react: doorAnswers('open'),
+        });
+        expect(w.result()).toEqual({ ok: true, message: 'Arrived' });
+        expect(w.sends).toEqual(['Unlock Door', 'walk to (3200, 3205)', 'walk to (3200, 3215)']);
+    });
+
+    test('an Unlock that needs a key fails cleanly: routed around once, no retry loop', async () => {
+        const paths = fakePaths(
+            (_from, _to, avoid) =>
+                avoid.length
+                    ? { success: false, waypoints: [], error: 'no route around the door' }
+                    : { success: true, reachedDestination: true, waypoints: route(DOOR, DEST) },
+            [DOOR],
+        );
+        const w = await walk(corridor({ doorOptions: ['Unlock'] }), DEST.x, DEST.z, 0, {
+            paths,
+            blocked: wall,
+            react: doorAnswers('no-key'),
+        });
+        expect(w.result()).toEqual({
+            ok: false,
+            reason: 'no-path',
+            message: 'No path to (3200, 3215) from (3200, 3204): no route around the door',
+        });
+        expect(w.logs).toEqual(['walk: door at (3200, 3205) is locked; routing around it']);
+        expect(w.sends.filter(s => s === 'Unlock Door')).toHaveLength(1);
     });
 
     test('a door out of reach three times is routed around; with no other route the walk has no path', async () => {

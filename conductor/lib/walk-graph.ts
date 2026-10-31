@@ -67,13 +67,20 @@ const sig = (graph: ReachGraph, alts: readonly number[]): string =>
         .join('\0');
 
 /** The op actions/walk.ts sends on a closed door (its `OPEN`); actions/toll.ts handles the Al Kharid toll gate. */
-const WALKER_OPENS = /^open$/i;
+const WALKER_OPENS = /^(open|unlock)$/i;
 /** A trigger an op on the loc runs (`oploc1,x`), and its op; a use-item trigger (`oplocu`) has none. */
 const triggerOp = (trigger: string): number | undefined => {
     const op = /^(?:op|ap)loc([1-5]),/.exec(trigger)?.[1];
     return op === undefined ? undefined : Number(op);
 };
-const pays = (g: Gate): boolean => g.requires.some(set => set.some(r => /^(coins|consume):/.test(r)));
+/**
+ * A row the walker cannot meet by opening: coins asked on any alternative (it pays no fee but the toll), or every
+ * alternative consuming an obj (the script takes a held key by itself, so a consume beside a free alternative, the
+ * Troll Stronghold prison door's key or finished quest, is met by the Unlock alone).
+ */
+const pays = (g: Gate): boolean =>
+    g.requires.some(set => set.some(r => r.startsWith('coins:'))) ||
+    (g.requires.length > 0 && g.requires.every(set => set.some(r => r.startsWith('consume:'))));
 
 /**
  * Doors whose Open the walker sends but whose script then needs what a walk does not do, by loc config: answering a

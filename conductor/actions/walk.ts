@@ -111,14 +111,15 @@ export const WALK_BASE_TICKS = 2 * DOOR_OPEN_TICKS + 20;
 /** Ticks per tile of route: walking pace (1 tile a tick) with as much again for slack. */
 export const WALK_TICKS_PER_TILE = 2;
 
-const OPEN = /^open$/i;
+// The door ops the walker sends: Open, or Unlock (a door whose script lets a bot through unkeyed, or fails "You need a key.").
+const OPEN = /^(open|unlock)$/i;
 const SLASH = /^slash$/i;
-const LOCKED = /locked/i;
+const LOCKED = /locked|need a key/i;
 const NO_BLADE = /sharp blade/i;
 const WEB_CUT_FAILED = /fail to cut/i;
 // A web has no locked outcome, so its stop set differs from DOOR_REFUSAL; NO_BLADE is a subset of WEB_STOP.
 const WEB_STOP = /sharp blade|can't reach|cannot reach/i;
-const DOOR_REFUSAL = /locked|can't reach|cannot reach/i;
+const DOOR_REFUSAL = /locked|need a key|can't reach|cannot reach/i;
 
 export type WalkResult =
     | { ok: true; message: string }
