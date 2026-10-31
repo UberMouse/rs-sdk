@@ -226,7 +226,8 @@ export const METHODS: MethodDef[] = [
                 from: 'stats.ts conductor2w1 --task mining (iron, area 3286,3369 r4, onFull drop)',
             },
         ],
-        notes: 'The four iron rocks; the mining task drops each ore as it is mined. No promoted plan.',
+        plans: ['iron-varrock-99'],
+        notes: 'The four iron rocks; the mining task drops each ore as it is mined.',
         source: 'conductor/roadmap.md Mining row: iron power-mine, drop each ore, a 4-rock layout',
     },
     {
@@ -679,7 +680,7 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 3097, z: 3285 },
         params: { tree: 'oak' },
         sink: { mode: 'drop' },
-        plans: ['oak-draynor-drop'],
+        plans: ['oak-draynor-drop', 'wc-oaks-99'],
         notes:
             'The five oaks of tree:draynor-village:1, each log dropped as cut. Every oak site ties on a drop sink (no ' +
             'legs); this one is near the spawn. The plan chops the normal trees of the same cluster to 15 first, area ' +
@@ -835,7 +836,7 @@ export const METHODS: MethodDef[] = [
         at: { level: 0, x: 2895, z: 9765 },
         area: 12,
         params: { npc: 'babybluedragon' },
-        plans: ['baby-blues-prayer'],
+        plans: ['baby-blues-prayer', 'ranged-dragons'],
         gear: ['rune_scimitar', 'amulet_of_strength'],
         food: 'lobster',
         loot: { bones: 'bury' },
