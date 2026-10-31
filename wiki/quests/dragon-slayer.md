@@ -18,7 +18,7 @@
 - Unfired bowl
 - Lobster pot
 - 3 Planks
-- 12 Nails (steel recommended)
+- 12 Nails: no shop sells them and nothing drops them; smith them at an anvil from steel bars (1 bar gives 2 nails, Smithing 34; `smithing.dbrow` [nails]), so 6 steel bars. The `smithing` task offered no nails product as of 2026-10-31. [server data; conductor3 runner 2026-10-31]
 - Hammer
 - 2,000+ gp (for ship purchase and other costs)
 - Anti-dragon shield (obtained during quest)
