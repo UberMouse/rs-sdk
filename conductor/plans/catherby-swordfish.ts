@@ -41,7 +41,7 @@ export default definePlan({
         ),
         phase(
             bank,
-            { area: bankArea, depositAllExcept: ['Harpoon', 'Coins'] },
+            { area: bankArea, depositAllExcept: ['Harpoon', 'Coins', 'Dusty key', 'Dragonfire shield', 'Excalibur'] },
             { name: 'bank-cooked', when: v => v.inv(cooked) > 0 && v.inv(rawAny) === 0 },
         ),
         phase(
