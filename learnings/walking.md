@@ -141,7 +141,7 @@ const BANK_TO_MINE = [
 
 ### A loc opened by an `interact` shows its new options late
 
-After `interact` Open on a cupboard (Morgan's, (3096,3268) level 1) the client's loc list kept offering only "Open" for ~10 s, so an immediate Search failed "offers: Open" and a second Search 10 s later succeeded. Gate the follow-up on the game message ("You open the cupboard.") and give the phase a retry rather than treating the first failure as final. [v 2026-10-24 questw1 local]
+After `interact` Open on a cupboard (Morgan's, (3096,3268) level 1) the client's loc list kept offering only "Open" for ~10 s, so an immediate Search failed "offers: Open" and a second Search 10 s later succeeded. Gate the follow-up on the game message ("You open the cupboard.") and give the phase a retry rather than treating the first failure as final. The same lag hit the Tribal Totem chest (2638,3324) level 1 (Search missing for over 10 s standing still after Open); stepping two tiles away ((2638,3321)) and back made Search appear at once, a faster refresh than waiting or a failing first Search. [v 2026-10-31 questw4 local]
 
 ### `talk` and fenced areas
 
