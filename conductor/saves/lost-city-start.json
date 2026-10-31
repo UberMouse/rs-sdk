@@ -1,0 +1,266 @@
+{
+    "name": "lost-city-start",
+    "purpose": "Lost City start: fresh quest (varp zanaris 0), Att/Str/Def 70 HP 80 Woodcutting 36 Crafting 31 Magic 31, no worn gear, bronze axe, knife, 16 swordfish in separate slots, 10 air 5 earth 5 law runes (Lumbridge Teleport out of the Entrana dungeon), at the Lumbridge Swamp adventurers camp (3148,3203)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3148,
+                "z": 3203,
+                "level": 0
+            },
+            "skills": {
+                "Attack": 70,
+                "Strength": 70,
+                "Defence": 70,
+                "Hitpoints": 80,
+                "Woodcutting": 36,
+                "Crafting": 31,
+                "Magic": 31
+            },
+            "inventory": [
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 946,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 556,
+                    "count": 10
+                },
+                {
+                    "id": 557,
+                    "count": 5
+                },
+                {
+                    "id": 563,
+                    "count": 5
+                }
+            ]
+        }
+    },
+    "sha1": "c2b265921f084a86dc5aff0fa3d398e24eaa89c9",
+    "createdAt": "2026-10-31T07:13:05.348Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3148,
+            "z": 3203,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 70,
+            "Defence": 70,
+            "Strength": 70,
+            "Hitpoints": 80,
+            "Magic": 31,
+            "Woodcutting": 36,
+            "Crafting": 31
+        },
+        "inventory": [
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 556,
+                "name": "airrune",
+                "count": 10
+            },
+            {
+                "id": 557,
+                "name": "earthrune",
+                "count": 5
+            },
+            {
+                "id": 563,
+                "name": "lawrune",
+                "count": 5
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
