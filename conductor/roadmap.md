@@ -287,6 +287,7 @@ Plague City's dig blocks Plague City. Other top quest XP after the route: Dragon
 Tasks the catalog needs, roughly in the order the account needs them. Each line: what, why,
 status (`idea` / `authoring` / `in review` / `in catalog`).
 
+- Walker: `lgancientwalldoor` (Legends dungeon, shape 9) is a cross move planned to a diagonal landing that its `enter_marked_wall` teleport never produces; check `cross.ts` replans or is bounded before a Legends' Quest plan uses it (review of e6bcec877). idea
 - In catalog: `woodcutting`, `pickup`, `firemaking` (line burn with wall-edge check), `fletching`,
   `mining`, `combat` (melee, Ranged, Magic), `bank`, `shop`, `smithing`, `cooking`, `fishing`,
   `thieving`, `crafting` (pottery), `fill`, `agility` (Gnome course), `walkTo` stairs/ladders.
