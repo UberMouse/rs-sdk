@@ -13,9 +13,7 @@
 // one Door and is used up: Giant rat -> red, level 1 Ghost -> orange, level 2 Skeleton -> yellow, then the ladders down
 // to the south-east room and the funnel Ladder (2932,3240) into the dungeon: Zombie -> blue, Melzar the mad -> magenta,
 // Lesser demon -> green, Chest (2935,9657). The ladder (2939,3257) only leads up out of the dungeon.
-// KNOWN GAP (DECISION NEEDED): the Port Sarim quay Gangplank (2593 at (3047,3205)) is a raw level 1 loc on bridge
-// (LinkBelow) tiles: the server serves it on level 0, the client scene lists it on level 1, so no task sees it from the
-// quay; the ship repair and the sail cannot start. Everything else is proven (see the report).
+// The Port Sarim quay Gangplank (3047,3205) is served on level 0 since the client bridge-loc fix 8c1819d62.
 // Start: lib:dragon-slayer-start. Needs: 32 QP (varp 101), melee ~70, 12000 coins, the four oracle items, 3 planks,
 // 12 nails, a hammer, food.
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
