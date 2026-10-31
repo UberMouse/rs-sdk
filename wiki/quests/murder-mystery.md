@@ -14,12 +14,12 @@ No skill or quest requirements.
 
 ## Items Needed
 
-- An empty pot, filled from the mansion's flour barrel (needs the guards' permission, so after starting; `quest_murder.rs2:177-190`) [server data, unverified in game 2026-10-23]
+- An empty pot, filled from the mansion's flour barrel (needs the guards' permission, so after starting; `quest_murder.rs2:177-190`); the flour barrel (2735,3582) "Take From" worked after starting. [v 2026-10-31 questw4 local]
 - Flypaper (obtainable during quest)
 
 ## Rewards
 
-- 1,406 Crafting XP
+- 1,406 base Crafting XP (`stat_advance(crafting, 14060)`, `quest_murder.rs2:428`); this server showed 35,150 Crafting XP. [v 2026-10-31 questw4 local]
 - 2,000 gp
 
 ## Walkthrough
@@ -81,3 +81,16 @@ Report your findings to the Guard outside the mansion, naming the correct suspec
 | Elizabeth               | Suspect                                   |
 | Carol                   | Suspect                                   |
 | Anna                    | Suspect                                   |
+
+## Verified route
+
+The plan `conductor/plans/murder-mystery.ts` is promoted: four fresh loads of `lib:murder-mystery-start` (south of the mansion at (2741,3556), Att/Str/Def 20, HP 30, one empty pot, no coins) each reached quest done in one run, 198-243 s, with murderers Bob, Elizabeth, Anna and Frank. [v 2026-10-31 questw4 local]
+
+- The Guard at (2741,3562) starts the quest ("Sure, I'll help"). The walker reached the study and upstairs rooms without door or stairs trouble. [v 2026-10-31 questw4 local]
+- Thread colour picks the suspect pair: thread loc 1808 red = Bob/Carol, 1809 green = Anna/David, 1810 blue = Elizabeth/Frank (scripts; matched in all 4 runs). [v 2026-10-31 questw4 local]
+- Tiles: criminals' dagger on the ground (2746,3578); thread at the smashed window (2747,3577); pungent pot (2747,3579); flour barrel (2735,3582); sacks (2731,3582) "Investigate", choice "Yes, it might be useful" gives one flypaper. [v 2026-10-31 questw4 local]
+- Suspect barrels (Search): Anna (2733,3575) and Bob (2733,3578) ground floor; David (2733,3578), Carol (2733,3581), Frank (2747,3577), Elizabeth (2747,3581) upstairs. [v 2026-10-31 questw4 local]
+- Fingerprints: dust and lift prints for both suspects and the dagger. Use a suspect's print on the dagger print (id 1822): a match keeps the suspect's print and gives the Killers' print (1815); a mismatch destroys the suspect's print. With the Killers' print held, the murderer is the first suspect if that print is still held, otherwise the second. [v 2026-10-31 questw4 local]
+- Poison: the salesman at (2737,3491) in Seers' Village, "Who did you sell Poison to", sets progress; then only the murderer's "Why'd you buy poison" answer sets `spoken_murderer`. Suspect talk tiles that worked: Bob (2747,3560), Anna (2734,3575), Frank (2742,3577), Elizabeth (2746,3581 level 1). [v 2026-10-31 questw4 local]
+- Murderer's place to Investigate, then accuse to the Guard: Anna compost (2730,3572), Bob beehive (2730,3559), Carol drain (2736,3573), David spiders' nest (2740,3574 level 1), Elizabeth fountain (2747,3563), Frank crest (2746,3573). Run in game for Bob, Anna, Elizabeth and Frank; Carol and David from map files and scripts only. [v 2026-10-31 questw4 local]
+- Phase seconds (Frank run): start 11, dagger 12, flour 29 (3 runs), paper 38 (3 runs), thread 9, barrels 16 each, dust/lift about 1 each, checks 1-3, salesman 32, ask-frank 30, accuse 17. [v 2026-10-31 questw4 local]
