@@ -1,0 +1,177 @@
+{
+    "name": "biohazard-start",
+    "purpose": "Biohazard start: conductor3 profile (Att 40 Str 54 Def 40 HP 47 Prayer 49, mithril scimitar worn, 10 swordfish in separate slots, 1000 coins), Plague City complete (elenaquest varp 165 = 29), Biohazard varp 0, East Ardougne market (2655,3300); pack holds a Priest gown and a Priest robe (the Fancy clothes store sells both under the name Priest gown, which the shop task cannot tell apart)",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2655,
+                "z": 3300
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 426,
+                    "count": 1
+                },
+                {
+                    "id": 428,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 1000,
+            "varps": {
+                "165": 29
+            }
+        }
+    },
+    "sha1": "236b2ee3f17d85162c8ff84a65bfcdbd1b506ba5",
+    "createdAt": "2026-10-24T04:48:39.150Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2655,
+            "z": 3300,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Prayer": 49
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1000
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 426,
+                "name": "priest_gown",
+                "count": 1
+            },
+            {
+                "id": 428,
+                "name": "priest_robe",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "165": 29,
+            "281": 1000
+        }
+    }
+}
