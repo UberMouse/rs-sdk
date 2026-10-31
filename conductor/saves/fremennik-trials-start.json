@@ -1,0 +1,253 @@
+{
+    "name": "fremennik-trials-start",
+    "purpose": "Fremennik Trials start: Att/Str/Def/HP/Prayer 99 (Koschei is fought unarmed under Protect from Melee, no food carried), WC 40 Crafting 40 Fletching 25; pack: 10 Big bones (the plan's phase-1 progress ledger) only; bank: 6000 coins, 30 lobster, 40 bones (phase-2 ledger), rune axe, knife, tinderbox, 2 raw shark, cabbage, potato, onion, 2 beer, rune scimitar; at Rellekka (2631,3669); viking varps 0",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2631,
+                "z": 3669
+            },
+            "skills": {
+                "Attack": 99,
+                "Strength": 99,
+                "Defence": 99,
+                "Hitpoints": 99,
+                "Prayer": 99,
+                "Woodcutting": 40,
+                "Crafting": 40,
+                "Fletching": 25
+            },
+            "inventory": [
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                },
+                {
+                    "id": 532,
+                    "count": 1
+                }
+            ],
+            "bank": [
+                {
+                    "id": 995,
+                    "count": 6000
+                },
+                {
+                    "id": 379,
+                    "count": 30
+                },
+                {
+                    "id": 1359,
+                    "count": 1
+                },
+                {
+                    "id": 946,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 383,
+                    "count": 2
+                },
+                {
+                    "id": 1965,
+                    "count": 1
+                },
+                {
+                    "id": 1942,
+                    "count": 1
+                },
+                {
+                    "id": 1957,
+                    "count": 1
+                },
+                {
+                    "id": 1917,
+                    "count": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 40
+                }
+            ]
+        }
+    },
+    "sha1": "35f3f076f8a1a5792ac07f1a08c51bdaaa08a3a3",
+    "createdAt": "2026-10-24T01:29:56.966Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2631,
+            "z": 3669,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 99,
+            "Defence": 99,
+            "Strength": 99,
+            "Hitpoints": 99,
+            "Prayer": 99,
+            "Woodcutting": 40,
+            "Fletching": 25,
+            "Crafting": 40
+        },
+        "inventory": [
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 6000
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 30
+            },
+            {
+                "id": 1359,
+                "name": "rune_axe",
+                "count": 1
+            },
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 383,
+                "name": "raw_shark",
+                "count": 2
+            },
+            {
+                "id": 1965,
+                "name": "cabbage",
+                "count": 1
+            },
+            {
+                "id": 1942,
+                "name": "potato",
+                "count": 1
+            },
+            {
+                "id": 1957,
+                "name": "onion",
+                "count": 1
+            },
+            {
+                "id": 1917,
+                "name": "beer",
+                "count": 2
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 40
+            }
+        ],
+        "varps": {
+            "281": 1000
+        }
+    }
+}

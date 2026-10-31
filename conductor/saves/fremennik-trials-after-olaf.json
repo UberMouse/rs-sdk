@@ -1,0 +1,304 @@
+{
+    "name": "fremennik-trials-after-olaf",
+    "purpose": "Fremennik Trials after Olaf: Swensen, Thorvald, Peer, Manni, Olaf votes in (viking varp 6); pack: 20 Bones (phase-2 ledger after the Bard tick), 5750 coins, 2 lobster (one slot each), rune scimitar; at (2650,3669); Sigmund not started",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2650,
+                "z": 3669
+            },
+            "skills": {
+                "Attack": 99,
+                "Strength": 99,
+                "Defence": 99,
+                "Hitpoints": 99,
+                "Prayer": 99,
+                "Woodcutting": 40,
+                "Crafting": 40,
+                "Fletching": 25
+            },
+            "inventory": [
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 1
+                },
+                {
+                    "id": 995,
+                    "count": 5750
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 1
+                },
+                {
+                    "id": 1333,
+                    "count": 1
+                }
+            ],
+            "bank": [
+                {
+                    "id": 995,
+                    "count": 1
+                },
+                {
+                    "id": 379,
+                    "count": 30
+                },
+                {
+                    "id": 526,
+                    "count": 20
+                }
+            ],
+            "varps": {
+                "347": 6,
+                "348": 8267776
+            }
+        }
+    },
+    "sha1": "6d6baad70338bbed8ed4e57bbae036e11b536466",
+    "createdAt": "2026-10-24T02:21:10.986Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2650,
+            "z": 3669,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 99,
+            "Defence": 99,
+            "Strength": 99,
+            "Hitpoints": 99,
+            "Prayer": 99,
+            "Woodcutting": 40,
+            "Fletching": 25,
+            "Crafting": 40
+        },
+        "inventory": [
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 5750
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 30
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 20
+            }
+        ],
+        "varps": {
+            "281": 1000,
+            "347": 6,
+            "348": 8267776
+        }
+    }
+}

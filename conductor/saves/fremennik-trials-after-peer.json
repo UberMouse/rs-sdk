@@ -1,0 +1,167 @@
+{
+    "name": "fremennik-trials-after-peer",
+    "purpose": "Fremennik Trials after phase 1: Swensen, Thorvald and Peer votes in (viking varp 4), Manni and Olaf started, pack empty at (2650,3669) east of Peer's house; bank as fremennik-trials-start",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2650,
+                "z": 3669
+            },
+            "skills": {
+                "Attack": 99,
+                "Strength": 99,
+                "Defence": 99,
+                "Hitpoints": 99,
+                "Prayer": 99,
+                "Woodcutting": 40,
+                "Crafting": 40,
+                "Fletching": 25
+            },
+            "inventory": [],
+            "bank": [
+                {
+                    "id": 995,
+                    "count": 6000
+                },
+                {
+                    "id": 379,
+                    "count": 30
+                },
+                {
+                    "id": 1359,
+                    "count": 1
+                },
+                {
+                    "id": 946,
+                    "count": 1
+                },
+                {
+                    "id": 590,
+                    "count": 1
+                },
+                {
+                    "id": 383,
+                    "count": 2
+                },
+                {
+                    "id": 1965,
+                    "count": 1
+                },
+                {
+                    "id": 1942,
+                    "count": 1
+                },
+                {
+                    "id": 1957,
+                    "count": 1
+                },
+                {
+                    "id": 1917,
+                    "count": 2
+                },
+                {
+                    "id": 1333,
+                    "count": 1
+                },
+                {
+                    "id": 526,
+                    "count": 40
+                }
+            ],
+            "varps": {
+                "347": 4,
+                "348": 1972224
+            }
+        }
+    },
+    "sha1": "91401399e163c36d6cf242c2f50085a7095d3b63",
+    "createdAt": "2026-10-24T01:30:49.307Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2650,
+            "z": 3669,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 99,
+            "Defence": 99,
+            "Strength": 99,
+            "Hitpoints": 99,
+            "Prayer": 99,
+            "Woodcutting": 40,
+            "Fletching": 25,
+            "Crafting": 40
+        },
+        "inventory": [],
+        "worn": [],
+        "bank": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 6000
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 30
+            },
+            {
+                "id": 1359,
+                "name": "rune_axe",
+                "count": 1
+            },
+            {
+                "id": 946,
+                "name": "knife",
+                "count": 1
+            },
+            {
+                "id": 590,
+                "name": "tinderbox",
+                "count": 1
+            },
+            {
+                "id": 383,
+                "name": "raw_shark",
+                "count": 2
+            },
+            {
+                "id": 1965,
+                "name": "cabbage",
+                "count": 1
+            },
+            {
+                "id": 1942,
+                "name": "potato",
+                "count": 1
+            },
+            {
+                "id": 1957,
+                "name": "onion",
+                "count": 1
+            },
+            {
+                "id": 1917,
+                "name": "beer",
+                "count": 2
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 40
+            }
+        ],
+        "varps": {
+            "281": 1000,
+            "347": 4,
+            "348": 1972224
+        }
+    }
+}

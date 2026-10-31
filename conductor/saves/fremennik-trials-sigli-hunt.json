@@ -1,0 +1,133 @@
+{
+    "name": "fremennik-trials-sigli-hunt",
+    "purpose": "Fremennik Trials, Sigli tail: 5 votes in (Swensen, Thorvald, Peer, Manni, Olaf) plus Sigmund done = 6, Sigli started with the uncharged Hunters' talisman held; pack: 5 Bones (ledger), 750 coins, Lyre, 2 lobster, Rune scimitar worn; near Rellekka (2669,3631)",
+    "source": {
+        "kind": "snapshot",
+        "bot": "questw4"
+    },
+    "sha1": "ff0843091443dbdf17b6cdcc6d1766e99ce27319",
+    "createdAt": "2026-10-24T04:55:30.957Z",
+    "saveVersion": 9,
+    "summary": {
+        "position": {
+            "x": 2703,
+            "z": 3659,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 99,
+            "Defence": 99,
+            "Strength": 99,
+            "Hitpoints": 99,
+            "Prayer": 99,
+            "Woodcutting": 40,
+            "Fletching": 25,
+            "Crafting": 40
+        },
+        "inventory": [
+            {
+                "id": 3689,
+                "name": "viking_strung_lyre",
+                "count": 1
+            },
+            {
+                "id": 3697,
+                "name": "viking_draugen_talisman_uncharged",
+                "count": 1
+            },
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 750
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            },
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [
+            {
+                "id": 379,
+                "name": "lobster",
+                "count": 28
+            },
+            {
+                "id": 383,
+                "name": "raw_shark",
+                "count": 1
+            },
+            {
+                "id": 1917,
+                "name": "beer",
+                "count": 1
+            },
+            {
+                "id": 526,
+                "name": "bones",
+                "count": 17
+            },
+            {
+                "id": 532,
+                "name": "big_bones",
+                "count": 3
+            },
+            {
+                "id": 347,
+                "name": "herring",
+                "count": 2
+            }
+        ],
+        "varps": {
+            "22": 272637952,
+            "59": -1,
+            "166": 2,
+            "168": 2,
+            "169": 2,
+            "275": -1,
+            "281": 1000,
+            "300": 1000,
+            "311": -2147472512,
+            "347": 7,
+            "348": 134113736,
+            "367": -1
+        }
+    }
+}
