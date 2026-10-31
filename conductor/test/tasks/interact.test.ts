@@ -1005,3 +1005,157 @@ describe('interact: a dialog the interaction opens', () => {
         expect(r.sends.filter(x => x === 'use Door key on Door')).toHaveLength(1);
     });
 });
+
+const sentActions = (r: Awaited<ReturnType<typeof simulate>>) =>
+    r.driver.commands.flatMap(c => (c.type === 'send' ? [c.action] : []));
+
+describe('interact: opIndex on an inventory item', () => {
+    const TOAD_OPS = [
+        { text: 'Drop', opIndex: 1 },
+        { text: 'Release All', opIndex: 4 },
+        { text: 'Release', opIndex: 5 },
+    ];
+    const toadWorld = (options = TOAD_OPS) => world().inv('Bloated toad', 1, { id: 2875, options });
+    const placed = (a: BotAction) =>
+        a.type === 'useInventoryItem'
+            ? (s: ReturnType<typeof toadWorld.prototype.build>) => ({ ...s, inventory: [] })
+            : undefined;
+    const toadParams = { target: 'item', name: '^bloated toad$', option: '^Drop$', opIndex: 1 };
+
+    test('sends the op at the index when the label matches and the destructive opt-in is given', async () => {
+        const r = await simulate(interact, {
+            params: { ...toadParams, allowDestructiveOption: true },
+            timeline: toadWorld().series(30),
+            react: placed,
+        });
+        expect(r.result.status).toBe('done');
+        expect(sentActions(r)).toMatchObject([{ type: 'useInventoryItem', optionIndex: 1 }]);
+    });
+
+    test('a destructive label without the opt-in is refused before anything is sent', async () => {
+        const r = await simulate(interact, { params: toadParams, timeline: toadWorld().series(30), react: placed });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('destroys or releases it');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('Release All at its index is destructive too', async () => {
+        const r = await simulate(interact, {
+            params: { ...toadParams, option: 'release all', opIndex: 4 },
+            timeline: toadWorld().series(30),
+            react: placed,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('"Release All"');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a label that differs from the published op names the real one', async () => {
+        const r = await simulate(interact, {
+            params: { ...toadParams, option: '^Place$', allowDestructiveOption: true },
+            timeline: toadWorld().series(30),
+            react: placed,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('is "Drop", which does not match /^Place$/');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('an index the item does not publish is refused', async () => {
+        const r = await simulate(interact, {
+            params: { ...toadParams, opIndex: 3, allowDestructiveOption: true },
+            timeline: toadWorld().series(30),
+            react: placed,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('has no op 3');
+    });
+
+    test('a non-destructive label needs no opt-in', async () => {
+        const w = toadWorld([{ text: 'Place', opIndex: 1 }]);
+        const r = await simulate(interact, {
+            params: { ...toadParams, option: '^Place$' },
+            timeline: w.series(30),
+            react: placed,
+        });
+        expect(r.result.status).toBe('done');
+    });
+
+    test('the item arriving later is checked by the step too', async () => {
+        const r = await simulate(interact, {
+            params: toadParams,
+            timeline: world().series(10, (w, i) => (i >= 2 ? toadWorld() : w)),
+            react: placed,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('destroys or releases it');
+        expect(r.sends).toEqual([]);
+    });
+
+    test('allowDestructiveOption without opIndex is rejected', () => {
+        const a = interact.params.safeParse({
+            target: 'item',
+            name: 'x',
+            option: 'y',
+            allowDestructiveOption: true,
+        });
+        expect(a.success).toBe(false);
+    });
+
+    test('preflight refuses only when every held match has a problem', async () => {
+        const w = world()
+            .inv('Bloated toad', 1, { id: 2875, options: TOAD_OPS })
+            .inv('Bloated toad', 1, { id: 2875, options: [{ text: 'Drop', opIndex: 2 }] });
+        const r = await simulate(interact, {
+            params: toadParams,
+            timeline: w.series(30),
+            react: placed,
+        });
+        expect(r.result.reason ?? '').not.toContain('destroys or releases it');
+    });
+
+    test('a rejected destructive op is not sent twice', async () => {
+        const r = await simulate(interact, {
+            params: { ...toadParams, allowDestructiveOption: true },
+            timeline: toadWorld().series(30),
+            react: act =>
+                act.type === 'useInventoryItem'
+                    ? st => ({
+                          ...st,
+                          opFeedback: {
+                              mapFlagUnsetCount: 1,
+                              lastMapFlagUnsetTick: -1,
+                              opRejectedCount: 1,
+                              lastOpRejectedTick: -1,
+                          },
+                      })
+                    : undefined,
+        });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toContain('not sent twice');
+        expect(sentActions(r).filter(a => a.type === 'useInventoryItem')).toHaveLength(1);
+    });
+
+    test('opIndex needs an item target and an option', async () => {
+        const a = interact.params.safeParse({ target: 'loc', name: 'x', option: 'y', opIndex: 1 });
+        const b = interact.params.safeParse({ target: 'item', name: 'x', use: { item: 'k' }, opIndex: 1 });
+        expect(a.success).toBe(false);
+        expect(b.success).toBe(false);
+    });
+
+    test('without opIndex a Drop pattern is still refused and a plain option still works', async () => {
+        const bad = await simulate(interact, {
+            params: { target: 'item', name: '^bloated toad$', option: '^Drop$' },
+            timeline: toadWorld().series(30),
+        });
+        expect(bad.result.status).toBe('failed');
+        expect(bad.result.reason).toContain('destructive option');
+        const w = world().inv('Ghostspeak amulet', 1, { id: AMULET_ID, options: [{ text: 'Wear', opIndex: 2 }] });
+        const ok = await simulate(interact, {
+            params: { target: 'item', name: '^ghostspeak amulet$', option: '^wear' },
+            timeline: w.series(30),
+            react: a => (a.type === 'useInventoryItem' ? s => ({ ...s, inventory: [] }) : undefined),
+        });
+        expect(ok.result.status).toBe('done');
+    });
+});

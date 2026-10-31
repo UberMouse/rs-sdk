@@ -1,0 +1,99 @@
+{
+    "name": "chompy-toad-bait",
+    "purpose": "Big Chompy Bird Hunting: one Bloated toad in hand, stood inside the bait zone (x2631-2639, z2962-2971), quest varp 293 = 25 (shown_toad); tests interact opIndex placing the toad and combat on the Chompy bird",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2635,
+                "z": 2966
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Ranged": 30
+            },
+            "inventory": [
+                {
+                    "id": 2875,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "varps": {
+                "293": 25
+            }
+        }
+    },
+    "sha1": "c1f3040a837a76a0e8cd73e1c0601d7498bb8ad8",
+    "createdAt": "2026-10-31T05:24:39.467Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2635,
+            "z": 2966,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Ranged": 30
+        },
+        "inventory": [
+            {
+                "id": 2875,
+                "name": "bloated_toad",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "281": 1000,
+            "293": 25
+        }
+    }
+}

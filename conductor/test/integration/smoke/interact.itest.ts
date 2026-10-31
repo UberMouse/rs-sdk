@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { expect, test } from 'bun:test';
 import { itestTimeout, runTask, withFixtureBot } from '../harness';
 
@@ -307,4 +309,84 @@ test(
         );
     },
     itestTimeout({ taskMinutes: 2 }),
+);
+
+// Big Chompy Bird Hunting (server/content/scripts/quests/quest_chompybird/scripts/bloated_toad.rs2): op 1 of the
+// Bloated toad places the bait (the client publishes it as "Drop"; op 5 "Release" frees the toad). Placing needs
+// varp 293 >= 25 (shown_toad) and a tile in the bait zone x2631-2639, z2962-2971. The ogre camp's zone is
+// used by no other itest.
+const BAIT_ZONE_TILE = { x: 2635, z: 2966 };
+const BLOATED_TOAD = 2875;
+const SWORDFISH = 373;
+const CHOMPY_VARP = 293;
+const SHOWN_TOAD = 25;
+
+test(
+    'interact refuses the Bloated toad Drop op without the opt-in, then places it with opIndex 1; the combat leg runs only if a Chompy bird spawned (op 5 Attack is pinned by combat.test.ts)',
+    async () => {
+        await withFixtureBot(
+            {
+                position: BAIT_ZONE_TILE,
+                skills: { Attack: 40, Strength: 54, Defence: 40, Hitpoints: 47 },
+                inventory: [
+                    { id: BLOATED_TOAD, count: 1 },
+                    { id: SWORDFISH, count: 1 },
+                    { id: SWORDFISH, count: 1 },
+                    { id: SWORDFISH, count: 1 },
+                ],
+                varps: { [CHOMPY_VARP]: SHOWN_TOAD },
+            },
+            async ({ name }) => {
+                // Refused first, while the toad is still held: the destructive label needs the opt-in.
+                const refused = await runTask(
+                    name,
+                    'interact',
+                    { target: 'item', name: '^Bloated toad$', option: '^Drop$', opIndex: 1 },
+                    ['minutes:1'],
+                );
+                const refusedDetail = `${JSON.stringify(refused.result)}\n${refused.stderr}`;
+                expect(refused.result.status, refusedDetail).toBe('failed');
+                expect(String(refused.result.reason), refusedDetail).toContain('destroys or releases it');
+                expect(refused.result.inventoryDelta?.['Bloated toad'] ?? 0, refusedDetail).toBe(0);
+
+                const place = await runTask(
+                    name,
+                    'interact',
+                    {
+                        target: 'item',
+                        name: '^Bloated toad$',
+                        option: '^Drop$',
+                        opIndex: 1,
+                        allowDestructiveOption: true,
+                        expect: 'carefully place the bloated toad',
+                    },
+                    ['minutes:1'],
+                );
+                const detail = `${JSON.stringify(place.result)}\n${place.stderr}`;
+                expect(place.result.status, detail).toBe('done');
+                expect(place.result.reason, detail).toContain('You carefully place the bloated toad bait.');
+
+                // A chompy spawns on some rolls of the toad (20% every 4 ticks) and may eat it first: with none in
+                // view the run fails "no free reachable"; with one, the attack goes out as op 5.
+                const fight = await runTask(
+                    name,
+                    'combat',
+                    { target: 'Chompy bird', area: { ...BAIT_ZONE_TILE, radius: 10 }, food: ['Swordfish'] },
+                    ['minutes:1'],
+                );
+                const fought = `${JSON.stringify(fight.result)}\n${fight.stderr}`;
+                const reason = String(fight.result.reason ?? '');
+                expect(reason, fought).not.toMatch(/no attack option/i);
+                if (!/no free reachable/.test(reason)) {
+                    // A chompy was in view: its Attack is op 5, and the server answers that melee is too quick for it.
+                    const ticks = gunzipSync(
+                        readFileSync(String(fight.result.logFile).replace(/\.ndjson$/, '.ticks.ndjson.gz')),
+                    ).toString();
+                    expect(ticks, fought).toContain('"optionIndex":5');
+                }
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
 );

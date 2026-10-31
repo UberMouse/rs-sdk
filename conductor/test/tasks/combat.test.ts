@@ -59,6 +59,25 @@ const healing =
     };
 
 describe('combat: fighting', () => {
+    test('sends the published Attack op even when it sits at index 5 (the Chompy bird)', async () => {
+        // Ops 1-4 unset (the client publishes only the set ones, with their index): Attack is the fifth.
+        const patched = base.npc('Chompy bird', COOP.x + 1, COOP.z, {
+            index: CHICKEN,
+            options: ['', '', '', '', 'Attack'],
+        });
+        const r = await simulate(combat, {
+            params: { target: 'Chompy bird', area: AREA },
+            timeline: kill(patched),
+            stops: xp(25),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual(['Attack Chompy bird']);
+        const sent = r.driver.commands.flatMap(c =>
+            c.type === 'send' && c.action.type === 'interactNpc' ? [c.action] : [],
+        );
+        expect(sent[0]).toMatchObject({ npcIndex: CHICKEN, optionIndex: 5 });
+    });
+
     test('attacks the nearest free chicken in the area and waits for the kill', async () => {
         const far = chickenAt(base, COOP.x + 2, COOP.z);
         const busy = far.npc('Chicken', COOP.x, COOP.z + 1, { index: 9, options: ['Attack'], inCombat: true });

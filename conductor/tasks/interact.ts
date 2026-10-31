@@ -43,8 +43,11 @@ const STUCK_AFTER_MS = stuckWindowMs(
     failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
 );
 
-/** Options that destroy what they are used on: an item target is never sent one. */
+/** Options that destroy what they are used on: refused for an item target unless `opIndex` + `allowDestructiveOption` name the op. */
 const DESTRUCTIVE_ITEM_OPTIONS = ['Drop', 'Destroy', 'Release', 'Empty'];
+/** Whether a published option label destroys or releases the item ("Release All" counts: it starts with "Release"). */
+const isDestructiveLabel = (label: string) =>
+    DESTRUCTIVE_ITEM_OPTIONS.some(o => label.trim().toLowerCase().startsWith(o.toLowerCase()));
 /** Combat has its own task (HP, food and threat checks); an NPC target is never attacked here. */
 const ATTACK_OPTION = 'Attack';
 
@@ -74,6 +77,19 @@ const Params = z
          * those `name` matches: the woolly Sheep (43) beside a sheared one (42), both named "Sheep". NPC targets only.
          */
         npcId: z.union([z.number().int().min(0), z.array(z.number().int().min(0)).min(1)]).optional(),
+        /**
+         * Item targets only: send the inventory op at this index (1-5, the `opIndex` of the item's published options)
+         * instead of the first option matching `option`. `option` still names the label the plan expects at that
+         * index, and the run refuses (naming the real label) when the published op there does not match it. For items
+         * whose server script differs from the label the client publishes: the Bloated toad's op 1 is published as
+         * "Drop" but places the bait (`opIndex: 1, option: "^Drop$", allowDestructiveOption: true`).
+         */
+        opIndex: z.number().int().min(1).max(5).optional(),
+        /**
+         * Opt in to an `opIndex` whose published label destroys or releases the item (Drop, Destroy, Release,
+         * Release All, Empty). Without it such an op is refused.
+         */
+        allowDestructiveOption: z.boolean().default(false),
         /**
          * Also take a target the client cannot route to (an islet in a river, a rock across water) and send the
          * op from the stand tile `at`, leaving the reach check to the server. Needs `at`.
@@ -105,6 +121,18 @@ const Params = z
     .refine(p => p.use === undefined || p.target === 'loc' || p.target === 'npc', 'a use works on a loc or an NPC')
     .refine(p => p.tile === undefined || p.target !== 'item', 'a tile picks a loc or an NPC, not an inventory item')
     .refine(p => p.npcId === undefined || p.target === 'npc', 'npcId picks an NPC type, so it needs target "npc"')
+    .refine(
+        p => p.opIndex === undefined || p.target === 'item',
+        'opIndex picks an inventory op, so it needs target "item"',
+    )
+    .refine(
+        p => p.opIndex === undefined || p.option !== undefined,
+        'opIndex needs `option`: the label expected at that index',
+    )
+    .refine(
+        p => !p.allowDestructiveOption || p.opIndex !== undefined,
+        'allowDestructiveOption only applies to an `opIndex` op: give opIndex, or drop it',
+    )
     .refine(
         p => !p.unreachable || (p.at !== undefined && p.target !== 'item'),
         'unreachable needs `at` and a loc or NPC',
@@ -150,6 +178,26 @@ function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number 
     return { targets: usable.map(loc => ({ kind: 'loc', loc })), unreachable: named.length - usable.length };
 }
 
+/**
+ * Why the inventory op at `opIndex` on `item` must not be sent, or null: no op there, a label that does not match
+ * `option`, or a destructive label without the opt-in. Names the real label so a plan can be fixed.
+ */
+function opIndexProblem(
+    item: InventoryItem,
+    opIndex: number,
+    option: RegExp,
+    allowDestructive: boolean,
+): string | null {
+    const published = item.optionsWithIndex.find(o => o.opIndex === opIndex);
+    const offered = item.optionsWithIndex.map(o => `${o.opIndex}=${o.text}`).join(' | ') || '(none)';
+    if (!published) return `${item.name} has no op ${opIndex}; it offers: ${offered}`;
+    if (!option.test(published.text))
+        return `op ${opIndex} on ${item.name} is "${published.text}", which does not match /${option.source}/; it offers: ${offered}`;
+    if (!allowDestructive && isDestructiveLabel(published.text))
+        return `op ${opIndex} on ${item.name} is "${published.text}", which destroys or releases it; set allowDestructiveOption to send it`;
+    return null;
+}
+
 /** A refusal that is about this one NPC, not the use: the next try takes another (a sheep already shorn). */
 const NPC_SKIP = /already been shorn/i;
 
@@ -189,7 +237,7 @@ export default defineTask({
         '(a key on a door, a rope on a rock, a rune on a pillar, an empty bucket on a cow); a use is re-sent only after a discarded op (on another match for an NPC), never after a message or no effect; without `expect` any inventory change ends the use as done, so pass `expect` (e.g. "you milk the cow") when the exact outcome matters. Done once the game shows an effect ' +
         '(a dialog or interface opened, the inventory or worn items changed, an animation, the loc changed, the player moved by the game: a teleport, swim, door pass-through, gangplank or whistle; a bare game message only when nothing else shows); after a use, an unreachable op or a move the game made it waits for the world to settle (position, floor and animation unchanged for 3 ticks) before it ends, so a rope throw ends once the bot has landed; it waits up to 16 ticks for the bot to stop moving, and a run that hits that cap says so in the effect; optional `expect` ' +
         '(regex) makes only a matching game message or dialog page count, and is the way to wait for a specific later message. Without `choices` it answers no dialog it opens (the guard clicks continue pages and declines a choice; use `talk` to converse); `choices` (regexes on the option text, one per multi-option page, in order, as `talk`) answers the dialog the interaction itself opens (the interaction must open one, else it fails saying so; the dialog guard is off for the run), e.g. the Port Sarim beggar question when opening the jeweller Door ("Yes certainly"), and the task is done when that dialog has closed. A message box the op opens (the Chaos altar Check) counts as the effect. Refuses the destructive options ' +
-        '(Drop, Destroy, Release, Empty) on an item, Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
+        '(Drop, Destroy, Release, Empty) on an item (`opIndex` 1-5, item targets only, sends the inventory op at that index when the published label there matches `option`, else fails naming the real label; a destructive label then needs `allowDestructiveOption: true`; the Bloated toad (Big Chompy Bird Hunting) is placed by {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"} inside the bait zone x2631-2639, z2962-2971: the client publishes its op 1 as Drop but the server places the bait; the toad leaves the inventory and a Bloated toad NPC stands there), Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
         '(then it needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and death still ends the run; carry only food and no valuables; the bot is left in the Wilderness, so whatever runs next, a plan phase or a `travel` out, must opt in to the Wilderness too). Fails with the options on offer when the target has none matching, ' +
         'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
         'E.g. {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"} (Ardougne sheep field); {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
@@ -202,12 +250,18 @@ export default defineTask({
     stuckAfterMs: STUCK_AFTER_MS,
 
     preflight(ctx) {
-        const { at, target, option, use, name, wilderness, minFood } = ctx.params;
+        const { at, target, option, use, name, wilderness, minFood, opIndex, allowDestructiveOption } = ctx.params;
         if (!wilderness && at && squareReachesWilderness(at.x, at.z, 0))
             return `(${at.x},${at.z}) is in the Wilderness`;
         // The pattern is checked against the option names themselves: refused if it could match one.
         const rx = option !== undefined ? matcher(option) : undefined;
-        if (rx && target === 'item' && DESTRUCTIVE_ITEM_OPTIONS.some(o => rx.test(o)))
+        if (rx && opIndex !== undefined) {
+            // An item not held yet is checked by the step; items held are checked now against their published op,
+            // and refused only when none of them can be sent (the step takes the first that passes).
+            const held = ctx.state().inventory.filter(i => matcher(name).test(i.name));
+            const problems = held.map(i => opIndexProblem(i, opIndex, rx, allowDestructiveOption));
+            if (problems.length > 0 && problems.every(p => p !== null)) return problems[0] ?? null;
+        } else if (rx && target === 'item' && DESTRUCTIVE_ITEM_OPTIONS.some(o => rx.test(o)))
             return `/${option}/ could send a destructive option (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}) on an item; use the drop task for dropping`;
         if (rx && target === 'npc' && rx.test(ATTACK_OPTION)) return 'attacking is the combat task, not interact';
         if (use && !heldItem(ctx)) return missingItem(use.item, name);
@@ -230,6 +284,8 @@ export default defineTask({
                     use,
                     unreachable: takeUnreachable,
                     wilderness,
+                    opIndex,
+                    allowDestructiveOption,
                 } = ctx.params;
                 const optionRx = option === undefined ? undefined : matcher(option);
                 const what = use ? `use ${itemLabel(use.item)}` : option;
@@ -252,12 +308,23 @@ export default defineTask({
                     return;
                 }
                 missing.reset();
-                const chosen = optionRx
-                    ? targets.find(t => optionsOf(t).some(o => optionRx.test(o)))
-                    : ctx.params.target === 'npc'
-                      ? (targets.find(t => t.kind === 'npc' && !ctx.memory.refusedNpcs.includes(t.npc.index)) ??
-                        nearest)
-                      : targets.find(t => t.kind === 'loc');
+                let opItem: InventoryItem | undefined;
+                if (opIndex !== undefined && optionRx) {
+                    // The step re-checks what preflight saw: the item may arrive later, or its options may differ per stack.
+                    const items = targets.flatMap(t => (t.kind === 'item' ? [t.item] : []));
+                    const problems = items.map(i => opIndexProblem(i, opIndex, optionRx, allowDestructiveOption));
+                    const ok = problems.findIndex(p => p === null);
+                    if (ok < 0) return { fail: [...new Set(problems)].join('; ') || 'no item' };
+                    opItem = items[ok];
+                }
+                const chosen = opItem
+                    ? ({ kind: 'item', item: opItem } as InteractTarget)
+                    : optionRx
+                      ? targets.find(t => optionsOf(t).some(o => optionRx.test(o)))
+                      : ctx.params.target === 'npc'
+                        ? (targets.find(t => t.kind === 'npc' && !ctx.memory.refusedNpcs.includes(t.npc.index)) ??
+                          nearest)
+                        : targets.find(t => t.kind === 'loc');
                 if (!chosen) {
                     const offered = optionsOf(nearest).join(' | ') || '(none)';
                     return { fail: `no ${optionRx} option on ${targetName(nearest)}; it offers: ${offered}` };
@@ -275,7 +342,7 @@ export default defineTask({
                         ? useOn(ctx, held, chosen.loc, effects)
                         : held && chosen.kind === 'npc'
                           ? useOnNpc(ctx, held, chosen.npc, effects)
-                          : optionRx && interact(ctx, chosen, optionRx, effects);
+                          : optionRx && interact(ctx, chosen, opIndex ?? optionRx, effects);
                 if (!attempt) return { fail: 'give an option or a use' };
                 if (ctx.params.choices.length > 0) ctx.memory.tried = true;
                 const r = yield* attempt;
@@ -302,6 +369,15 @@ export default defineTask({
                     ctx.memory.refusedNpcs.push(chosen.npc.index);
                 if (r.reason !== 'send-failed' && r.reason !== 'rejected' && !skipped)
                     return { fail: `${r.reason}: ${r.message}` };
+                // A destructive op (the toad's "Drop") may already have landed unseen: never send it a second time.
+                const sentLabel =
+                    opIndex !== undefined && chosen.kind === 'item'
+                        ? chosen.item.optionsWithIndex.find(o => o.opIndex === opIndex)?.text
+                        : undefined;
+                if (sentLabel !== undefined && isDestructiveLabel(sentLabel))
+                    return {
+                        fail: `${r.reason}: ${r.message} (op ${opIndex} "${sentLabel}" is destructive and is not sent twice)`,
+                    };
                 if (fails.add() >= FAIL_LIMIT)
                     return { fail: `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})` };
             },
