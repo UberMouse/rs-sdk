@@ -7,11 +7,11 @@
 
 | Site | Centre | Box | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|---|
-| `tree:barbarian-outpost:0` | (2540, 3571) | x 2539-2540, z 3569-3573 | `{ x: 2540, z: 3571, radius: 6 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | - |
-| `tree:barbarian-outpost:1` | (2553, 3565) | x 2550-2555, z 3561-3568 | `{ x: 2553, z: 3565, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | Alfred Grimhand's Barcrawl done (%barcrawl = ^barcrawl_complete, areas/area_barbarian_outpost/scripts/outpost_gate.rs2:2) |
+| `tree:barbarian-outpost:0` | (2546, 3571) | x 2539-2555, z 3561-3576 | `{ x: 2547, z: 3569, radius: 15 }` | [normal](../resources/tree/normal.md) 7 | no | no | - | - |
 
 ## Monsters
 
 | Site | Centre | Box | Roam | Area to copy | Counts | F2P | Multiway | Wilderness | Requires |
 |---|---|---|---|---|---|---|---|---|---|
-| `npc:barbarian-outpost:0` | (2550, 3564) | x 2546-2554, z 3560-3570 | x 2536-2564, z 3550-3580 | `{ x: 2550, z: 3565, radius: 24 }` | Barbarian 4, Barbarian woman 1, Chicken 3 | no | no | - | - |
+| `npc:barbarian-outpost:0` | (2544, 3577) | (2544, 3577) | x 2534-2554, z 3567-3587 | `{ x: 2544, z: 3577, radius: 18 }` | Barbarian 1 | no | no | - | - |
+| `npc:barbarian-outpost:1` | (2550, 3564) | x 2546-2554, z 3560-3570 | x 2536-2564, z 3550-3580 | `{ x: 2550, z: 3565, radius: 24 }` | Barbarian 4, Barbarian woman 1, Chicken 3 | no | no | - | - |

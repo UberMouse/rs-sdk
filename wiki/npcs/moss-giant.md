@@ -43,7 +43,7 @@
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9544) | (2680, 9544) | 1 | 3 | x 2677-2683, z 9541-9547 | 60 ticks | - | `{ x: 2680, z: 9544, radius: 8 }` | no |
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2680, 9594) | (2680, 9594) | 1 | 3 | x 2677-2683, z 9591-9597 | 60 ticks | - | `{ x: 2680, z: 9594, radius: 8 }` | no |
 | [Brimhaven Dungeon](../places/brimhaven-dungeon.md) | (2682, 9573) | (2682, 9573) | 1 | 3 | x 2679-2685, z 9570-9576 | 60 ticks | - | `{ x: 2682, z: 9573, radius: 8 }` | no |
-| [Crandor](../places/crandor.md) | (2831, 3244) | x 2827-2834, z 3242-3246 | 3 | 3 | x 2824-2837, z 3239-3249 | 60 ticks | - | `{ x: 2831, z: 3244, radius: 12 }` | yes |
+| [Crandor](../places/crandor.md) | (2831, 3244) | x 2827-2840, z 3238-3246 | 3 | 3 | x 2824-2843, z 3235-3249 | 60 ticks | - | `{ x: 2834, z: 3242, radius: 16 }` | yes |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2528, 9843) | x 2528-2530, z 9841-9846 | 1 | 3 | x 2525-2533, z 9838-9849 | 60 ticks | - | `{ x: 2529, z: 9844, radius: 11 }` | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2541, 9845) | x 2541-2546, z 9840-9847 | 1 | 3 | x 2538-2549, z 9837-9850 | 60 ticks | - | `{ x: 2544, z: 9844, radius: 13 }` | no |
 | [Dungeon below (2556, 3444)](../places/dungeon-below-2556-3444.md) | (2542, 9819) | x 2538-2546, z 9813-9822 | 1 | 3 | x 2535-2549, z 9810-9825 | 60 ticks | - | `{ x: 2542, z: 9818, radius: 14 }` | no |

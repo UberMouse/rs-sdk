@@ -13,7 +13,7 @@ Min is the level the whole method needs, every skill of it at that level togethe
 | `moss-giants-varrock-sewers` † | [Varrock Sewers](../places/varrock-sewers.md) `npc:varrock-sewers:0` | 208k at 20 | 106k | 208k | 330k | 443k | 621k | 724k | 823k | 992k | 1.08M | 1.17M | 195 | 7.5k | player | - |
 | `scorpions-dwarven-mine` † | [Dwarven Mine](../places/dwarven-mine.md) `npc:dwarven-mine:15` | 477k at 30 | 252k | 330k | 477k | 650k | 747k | 908k | 965k | 994k | 1.02M | 1.03M | 605 | 0 | resource | - |
 | `baby-blue-dragons-taverley` † | [Taverley Dungeon](../places/taverley-dungeon.md) `npc:taverley-dungeon:21` | 436k at 40 | 154k | 252k | 345k | 436k | 618k | 794k | 908k | 1.07M | 1.22M | 1.37M | 273 | 0 | player | - |
-| `moss-giants-kandarin` † | [Kandarin](../places/kandarin.md) `npc:kandarin:47` | 702k at 40 | 250k | 407k | 558k | 702k | 883k | 1.06M | 1.15M | 1.31M | 1.47M | 1.61M | 269 | 10.3k | player | - |
+| `moss-giants-kandarin` † | [Kandarin](../places/kandarin.md) `npc:kandarin:46` | 702k at 40 | 250k | 407k | 558k | 702k | 883k | 1.06M | 1.15M | 1.31M | 1.47M | 1.61M | 269 | 10.3k | player | - |
 
 - `chickens-lumbridge`: Chickens north of Lumbridge, bones buried, feathers kept. Plans: melee-chickens. A first melee method, no food. ranged-magic-chickens fights these chickens with a bow and spells, which come later, so it names no method.
   - **Requires**: Reach: none. Levels: Attack 1, Defence 1, Strength 1, Hitpoints 1, Prayer 1, each with the other skills at 99; every skill at once: 1. Tools: none. Gear: Bronze scimitar.

@@ -216,60 +216,56 @@
 | `connector:asgarnia:1` | (2824, 3507) | (2824, 3507) | `{ x: 2824, z: 3507, radius: 3 }` | Ladder 1 | down (2825, 9907) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `connector:asgarnia:2` | (2845, 3516) | (2845, 3516) | `{ x: 2845, z: 3516, radius: 3 }` | Ladder 1 | down (2846, 9916) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
 | `connector:asgarnia:3` | (2848, 3519) | (2848, 3519) | `{ x: 2848, z: 3519, radius: 3 }` | Ladder 1 | down (2849, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:4` | (2851, 3234) L1 | (2851, 3234) L1 | `{ x: 2851, z: 3234, radius: 3, level: 1 }` | Ship's ladder 1 | up (2852, 3234) L2 by Climb-up | yes | no | - | unreached |
-| `connector:asgarnia:5` | (2851, 3234) L2 | (2851, 3234) L2 | `{ x: 2851, z: 3234, radius: 3, level: 2 }` | Ship's ladder 1 | down (2850, 3234) L1 by Climb-down | yes | no | - | unreached |
-| `connector:asgarnia:6` | (2851, 3236) L1 | (2851, 3236) L1 | `{ x: 2851, z: 3236, radius: 3, level: 1 }` | Ship's ladder 1 | up (2852, 3236) L2 by Climb-up | yes | no | - | unreached |
-| `connector:asgarnia:7` | (2851, 3236) L2 | (2851, 3236) L2 | `{ x: 2851, z: 3236, radius: 3, level: 2 }` | Ship's ladder 1 | down (2850, 3236) L1 by Climb-down | yes | no | - | unreached |
-| `connector:asgarnia:8` | (2857, 3517) | (2857, 3517) | `{ x: 2857, z: 3517, radius: 3 }` | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:9` | (2859, 3519) | (2859, 3519) | `{ x: 2859, z: 3519, radius: 3 }` | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `connector:asgarnia:10` | (2884, 3397) | (2884, 3397) | `{ x: 2884, z: 3397, radius: 3 }` | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
-| `connector:asgarnia:11` | (2895, 3513) | (2895, 3513) | `{ x: 2895, z: 3513, radius: 3 }` | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:12` | (2895, 3516) L1 | (2895, 3516) L1 | `{ x: 2895, z: 3516, radius: 3, level: 1 }` | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
-| `connector:asgarnia:13` | (2895, 3516) L2 | (2895, 3516) L2 | `{ x: 2895, z: 3516, radius: 3, level: 2 }` | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:14` | (2896, 3513) L1 | (2896, 3513) L1 | `{ x: 2896, z: 3513, radius: 3, level: 1 }` | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
-| `connector:asgarnia:15` | (2898, 3428) | (2898, 3428) | `{ x: 2898, z: 3428, radius: 3 }` | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:16` | (2898, 3428) L1 | (2898, 3428) L1 | `{ x: 2898, z: 3428, radius: 3, level: 1 }` | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
-| `connector:asgarnia:17` | (2906, 3470) L1 | (2906, 3470) L1 | `{ x: 2906, z: 3470, radius: 3, level: 1 }` | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
-| `connector:asgarnia:18` | (2907, 3476) | (2907, 3476) | `{ x: 2907, z: 3476, radius: 3 }` | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
-| `connector:asgarnia:19` | (2915, 3323) | (2915, 3323) | `{ x: 2915, z: 3323, radius: 3 }` | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:20` | (2915, 3323) L1 | (2915, 3323) L1 | `{ x: 2915, z: 3323, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:21` | (2915, 3441) | (2915, 3441) | `{ x: 2915, z: 3441, radius: 3 }` | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:22` | (2915, 3441) L1 | (2915, 3441) L1 | `{ x: 2915, z: 3441, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
-| `connector:asgarnia:23` | (2915, 3450) | (2915, 3450) | `{ x: 2915, z: 3450, radius: 3 }` | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:24` | (2915, 3450) L1 | (2915, 3450) L1 | `{ x: 2915, z: 3450, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
-| `connector:asgarnia:25` | (2929, 3544) | (2929, 3544) | `{ x: 2929, z: 3544, radius: 3 }` | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
-| `connector:asgarnia:26` | (2929, 3544) L1 | (2929, 3544) L1 | `{ x: 2929, z: 3544, radius: 3, level: 1 }` | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
-| `connector:asgarnia:27` | (3008, 3150) | (3008, 3150) | `{ x: 3008, z: 3150, radius: 3 }` | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
-| `connector:asgarnia:28` | (3011, 3235) | (3011, 3235) | `{ x: 3011, z: 3235, radius: 3 }` | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:29` | (3011, 3235) L1 | (3011, 3235) L1 | `{ x: 3011, z: 3235, radius: 3, level: 1 }` | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:30` | (3013, 3203) | (3013, 3203) | `{ x: 3013, z: 3203, radius: 3 }` | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:31` | (3013, 3203) L1 | (3013, 3203) L1 | `{ x: 3013, z: 3203, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:32` | (3013, 3244) L1 | (3013, 3244) L1 | `{ x: 3013, z: 3244, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:33` | (3023, 3261) | (3023, 3261) | `{ x: 3023, z: 3261, radius: 3 }` | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:34` | (3024, 3261) L1 | (3024, 3261) L1 | `{ x: 3024, z: 3261, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:35` | (3026, 3248) | (3026, 3248) | `{ x: 3026, z: 3248, radius: 3 }` | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:36` | (3026, 3248) L1 | (3026, 3248) L1 | `{ x: 3026, z: 3248, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:37` | (3027, 3353) | (3027, 3353) | `{ x: 3027, z: 3353, radius: 3 }` | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:38` | (3027, 3353) L1 | (3027, 3353) L1 | `{ x: 3027, z: 3353, radius: 3, level: 1 }` | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:39` | (3034, 3363) | (3034, 3363) | `{ x: 3034, z: 3363, radius: 3 }` | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:40` | (3035, 3344) | (3035, 3344) | `{ x: 3035, z: 3344, radius: 3 }` | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:41` | (3035, 3344) L1 | (3035, 3344) L1 | `{ x: 3035, z: 3344, radius: 3, level: 1 }` | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:42` | (3035, 3363) L1 | (3035, 3363) L1 | `{ x: 3035, z: 3363, radius: 3, level: 1 }` | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:43` | (3042, 3379) L1 | (3042, 3379) L1 | `{ x: 3042, z: 3379, radius: 3, level: 1 }` | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:44` | (3042, 3379) L2 | (3042, 3379) L2 | `{ x: 3042, z: 3379, radius: 3, level: 2 }` | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:45` | (3044, 3381) | (3044, 3381) | `{ x: 3044, z: 3381, radius: 3 }` | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:46` | (3044, 3382) L1 | (3044, 3382) L1 | `{ x: 3044, z: 3382, radius: 3, level: 1 }` | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:47` | (3045, 3363) | (3045, 3363) | `{ x: 3045, z: 3363, radius: 3 }` | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:48` | (3045, 3364) L1 | (3045, 3364) L1 | `{ x: 3045, z: 3364, radius: 3, level: 1 }` | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:49` | (3048, 3352) | (3048, 3352) | `{ x: 3048, z: 3352, radius: 3 }` | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:50` | (3049, 3353) L1 | (3049, 3353) L1 | `{ x: 3049, z: 3353, radius: 3, level: 1 }` | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:51` | (3050, 3355) L1 | (3050, 3355) L1 | `{ x: 3050, z: 3355, radius: 3, level: 1 }` | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:52` | (3050, 3355) L2 | (3050, 3355) L2 | `{ x: 3050, z: 3355, radius: 3, level: 2 }` | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
-| `connector:asgarnia:53` | (3059, 3354) | (3059, 3354) | `{ x: 3059, z: 3354, radius: 3 }` | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:54` | (3059, 3354) L1 | (3059, 3354) L1 | `{ x: 3059, z: 3354, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:55` | (3059, 3357) | (3059, 3357) | `{ x: 3059, z: 3357, radius: 3 }` | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
-| `connector:asgarnia:56` | (3059, 3357) L1 | (3059, 3357) L1 | `{ x: 3059, z: 3357, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
-| `connector:asgarnia:57` | (3059, 3376) | (3059, 3376) | `{ x: 3059, z: 3376, radius: 3 }` | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:4` | (2857, 3517) | (2857, 3517) | `{ x: 2857, z: 3517, radius: 3 }` | Ladder 1 | down (2858, 9917) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:5` | (2859, 3519) | (2859, 3519) | `{ x: 2859, z: 3519, radius: 3 }` | Ladder 1 | down (2860, 9919) by Climb-Down | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `connector:asgarnia:6` | (2884, 3397) | (2884, 3397) | `{ x: 2884, z: 3397, radius: 3 }` | Ladder 1 | down (2885, 9797) by Climb-Down | no | no | - | - |
+| `connector:asgarnia:7` | (2895, 3513) | (2895, 3513) | `{ x: 2895, z: 3513, radius: 3 }` | Staircase 1 | up (2897, 3513) L1 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:8` | (2895, 3516) L1 | (2895, 3516) L1 | `{ x: 2895, z: 3516, radius: 3, level: 1 }` | Ladder 1 | up (2894, 3516) L2 by Climb-up | no | no | - | Hero's Quest done |
+| `connector:asgarnia:9` | (2895, 3516) L2 | (2895, 3516) L2 | `{ x: 2895, z: 3516, radius: 3, level: 2 }` | Ladder 1 | down (2894, 3516) L1 by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:10` | (2896, 3513) L1 | (2896, 3513) L1 | `{ x: 2896, z: 3513, radius: 3, level: 1 }` | Staircase 1 | down (2896, 3512) by Climb-down | no | no | - | Hero's Quest done |
+| `connector:asgarnia:11` | (2898, 3428) | (2898, 3428) | `{ x: 2898, z: 3428, radius: 3 }` | Staircase 1 | up (2898, 3427) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:12` | (2898, 3428) L1 | (2898, 3428) L1 | `{ x: 2898, z: 3428, radius: 3, level: 1 }` | Staircase 1 | down (2897, 3428) by Climb-down | no | no | - | - |
+| `connector:asgarnia:13` | (2906, 3470) L1 | (2906, 3470) L1 | `{ x: 2906, z: 3470, radius: 3, level: 1 }` | Staircase 1 | down (2906, 3468) by Walk-down | no | no | - | unreached |
+| `connector:asgarnia:14` | (2907, 3476) | (2907, 3476) | `{ x: 2907, z: 3476, radius: 3 }` | Ladder 1 | down (2906, 9876) by Climb-down | no | no | - | unreached |
+| `connector:asgarnia:15` | (2915, 3323) | (2915, 3323) | `{ x: 2915, z: 3323, radius: 3 }` | Ladder 1 | up (2914, 3323) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:16` | (2915, 3323) L1 | (2915, 3323) L1 | `{ x: 2915, z: 3323, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3323) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:17` | (2915, 3441) | (2915, 3441) | `{ x: 2915, z: 3441, radius: 3 }` | Ladder 1 | up (2914, 3441) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:18` | (2915, 3441) L1 | (2915, 3441) L1 | `{ x: 2915, z: 3441, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3441) by Climb-down | no | no | - | - |
+| `connector:asgarnia:19` | (2915, 3450) | (2915, 3450) | `{ x: 2915, z: 3450, radius: 3 }` | Ladder 1 | up (2914, 3450) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:20` | (2915, 3450) L1 | (2915, 3450) L1 | `{ x: 2915, z: 3450, radius: 3, level: 1 }` | Ladder 1 | down (2914, 3450) by Climb-down | no | no | - | - |
+| `connector:asgarnia:21` | (2929, 3544) | (2929, 3544) | `{ x: 2929, z: 3544, radius: 3 }` | Ladder 1 | up (2929, 3545) L1 by Climb-up | no | no | - | - |
+| `connector:asgarnia:22` | (2929, 3544) L1 | (2929, 3544) L1 | `{ x: 2929, z: 3544, radius: 3, level: 1 }` | Ladder 1 | down (2929, 3545) by Climb-down | no | no | - | - |
+| `connector:asgarnia:23` | (3008, 3150) | (3008, 3150) | `{ x: 3008, z: 3150, radius: 3 }` | Ladder 1 | down (3009, 9550) by Climb-Down | yes | no | - | - |
+| `connector:asgarnia:24` | (3011, 3235) | (3011, 3235) | `{ x: 3011, z: 3235, radius: 3 }` | Ladder 1 | up (3010, 3235) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:25` | (3011, 3235) L1 | (3011, 3235) L1 | `{ x: 3011, z: 3235, radius: 3, level: 1 }` | Ladder 1 | down (3010, 3235) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:26` | (3013, 3203) | (3013, 3203) | `{ x: 3013, z: 3203, radius: 3 }` | Ladder 1 | up (3012, 3203) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:27` | (3013, 3203) L1 | (3013, 3203) L1 | `{ x: 3013, z: 3203, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3203) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:28` | (3013, 3244) L1 | (3013, 3244) L1 | `{ x: 3013, z: 3244, radius: 3, level: 1 }` | Ladder 1 | down (3012, 3244) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:29` | (3023, 3261) | (3023, 3261) | `{ x: 3023, z: 3261, radius: 3 }` | Staircase 1 | up (3025, 3261) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:30` | (3024, 3261) L1 | (3024, 3261) L1 | `{ x: 3024, z: 3261, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3261) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:31` | (3026, 3248) | (3026, 3248) | `{ x: 3026, z: 3248, radius: 3 }` | Staircase 1 | up (3026, 3247) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:32` | (3026, 3248) L1 | (3026, 3248) L1 | `{ x: 3026, z: 3248, radius: 3, level: 1 }` | Staircase 1 | down (3025, 3248) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:33` | (3027, 3353) | (3027, 3353) | `{ x: 3027, z: 3353, radius: 3 }` | Ladder 1 | up (3026, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:34` | (3027, 3353) L1 | (3027, 3353) L1 | `{ x: 3027, z: 3353, radius: 3, level: 1 }` | Ladder 1 | down (3026, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:35` | (3034, 3363) | (3034, 3363) | `{ x: 3034, z: 3363, radius: 3 }` | Staircase 1 | up (3036, 3363) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:36` | (3035, 3344) | (3035, 3344) | `{ x: 3035, z: 3344, radius: 3 }` | Ladder 1 | up (3035, 3345) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:37` | (3035, 3344) L1 | (3035, 3344) L1 | `{ x: 3035, z: 3344, radius: 3, level: 1 }` | Ladder 1 | down (3035, 3345) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:38` | (3035, 3363) L1 | (3035, 3363) L1 | `{ x: 3035, z: 3363, radius: 3, level: 1 }` | Staircase 1 | down (3036, 3363) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:39` | (3042, 3379) L1 | (3042, 3379) L1 | `{ x: 3042, z: 3379, radius: 3, level: 1 }` | Ladder 1 | up (3043, 3379) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:40` | (3042, 3379) L2 | (3042, 3379) L2 | `{ x: 3042, z: 3379, radius: 3, level: 2 }` | Ladder 1 | down (3043, 3379) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:41` | (3044, 3381) | (3044, 3381) | `{ x: 3044, z: 3381, radius: 3 }` | Staircase 1 | up (3044, 3384) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:42` | (3044, 3382) L1 | (3044, 3382) L1 | `{ x: 3044, z: 3382, radius: 3, level: 1 }` | Staircase 1 | down (3044, 3380) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:43` | (3045, 3363) | (3045, 3363) | `{ x: 3045, z: 3363, radius: 3 }` | Staircase 1 | up (3045, 3366) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:44` | (3045, 3364) L1 | (3045, 3364) L1 | `{ x: 3045, z: 3364, radius: 3, level: 1 }` | Staircase 1 | down (3045, 3362) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:45` | (3048, 3352) | (3048, 3352) | `{ x: 3048, z: 3352, radius: 3 }` | Staircase 1 | up (3049, 3354) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:46` | (3049, 3353) L1 | (3049, 3353) L1 | `{ x: 3049, z: 3353, radius: 3, level: 1 }` | Staircase 1 | down (3049, 3354) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:47` | (3050, 3355) L1 | (3050, 3355) L1 | `{ x: 3050, z: 3355, radius: 3, level: 1 }` | Ladder 1 | up (3049, 3355) L2 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:48` | (3050, 3355) L2 | (3050, 3355) L2 | `{ x: 3050, z: 3355, radius: 3, level: 2 }` | Ladder 1 | down (3049, 3355) L1 by Climb-down | yes | no | - | - |
+| `connector:asgarnia:49` | (3059, 3354) | (3059, 3354) | `{ x: 3059, z: 3354, radius: 3 }` | Ladder 1 | up (3059, 3353) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:50` | (3059, 3354) L1 | (3059, 3354) L1 | `{ x: 3059, z: 3354, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3353) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:51` | (3059, 3357) | (3059, 3357) | `{ x: 3059, z: 3357, radius: 3 }` | Ladder 1 | up (3059, 3358) L1 by Climb-up | yes | no | - | - |
+| `connector:asgarnia:52` | (3059, 3357) L1 | (3059, 3357) L1 | `{ x: 3059, z: 3357, radius: 3, level: 1 }` | Ladder 1 | down (3059, 3358) by Climb-down | yes | no | - | - |
+| `connector:asgarnia:53` | (3059, 3376) | (3059, 3376) | `{ x: 3059, z: 3376, radius: 3 }` | Staircase 1 | down (3058, 9776) by Climb-down | yes | no | - | - |
 
 ## Areas within
 

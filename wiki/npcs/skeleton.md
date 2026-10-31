@@ -44,6 +44,9 @@
 | [Bone Yard (Wilderness)](../places/bone-yard.md) | (3243, 3743) | x 3240-3246, z 3741-3745 | 2 | 9 | x 3231-3255, z 3732-3754 | 140 ticks | - | `{ x: 3243, z: 3743, radius: 20 }` | yes |
 | [Bone Yard (Wilderness)](../places/bone-yard.md) | (3252, 3737) | (3252, 3737) | 1 | 9 | x 3243-3261, z 3728-3746 | 140 ticks | - | `{ x: 3252, z: 3737, radius: 16 }` | yes |
 | [Crandor](../places/crandor.md) | (2820, 3259) | (2820, 3259) | 1 | 9 | x 2811-2829, z 3250-3268 | 140 ticks | - | `{ x: 2820, z: 3259, radius: 16 }` | yes |
+| [Crandor](../places/crandor.md) | (2824, 3237) | (2824, 3237) | 1 | 9 | x 2815-2833, z 3228-3246 | 140 ticks | - | `{ x: 2824, z: 3237, radius: 16 }` | yes |
+| [Crandor](../places/crandor.md) | (2832, 3234) | (2832, 3234) | 1 | 9 | x 2823-2841, z 3225-3243 | 140 ticks | - | `{ x: 2832, z: 3234, radius: 16 }` | yes |
+| [Crandor](../places/crandor.md) | (2840, 3238) | x 2827-2840, z 3238-3246 | 1 | 9 | x 2818-2849, z 3229-3255 | 140 ticks | - | `{ x: 2834, z: 3242, radius: 24 }` | yes |
 | [Crandor](../places/crandor.md) | (2850, 3248) | x 2846-2854, z 3247-3249 | 3 | 9 | x 2837-2863, z 3238-3258 | 140 ticks | - | `{ x: 2850, z: 3248, radius: 20 }` | yes |
 | [Crandor](../places/crandor.md) | (2851, 3258) | x 2850-2852, z 3256-3260 | 2 | 9 | x 2841-2861, z 3247-3269 | 140 ticks | - | `{ x: 2851, z: 3258, radius: 18 }` | yes |
 | [Dig Site dungeon](../places/dig-site-dungeon.md) | (3378, 9751) | x 3369-3384, z 9744-9758 | 10 | 8 | x 3361-3392, z 9736-9766 | 140 ticks | - | `{ x: 3377, z: 9751, radius: 25 }` | no |
@@ -59,10 +62,7 @@
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3121, 9908) | (3121, 9908) | 1 | 9 | x 3112-3130, z 9899-9917 | 140 ticks | - | `{ x: 3121, z: 9908, radius: 16 }` | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3132, 9909) | x 3128-3134, z 9904-9914 | 5 | 9 | x 3119-3143, z 9895-9923 | 140 ticks | - | `{ x: 3131, z: 9909, radius: 22 }` | yes |
 | [Edgeville Dungeon](../places/edgeville-dungeon.md) | (3140, 9872) | x 3137-3144, z 9869-9877 | 6 | 9 | x 3128-3153, z 9860-9886 | 140 ticks | - | `{ x: 3141, z: 9873, radius: 22 }` | yes |
-| [Kandarin](../places/kandarin.md) | (2824, 3237) | (2824, 3237) | 1 | 9 | x 2815-2833, z 3228-3246 | 140 ticks | - | `{ x: 2824, z: 3237, radius: 16 }` | yes |
-| [Kandarin](../places/kandarin.md) | (2832, 3234) | (2832, 3234) | 1 | 9 | x 2823-2841, z 3225-3243 | 140 ticks | - | `{ x: 2832, z: 3234, radius: 16 }` | yes |
 | [Kandarin](../places/kandarin.md) | (2834, 3305) | (2834, 3305) | 1 | 9 | x 2825-2843, z 3296-3314 | 140 ticks | - | `{ x: 2834, z: 3305, radius: 16 }` | yes |
-| [Kandarin](../places/kandarin.md) | (2840, 3238) | (2840, 3238) | 1 | 9 | x 2831-2849, z 3229-3247 | 140 ticks | - | `{ x: 2840, z: 3238, radius: 16 }` | yes |
 | [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2848, 9581) | x 2834-2848, z 9576-9584 | 1 | 8 | x 2826-2856, z 9568-9592 | 140 ticks | - | `{ x: 2841, z: 9580, radius: 23 }` | yes |
 | [Karamja Volcano dungeon](../places/karamja-volcano-dungeon.md) | (2859, 9573) | x 2853-2864, z 9568-9577 | 4 | 8 | x 2845-2872, z 9560-9585 | 140 ticks | - | `{ x: 2859, z: 9573, radius: 23 }` | yes |
 | [Melzar's Maze (Asgarnia)](../places/melzars-maze.md) | (2928, 3253) L2 | x 2923-2933, z 3240-3256 L2 | 6 | 9 | x 2914-2942, z 3231-3265 L2 | 70 ticks | - | `{ x: 2928, z: 3248, radius: 26, level: 2 }` | yes |

@@ -119,7 +119,7 @@
 | `tree:kandarin:24` | (2488, 3368) | x 2466-2518, z 3341-3380 | `{ x: 2492, z: 3361, radius: 36 }` | [normal](../resources/tree/normal.md) 43, [oak](../resources/tree/oak.md) 18 | no | no | - | - |
 | `tree:kandarin:25` | (2470, 3282) | (2470, 3282) | `{ x: 2470, z: 3282, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | Biohazard done |
 | `tree:kandarin:26` | (2494, 3323) | x 2493-2494, z 3319-3326 | `{ x: 2494, z: 3323, radius: 8 }` | [normal](../resources/tree/normal.md) 2 | no | no | - | Biohazard done |
-| `tree:kandarin:27` | (2521, 3561) | x 2496-2551, z 3529-3585 | `{ x: 2524, z: 3557, radius: 43 }` | [normal](../resources/tree/normal.md) 53, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 9 | no | no | - | - |
+| `tree:kandarin:27` | (2520, 3561) | x 2496-2545, z 3529-3585 | `{ x: 2521, z: 3557, radius: 41 }` | [normal](../resources/tree/normal.md) 50, [oak](../resources/tree/oak.md) 4, [willow](../resources/tree/willow.md) 9 | no | no | - | - |
 | `tree:kandarin:28` | (2504, 3487) | x 2501-2507, z 3484-3489 | `{ x: 2504, z: 3487, radius: 8 }` | [normal](../resources/tree/normal.md) 1, [willow](../resources/tree/willow.md) 1 | no | no | - | - |
 | `tree:kandarin:29` | (2508, 3405) | x 2502-2513, z 3399-3409 | `{ x: 2508, z: 3404, radius: 11 }` | [normal](../resources/tree/normal.md) 1, [oak](../resources/tree/oak.md) 3 | no | no | - | - |
 | `tree:kandarin:30` | (2507, 3426) | (2507, 3426) | `{ x: 2507, z: 3426, radius: 3 }` | [normal](../resources/tree/normal.md) 1 | no | no | - | - |
@@ -276,92 +276,88 @@
 | `npc:kandarin:40` | (2543, 3278) | x 2540-2546, z 3277-3279 | x 2535-2551, z 3272-3284 | `{ x: 2543, z: 3278, radius: 13 }` | Woman (dskin_w_ardoungecitizen2) 1, Woman (w_ardoungecitizenlady1) 1 | no | no | - | Biohazard done |
 | `npc:kandarin:41` | (2550, 3193) | x 2541-2557, z 3186-3198 | x 2526-2572, z 3171-3213 | `{ x: 2549, z: 3192, radius: 35 }` | Goblin (goblin) 4, Goblin (goblin_armed) 1, Ogre (ogre) 1, Spider 4 | no | no | - | - |
 | `npc:kandarin:42` | (2542, 3155) | (2542, 3155) | x 2527-2557, z 3140-3170 | `{ x: 2542, z: 3155, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:kandarin:43` | (2544, 3577) | (2544, 3577) | x 2534-2554, z 3567-3587 | `{ x: 2544, z: 3577, radius: 18 }` | Barbarian 1 | no | no | - | - |
-| `npc:kandarin:44` | (2547, 3146) | x 2545-2548, z 3144-3147 | x 2542-2551, z 3141-3150 | `{ x: 2547, z: 3146, radius: 11 }` | Giant 2 | no | no | - | - |
-| `npc:kandarin:45` | (2546, 3116) | (2546, 3116) | x 2538-2554, z 3108-3124 | `{ x: 2546, z: 3116, radius: 15 }` | Tower guard 1 | no | no | - | - |
-| `npc:kandarin:46` | (2548, 3287) | (2548, 3287) | x 2543-2553, z 3282-3292 | `{ x: 2548, z: 3287, radius: 11 }` | Mourner (mourner3) 1 | no | no | - | Biohazard done |
-| `npc:kandarin:47` | (2553, 3406) | x 2549-2556, z 3401-3409 | x 2546-2559, z 3398-3412 | `{ x: 2553, z: 3405, radius: 13 }` | Moss giant 4 | no | no | - | - |
-| `npc:kandarin:48` | (2550, 3166) | (2550, 3166) | x 2535-2565, z 3151-3181 | `{ x: 2550, z: 3166, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:kandarin:49` | (2553, 3324) | x 2550-2555, z 3314-3332 | x 2545-2560, z 3309-3337 | `{ x: 2553, z: 3323, radius: 20 }` | Mourner (mourner3) 3, Mourner (mourner_armed) 2, Mourner (mournerstew1) 3, Mourner (mournerstew3) 3, Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
-| `npc:kandarin:50` | (2551, 3326) L1 | x 2551, z 3324-3327 L1 | x 2550-2552, z 3323-3328 L1 | `{ x: 2551, z: 3326, radius: 7, level: 1 }` | Mourner (mournerstew2) 2 | no | no | - | unreached |
-| `npc:kandarin:51` | (2553, 3275) | (2553, 3275) | x 2548-2558, z 3270-3280 | `{ x: 2553, z: 3275, radius: 11 }` | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
-| `npc:kandarin:52` | (2554, 3117) | (2554, 3117) | x 2546-2562, z 3109-3125 | `{ x: 2554, z: 3117, radius: 15 }` | Tower guard 1 | no | no | - | - |
-| `npc:kandarin:53` | (2554, 3307) | (2554, 3307) | x 2549-2559, z 3302-3312 | `{ x: 2554, z: 3307, radius: 11 }` | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
-| `npc:kandarin:54` | (2554, 3467) | x 2554, z 3465-3469 | x 2549-2559, z 3460-3474 | `{ x: 2554, z: 3467, radius: 12 }` | Dwarf 2 | no | no | - | - |
-| `npc:kandarin:55` | (2567, 3407) | x 2563-2574, z 3398-3416 | x 2548-2589, z 3383-3431 | `{ x: 2569, z: 3407, radius: 35 }` | Goblin (goblin) 4, Goblin (goblin_armed) 2 | no | no | - | - |
-| `npc:kandarin:56` | (2569, 3437) | x 2563-2576, z 3428-3442 | x 2548-2591, z 3413-3457 | `{ x: 2570, z: 3435, radius: 35 }` | Goblin (goblin) 3, Goblin (goblin_armed) 3 | no | no | - | - |
-| `npc:kandarin:57` | (2567, 3146) | x 2564-2570, z 3142-3149 | x 2560-2574, z 3138-3153 | `{ x: 2567, z: 3146, radius: 14 }` | Khazard Guard (arena_guard4) 3 | no | no | - | - |
-| `npc:kandarin:58` | (2567, 3455) | x 2564-2572, z 3453-3456 | x 2549-2587, z 3438-3471 | `{ x: 2568, z: 3455, radius: 29 }` | Dwarf 2, Goblin (goblin) 1 | no | no | - | - |
-| `npc:kandarin:59` | (2571, 3481) | (2571, 3481) | x 2563-2579, z 3473-3489 | `{ x: 2571, z: 3481, radius: 15 }` | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:60` | (2572, 3396) | (2572, 3396) | x 2557-2587, z 3381-3411 | `{ x: 2572, z: 3396, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:kandarin:61` | (2572, 3420) | (2572, 3420) | x 2557-2587, z 3405-3435 | `{ x: 2572, z: 3420, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:kandarin:62` | (2575, 3474) | x 2572-2578, z 3472-3476 | x 2564-2586, z 3464-3484 | `{ x: 2575, z: 3474, radius: 18 }` | Giant bat 2 | no | no | - | - |
-| `npc:kandarin:63` | (2579, 3166) | x 2577-2580, z 3162-3171 | x 2573-2584, z 3158-3175 | `{ x: 2579, z: 3167, radius: 14 }` | Khazard Guard (arena_guard4) 3 | no | no | - | - |
-| `npc:kandarin:64` | (2583, 3119) | x 2580-2588, z 3117-3122 | x 2575-2593, z 3112-3127 | `{ x: 2584, z: 3120, radius: 16 }` | Cow 3 | no | no | - | - |
-| `npc:kandarin:65` | (2583, 3149) | (2583, 3149) | x 2579-2587, z 3145-3153 | `{ x: 2583, z: 3149, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
-| `npc:kandarin:66` | (2583, 3435) | (2583, 3435) | x 2568-2598, z 3420-3450 | `{ x: 2583, z: 3435, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
-| `npc:kandarin:67` | (2584, 3141) | (2584, 3141) | x 2583-2585, z 3140-3142 | `{ x: 2584, z: 3141, radius: 5 }` | Khazard Guard (arena_guard1) 1 | no | no | - | - |
-| `npc:kandarin:68` | (2586, 3473) | (2586, 3473) | x 2578-2594, z 3465-3481 | `{ x: 2586, z: 3473, radius: 15 }` | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:69` | (2589, 3193) | (2589, 3193) | x 2585-2593, z 3189-3197 | `{ x: 2589, z: 3193, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
-| `npc:kandarin:70` | (2593, 3139) | x 2591-2595, z 3139 | x 2590-2596, z 3138-3140 | `{ x: 2593, z: 3139, radius: 7 }` | Khazard Guard (arena_guard1) 2 | no | no | - | - |
-| `npc:kandarin:71` | (2594, 3181) | x 2592-2598, z 3176-3185 | x 2588-2602, z 3172-3189 | `{ x: 2595, z: 3181, radius: 15 }` | Khazard Guard (arena_guard4) 6 | no | no | - | - |
-| `npc:kandarin:72` | (2598, 3442) | x 2593-2607, z 3432-3454 | x 2558-2642, z 3397-3489 | `{ x: 2600, z: 3443, radius: 66 }` | Duck (duck) 7, Duck (duck_female) 18 | no | no | - | no stand |
-| `npc:kandarin:73` | (2594, 3474) | (2594, 3474) | x 2586-2602, z 3466-3482 | `{ x: 2594, z: 3474, radius: 15 }` | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:74` | (2595, 3131) | (2595, 3131) | x 2570-2620, z 3106-3156 | `{ x: 2595, z: 3131, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:75` | (2597, 3120) | (2597, 3120) | x 2572-2622, z 3095-3145 | `{ x: 2597, z: 3120, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:76` | (2599, 3193) | (2599, 3193) | x 2595-2603, z 3189-3197 | `{ x: 2599, z: 3193, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
-| `npc:kandarin:77` | (2606, 3126) | (2606, 3126) | x 2581-2631, z 3101-3151 | `{ x: 2606, z: 3126, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:78` | (2607, 3165) | x 2606-2608, z 3159-3171 | x 2591-2623, z 3144-3186 | `{ x: 2607, z: 3165, radius: 30 }` | Khazard Guard (arena_guard4) 1, Khazard Ogre 1, Khazard Scorpion 1 | no | no | - | - |
-| `npc:kandarin:79` | (2609, 3185) | x 2607-2614, z 3183-3186 | x 2603-2618, z 3179-3190 | `{ x: 2611, z: 3185, radius: 13 }` | Khazard Guard (arena_guard4) 4 | no | no | - | - |
-| `npc:kandarin:80` | (2608, 3134) | (2608, 3134) | x 2583-2633, z 3109-3159 | `{ x: 2608, z: 3134, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:81` | (2611, 3149) | x 2609-2614, z 3149-3150 | x 2605-2618, z 3145-3154 | `{ x: 2612, z: 3150, radius: 12 }` | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard4) 2 | no | no | - | unreached |
-| `npc:kandarin:82` | (2610, 3193) | (2610, 3193) | x 2606-2614, z 3189-3197 | `{ x: 2610, z: 3193, radius: 9 }` | Khazard Guard (arena_guard3) 1 | no | no | - | - |
-| `npc:kandarin:83` | (2613, 3477) | x 2611-2614, z 3475-3478 | x 2596-2629, z 3460-3493 | `{ x: 2613, z: 3477, radius: 28 }` | Rat 2 | no | no | - | - |
-| `npc:kandarin:84` | (2614, 3116) | (2614, 3116) | x 2589-2639, z 3091-3141 | `{ x: 2614, z: 3116, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:85` | (2618, 3448) | x 2614-2621, z 3444-3453 | x 2579-2656, z 3409-3488 | `{ x: 2618, z: 3449, radius: 59 }` | Duck (duck) 5, Duck (duck_female) 7 | no | no | - | no stand |
-| `npc:kandarin:86` | (2615, 3141) | (2615, 3141) | x 2611-2619, z 3137-3145 | `{ x: 2615, z: 3141, radius: 9 }` | Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
-| `npc:kandarin:87` | (2616, 3126) | (2616, 3126) | x 2591-2641, z 3101-3151 | `{ x: 2616, z: 3126, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:88` | (2617, 3168) | x 2616-2618, z 3166-3170 | x 2615-2619, z 3165-3171 | `{ x: 2617, z: 3168, radius: 7 }` | Khazard Guard (arena_guard1) 2 | no | no | - | unreached |
-| `npc:kandarin:89` | (2618, 3159) | (2618, 3159) | x 2617-2619, z 3158-3160 | `{ x: 2618, z: 3159, radius: 5 }` | Khazard Guard (arena_guard1) 1 | no | no | - | unreached |
-| `npc:kandarin:90` | (2621, 3133) | (2621, 3133) | x 2596-2646, z 3108-3158 | `{ x: 2621, z: 3133, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:91` | (2622, 3395) | x 2621-2623, z 3393-3397 | x 2606-2638, z 3378-3412 | `{ x: 2622, z: 3395, radius: 27 }` | Goblin (goblin) 1, Goblin (goblin_armed) 2 | no | no | - | - |
-| `npc:kandarin:92` | (2621, 3408) | x 2621, z 3405-3410 | x 2586-2656, z 3370-3445 | `{ x: 2621, z: 3408, radius: 55 }` | Duck (duck_female) 2 | no | no | - | no stand |
-| `npc:kandarin:93` | (2622, 3118) | (2622, 3118) | x 2597-2647, z 3093-3143 | `{ x: 2622, z: 3118, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:94` | (2625, 3203) | (2625, 3203) | x 2600-2650, z 3178-3228 | `{ x: 2625, z: 3203, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:95` | (2625, 3217) | (2625, 3217) | x 2600-2650, z 3192-3242 | `{ x: 2625, z: 3217, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:96` | (2629, 3233) | (2629, 3233) | x 2604-2654, z 3208-3258 | `{ x: 2629, z: 3233, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:97` | (2630, 3210) | (2630, 3210) | x 2605-2655, z 3185-3235 | `{ x: 2630, z: 3210, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:98` | (2632, 3202) | (2632, 3202) | x 2607-2657, z 3177-3227 | `{ x: 2632, z: 3202, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:99` | (2633, 3222) | (2633, 3222) | x 2608-2658, z 3197-3247 | `{ x: 2633, z: 3222, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:100` | (2633, 3243) | (2633, 3243) | x 2608-2658, z 3218-3268 | `{ x: 2633, z: 3243, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:101` | (2639, 3230) | (2639, 3230) | x 2614-2664, z 3205-3255 | `{ x: 2639, z: 3230, radius: 39 }` | Imp 1 | no | no | - | - |
-| `npc:kandarin:102` | (2656, 3720) | (2656, 3720) | x 2653-2659, z 3717-3723 | `{ x: 2656, z: 3720, radius: 8 }` | Hobgoblin 1 | no | yes | - | no stand |
-| `npc:kandarin:103` | (2659, 3729) | x 2656-2661, z 3727-3731 | x 2653-2664, z 3724-3734 | `{ x: 2659, z: 3729, radius: 11 }` | Hobgoblin 2 | no | yes | - | no stand |
-| `npc:kandarin:104` | (2666, 3351) | x 2658-2672, z 3348-3354 | x 2653-2677, z 3343-3359 | `{ x: 2665, z: 3351, radius: 18 }` | Cow 5 | no | no | - | - |
-| `npc:kandarin:105` | (2676, 3090) | x 2667-2683, z 3081-3097 | x 2664-2686, z 3078-3100 | `{ x: 2675, z: 3089, radius: 19 }` | Jungle spider 18 | no | no | - | - |
-| `npc:kandarin:106` | (2672, 3728) | x 2669-2675, z 3725-3731 | x 2666-2678, z 3722-3734 | `{ x: 2672, z: 3728, radius: 12 }` | Hobgoblin 2 | no | yes | - | - |
-| `npc:kandarin:107` | (2676, 3110) | x 2671-2681, z 3107-3114 | x 2663-2689, z 3099-3122 | `{ x: 2676, z: 3111, radius: 21 }` | Jungle spider 3, Spider 2 | no | no | - | - |
-| `npc:kandarin:108` | (2695, 3211) | x 2691-2699, z 3204-3216 | x 2688-2702, z 3201-3219 | `{ x: 2695, z: 3210, radius: 15 }` | Moss giant 5 | no | no | - | 30 coins + 10 Agility or The Grand Tree done + 10 Agility |
-| `npc:kandarin:109` | (2692, 3274) | x 2691-2695, z 3271-3277 | x 2686-2700, z 3266-3282 | `{ x: 2693, z: 3274, radius: 14 }` | Chicken (chicken) 4 | no | no | - | - |
-| `npc:kandarin:110` | (2720, 3218) | x 2715-2724, z 3212-3223 | x 2703-2736, z 3200-3235 | `{ x: 2720, z: 3218, radius: 28 }` | Poison Scorpion 5 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:kandarin:111` | (2720, 3583) | (2720, 3583) | x 2705-2735, z 3568-3598 | `{ x: 2720, z: 3583, radius: 25 }` | Rat 1 | no | no | - | - |
-| `npc:kandarin:112` | (2727, 3160) | x 2723-2731, z 3158-3164 | x 2718-2736, z 3153-3169 | `{ x: 2727, z: 3161, radius: 16 }` | Tribesman 9 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:kandarin:113` | (2728, 3575) | x 2725-2730, z 3571-3580 | x 2710-2745, z 3556-3595 | `{ x: 2728, z: 3576, radius: 30 }` | Rat 4 | no | no | - | - |
-| `npc:kandarin:114` | (2731, 3225) | x 2729-2733, z 3224-3225 | x 2717-2745, z 3212-3237 | `{ x: 2731, z: 3225, radius: 23 }` | Poison Scorpion 2 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:kandarin:115` | (2735, 3521) | (2735, 3521) | x 2727-2743, z 3513-3529 | `{ x: 2735, z: 3521, radius: 15 }` | Highwayman 1 | no | no | - | - |
-| `npc:kandarin:116` | (2738, 3636) | x 2736-2740, z 3635-3638 | x 2731-2745, z 3630-3643 | `{ x: 2738, z: 3637, radius: 13 }` | Bunny (viking_bunny_1) 3, Bunny (viking_bunny_2) 5 | no | no | - | - |
-| `npc:kandarin:117` | (2749, 3521) | (2749, 3521) | x 2741-2757, z 3513-3529 | `{ x: 2749, z: 3521, radius: 15 }` | Highwayman 1 | no | no | - | - |
-| `npc:kandarin:118` | (2752, 3409) | (2752, 3409) | x 2744-2760, z 3401-3417 | `{ x: 2752, z: 3409, radius: 15 }` | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:119` | (2753, 3396) | (2753, 3396) | x 2745-2761, z 3388-3404 | `{ x: 2753, z: 3396, radius: 15 }` | Giant bat 1 | no | no | - | - |
-| `npc:kandarin:120` | (2768, 3210) | (2768, 3210) | x 2765-2771, z 3207-3213 | `{ x: 2768, z: 3210, radius: 8 }` | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
-| `npc:kandarin:121` | (2804, 3507) | (2804, 3507) | x 2801-2807, z 3504-3510 | `{ x: 2804, z: 3507, radius: 8 }` | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:122` | (2811, 3506) | (2811, 3506) | x 2808-2814, z 3503-3509 | `{ x: 2811, z: 3506, radius: 8 }` | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:123` | (2818, 3561) | x 2816-2819, z 3559-3562 | x 2811-2824, z 3554-3567 | `{ x: 2818, z: 3561, radius: 13 }` | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | wear Climbing boots or Death Plateau done or Death Plateau: Tenzing's map got (~death_get_map >= ^death_got_map, quests/quest_death/scripts/quest_death.rs2:65) + Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Troll Stronghold at stage 10 + 15 Agility |
-| `npc:kandarin:124` | (2817, 3514) | (2817, 3514) | x 2814-2820, z 3511-3517 | `{ x: 2817, z: 3514, radius: 8 }` | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
-| `npc:kandarin:125` | (2824, 3237) | (2824, 3237) | x 2815-2833, z 3228-3246 | `{ x: 2824, z: 3237, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:kandarin:126` | (2832, 3234) | (2832, 3234) | x 2823-2841, z 3225-3243 | `{ x: 2832, z: 3234, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:kandarin:127` | (2834, 3305) | (2834, 3305) | x 2825-2843, z 3296-3314 | `{ x: 2834, z: 3305, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
-| `npc:kandarin:128` | (2840, 3238) | (2840, 3238) | x 2831-2849, z 3229-3247 | `{ x: 2840, z: 3238, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
+| `npc:kandarin:43` | (2547, 3146) | x 2545-2548, z 3144-3147 | x 2542-2551, z 3141-3150 | `{ x: 2547, z: 3146, radius: 11 }` | Giant 2 | no | no | - | - |
+| `npc:kandarin:44` | (2546, 3116) | (2546, 3116) | x 2538-2554, z 3108-3124 | `{ x: 2546, z: 3116, radius: 15 }` | Tower guard 1 | no | no | - | - |
+| `npc:kandarin:45` | (2548, 3287) | (2548, 3287) | x 2543-2553, z 3282-3292 | `{ x: 2548, z: 3287, radius: 11 }` | Mourner (mourner3) 1 | no | no | - | Biohazard done |
+| `npc:kandarin:46` | (2553, 3406) | x 2549-2556, z 3401-3409 | x 2546-2559, z 3398-3412 | `{ x: 2553, z: 3405, radius: 13 }` | Moss giant 4 | no | no | - | - |
+| `npc:kandarin:47` | (2550, 3166) | (2550, 3166) | x 2535-2565, z 3151-3181 | `{ x: 2550, z: 3166, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:kandarin:48` | (2553, 3324) | x 2550-2555, z 3314-3332 | x 2545-2560, z 3309-3337 | `{ x: 2553, z: 3323, radius: 20 }` | Mourner (mourner3) 3, Mourner (mourner_armed) 2, Mourner (mournerstew1) 3, Mourner (mournerstew3) 3, Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
+| `npc:kandarin:49` | (2551, 3326) L1 | x 2551, z 3324-3327 L1 | x 2550-2552, z 3323-3328 L1 | `{ x: 2551, z: 3326, radius: 7, level: 1 }` | Mourner (mournerstew2) 2 | no | no | - | unreached |
+| `npc:kandarin:50` | (2553, 3275) | (2553, 3275) | x 2548-2558, z 3270-3280 | `{ x: 2553, z: 3275, radius: 11 }` | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
+| `npc:kandarin:51` | (2554, 3117) | (2554, 3117) | x 2546-2562, z 3109-3125 | `{ x: 2554, z: 3117, radius: 15 }` | Tower guard 1 | no | no | - | - |
+| `npc:kandarin:52` | (2554, 3307) | (2554, 3307) | x 2549-2559, z 3302-3312 | `{ x: 2554, z: 3307, radius: 11 }` | Woman (dskin_w_ardoungecitizenlady3) 1 | no | no | - | Biohazard done |
+| `npc:kandarin:53` | (2554, 3467) | x 2554, z 3465-3469 | x 2549-2559, z 3460-3474 | `{ x: 2554, z: 3467, radius: 12 }` | Dwarf 2 | no | no | - | - |
+| `npc:kandarin:54` | (2567, 3407) | x 2563-2574, z 3398-3416 | x 2548-2589, z 3383-3431 | `{ x: 2569, z: 3407, radius: 35 }` | Goblin (goblin) 4, Goblin (goblin_armed) 2 | no | no | - | - |
+| `npc:kandarin:55` | (2569, 3437) | x 2563-2576, z 3428-3442 | x 2548-2591, z 3413-3457 | `{ x: 2570, z: 3435, radius: 35 }` | Goblin (goblin) 3, Goblin (goblin_armed) 3 | no | no | - | - |
+| `npc:kandarin:56` | (2567, 3146) | x 2564-2570, z 3142-3149 | x 2560-2574, z 3138-3153 | `{ x: 2567, z: 3146, radius: 14 }` | Khazard Guard (arena_guard4) 3 | no | no | - | - |
+| `npc:kandarin:57` | (2567, 3455) | x 2564-2572, z 3453-3456 | x 2549-2587, z 3438-3471 | `{ x: 2568, z: 3455, radius: 29 }` | Dwarf 2, Goblin (goblin) 1 | no | no | - | - |
+| `npc:kandarin:58` | (2571, 3481) | (2571, 3481) | x 2563-2579, z 3473-3489 | `{ x: 2571, z: 3481, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:kandarin:59` | (2572, 3396) | (2572, 3396) | x 2557-2587, z 3381-3411 | `{ x: 2572, z: 3396, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:kandarin:60` | (2572, 3420) | (2572, 3420) | x 2557-2587, z 3405-3435 | `{ x: 2572, z: 3420, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:kandarin:61` | (2575, 3474) | x 2572-2578, z 3472-3476 | x 2564-2586, z 3464-3484 | `{ x: 2575, z: 3474, radius: 18 }` | Giant bat 2 | no | no | - | - |
+| `npc:kandarin:62` | (2579, 3166) | x 2577-2580, z 3162-3171 | x 2573-2584, z 3158-3175 | `{ x: 2579, z: 3167, radius: 14 }` | Khazard Guard (arena_guard4) 3 | no | no | - | - |
+| `npc:kandarin:63` | (2583, 3119) | x 2580-2588, z 3117-3122 | x 2575-2593, z 3112-3127 | `{ x: 2584, z: 3120, radius: 16 }` | Cow 3 | no | no | - | - |
+| `npc:kandarin:64` | (2583, 3149) | (2583, 3149) | x 2579-2587, z 3145-3153 | `{ x: 2583, z: 3149, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
+| `npc:kandarin:65` | (2583, 3435) | (2583, 3435) | x 2568-2598, z 3420-3450 | `{ x: 2583, z: 3435, radius: 25 }` | Goblin (goblin_armed) 1 | no | no | - | - |
+| `npc:kandarin:66` | (2584, 3141) | (2584, 3141) | x 2583-2585, z 3140-3142 | `{ x: 2584, z: 3141, radius: 5 }` | Khazard Guard (arena_guard1) 1 | no | no | - | - |
+| `npc:kandarin:67` | (2586, 3473) | (2586, 3473) | x 2578-2594, z 3465-3481 | `{ x: 2586, z: 3473, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:kandarin:68` | (2589, 3193) | (2589, 3193) | x 2585-2593, z 3189-3197 | `{ x: 2589, z: 3193, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
+| `npc:kandarin:69` | (2593, 3139) | x 2591-2595, z 3139 | x 2590-2596, z 3138-3140 | `{ x: 2593, z: 3139, radius: 7 }` | Khazard Guard (arena_guard1) 2 | no | no | - | - |
+| `npc:kandarin:70` | (2594, 3181) | x 2592-2598, z 3176-3185 | x 2588-2602, z 3172-3189 | `{ x: 2595, z: 3181, radius: 15 }` | Khazard Guard (arena_guard4) 6 | no | no | - | - |
+| `npc:kandarin:71` | (2598, 3442) | x 2593-2607, z 3432-3454 | x 2558-2642, z 3397-3489 | `{ x: 2600, z: 3443, radius: 66 }` | Duck (duck) 7, Duck (duck_female) 18 | no | no | - | no stand |
+| `npc:kandarin:72` | (2594, 3474) | (2594, 3474) | x 2586-2602, z 3466-3482 | `{ x: 2594, z: 3474, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:kandarin:73` | (2595, 3131) | (2595, 3131) | x 2570-2620, z 3106-3156 | `{ x: 2595, z: 3131, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:74` | (2597, 3120) | (2597, 3120) | x 2572-2622, z 3095-3145 | `{ x: 2597, z: 3120, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:75` | (2599, 3193) | (2599, 3193) | x 2595-2603, z 3189-3197 | `{ x: 2599, z: 3193, radius: 9 }` | Khazard Guard (arena_guard4) 1 | no | no | - | - |
+| `npc:kandarin:76` | (2606, 3126) | (2606, 3126) | x 2581-2631, z 3101-3151 | `{ x: 2606, z: 3126, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:77` | (2607, 3165) | x 2606-2608, z 3159-3171 | x 2591-2623, z 3144-3186 | `{ x: 2607, z: 3165, radius: 30 }` | Khazard Guard (arena_guard4) 1, Khazard Ogre 1, Khazard Scorpion 1 | no | no | - | - |
+| `npc:kandarin:78` | (2609, 3185) | x 2607-2614, z 3183-3186 | x 2603-2618, z 3179-3190 | `{ x: 2611, z: 3185, radius: 13 }` | Khazard Guard (arena_guard4) 4 | no | no | - | - |
+| `npc:kandarin:79` | (2608, 3134) | (2608, 3134) | x 2583-2633, z 3109-3159 | `{ x: 2608, z: 3134, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:80` | (2611, 3149) | x 2609-2614, z 3149-3150 | x 2605-2618, z 3145-3154 | `{ x: 2612, z: 3150, radius: 12 }` | Khazard Guard (arena_guard1) 1, Khazard Guard (arena_guard4) 2 | no | no | - | unreached |
+| `npc:kandarin:81` | (2610, 3193) | (2610, 3193) | x 2606-2614, z 3189-3197 | `{ x: 2610, z: 3193, radius: 9 }` | Khazard Guard (arena_guard3) 1 | no | no | - | - |
+| `npc:kandarin:82` | (2613, 3477) | x 2611-2614, z 3475-3478 | x 2596-2629, z 3460-3493 | `{ x: 2613, z: 3477, radius: 28 }` | Rat 2 | no | no | - | - |
+| `npc:kandarin:83` | (2614, 3116) | (2614, 3116) | x 2589-2639, z 3091-3141 | `{ x: 2614, z: 3116, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:84` | (2618, 3448) | x 2614-2621, z 3444-3453 | x 2579-2656, z 3409-3488 | `{ x: 2618, z: 3449, radius: 59 }` | Duck (duck) 5, Duck (duck_female) 7 | no | no | - | no stand |
+| `npc:kandarin:85` | (2615, 3141) | (2615, 3141) | x 2611-2619, z 3137-3145 | `{ x: 2615, z: 3141, radius: 9 }` | Khazard Guard (arena_guard2) 1 | no | no | - | unreached |
+| `npc:kandarin:86` | (2616, 3126) | (2616, 3126) | x 2591-2641, z 3101-3151 | `{ x: 2616, z: 3126, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:87` | (2617, 3168) | x 2616-2618, z 3166-3170 | x 2615-2619, z 3165-3171 | `{ x: 2617, z: 3168, radius: 7 }` | Khazard Guard (arena_guard1) 2 | no | no | - | unreached |
+| `npc:kandarin:88` | (2618, 3159) | (2618, 3159) | x 2617-2619, z 3158-3160 | `{ x: 2618, z: 3159, radius: 5 }` | Khazard Guard (arena_guard1) 1 | no | no | - | unreached |
+| `npc:kandarin:89` | (2621, 3133) | (2621, 3133) | x 2596-2646, z 3108-3158 | `{ x: 2621, z: 3133, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:90` | (2622, 3395) | x 2621-2623, z 3393-3397 | x 2606-2638, z 3378-3412 | `{ x: 2622, z: 3395, radius: 27 }` | Goblin (goblin) 1, Goblin (goblin_armed) 2 | no | no | - | - |
+| `npc:kandarin:91` | (2621, 3408) | x 2621, z 3405-3410 | x 2586-2656, z 3370-3445 | `{ x: 2621, z: 3408, radius: 55 }` | Duck (duck_female) 2 | no | no | - | no stand |
+| `npc:kandarin:92` | (2622, 3118) | (2622, 3118) | x 2597-2647, z 3093-3143 | `{ x: 2622, z: 3118, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:93` | (2625, 3203) | (2625, 3203) | x 2600-2650, z 3178-3228 | `{ x: 2625, z: 3203, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:94` | (2625, 3217) | (2625, 3217) | x 2600-2650, z 3192-3242 | `{ x: 2625, z: 3217, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:95` | (2629, 3233) | (2629, 3233) | x 2604-2654, z 3208-3258 | `{ x: 2629, z: 3233, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:96` | (2630, 3210) | (2630, 3210) | x 2605-2655, z 3185-3235 | `{ x: 2630, z: 3210, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:97` | (2632, 3202) | (2632, 3202) | x 2607-2657, z 3177-3227 | `{ x: 2632, z: 3202, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:98` | (2633, 3222) | (2633, 3222) | x 2608-2658, z 3197-3247 | `{ x: 2633, z: 3222, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:99` | (2633, 3243) | (2633, 3243) | x 2608-2658, z 3218-3268 | `{ x: 2633, z: 3243, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:100` | (2639, 3230) | (2639, 3230) | x 2614-2664, z 3205-3255 | `{ x: 2639, z: 3230, radius: 39 }` | Imp 1 | no | no | - | - |
+| `npc:kandarin:101` | (2656, 3720) | (2656, 3720) | x 2653-2659, z 3717-3723 | `{ x: 2656, z: 3720, radius: 8 }` | Hobgoblin 1 | no | yes | - | no stand |
+| `npc:kandarin:102` | (2659, 3729) | x 2656-2661, z 3727-3731 | x 2653-2664, z 3724-3734 | `{ x: 2659, z: 3729, radius: 11 }` | Hobgoblin 2 | no | yes | - | no stand |
+| `npc:kandarin:103` | (2666, 3351) | x 2658-2672, z 3348-3354 | x 2653-2677, z 3343-3359 | `{ x: 2665, z: 3351, radius: 18 }` | Cow 5 | no | no | - | - |
+| `npc:kandarin:104` | (2676, 3090) | x 2667-2683, z 3081-3097 | x 2664-2686, z 3078-3100 | `{ x: 2675, z: 3089, radius: 19 }` | Jungle spider 18 | no | no | - | - |
+| `npc:kandarin:105` | (2672, 3728) | x 2669-2675, z 3725-3731 | x 2666-2678, z 3722-3734 | `{ x: 2672, z: 3728, radius: 12 }` | Hobgoblin 2 | no | yes | - | - |
+| `npc:kandarin:106` | (2676, 3110) | x 2671-2681, z 3107-3114 | x 2663-2689, z 3099-3122 | `{ x: 2676, z: 3111, radius: 21 }` | Jungle spider 3, Spider 2 | no | no | - | - |
+| `npc:kandarin:107` | (2695, 3211) | x 2691-2699, z 3204-3216 | x 2688-2702, z 3201-3219 | `{ x: 2695, z: 3210, radius: 15 }` | Moss giant 5 | no | no | - | 30 coins + 10 Agility or The Grand Tree done + 10 Agility |
+| `npc:kandarin:108` | (2692, 3274) | x 2691-2695, z 3271-3277 | x 2686-2700, z 3266-3282 | `{ x: 2693, z: 3274, radius: 14 }` | Chicken (chicken) 4 | no | no | - | - |
+| `npc:kandarin:109` | (2720, 3218) | x 2715-2724, z 3212-3223 | x 2703-2736, z 3200-3235 | `{ x: 2720, z: 3218, radius: 28 }` | Poison Scorpion 5 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:kandarin:110` | (2720, 3583) | (2720, 3583) | x 2705-2735, z 3568-3598 | `{ x: 2720, z: 3583, radius: 25 }` | Rat 1 | no | no | - | - |
+| `npc:kandarin:111` | (2727, 3160) | x 2723-2731, z 3158-3164 | x 2718-2736, z 3153-3169 | `{ x: 2727, z: 3161, radius: 16 }` | Tribesman 9 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:kandarin:112` | (2728, 3575) | x 2725-2730, z 3571-3580 | x 2710-2745, z 3556-3595 | `{ x: 2728, z: 3576, radius: 30 }` | Rat 4 | no | no | - | - |
+| `npc:kandarin:113` | (2731, 3225) | x 2729-2733, z 3224-3225 | x 2717-2745, z 3212-3237 | `{ x: 2731, z: 3225, radius: 23 }` | Poison Scorpion 2 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:kandarin:114` | (2735, 3521) | (2735, 3521) | x 2727-2743, z 3513-3529 | `{ x: 2735, z: 3521, radius: 15 }` | Highwayman 1 | no | no | - | - |
+| `npc:kandarin:115` | (2738, 3636) | x 2736-2740, z 3635-3638 | x 2731-2745, z 3630-3643 | `{ x: 2738, z: 3637, radius: 13 }` | Bunny (viking_bunny_1) 3, Bunny (viking_bunny_2) 5 | no | no | - | - |
+| `npc:kandarin:116` | (2749, 3521) | (2749, 3521) | x 2741-2757, z 3513-3529 | `{ x: 2749, z: 3521, radius: 15 }` | Highwayman 1 | no | no | - | - |
+| `npc:kandarin:117` | (2752, 3409) | (2752, 3409) | x 2744-2760, z 3401-3417 | `{ x: 2752, z: 3409, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:kandarin:118` | (2753, 3396) | (2753, 3396) | x 2745-2761, z 3388-3404 | `{ x: 2753, z: 3396, radius: 15 }` | Giant bat 1 | no | no | - | - |
+| `npc:kandarin:119` | (2768, 3210) | (2768, 3210) | x 2765-2771, z 3207-3213 | `{ x: 2768, z: 3210, radius: 8 }` | Jungle spider 1 | no | no | - | 30 coins or The Grand Tree done |
+| `npc:kandarin:120` | (2804, 3507) | (2804, 3507) | x 2801-2807, z 3504-3510 | `{ x: 2804, z: 3507, radius: 8 }` | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:kandarin:121` | (2811, 3506) | (2811, 3506) | x 2808-2814, z 3503-3509 | `{ x: 2811, z: 3506, radius: 8 }` | Ice giant 1 | no | no | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:kandarin:122` | (2818, 3561) | x 2816-2819, z 3559-3562 | x 2811-2824, z 3554-3567 | `{ x: 2818, z: 3561, radius: 13 }` | Chicken (chicken) 2, Chicken (chicken_brown) 2, Rooster 1 | no | no | - | wear Climbing boots or Death Plateau done or Death Plateau: Tenzing's map got (~death_get_map >= ^death_got_map, quests/quest_death/scripts/quest_death.rs2:65) + Death Plateau: spoken to Saba (~death_get_map >= ^death_spoken_saba, quests/quest_death/scripts/quest_death.rs2:56) or Troll Stronghold at stage 10 + 15 Agility |
+| `npc:kandarin:123` | (2817, 3514) | (2817, 3514) | x 2814-2820, z 3511-3517 | `{ x: 2817, z: 3514, radius: 8 }` | Ice giant 1 | no | yes | - | carry any weapon pickaxe + 50 Mining or wear any weapon pickaxe + 50 Mining |
+| `npc:kandarin:124` | (2834, 3305) | (2834, 3305) | x 2825-2843, z 3296-3314 | `{ x: 2834, z: 3305, radius: 16 }` | Skeleton 1 | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Ladders and stairs
 
@@ -446,13 +442,12 @@
 | `connector:kandarin:76` | (2774, 3234) L1 | (2774, 3234) L1 | `{ x: 2774, z: 3234, radius: 3, level: 1 }` | Gangplank 1 | down (2772, 3234) by Cross | no | no | - | 30 coins or The Grand Tree done |
 | `connector:kandarin:77` | (2776, 3234) | (2776, 3234) | `{ x: 2776, z: 3234, radius: 3 }` | Ship's ladder 1 | up (2776, 3235) L1 by Climb-up | no | no | - | 30 coins or The Grand Tree done |
 | `connector:kandarin:78` | (2776, 3234) L1 | (2776, 3234) L1 | `{ x: 2776, z: 3234, radius: 3, level: 1 }` | Ship's ladder 1 | down (2776, 3235) by Climb-down | no | no | - | 30 coins or The Grand Tree done |
-| `connector:kandarin:79` | (2848, 3235) | (2848, 3235) | `{ x: 2848, z: 3235, radius: 3 }` | Ladder 1 | up (2847, 3235) L1 by Climb-up | yes | no | - | 30 coins + Dragon Slayer done or Dragon Slayer done + The Grand Tree done |
 
 ## Areas within
 
 | Area | Sites in it |
 |---|---|
-| [Barbarian Outpost](barbarian-outpost.md) | tree 2, npc 1 |
+| [Barbarian Outpost](barbarian-outpost.md) | tree 1, npc 2 |
 | [Barbarian Outpost agility course](barbarian-agility-course.md) | tree 2, agility-course 1, npc 1, connector 3 |
 | [Battlefield](battlefield.md) | pickpocket 2, npc 2 |
 | [Baxtorian Falls](baxtorian-falls.md) | tree 1 |

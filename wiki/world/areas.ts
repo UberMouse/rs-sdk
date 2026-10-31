@@ -175,7 +175,7 @@ export const AREAS: readonly Area[] = [
     },
 
     // Islands off Asgarnia. Each is smaller than the region rects around it, so it wins their tiles.
-    { id: 'crandor', name: 'Crandor', rects: [{ x1: 2807, z1: 3239, x2: 2870, z2: 3302 }] },
+    { id: 'crandor', name: 'Crandor', rects: [{ x1: 2807, z1: 3224, x2: 2870, z2: 3302 }] },
     // From the dock (2834, 3334) in the south to the north shore, and east to the net spots at x 2879
     // (fishing_movement_entrana2_enum).
     { id: 'entrana', name: 'Entrana', rects: [{ x1: 2816, z1: 3328, x2: 2881, z2: 3410 }] },
@@ -216,7 +216,7 @@ export const AREAS: readonly Area[] = [
         id: 'barbarian-outpost',
         name: 'Barbarian Outpost',
         parent: 'kandarin',
-        rects: [{ x1: 2538, z1: 3551, x2: 2561, z2: 3574 }],
+        rects: [{ x1: 2538, z1: 3551, x2: 2561, z2: 3577 }],
     },
     { id: 'battlefield', name: 'Battlefield', parent: 'kandarin', rects: [{ x1: 2510, z1: 3220, x2: 2533, z2: 3243 }] },
     {
