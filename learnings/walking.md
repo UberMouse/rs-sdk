@@ -202,6 +202,10 @@ await bot.walkTo(3092, 3243);  // May path through (3220, 3220)
 | Falador north gate (to Taverley and wester side of map) | ~(2935, 3460) | 
 | Taverley (stone circle) | (2935, 3479) |
 
+### Al Kharid toll gate and talk
+
+The `talk` task's own `at` walk cannot cross the toll gate west to east: it logs "A dialog is open at the toll gate with no Yes choice", because `talk` runs with the dialog guard off and the border guard's continue pages stay open. `travel` and `pick` cross it fine, so put a `travel` phase before any Al Kharid talk, until the task is fixed. Prince Ali Rescue does not exempt the toll until done (10 gp each way). [v 2026-11-01 questw3 local]
+
 ### Al Kharid Coordinates
 
 | Location | Coordinates | Notes |
