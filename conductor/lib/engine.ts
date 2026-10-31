@@ -44,6 +44,15 @@ import { distance, errMessage, INVENTORY_SLOTS, mapCounter, xpGainedSince } from
 export const TICK_STALL_MS = 30_000;
 /** Consecutive loops with no applicable step before the run fails (covers mid-animation gaps). */
 const MAX_IDLE_LOOPS = 20;
+/**
+ * Step completions (of any steps) that end on the tick they started on with the progress signature unchanged,
+ * all on one tick, before the run is stuck. A guard run, an idle loop, a tick advance or a signature change
+ * resets the count. A real step waits (the tick advances) or changes something; several cheap steps
+ * resolving in one tick are a handful, so 50 is far above any legitimate chain and trips in well under a
+ * second of a step that returns at once forever. The watchdog cannot: it is wall-clock and sized to the
+ * task's longest legitimate silence (minutes), while such a loop spins hundreds of times a tick.
+ */
+export const MAX_NO_EFFECT_STEPS = 50;
 export const DEFAULT_STUCK_AFTER_MS = 90_000;
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;
@@ -575,6 +584,12 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     let lastTickAt = now();
     let lastReportAt = now();
     let idleLoops = 0;
+    /**
+     * Step completions (across different steps) with no tick advance and no signature change, all on the
+     * tick `noEffectTick` (MAX_NO_EFFECT_STEPS); guards, idle loops and a new tick reset it.
+     */
+    let noEffectSteps = 0;
+    let noEffectTick = -1;
     /** Calls of `opts.externalStop` so far: the one that fires is recorded, for the replay to fire on. */
     let externalChecks = 0;
 
@@ -723,6 +738,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             });
             if (guard) {
                 begin(guard.name);
+                noEffectSteps = 0;
                 const out = guard.run(s);
                 stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guards, guard)) : ended(guard.name, out);
             } else {
@@ -732,6 +748,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 for (const [i, st] of def.steps.entries()) if (!applies[i]) streaks.delete(st);
                 const step = def.steps[applies.indexOf(true)];
                 if (!step) {
+                    noEffectSteps = 0;
                     // Nothing applicable can be a transient state (mid-animation); give it a few ticks.
                     if (++idleLoops > MAX_IDLE_LOOPS) return finish('failed', 'no step applies to the current state');
                     await driver.nextTick();
@@ -751,6 +768,18 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                     stepEnd = isOp(out) ? await runOp(step.name, out, guards) : ended(step.name, out);
                 } finally {
                     running = null;
+                }
+                if (!stepEnd) {
+                    const after = driver.state();
+                    if (after.tick === s.tick && progressSignature(after) === progressSignature(s)) {
+                        if (s.tick !== noEffectTick) noEffectSteps = 0;
+                        noEffectTick = s.tick;
+                        if (++noEffectSteps > MAX_NO_EFFECT_STEPS)
+                            return finish(
+                                'stuck',
+                                `step ${step.name} completed ${noEffectSteps} times with no tick or state change`,
+                            );
+                    } else noEffectSteps = 0;
                 }
             }
 

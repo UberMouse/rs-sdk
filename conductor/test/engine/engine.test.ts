@@ -5,7 +5,13 @@ import { SMITHING_INTERFACE } from '../../actions/dismiss';
 import { TimelineDriver, type TimelineOptions } from '../../core/drivers/timeline';
 import { TickStall } from '../../core/interpret';
 import { type Op, send, ticks, uninterruptible, wait } from '../../core/op';
-import { LEFTOVER_CLOSE_TICKS, LEFTOVER_STEP, MAX_STEP_COMMANDS, SETTLE_TICKS } from '../../lib/engine';
+import {
+    LEFTOVER_CLOSE_TICKS,
+    LEFTOVER_STEP,
+    MAX_NO_EFFECT_STEPS,
+    MAX_STEP_COMMANDS,
+    SETTLE_TICKS,
+} from '../../lib/engine';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
@@ -502,6 +508,89 @@ describe('onTick during a generator step', () => {
         expect(r.result.reason).toBe('no XP, position, HP or inventory change for 2s (last step: idle)');
         expect(r.result.durationMs).toBe(6 * TICK_MS);
         expect(r.sends).toEqual(['start', 'cleanup']);
+    });
+
+    test('a step that returns at once forever ends stuck after MAX_NO_EFFECT_STEPS runs', async () => {
+        let runs = 0;
+        const r = await runTask(
+            [
+                step('instant', () => {
+                    runs++;
+                }),
+            ],
+            timeline(3),
+        );
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe(
+            `step instant completed ${MAX_NO_EFFECT_STEPS + 1} times with no tick or state change`,
+        );
+        expect(runs).toBe(MAX_NO_EFFECT_STEPS + 1);
+    });
+
+    test('cheap steps resolving within a tick do not trip it: a new tick resets the count', async () => {
+        let runs = 0;
+        const r = await runTask(
+            [
+                step('burst', function* () {
+                    // Many instant runs per tick, then a wait: the tick advancing resets the count.
+                    if (++runs % MAX_NO_EFFECT_STEPS !== 0) return;
+                    yield* ticks(1);
+                    if (runs >= MAX_NO_EFFECT_STEPS * 4) return { done: 'enough' };
+                }),
+            ],
+            timeline(10),
+        );
+        expect(r.result.status).toBe('done');
+        expect(runs).toBe(MAX_NO_EFFECT_STEPS * 4);
+    });
+
+    test('a state change on the same tick resets the count', async () => {
+        // The bot's xp grows every time the state is read, with the tick standing still.
+        class Moving extends TimelineDriver {
+            private reads = 0;
+            override state(): BotWorldState {
+                const s = super.state();
+                return { ...s, skills: [{ ...s.skills[0]!, experience: ++this.reads }] };
+            }
+        }
+        let runs = 0;
+        const r = await runTask(
+            [
+                step('moving', () => {
+                    if (++runs > MAX_NO_EFFECT_STEPS * 3) return { done: 'enough' };
+                }),
+            ],
+            [],
+            { driver: new Moving(timeline(3)) },
+        );
+        expect(r.result.status).toBe('done');
+        expect(runs).toBe(MAX_NO_EFFECT_STEPS * 3 + 1);
+    });
+
+    test('a guard run between instant steps resets the count', async () => {
+        let runs = 0;
+        const fired = new Set<number>();
+        const every40: TaskGuard = {
+            name: 'every40',
+            policy: 'abort',
+            episode: () => ({}),
+            when: () => runs > 0 && runs % 40 === 0 && !fired.has(runs),
+            run: () => {
+                fired.add(runs);
+                return undefined;
+            },
+        };
+        const r = await runTask(
+            [
+                step('instant', () => {
+                    if (++runs >= MAX_NO_EFFECT_STEPS * 4) return { done: 'enough' };
+                }),
+            ],
+            timeline(3),
+            { guards: [every40] },
+        );
+        expect(r.result.status).toBe('done');
+        expect(runs).toBe(MAX_NO_EFFECT_STEPS * 4);
     });
 
     test('the step timeout cancels the step as a tick budget and runs its finally', async () => {
