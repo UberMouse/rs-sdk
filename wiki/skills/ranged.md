@@ -50,6 +50,7 @@ Ranged XP is gained by dealing damage with ranged weapons. Requires line of sigh
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
 | Lumbridge chickens | (3231, 3295), radius 8 | 1-40 | Shortbow + Bronze arrows wielded; arrows dropped by misses are picked up again. Ranged 1 -> 13 in 8 min, 13 -> 40 in ~10 min (also gave Hitpoints 24 -> 36). Setup: [combat](../../learnings/combat.md) | not from stats.ts (1 run: 14.4k Ranged in 10 min) | 2026-10-11 conductor2 local |
+| Taverley Dungeon baby blue dragons | room ~(2898, 9766), behind the Dusty-key gate (2924, 9803) | 45-95 | Oak shortbow, Steel arrows then Iron arrows (arrows in `loot`), `buryBones`; also ~71k Prayer/h and ~160k HP/h ([prayer](prayer.md#dusty-key-and-baby-blue-dragons-taverley-dungeon)). 300 Steel arrows lasted ~36 min; ~800 arrows went in ~90 min even with fallen arrows picked up (pickups not measured). Run 2: Ranged 45 -> 93 (+642,500) in 80 min, Steel phase 247,700 XP in 36 min, Iron phase 392,200 XP in 40 min. Buying arrows: [shops](../../learnings/shops.md) | ~480k (local, 2 plan runs; not stats.ts) | 2026-10-31 conductor3 local |
 
 ## Speeds, ammo and XP (server data)
 

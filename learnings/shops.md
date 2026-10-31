@@ -31,6 +31,8 @@ overstocked on that item, not that the sale failed.
 
 - The `shop` task failed twice with `cannot open shop via "Dwarf": No trade option on NPC` in the Dwarven Mine while a trading Dwarf (idx 5250, [Trade]) stood 3 tiles away: it picked a same-named Dwarf with no Trade option. Fixed in 7d30f5a41: `shop` now picks the reachable, nearest same-named NPC that offers Trade. [v 2026-10-24 conductor3 local; fix v unit+itest 7d30f5a41]
 
+- Lowe's Archery Emporium (Oak shortbow, Steel and Iron arrows; page `wiki/shops/lowes-archery-emporium.md`): the buy needs 3+ free inventory slots; a full pack failed the arrow buy with "no-inventory-space". Prices ramp with quantity: 500 Iron arrows cost 4,954 gp; an Oak shortbow + 300 Steel arrows cost 8,875 gp. [v 2026-10-31 conductor3 local]
+
 ## Starter tools: where to get each
 
 | Tool | Source | Cost | Verified |

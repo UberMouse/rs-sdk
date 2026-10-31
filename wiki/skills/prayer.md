@@ -73,5 +73,6 @@ Dusty key (dusty-key plan draft, conductor3): the Jailer is combat 47, so the pl
 - The bone is "Babydragon bones". `combat` with `buryBones: true` and `maxLevelGap: 60` buries them continuously; no `loot` param is needed. Prayer points fell to 2 with no effect when no protection prayer is used. [v 2026-10-31 conductor3 local]
 - Set the combat `skill` to an unmaxed melee skill (Attack/Defence) once Strength is 99: melee xp here is ~7x the Prayer xp, and the 764k/h run trained maxed Strength, wasted. [v 2026-10-31 conductor3 local]
 - Banking for this trip: 12 Swordfish + 12 Tuna + Salmon filled all 28 slots; a deposit keeping only Dusty key and Coins also banks the Hammer and Maze key (re-take them if a later quest needs them). [v 2026-10-31 conductor3 local]
+- Ranged at the same room (plan `ranged-dragons`: Oak shortbow, Steel then Iron arrows, arrows in `loot`, `buryBones`) gave about 480k Ranged/h, ~71k Prayer/h and ~160k HP/h at Ranged 45-95: Prayer/h is below melee's 104-112k/h because kills are slower. Ranged: [ranged](ranged.md#verified-training-spots). [v 2026-10-31 conductor3 local]
 - Lesser demons attack at the gate: see `learnings/hazards.md` (Taverley Dungeon dragon gate).
 
