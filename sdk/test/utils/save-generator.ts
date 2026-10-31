@@ -23,11 +23,38 @@ import * as path from 'path';
 const SAV_MAGIC = 0x2004;
 const SAV_VERSION = 6;
 
+/**
+ * A fresh account's varp values, one per varp id. Player.ts (constructor) starts every varp at 0 if
+ * its type is int and at -1 for any other type except string (a coord, a boolean, an npc_uid, ...);
+ * the types are the third column of server/engine/data/symbols/varp.sym, which the engine's own
+ * pack step writes. Unset varps in a generated save must hold these, or a quest that tests a
+ * coord varp against -1 (Ikov's ice-arrow chest, varp 28) never sees its fresh state.
+ */
+export function freshVarpDefaults(
+    symPath = path.join(import.meta.dir, '../../../server/engine/data/symbols/varp.sym'),
+): number[] {
+    const out: number[] = [];
+    for (const raw of fs.readFileSync(symPath, 'utf8').split('\n')) {
+        const line = raw.trim();
+        if (line === '') continue;
+        const [id, name, type] = line.split('\t');
+        if (id === undefined || !/^\d+$/.test(id) || !name || !type) {
+            throw new Error(`${symPath}: line is not "id<TAB>name<TAB>type": ${JSON.stringify(line)}`);
+        }
+        out[parseInt(id)] = type === 'int' || type === 'string' ? 0 : -1;
+    }
+    if (out.length === 0) throw new Error(`${symPath}: no varp rows`);
+    for (let i = 0; i < out.length; i++) {
+        if (out[i] === undefined) throw new Error(`${symPath}: varp ids are not contiguous, id ${i} is missing`);
+    }
+    return out;
+}
+
 // Common inventory type IDs (from game config)
 export const InvTypes = {
-    INV: 93,      // Main inventory (28 slots)
-    WORN: 94,     // Equipment (14 slots)
-    BANK: 95,     // Bank (496 slots)
+    INV: 93, // Main inventory (28 slots)
+    WORN: 94, // Equipment (14 slots)
+    BANK: 95, // Bank (496 slots)
 };
 
 // Common item IDs
@@ -88,16 +115,16 @@ export const Items = {
     THREAD: 1734,
 
     // Herblore
-    GUAM_LEAF: 249,          // Clean guam leaf
-    EYE_OF_NEWT: 221,        // Secondary ingredient for attack potion
-    VIAL_OF_WATER: 227,      // Base for unfinished potions
-    GUAM_POTION_UNF: 91,     // Unfinished guam potion
-    ATTACK_POTION_3: 121,    // 3-dose attack potion
+    GUAM_LEAF: 249, // Clean guam leaf
+    EYE_OF_NEWT: 221, // Secondary ingredient for attack potion
+    VIAL_OF_WATER: 227, // Base for unfinished potions
+    GUAM_POTION_UNF: 91, // Unfinished guam potion
+    ATTACK_POTION_3: 121, // 3-dose attack potion
 
     // Runecrafting
-    RUNE_ESSENCE: 1436,      // Basic essence for crafting runes
-    PURE_ESSENCE: 7936,      // Pure essence (for higher runes)
-    AIR_TALISMAN: 1438,      // Talisman to enter air altar
+    RUNE_ESSENCE: 1436, // Basic essence for crafting runes
+    PURE_ESSENCE: 7936, // Pure essence (for higher runes)
+    AIR_TALISMAN: 1438, // Talisman to enter air altar
 
     // Other
     COINS: 995,
@@ -137,29 +164,29 @@ export const Skills = {
 // Known locations
 export const Locations = {
     LUMBRIDGE_CASTLE: { x: 3222, z: 3218 },
-    LUMBRIDGE_SPINNING_WHEEL: { x: 3209, z: 3213, level: 2 },  // 2nd floor of castle
+    LUMBRIDGE_SPINNING_WHEEL: { x: 3209, z: 3213, level: 2 }, // 2nd floor of castle
     LUMBRIDGE_SHOP: { x: 3212, z: 3246 },
-    ALKHARID_FISHING: { x: 3267, z: 3148 },  // Safe shrimp spot near Al Kharid palace
-    DRAYNOR_FISHING: { x: 3086, z: 3230 },  // WARNING: Near dark wizards!
+    ALKHARID_FISHING: { x: 3267, z: 3148 }, // Safe shrimp spot near Al Kharid palace
+    DRAYNOR_FISHING: { x: 3086, z: 3230 }, // WARNING: Near dark wizards!
     VARROCK_SE_MINE: { x: 3285, z: 3365 },
-    VARROCK_TEA_STALL: { x: 3269, z: 3410 },  // SE Varrock, near tea stall
+    VARROCK_TEA_STALL: { x: 3269, z: 3410 }, // SE Varrock, near tea stall
     ALKHARID_MINE: { x: 3300, z: 3310 },
     ALKHARID_FURNACE: { x: 3274, z: 3186 },
     VARROCK_WEST_BANK: { x: 3185, z: 3436 },
-    FALADOR_MINE: { x: 3045, z: 9780, level: 0 },  // Dwarven mine
-    EDGEVILLE_DUNGEON: { x: 3132, z: 9912, level: 0 },  // Edgeville dungeon entrance area
-    ZANARIS: { x: 3220, z: 9592, level: 0 },  // Lost City (Zanaris)
-    GNOME_STRONGHOLD_AGILITY: { x: 2474, z: 3436 },  // Gnome Agility Course start
+    FALADOR_MINE: { x: 3045, z: 9780, level: 0 }, // Dwarven mine
+    EDGEVILLE_DUNGEON: { x: 3132, z: 9912, level: 0 }, // Edgeville dungeon entrance area
+    ZANARIS: { x: 3220, z: 9592, level: 0 }, // Lost City (Zanaris)
+    GNOME_STRONGHOLD_AGILITY: { x: 2474, z: 3436 }, // Gnome Agility Course start
 };
 
 export interface SaveConfig {
     position?: { x: number; z: number; level?: number };
-    skills?: Record<string, number>;  // Skill name -> level
+    skills?: Record<string, number>; // Skill name -> level
     inventory?: Array<{ id: number; count: number }>;
     equipment?: Array<{ id: number; count: number; slot: number }>;
-    bank?: Array<{ id: number; count: number }>;  // Bank items (up to 496 slots)
+    bank?: Array<{ id: number; count: number }>; // Bank items (up to 496 slots)
     coins?: number;
-    varps?: Record<number, number>;  // Varp ID -> value (281=tutorial progress)
+    varps?: Record<number, number>; // Varp ID -> value (281=tutorial progress)
     appearance?: {
         body?: number[];
         colors?: number[];
@@ -200,7 +227,7 @@ function getExpByLevel(level: number): number {
     for (let i = 1; i < level; i++) {
         xp += Math.floor(i + 300 * Math.pow(2, i / 10));
     }
-    return Math.floor(xp / 4) * 10;  // ×10 to match engine format
+    return Math.floor(xp / 4) * 10; // ×10 to match engine format
 }
 
 // Binary writer helper
@@ -219,17 +246,17 @@ class BinaryWriter {
     }
 
     p2(value: number): void {
-        this.view.setUint16(this.pos, value, false);  // Big-endian
+        this.view.setUint16(this.pos, value, false); // Big-endian
         this.pos += 2;
     }
 
     p4(value: number): void {
-        this.view.setInt32(this.pos, value, false);  // Big-endian
+        this.view.setInt32(this.pos, value, false); // Big-endian
         this.pos += 4;
     }
 
     p8(value: bigint): void {
-        this.view.setBigInt64(this.pos, value, false);  // Big-endian
+        this.view.setBigInt64(this.pos, value, false); // Big-endian
         this.pos += 8;
     }
 
@@ -305,17 +332,20 @@ export function createSaveData(config: SaveConfig): Uint8Array {
             xp = getExpByLevel(10);
         }
 
-        writer.p4(xp);   // Experience
+        writer.p4(xp); // Experience
         writer.p1(level); // Current level
     }
 
     // Variables (varps) - write count of 309 (typical), or up to the highest custom varp id, which the
     // engine reads back one by one (PlayerLoading.ts, save versions below 7)
     // Set tutorial progress (varp 281) to 1000 to mark tutorial complete
-    const ids = Object.keys(config.varps ?? {}).map(id => parseInt(id)).filter(id => id >= 0);
-    const varpCount = Math.max(309, ...ids.map(id => id + 1));
-    const varps = new Array(varpCount).fill(0);
-    varps[281] = 1000;  // Tutorial complete
+    const ids = Object.keys(config.varps ?? {})
+        .map(id => parseInt(id))
+        .filter(id => id >= 0);
+    const defaults = freshVarpDefaults();
+    const varpCount = Math.max(309, defaults.length, ...ids.map(id => id + 1));
+    const varps = Array.from({ length: varpCount }, (_, i) => defaults[i] ?? 0);
+    varps[281] = 1000; // Tutorial complete
 
     // Apply custom varps if specified
     if (config.varps) {
@@ -329,7 +359,7 @@ export function createSaveData(config: SaveConfig): Uint8Array {
 
     writer.p2(varpCount);
     for (let i = 0; i < varpCount; i++) {
-        writer.p4(varps[i]);
+        writer.p4(varps[i] ?? 0);
     }
 
     // Inventories
@@ -388,14 +418,14 @@ export function createSaveData(config: SaveConfig): Uint8Array {
 
     // Write main inventory
     if (hasInv) {
-        writer.p2(InvTypes.INV);  // Type ID
-        writer.p2(28);            // Capacity
+        writer.p2(InvTypes.INV); // Type ID
+        writer.p2(28); // Capacity
         for (let i = 0; i < 28; i++) {
             const item = invItems[i];
             if (!item) {
-                writer.p2(0);  // Empty slot
+                writer.p2(0); // Empty slot
             } else {
-                writer.p2(item.id + 1);  // Item ID (1-indexed)
+                writer.p2(item.id + 1); // Item ID (1-indexed)
                 if (item.count >= 255) {
                     writer.p1(255);
                     writer.p4(item.count);
@@ -408,14 +438,14 @@ export function createSaveData(config: SaveConfig): Uint8Array {
 
     // Write worn equipment
     if (hasWorn) {
-        writer.p2(InvTypes.WORN);  // Type ID
-        writer.p2(14);             // Capacity
+        writer.p2(InvTypes.WORN); // Type ID
+        writer.p2(14); // Capacity
         for (let i = 0; i < 14; i++) {
             const item = wornItems[i];
             if (!item) {
-                writer.p2(0);  // Empty slot
+                writer.p2(0); // Empty slot
             } else {
-                writer.p2(item.id + 1);  // Item ID (1-indexed)
+                writer.p2(item.id + 1); // Item ID (1-indexed)
                 if (item.count >= 255) {
                     writer.p1(255);
                     writer.p4(item.count);
@@ -428,14 +458,14 @@ export function createSaveData(config: SaveConfig): Uint8Array {
 
     // Write bank
     if (hasBank) {
-        writer.p2(InvTypes.BANK);  // Type ID
-        writer.p2(BANK_SIZE);      // Capacity
+        writer.p2(InvTypes.BANK); // Type ID
+        writer.p2(BANK_SIZE); // Capacity
         for (let i = 0; i < BANK_SIZE; i++) {
             const item = bankItems[i];
             if (!item) {
-                writer.p2(0);  // Empty slot
+                writer.p2(0); // Empty slot
             } else {
-                writer.p2(item.id + 1);  // Item ID (1-indexed)
+                writer.p2(item.id + 1); // Item ID (1-indexed)
                 if (item.count >= 255) {
                     writer.p1(255);
                     writer.p4(item.count);
@@ -447,8 +477,8 @@ export function createSaveData(config: SaveConfig): Uint8Array {
     }
 
     // AFK zones (empty)
-    writer.p1(0);  // Count
-    writer.p2(0);  // Last AFK zone
+    writer.p1(0); // Count
+    writer.p2(0); // Last AFK zone
 
     // Chat modes (packed byte: public << 4 | private << 2 | trade)
     writer.p1(0);
@@ -469,11 +499,7 @@ export function createSaveData(config: SaveConfig): Uint8Array {
 /**
  * Generate and save a save file for a bot
  */
-export async function generateSave(
-    username: string,
-    config: SaveConfig,
-    profile: string = 'main'
-): Promise<string> {
+export async function generateSave(username: string, config: SaveConfig, profile: string = 'main'): Promise<string> {
     const saveData = createSaveData(config);
 
     // Determine save path - check both possible engine locations
@@ -534,9 +560,7 @@ export const TestPresets = {
     MINER_AT_VARROCK: {
         position: Locations.VARROCK_SE_MINE,
         skills: { Mining: 1 },
-        inventory: [
-            { id: Items.BRONZE_PICKAXE, count: 1 },
-        ],
+        inventory: [{ id: Items.BRONZE_PICKAXE, count: 1 }],
     } as SaveConfig,
 
     // Miner at Al-Kharid mine (good for mining -> smithing flow)
@@ -553,27 +577,21 @@ export const TestPresets = {
     FISHER_AT_ALKHARID: {
         position: Locations.ALKHARID_FISHING,
         skills: { Fishing: 1 },
-        inventory: [
-            { id: Items.SMALL_FISHING_NET, count: 1 },
-        ],
+        inventory: [{ id: Items.SMALL_FISHING_NET, count: 1 }],
     } as SaveConfig,
 
     // Fisher at Draynor with net (WARNING: near dark wizards!)
     FISHER_AT_DRAYNOR: {
         position: Locations.DRAYNOR_FISHING,
         skills: { Fishing: 1 },
-        inventory: [
-            { id: Items.SMALL_FISHING_NET, count: 1 },
-        ],
+        inventory: [{ id: Items.SMALL_FISHING_NET, count: 1 }],
     } as SaveConfig,
 
     // Fisher+Cook at Al-Kharid (SAFE!) - cook at range, bank fish
     FISHER_COOK_AT_DRAYNOR: {
-        position: Locations.ALKHARID_FISHING,  // Safe from dark wizards
+        position: Locations.ALKHARID_FISHING, // Safe from dark wizards
         skills: { Fishing: 1, Cooking: 1 },
-        inventory: [
-            { id: Items.SMALL_FISHING_NET, count: 1 },
-        ],
+        inventory: [{ id: Items.SMALL_FISHING_NET, count: 1 }],
     } as SaveConfig,
 
     // Woodcutter at Lumbridge with axe and tinderbox
