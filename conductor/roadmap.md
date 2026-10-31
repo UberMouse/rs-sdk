@@ -115,7 +115,7 @@ filler when a quest waits on a pack item or coins. The prep and plan debugging, 
 adapts a promoted plan spends ~10 M cache reads (grail-chain, 175 turns, 45 min).
 
 **Queue now (retro #5), in order.**
-1. Finish Merlin + Holy Grail (runner in flight; Defence ~85, Prayer ~80 expected; record the measured XP).
+1. ~~Finish Merlin + Holy Grail~~ done 2026-10-24 (Defence 40 -> 85, Prayer 49 -> 81).
 2. ~~Coins goal~~ done 2026-10-24: bank + pack >= 60k in 32 min (knight-thieve-bankfood with `until` on `v.bank('Coins') + v.inv('Coins')`, a one-line copy; pack +11,126). **Coins goal: Knights of Ardougne thieving to 60k gp** (plan knight-thieve-bankfood, ~1,160 gp/min, so ~45 min after the
    walk). Needed for: the rune sword (20.8k), Dragon Slayer costs, Plague City / Observatory pack items, Fremennik. One runner,
    milestone "60k banked", not a level. Do it before Dragon Slayer, and batch the Kandarin errands (Monk's Friend starts E
@@ -134,6 +134,61 @@ adapts a promoted plan spends ~10 M cache reads (grail-chain, 175 turns, 45 min)
 7. Then Mining 86-99 / Smithing 87-99 superheat, Crafting remainder, Ranged/Fletching quests (Big Chompy -> Ikov), and the long
    combat grind (HP, Prayer, Runecraft long poles).
 Before each run, check the plan's `until`/`when` gates and the combat floor.
+
+**Account 2026-10-31 07:32 (retro #6):** total 1207 (35.9% of max XP). Thieving/Cooking/Fishing 99, Attack 95, Strength 91,
+Smithing 87, Mining 86, Defence 85, Crafting 85, Prayer 83, Woodcutting 73, HP 67, Herblore 57, Agility 53, Magic 44;
+Ranged/Fletching/Firemaking/Runecraft 1. QP ~41. Adamant axe and pickaxe, 24,855 coins in the pack (the bank held only ~13k, not the 48k the state recorded). Dragon Slayer is
+on a runner (Lost City stretch). Left to 99: Herblore 942k, Agility 957k, Magic 977k, HP 890k, Woodcutting 827k, Prayer 657k,
+Defence 600k, Crafting 600k, Mining 572k, Smithing 549k, Strength 405k, Attack 198k, and 998k each in the four level-1 skills.
+
+**Where the qp32-set wall time went (retro #6, runner agent-a8ed683cf81dc5772, 05:22-07:32 = 130 min, journal `qp32-set`).**
+Quest plan runs that finished: ~50 min (Monk's 4.5, TGV 9, Ernest ~8, Vampire 5, Cook's 5, Romeo 5, PiP 8, plus Goblin's
+non-grind 7). The rest:
+- **Spirit tree loop 05:39-06:04, ~25 min (19%)**: `ernest-lawrune` phase `veronica` bounced between the maze railing and
+  `stronghold_ent` (2543,3168) for 18 min, SIGTERMed by the runner at 05:57 after the user's message (runner turn 108: "Waiting
+  for Ernest to finish." was its last look at 05:42; 14 min with no check), then ~7 min of escape `travel` legs (one wrong param,
+  `area` for `to`, journal 05:57:20) and a second Ernest start killed after 2 min.
+- **Goblin mail grind 24 min (18%)**: see Drops below.
+- **Walker dead ends after quests ~6 min of hand `interact` calls**: Draynor Manor top floor / Morgan's house (journal 06:12-06:15, four
+  failed interacts and two failed Vampire runs), vampire crypt (06:20-06:21, `No connector from level 0 (3077, 9774)`), fixed in the
+  walker b4d25b0b9 and `learnings/draynor-manor.md`.
+- **Priest in Peril reap 07:04-07:22 (18 min run, killed)**: the harness reaped the background shell ("stopped because the system
+  is running low on memory", runner turn 290), not a `kill`; the rerun at 07:23 resumed and finished in 8 min.
+- Prep: qp-prep 3 min (logs for TGV, its bronze axe), pip-prep 21 s (Pot, pickaxe). Small.
+So ~54 of 130 min (42%) was the loop, the grind, dead ends and the reap; the quests themselves were 40%. The loop was the one
+avoidable cost with a cheap detector (below).
+
+**Retro #6 findings that change the order.**
+1. **Melee deficits are now small, and combat feeds HP and Prayer which no quest does.** Left: Attack 198k, Strength 405k, Defence
+   600k = 1.2M style XP, against HP 890k (needs ~2.7M combat XP at 1/3 per hit, so ~1.5M more than the deficits yield) and Prayer
+   657k (bones). The training pages rate baby blue dragons at Taverley 1.38M/h Attack, 1.37M Strength, 456k HP, 206k Prayer at 99
+   (HP ~320-370k/h at 70-80); moss giants Kandarin 1.6M/h melee but 101k/h Prayer. So retro #4's "lumps before grinding" stops
+   paying after Dragon Slayer (932k Str+Def, a 75-min budget with prep, against ~1 h of grind that also gives HP and Prayer).
+   After Dragon Slayer, skip Fight Arena (Bouncer 137, Att 304k for a 198k need) and Grand Tree's black demon; the one combat
+   site is **baby blue dragons (dusty key) for Att/Def tail + HP 67 -> 99 + Prayer 83 -> 99, ~3.5-4 h, Prayer binding**. Dragon
+   Slayer's anti-dragon shield is for exactly that site. This is the biggest block of remaining hours.
+2. **The four level-1 skills and Herblore have the quest lumps left**: Ranged/Fletching (Big Chompy or Ranged 1 -> 40 by hand, then Temple
+   of Ikov 262k Ranged + 200k Fletching; Tourist Trap 232k Fletching if the pick is Fletching, needs Fletching 10 mid), Herblore
+   (Death Plateau -> Troll Stronghold -> Eadgar's Ruse 275k; Jungle Potion 19k), Agility (Grand Tree 197k, Tourist Trap pick 116k),
+   Magic (Watchtower 382k), Crafting (Observatory 56k, Nature Spirit 75k, Dwarf Cannon 19k), Mining (Plague City 60k).
+3. **Runecraft is the one long pole with no run yet** (floor 5.6 h; plans `earth-runecraft` and `earth-runecraft-28` exist): put a
+   measured run in the next idle slot, and Firemaking from level 1 beside Woodcutting.
+
+**Queue (retro #6), in order.**
+1. Dragon Slayer + Lost City stretch (runner in flight). Expect Str 91 -> ~99 and Defence 85 -> ~96.
+2. **Woodcutting 73 -> 99 filler** (`oak-draynor-drop` north oaks, `until` level:99, ~0.75 h, no prep) with willows + Firemaking 1-30
+   beside it if a variant plan exists; also the slot to run Runecraft 1 -> 28 once (`earth-runecraft-28`, measure).
+3. **Dusty key then baby blue dragons** (new objective; Prayer 83 -> 99, HP, Attack tail): jailer kill at (2933,9693), Velrak's
+   cell, Taverley dungeon site `baby-blue-dragons-taverley`; combat plan with bone burying and the anti-dragon shield. One runner,
+   milestone "dusty key held", then "HP 80 + Prayer 90".
+4. **Ranged/Fletching/Herblore/Agility quest batch** (one runner, plans on main): Death Plateau (Att 75k, 1 QP) -> Troll Stronghold
+   (Dad 101, down to 20 HP) -> Eadgar's Ruse; Tourist Trap with the pick set to Fletching (proven 748 s; save
+   `tourist-trap-start` holds Fletching 10 feathers); Temple of Ikov after Ranged 40 (Ranged 1 -> 40 on chickens or cows with a
+   shortbow, ~10 min); Grand Tree (Agility 197k; black demon 172 fight, do it after the dragon grind raises HP); Plague City (60k
+   Mining, bucket of milk, chocolate dust, snape grass), Biohazard (1,241 s, Thieving 31k; prerequisite of Underground Pass),
+   Nature Spirit (needs PiP stage 61 done), Observatory.
+5. Mining 86-99 and Smithing 87-99 (superheat), Crafting remainder, Magic (Watchtower 382k), then Herblore from chaos druids.
+Each batch runner gets a prep line in its brief (below) and a stop rule for loops.
 
 **Adamant axe pays back; the rune pickaxe does not.** Rate model (`methodRate` with the tool forced), WC oaks at Draynor,
 dropped: steel -> adamant is 672k -> 1.00M/h at WC 15, 847k -> 1.25M at 30, 1.07M -> 1.57M at 50, 1.27M -> 1.88M at 70
@@ -229,6 +284,29 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   minFood, or the boats (Port Sarim -> Karamja -> Brimhaven -> Ardougne, 30 gp each, unverified for bots). Batch the
   Kandarin goals (knights, gnome agility, Catherby fishing, Seers flax and longbows, moss giants (2549,3408)) so the
   account crosses once each way.
+- **Net-progress watchdog (retro #6, task-author / engine)**: the watchdog (`engine.ts` ~172, `DEFAULT_STUCK_AFTER_MS`) counts any change
+  in XP, position, inventory or HP as progress, so a walker bouncing between two tiles (the `stronghold_ent` loop: 13 walk steps,
+  18 min, journal 05:39-05:57, `walk: no-move: loc-op 1 stronghold_ent ... planning without it` repeated) never trips it, and the
+  user noticed, not a log. Add a displacement check: `stuck` when, over N minutes (4-5), the bot stays within a few tiles of where
+  it was, with no XP, inventory-count, quest-tab or phase change; plus a walk rule: the same loc-op logged `no-move` twice in one
+  walk fails the walk `no-progress` naming the loc. The runner brief also needs a check cadence for long plans (one look every
+  5-8 minutes at the log tail and position, stopping a run whose position is unchanged), because the runner waited 14 min blind.
+- **Plan start check for held items (retro #6, task-author)**: the plans' header comment says "Needs: a Pot, a pickaxe, 2+ coins"
+  (priest-in-peril.ts:12) and `requires` can only hold throughout, so a consumed prep item cannot be listed. Three misses in the
+  qp32-set alone: TGV needs 6 logs held (no gather phase), PiP's Pot and pickaxe not fetched (pip-prep, runner turn 281), Holy
+  Grail's coin marker (retro #5); Dragon Slayer's brief had to list the pack by hand. Add `needs: { 'Pot': 1, 'Coins': 2 }` to
+  `definePlan` (start-only; the run fails at load with `plan needs 1 Pot` before moving) and print it in `--list`; wiki/quests pages
+  already carry the item lists. Cheaper than a prep plan per quest for the runner to discover.
+- **Harness memory reap (retro #6)**: Claude Code stops idle background shells at critically low memory (the task notification names
+  `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1`); it killed `priest-in-peril` at 18 min and the instruction is "do not restart on your
+  own". Start plan runs with `setsid -f` like `up.sh` (the up-sh-detach memory) so the reap cannot take the run, and let runners resume
+  once after SIGTERM when `free -g` allows (already in the Dragon Slayer brief).
+- **Stale plan header (retro #6)**: `conductor/plans/dragon-slayer.ts` still carries "KNOWN GAP (DECISION NEEDED): ... Gangplank" although
+  the quest page says 8c1819d62 fixed it and the plan was proven through the sail; delete the paragraph.
+- **Generated Goblin drop page merges two tables (retro #6, wiki/world generator)**: `wiki/npcs/goblin.md` lists one drop table (Goblin mail
+  5/128) for five variants, but `goblin_greenarmour` / `goblin_redarmour` (Goblin Village) use `goblin_village_drop_table` with mail
+  at 10/128 (`server/content/scripts/drop tables/scripts/goblin.rs2`, 96..105 of 128). Fix in the page generator so the two tables show
+  separately; the quests README already says "10/128 in Goblin Village".
 - **Run-task auto-journal + plan nudge (idea)**: runners still journal in batches and chain plain runs
   after four prompt fixes; make it structural (see the retrospective #4 proposals): `run-task.ts
   --objective <title> --journal <path>` appends the mechanical journal line itself, and the RESULT
@@ -331,6 +409,16 @@ their shapes. Miscellania's coal, maples and fish need the kingdom quest and los
 
 Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothesis, variants, status.
 
+- Goblin mail source (retro #6): Lumbridge goblins (3254,3236) r20: mail 5/128 (3.9%), 1,241 damage / ~247 kills / 3 mails in 1,441 s (5.8 s
+  = 9.7 ticks per kill, ~82 kills per mail against 26 expected: unlucky, p ~0.4%, other drops matched their rates: Water rune 16 seen
+  vs 12, Bronze sq shield 9 vs 6; the questw1 461 s run was ~56 kills). Expected for 3 mails: 77 kills = ~10.5 min at that kill rate,
+  and the tail is long (95th percentile ~120 kills). Alternative: Goblin Village goblins (15 spawns, x 2951-2964 z 3491-3511, 70-tick
+  respawn, 12 HP each, level 5, attackable) drop it 10/128: 38 kills expected, perhaps 10 s each at 12 HP, ~6 min, beside the generals where the
+  mails are handed in. Variant plan: mails phase at (2958,3501) r15 after the woad (Falador) and before Aggie, instead of Lumbridge.
+  Metric: seconds to 3 mails over 3 worker runs. Do not pre-spend a tool/area search on the Lumbridge cluster: a denser one only cuts
+  the walk, kills per mail stay at 26.
+- Looping walk detector (retro #6): hypothesis, a displacement watchdog catches the `stronghold_ent` class within 5 min instead of 18
+  (see Backlog). Metric: minutes from first repeated no-move to the kill, over the next 5 walker failures.
 - Quest lumps vs grinding (retro #4): hypothesis, for every skill still under ~85 the cheapest XP is the quest list in Now;
   metric: XP per bot-minute of each promoted plan (druidic 28 Herblore levels in 9 min; Digsite Mining 1-85 in ~21 min;
   Knight's Sword Smithing 20-82 in 12 min vs crafting80 267k in 56 min). Record each lump's measured XP.
