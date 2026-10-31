@@ -89,6 +89,11 @@ describe('doorRefusal: the door rows a walk crosses are those the walker opens',
         expect(way(NO_ACCOUNT)).toBeUndefined();
     });
 
+    test("a consume beside a free alternative is refused unless the door takes its own key: the Gu'Tanoth gate", () => {
+        for (const loc of ['ogreguardgate2', 'ogreguardgate2right'])
+            expect(doorRefusal(row(loc), opName), loc).toBe('a payment other than the toll');
+    });
+
     test('crossed: the guild doors and member gates opened by Open, and the Al Kharid toll gate', () => {
         for (const loc of ['magicguild_door_r', 'ranging_guild_door', 'crafting_guild_door', 'chefdoor'])
             expect(doorRefusal(row(loc), opName), loc).toBeUndefined();

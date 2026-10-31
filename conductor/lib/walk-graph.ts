@@ -74,13 +74,16 @@ const triggerOp = (trigger: string): number | undefined => {
     return op === undefined ? undefined : Number(op);
 };
 /**
- * A row the walker cannot meet by opening: coins asked on any alternative (it pays no fee but the toll), or every
- * alternative consuming an obj (the script takes a held key by itself, so a consume beside a free alternative, the
- * Troll Stronghold prison door's key or finished quest, is met by the Unlock alone).
+ * Doors whose own Unlock takes the held key (or needs none past a finished quest), by loc config: a consume
+ * alternative on these is met by the walk. Elsewhere a consume beside a free alternative is no promise of the
+ * script: the Gu'Tanoth city gate lists a gold bar and the relic, but its script checks only the quest varp and the
+ * guard throws the player back (quest_itwatchtower.rs2:277, ogre_guard.rs2:43-58).
  */
+const SELF_CONSUMING_DOORS: ReadonlySet<string> = new Set(['troll_stronghold_prison_door_closed']);
+/** A row the walker cannot meet by opening: coins asked on any alternative (it pays no fee but the toll), or a consume it does not make. */
 const pays = (g: Gate): boolean =>
     g.requires.some(set => set.some(r => r.startsWith('coins:'))) ||
-    (g.requires.length > 0 && g.requires.every(set => set.some(r => r.startsWith('consume:'))));
+    (!SELF_CONSUMING_DOORS.has(g.loc) && g.requires.some(set => set.some(r => r.startsWith('consume:'))));
 
 /**
  * Doors whose Open the walker sends but whose script then needs what a walk does not do, by loc config: answering a
