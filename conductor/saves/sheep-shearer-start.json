@@ -1,0 +1,70 @@
+{
+    "name": "sheep-shearer-start",
+    "purpose": "Sheep Shearer start: fresh level-1 stats, shears in pack, Lumbridge castle courtyard (3222,3218), quest not started",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3218
+            },
+            "inventory": [
+                {
+                    "id": 1735,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "089de42f38106de816e6bdca0265cc90bc0eca4c",
+    "createdAt": "2026-10-31T12:05:08.159Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Hitpoints": 10
+        },
+        "inventory": [
+            {
+                "id": 1735,
+                "name": "shears",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
