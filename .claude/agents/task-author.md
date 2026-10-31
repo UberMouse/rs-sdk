@@ -239,7 +239,7 @@ the index's connector reader (`wiki/world/sources/connectors.ts`, then `bun run 
 note goes in `OVERRIDES` in `conductor/lib/connectors.ts`. It refuses (`no-path`) a route that crosses
 the Wilderness to a destination outside it (`lib/wilderness.ts`). Its result's `reason` says why it
 stopped short (`no-path`, `no-connector`, `climb-failed`, `cross-failed`, `dead-end`, `stuck`, `gave-up`, `timeout`,
-`no-time`, `no-blade`: a slashable web on the route and no wielded slash weapon, final, do not retry, ...); `message` is what to put in a fail reason. Walk opens doors and slashes spider webs (`SLASH_WEBS` in `actions/paths.ts`) on its own. One walk
+`no-time`, `no-blade`: a slashable web on the route and no wielded slash weapon, final, do not retry, `no-progress`: no new best distance to one target for `NO_PROGRESS_TICKS` across the run's walks, and a retry to that target fails at once until 100 idle ticks, arrival or a new target, ...); `message` is what to put in a fail reason. Walk opens doors and slashes spider webs (`SLASH_WEBS` in `actions/paths.ts`) on its own. One walk
 takes at most `WALK_MAX_TICKS` (from its route's length, capped): a far walk ends `timeout` where it
 stands and the next walk carries on from there, so a step that walks far must be one the task runs
 again (a `when` that still holds). A walk also never outlasts its step: it caps itself to
