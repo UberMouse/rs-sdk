@@ -63,3 +63,20 @@ export function* setPrayer(ctx: ActionContext, name: string, on: boolean): Op<Pr
     if (w.kind !== 'met') return { ok: false, reason: 'timeout', message: `${PRAYERS[index]} did not turn ${verb}` };
     return { ok: true, changed: true };
 }
+
+/** Prayers that switch each other off (prayer_deactivate in the server's prayers.dbrow), by tab index. */
+export const PRAYER_CONFLICTS: readonly (readonly number[])[] = [
+    [0, 3, 9], // Thick, Rock, Steel Skin
+    [1, 4, 10], // Burst of, Superhuman, Ultimate Strength
+    [2, 5, 11], // Clarity of Thought, Improved, Incredible Reflexes
+    [12, 13, 14], // Protect from Magic, Missiles, Melee
+];
+
+/** The first group of `names` that switch each other off (turning one on turns the other off), as a message; undefined when none do. */
+export const prayerConflict = (names: readonly string[]): string | undefined => {
+    for (const group of PRAYER_CONFLICTS) {
+        const held = names.filter(n => group.includes(prayerIndex(n) ?? -1));
+        if (new Set(held.map(n => prayerIndex(n))).size > 1) return `prayers switch each other off: ${held.join(', ')}`;
+    }
+    return undefined;
+};

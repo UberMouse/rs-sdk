@@ -1536,6 +1536,19 @@ describe('combat: prayers', () => {
         ]);
     });
 
+    test('keepPrayersOn leaves the prayer on when the run ends', async () => {
+        const r = await simulate(combat, {
+            params: { ...params, keepPrayersOn: true },
+            timeline: tab(kill(coop, 20, 6)),
+            react: prayerReact,
+            stops: xp(25),
+        });
+        expect(r.result.reason).toBe('reached +25 Attack xp');
+        expect(r.sends).toEqual(['Protect from Melee on', ATTACK]);
+        expect(r.driver.state().prayers.activePrayers[MELEE]).toBe(true);
+        expect(JSON.stringify(r.events)).toContain('keepPrayersOn: Protect from Melee stays on');
+    });
+
     test('a prayer already on is left alone, and not ours to turn off at the end', async () => {
         const r = await simulate(combat, {
             params,

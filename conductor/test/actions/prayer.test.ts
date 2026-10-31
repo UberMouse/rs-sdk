@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotWorldState } from '../../../sdk/types';
-import { PRAYERS, PRAYER_WAIT_TICKS, prayerIndex, setPrayer } from '../../actions/prayer';
+import { PRAYERS, PRAYER_WAIT_TICKS, prayerConflict, prayerIndex, setPrayer } from '../../actions/prayer';
 import { world } from '../world';
 import { refuse, runOp } from './harness';
 
@@ -88,5 +88,22 @@ describe('setPrayer', () => {
             respond: refuse,
         });
         expect(result).toEqual({ ok: false, reason: 'send-failed', message: 'not connected' });
+    });
+});
+
+describe('prayerConflict', () => {
+    test.each([
+        ['Thick Skin', 'Steel Skin'],
+        ['Burst of Strength', 'Ultimate Strength'],
+        ['Clarity of Thought', 'Incredible Reflexes'],
+        ['Protect from Magic', 'Protect from Melee'],
+    ])('%s with %s conflicts', (a, b) => {
+        expect(prayerConflict([a!, b!])).toContain('switch each other off');
+    });
+
+    test('the same name twice, or prayers of different groups, do not conflict', () => {
+        expect(prayerConflict(['Protect from Melee', 'Protect from Melee'])).toBeUndefined();
+        expect(prayerConflict(['Thick Skin', 'Burst of Strength', 'Protect from Melee'])).toBeUndefined();
+        expect(prayerConflict([])).toBeUndefined();
     });
 });

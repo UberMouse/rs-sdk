@@ -4,7 +4,7 @@ import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { CAST_DELAY_TICKS, CAST_WAIT_TICKS, cast } from '../actions/cast';
 import { eat } from '../actions/eat';
 import { equip } from '../actions/equip';
-import { prayerActive, prayerIndex, setPrayer } from '../actions/prayer';
+import { prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
@@ -107,14 +107,6 @@ const STEP_TIMEOUT_MS = 300_000;
 /** Without food, preflight refuses NPCs above this combat level (chickens are 1, cows 2). */
 const NO_FOOD_MAX_NPC_LEVEL = 5;
 
-/** Prayers that switch each other off (prayer_deactivate in the server's prayers.dbrow), by tab index. */
-const PRAYER_CONFLICTS: readonly (readonly number[])[] = [
-    [0, 3, 9], // Thick, Rock, Steel Skin
-    [1, 4, 10], // Burst of, Superhuman, Ultimate Strength
-    [2, 5, 11], // Clarity of Thought, Improved, Incredible Reflexes
-    [12, 13, 14], // Protect from Magic, Missiles, Melee
-];
-
 const Params = z
     .object({
         /** Exact NPC name (case-insensitive), e.g. "Chicken", "Cow". */
@@ -182,13 +174,18 @@ const Params = z
             )
             .superRefine((names, c) => {
                 // Each of a group switches the others off, so the prayer-on step would turn them on in turn for ever.
-                for (const group of PRAYER_CONFLICTS) {
-                    const held = names.filter(n => group.includes(prayerIndex(n) ?? -1));
-                    if (new Set(held.map(n => prayerIndex(n))).size > 1)
-                        c.addIssue({ code: 'custom', message: `prayers switch each other off: ${held.join(', ')}` });
-                }
+                const conflict = prayerConflict(names);
+                if (conflict) c.addIssue({ code: 'custom', message: conflict });
             })
             .default([]),
+        /**
+         * Leave the prayers this run turned on when it ends, for a plan's following non-combat phases (walk, pick
+         * up, climb) in a hostile area; the plan turns them off with the `prayer` task. They drain the points
+         * until then. Default false: they go off when the run ends, except under `stopOnDialog`'s open dialog.
+         * A prayer an earlier phase kept on, or already on at the start, is not ours: a later combat phase never
+         * turns it off, only the `prayer` task does.
+         */
+        keepPrayersOn: z.boolean().default(false),
     })
     .refine(p => p.minLevel === undefined || p.maxLevel === undefined || p.minLevel <= p.maxLevel, {
         message: 'minLevel is above maxLevel',
@@ -538,7 +535,8 @@ export default defineTask({
         'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
         'Weapon/shield need the bot to meet their wield requirement. `level` (or `minLevel`/`maxLevel`) attacks only NPCs ' +
         'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
-        'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, failing when the prayer points run out; ' +
+        'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, unless `keepPrayersOn` or an open `stopOnDialog` dialog (below), failing when the prayer points run out; ' +
+        '`keepPrayersOn: true` leaves them on instead, for a plan that walks, picks up or climbs on in a hostile area (they drain until the `prayer` task turns them off); a prayer an earlier phase kept on, or already on at the start, does not belong to this run, so a later combat phase never turns it off and only the `prayer` task ends it; the one other exception is `stopOnDialog` ending the run on an open quest dialog, which a prayer click would close, so the prayers stay on there whatever `keepPrayersOn` says; ' +
         "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
         'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; the open dialog is also kept from the low-HP eat and the end-of-run settle and eat (above the HP floor, the larger of 8 and a quarter of max HP); a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
@@ -570,11 +568,16 @@ export default defineTask({
      * drain while one is on. Not with `stopOnDialog`'s quest dialog open: every prayer click starts with
      * `if_close`, which would close the dialog left for the next phase (the prayers are named in its reason).
      * Without `stopOnDialog` no dialog is the run's to keep, so the click may close whatever is open.
+     * `keepPrayersOn` leaves them on whatever ended the run (the plan's explicit choice).
      */
     *onEnd(ctx) {
         const s = ctx.state();
         const on = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
         if (on.length === 0) return;
+        if (ctx.params.keepPrayersOn) {
+            yield* log(`keepPrayersOn: ${on.join(', ')} stays on, ${s.prayers.prayerPoints} points`);
+            return;
+        }
         const clicked = ctx.memory.levelUpClickedAtTick;
         const unlock = clicked !== null && s.tick - clicked <= UNLOCK_PAGE_TICKS && isUnlockPage(s);
         if (ctx.params.stopOnDialog && keptDialog(s, unlock)) {
