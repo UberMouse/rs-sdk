@@ -1,0 +1,325 @@
+{
+    "name": "herblore-pack",
+    "purpose": "Herblore 57 at Lumbridge, 28-slot pack of 10 grimy herbs (3 guam, 2 harralander, 3 irit, 2 ranarr), 10 vials of water, 6 eye of newt, 2 chocolate dust. Tests the herblore task: clean, unfinished, finish.",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 3222,
+                "z": 3218,
+                "level": 0
+            },
+            "skills": {
+                "Herblore": 57,
+                "Attack": 99,
+                "Strength": 99,
+                "Defence": 99,
+                "Hitpoints": 99
+            },
+            "inventory": [
+                {
+                    "id": 199,
+                    "count": 1
+                },
+                {
+                    "id": 199,
+                    "count": 1
+                },
+                {
+                    "id": 199,
+                    "count": 1
+                },
+                {
+                    "id": 205,
+                    "count": 1
+                },
+                {
+                    "id": 205,
+                    "count": 1
+                },
+                {
+                    "id": 209,
+                    "count": 1
+                },
+                {
+                    "id": 209,
+                    "count": 1
+                },
+                {
+                    "id": 209,
+                    "count": 1
+                },
+                {
+                    "id": 207,
+                    "count": 1
+                },
+                {
+                    "id": 207,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 227,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 221,
+                    "count": 1
+                },
+                {
+                    "id": 1975,
+                    "count": 1
+                },
+                {
+                    "id": 1975,
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "sha1": "f16abb50e990c3cde829563f8dafaf8be5f2720e",
+    "createdAt": "2026-10-31T17:17:08.201Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 3222,
+            "z": 3218,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 99,
+            "Defence": 99,
+            "Strength": 99,
+            "Hitpoints": 99,
+            "Herblore": 57
+        },
+        "inventory": [
+            {
+                "id": 199,
+                "name": "unidentified_guam",
+                "count": 1
+            },
+            {
+                "id": 199,
+                "name": "unidentified_guam",
+                "count": 1
+            },
+            {
+                "id": 199,
+                "name": "unidentified_guam",
+                "count": 1
+            },
+            {
+                "id": 205,
+                "name": "unidentified_harralander",
+                "count": 1
+            },
+            {
+                "id": 205,
+                "name": "unidentified_harralander",
+                "count": 1
+            },
+            {
+                "id": 209,
+                "name": "unidentified_irit",
+                "count": 1
+            },
+            {
+                "id": 209,
+                "name": "unidentified_irit",
+                "count": 1
+            },
+            {
+                "id": 209,
+                "name": "unidentified_irit",
+                "count": 1
+            },
+            {
+                "id": 207,
+                "name": "unidentified_ranarr",
+                "count": 1
+            },
+            {
+                "id": 207,
+                "name": "unidentified_ranarr",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 227,
+                "name": "vial_water",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 221,
+                "name": "eye_of_newt",
+                "count": 1
+            },
+            {
+                "id": 1975,
+                "name": "chocolate_dust",
+                "count": 1
+            },
+            {
+                "id": 1975,
+                "name": "chocolate_dust",
+                "count": 1
+            }
+        ],
+        "worn": [],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
