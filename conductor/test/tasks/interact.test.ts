@@ -1009,6 +1009,11 @@ describe('interact: a dialog the interaction opens', () => {
 const sentActions = (r: Awaited<ReturnType<typeof simulate>>) =>
     r.driver.commands.flatMap(c => (c.type === 'send' ? [c.action] : []));
 
+// Op 1 on the toad (the eat is a useInventoryItem too, at another op).
+const toadSends = (r: Awaited<ReturnType<typeof simulate>>) =>
+    sentActions(r).filter(a => a.type === 'useInventoryItem' && a.optionIndex === 1 && a.slot === 0);
+// Hurt at tick 3 with food: the low-HP guard cancels the step waiting on the op, which runs again.
+
 describe('interact: opIndex on an inventory item', () => {
     const TOAD_OPS = [
         { text: 'Drop', opIndex: 1 },
@@ -1021,6 +1026,13 @@ describe('interact: opIndex on an inventory item', () => {
             ? (s: ReturnType<typeof toadWorld.prototype.build>) => ({ ...s, inventory: [] })
             : undefined;
     const toadParams = { target: 'item', name: '^bloated toad$', option: '^Drop$', opIndex: 1 };
+    const cut = (goneAt: number) =>
+        toadWorld()
+            .inv('Shrimps', 1)
+            .series(40, (w, i) => {
+                const held = i < goneAt ? w : w.inv('Bloated toad', 0);
+                return i === 3 ? attackedFrom(held, i, 4).player({ hp: 3 }) : held;
+            });
 
     test('sends the op at the index when the label matches and the destructive opt-in is given', async () => {
         const r = await simulate(interact, {
@@ -1102,16 +1114,54 @@ describe('interact: opIndex on an inventory item', () => {
         expect(a.success).toBe(false);
     });
 
-    test('preflight refuses only when every held match has a problem', async () => {
-        const w = world()
-            .inv('Bloated toad', 1, { id: 2875, options: TOAD_OPS })
-            .inv('Bloated toad', 1, { id: 2875, options: [{ text: 'Drop', opIndex: 2 }] });
-        const r = await simulate(interact, {
-            params: toadParams,
-            timeline: w.series(30),
-            react: placed,
+    describe('two stacks that both match the name', () => {
+        // world().inv dedupes by name, so the stacks carry two names one pattern matches.
+        const GOOD = [{ text: 'Drop', opIndex: 1 }];
+        const WRONG = [{ text: 'Place', opIndex: 1 }];
+        const DROP2 = [{ text: 'Drop', opIndex: 2 }];
+        const two = (first: typeof GOOD, second: typeof GOOD) =>
+            world()
+                .inv('Bloated toad', 1, { id: 2875, options: first })
+                .inv('Bloated toad big', 1, { id: 2876, options: second });
+        const params = { ...toadParams, name: '^bloated toad', allowDestructiveOption: true };
+
+        test('a bad stack first, a good one second: the good one is sent', async () => {
+            const r = await simulate(interact, { params, timeline: two(WRONG, GOOD).series(30), react: placed });
+            expect(r.result.status).toBe('done');
+            expect(sentActions(r)).toMatchObject([{ type: 'useInventoryItem', slot: 1, optionIndex: 1 }]);
         });
-        expect(r.result.reason ?? '').not.toContain('destroys or releases it');
+
+        test('a good stack first, a bad one second: the good one is sent', async () => {
+            const r = await simulate(interact, { params, timeline: two(GOOD, WRONG).series(30), react: placed });
+            expect(r.result.status).toBe('done');
+            expect(sentActions(r)).toMatchObject([{ type: 'useInventoryItem', slot: 0, optionIndex: 1 }]);
+        });
+
+        test('both bad with different problems: preflight and step name both', async () => {
+            const r = await simulate(interact, { params, timeline: two(WRONG, DROP2).series(30), react: placed });
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toContain('does not match');
+            expect(r.result.reason).toContain('; ');
+            expect(r.result.reason).toContain('has no op 1');
+            expect(r.sends).toEqual([]);
+        });
+    });
+
+    describe('a destructive op whose step was cut off after the send', () => {
+        const params = { ...toadParams, allowDestructiveOption: true };
+        test('the item gone on re-entry: done, nothing sent twice', async () => {
+            const r = await simulate(interact, { params, timeline: cut(4) });
+            expect(toadSends(r)).toHaveLength(1);
+            expect(r.result.status).toBe('done');
+            expect(r.result.reason ?? '').toContain('already sent');
+        });
+
+        test('the item still held on re-entry: fails without a second send', async () => {
+            const r = await simulate(interact, { params, timeline: cut(1000) });
+            expect(toadSends(r)).toHaveLength(1);
+            expect(r.result.status).toBe('failed');
+            expect(r.result.reason).toContain('not sent twice');
+        });
     });
 
     test('a rejected destructive op is not sent twice', async () => {

@@ -149,6 +149,8 @@ interface Memory {
     sent: boolean;
     /** The send was started (`choices` set only): a cut-off step that finds the dialog open treats it as landed. */
     tried: boolean;
+    /** A destructive `opIndex` op was sent (set just before the send): a cut-off step must never send it again. */
+    destructiveSent: boolean;
     /** Choices answered in the dialog the interaction opened. */
     progress: TalkProgress;
 }
@@ -177,6 +179,9 @@ function candidates(ctx: Ctx): { targets: InteractTarget[]; unreachable: number 
     const usable = byDistance(named.filter(l => takeUnreachable || l.reachable !== false));
     return { targets: usable.map(loc => ({ kind: 'loc', loc })), unreachable: named.length - usable.length };
 }
+
+/** The distinct problems of the held stacks, as one message (preflight and the step word it the same). */
+const joinProblems = (problems: (string | null)[]) => [...new Set(problems)].filter(Boolean).join('; ');
 
 /**
  * Why the inventory op at `opIndex` on `item` must not be sent, or null: no op there, a label that does not match
@@ -242,7 +247,13 @@ export default defineTask({
         'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
         'E.g. {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"} (Ardougne sheep field); {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
     params: Params,
-    memory: (): Memory => ({ refusedNpcs: [], sent: false, tried: false, progress: { answered: 0 } }),
+    memory: (): Memory => ({
+        refusedNpcs: [],
+        sent: false,
+        tried: false,
+        destructiveSent: false,
+        progress: { answered: 0 },
+    }),
     // The dialog an interaction opens is answered by its own `choices`; the guard clicks under nothing then.
     allowGuards: params => (params.choices.length > 0 ? ['dialog'] : []),
     allowWilderness: params => params.wilderness,
@@ -260,7 +271,7 @@ export default defineTask({
             // and refused only when none of them can be sent (the step takes the first that passes).
             const held = ctx.state().inventory.filter(i => matcher(name).test(i.name));
             const problems = held.map(i => opIndexProblem(i, opIndex, rx, allowDestructiveOption));
-            if (problems.length > 0 && problems.every(p => p !== null)) return problems[0] ?? null;
+            if (problems.length > 0 && problems.every(p => p !== null)) return joinProblems(problems);
         } else if (rx && target === 'item' && DESTRUCTIVE_ITEM_OPTIONS.some(o => rx.test(o)))
             return `/${option}/ could send a destructive option (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}) on an item; use the drop task for dropping`;
         if (rx && target === 'npc' && rx.test(ATTACK_OPTION)) return 'attacking is the combat task, not interact';
@@ -293,6 +304,13 @@ export default defineTask({
                 // A step cut off after its send (a guard, a stop) finds the dialog it opened already showing.
                 if (ctx.memory.tried && !ctx.memory.sent && ctx.state().dialog.isOpen) ctx.memory.sent = true;
                 if (ctx.memory.sent) return yield* answerDialog(ctx);
+                if (ctx.memory.destructiveSent) {
+                    // The destructive op went out before a cut-off: never send it again, whatever the inventory shows.
+                    const stillHeld = candidates(ctx).targets.length > 0;
+                    return stillHeld
+                        ? { fail: `op ${opIndex} (${option}) on ${name} was already sent; not sent twice` }
+                        : { done: `op ${opIndex} (${option}) on ${name} was already sent and the item is gone` };
+                }
                 if (use && !held) return { fail: missingItem(use.item, name) };
                 const { targets, unreachable } = candidates(ctx);
                 const missing = ctx.streak('missing');
@@ -314,7 +332,7 @@ export default defineTask({
                     const items = targets.flatMap(t => (t.kind === 'item' ? [t.item] : []));
                     const problems = items.map(i => opIndexProblem(i, opIndex, optionRx, allowDestructiveOption));
                     const ok = problems.findIndex(p => p === null);
-                    if (ok < 0) return { fail: [...new Set(problems)].join('; ') || 'no item' };
+                    if (ok < 0) return { fail: joinProblems(problems) || 'no item' };
                     opItem = items[ok];
                 }
                 const chosen = opItem
@@ -345,6 +363,11 @@ export default defineTask({
                           : optionRx && interact(ctx, chosen, opIndex ?? optionRx, effects);
                 if (!attempt) return { fail: 'give an option or a use' };
                 if (ctx.params.choices.length > 0) ctx.memory.tried = true;
+                // Recorded before the send: a cut-off can land on the tick the op takes effect.
+                if (opIndex !== undefined && chosen.kind === 'item') {
+                    const label = chosen.item.optionsWithIndex.find(o => o.opIndex === opIndex)?.text;
+                    if (label !== undefined && isDestructiveLabel(label)) ctx.memory.destructiveSent = true;
+                }
                 const r = yield* attempt;
                 const fails = ctx.streak('interactFails');
                 if (r.ok) {
