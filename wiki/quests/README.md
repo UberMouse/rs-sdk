@@ -30,7 +30,7 @@ file names under `server/content/scripts/` with a line number (`find server/cont
 | [Black Knights' Fortress](black-knights-fortress.md) (`fortress`) | 3 | F | 12 QP at start (`sir_amik_varze.rs2:15`); bronze med helm + iron chainbody worn (`quest_blackknight.rs2:16`) | none | 2,500 coins | none forced; Black Knights 33 aggro at doors | |
 | [Clock Tower](clock-tower.md) (`cog`) | 1 | M | none | none | 500 coins | none | |
 | [Cook's Assistant](cooks-assistant.md) (`cook`) | 1 | F | none | Cooking 7,500 -> 30 (`quest_cook.rs2:89`) | Lumbridge castle range (`quest_cook.rs2:93-101`) | none | promoted |
-| [Death Plateau](death-plateau.md) (`death`) | 1 | M | none | Attack 75,000 -> 61 (`quest_death.rs2:221`) | Steel claws; climbing boots wearable; Troll Stronghold and Eadgar's Ruse starts | none | in progress |
+| [Death Plateau](death-plateau.md) (`death`) | 1 | M | none | Attack 75,000 -> 61 (`quest_death.rs2:221`) | Steel claws; climbing boots wearable; Troll Stronghold and Eadgar's Ruse starts | none | promoted |
 | [Demon Slayer](demon-slayer.md) (`demon`) | 3 | F | 1 coin to the gypsy; 25 bones; Silverlight wielded for Delrith (`npc_combat.rs2:174-186`) | none | Silverlight | Delrith 27 | |
 | [Digsite](digsite.md) (`itexam`) | 2 | M | Mid: Thieving 25 (`digsite_workman.rs2:62`, the only source of the rock sample and brush); Agility 10 (`area_digsite.rs2:617`); Herblore 10 (`itexam_chemistry.rs2:21`) | Mining 382,500 -> 85; Herblore 50,000 -> 56 (`quest_itexam.rs2:41-42`) | 2 gold bars | promoted |
 | [Doric's Quest](dorics-quest.md) (`doric`) | 1 | F | none (6 clay, 4 copper, 2 iron) | Mining 32,500 -> 49 (`quest_doric.rs2:99`) | 180 coins; Doric's anvils (`smithing.rs2:53-63`) | none | |

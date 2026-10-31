@@ -70,6 +70,8 @@ for (let i = 0; i < 20; i++) {
 - Mesbox text ("You pour...", item-use messages) is often not recorded in the history, so gate on a game message or an inventory change instead (the plague-city pour and dig gates use the fill message and the bucket count; early gates use held/worn items and position). [v 2026-10-24 questw7 local]
 - `interact`'s `expect` does not match a mesbox that the dialog guard closed first (the bucket pour at the mud patch); give such an interact no `expect` and let the inventory change show it worked. [v 2026-10-24 questw7 local]
 - Dialog history entries are single pages with wrapped lines, so match a short phrase, not a whole sentence. [v 2026-10-23 questw3 local]
+- Quest handouts need a free slot: with a full 28-slot pack Denulth (Death Plateau) "has given you a certificate" and no item arrived, silently. Start a quest run with a free slot per item handed out. [v 2026-10-24 questw2 local]
+- Make dialog markers chain (each implies the earlier ones) so one that scrolled out of the ~20-page history is still known; a fast-clicked page can be missing entirely (Saba's "nettlesome Sherpa"), so prefer a later or alternative line. [v 2026-10-24 questw2 local]
 - Stale inventory after a `talk` use phase: right after a `talk` phase with `use` ends, the plan's next phase selection can still read the old inventory, so the same use phase is chosen again and fails `use-items: no item matching #<id> in the inventory to use on <loc>` (seen on fill at the Well and pour at the Coffin, each repeated once, ~10 s lost). Give such phases `onFail: 'continue'`; the plan moves on. [v 2026-10-23 questw5 local]
 
 ## Shop Interfaces
