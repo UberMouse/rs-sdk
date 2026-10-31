@@ -1,0 +1,361 @@
+{
+    "name": "troll-stronghold-start",
+    "purpose": "Troll Stronghold start in Burthorpe (2897,3531) near Denulth: Death Plateau done (varp 314=80, varp 315=201326600 so Tenzing's hut door opens), Troll Stronghold not started. Att/Str/Def/HP 85, Prayer 99, Agility 30, Thieving 60; rune scimitar, full helm, platebody, platelegs, kiteshield and Climbing boots worn; 24 swordfish each in its own slot (24 of 28 slots, room for the Prison key, Cell key and Law talisman).",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2897,
+                "z": 3531
+            },
+            "skills": {
+                "Attack": 85,
+                "Strength": 85,
+                "Defence": 85,
+                "Hitpoints": 85,
+                "Prayer": 99,
+                "Agility": 30,
+                "Thieving": 60
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1163,
+                    "count": 1,
+                    "slot": 0
+                },
+                {
+                    "id": 1333,
+                    "count": 1,
+                    "slot": 3
+                },
+                {
+                    "id": 1127,
+                    "count": 1,
+                    "slot": 4
+                },
+                {
+                    "id": 1201,
+                    "count": 1,
+                    "slot": 5
+                },
+                {
+                    "id": 1079,
+                    "count": 1,
+                    "slot": 7
+                },
+                {
+                    "id": 3105,
+                    "count": 1,
+                    "slot": 10
+                }
+            ],
+            "varps": {
+                "314": 80,
+                "315": 201326600
+            }
+        }
+    },
+    "sha1": "383642c6adeaaec907efb8c1a2bff6a21c10f4c4",
+    "createdAt": "2026-10-31T06:58:28.663Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2897,
+            "z": 3531,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 85,
+            "Defence": 85,
+            "Strength": 85,
+            "Hitpoints": 85,
+            "Prayer": 99,
+            "Agility": 30,
+            "Thieving": 60
+        },
+        "inventory": [
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1163,
+                "name": "rune_full_helm",
+                "count": 1
+            },
+            {
+                "id": 1333,
+                "name": "rune_scimitar",
+                "count": 1
+            },
+            {
+                "id": 1127,
+                "name": "rune_platebody",
+                "count": 1
+            },
+            {
+                "id": 1201,
+                "name": "rune_kiteshield",
+                "count": 1
+            },
+            {
+                "id": 1079,
+                "name": "rune_platelegs",
+                "count": 1
+            },
+            {
+                "id": 3105,
+                "name": "death_climbingboots",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1,
+            "314": 80,
+            "315": 201326600
+        }
+    }
+}
