@@ -1,0 +1,308 @@
+{
+    "name": "big-chompy-start",
+    "purpose": "Big Chompy Bird Hunting start: Att 40 Str 54 Def 40 HP 47 Prayer 49 Crafting 85 Smithing 87 Fletching 5 Cooking 50 (the spit-roast burn roll at 30 burned the one chompy) Ranged 30, mithril scimitar worn, 10 swordfish, bronze axe, 100 feathers, 5 wolf bones (Feldip wolves are level 64), one each of potato, onion, cabbage, tomato, equa leaves and doogle leaves (the spawns lie in an aggressive ogre pen; the family names three at random), 300 coins, beside Rantz (2631,2976); knife and chisel are bought from Bugs, logs chopped, bellows from the ogre chest",
+    "source": {
+        "kind": "generated",
+        "spec": {
+            "position": {
+                "x": 2631,
+                "z": 2976
+            },
+            "skills": {
+                "Attack": 40,
+                "Strength": 54,
+                "Defence": 40,
+                "Hitpoints": 47,
+                "Prayer": 49,
+                "Crafting": 85,
+                "Smithing": 87,
+                "Fletching": 5,
+                "Cooking": 50,
+                "Ranged": 30
+            },
+            "inventory": [
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 373,
+                    "count": 1
+                },
+                {
+                    "id": 1351,
+                    "count": 1
+                },
+                {
+                    "id": 314,
+                    "count": 100
+                },
+                {
+                    "id": 2859,
+                    "count": 1
+                },
+                {
+                    "id": 2859,
+                    "count": 1
+                },
+                {
+                    "id": 2859,
+                    "count": 1
+                },
+                {
+                    "id": 2859,
+                    "count": 1
+                },
+                {
+                    "id": 2859,
+                    "count": 1
+                },
+                {
+                    "id": 1942,
+                    "count": 1
+                },
+                {
+                    "id": 1957,
+                    "count": 1
+                },
+                {
+                    "id": 1965,
+                    "count": 1
+                },
+                {
+                    "id": 1982,
+                    "count": 1
+                },
+                {
+                    "id": 2128,
+                    "count": 1
+                },
+                {
+                    "id": 1573,
+                    "count": 1
+                }
+            ],
+            "equipment": [
+                {
+                    "id": 1329,
+                    "count": 1,
+                    "slot": 3
+                }
+            ],
+            "coins": 300
+        }
+    },
+    "sha1": "9a4a2c834bd6285c9b440d2057827c4f0547ab8b",
+    "createdAt": "2026-10-31T10:35:38.673Z",
+    "saveVersion": 6,
+    "summary": {
+        "position": {
+            "x": 2631,
+            "z": 2976,
+            "level": 0
+        },
+        "levels": {
+            "Attack": 40,
+            "Defence": 40,
+            "Strength": 54,
+            "Hitpoints": 47,
+            "Ranged": 30,
+            "Prayer": 49,
+            "Cooking": 50,
+            "Fletching": 5,
+            "Crafting": 85,
+            "Smithing": 87
+        },
+        "inventory": [
+            {
+                "id": 995,
+                "name": "coins",
+                "count": 300
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 373,
+                "name": "swordfish",
+                "count": 1
+            },
+            {
+                "id": 1351,
+                "name": "bronze_axe",
+                "count": 1
+            },
+            {
+                "id": 314,
+                "name": "feather",
+                "count": 100
+            },
+            {
+                "id": 2859,
+                "name": "wolf_bones",
+                "count": 1
+            },
+            {
+                "id": 2859,
+                "name": "wolf_bones",
+                "count": 1
+            },
+            {
+                "id": 2859,
+                "name": "wolf_bones",
+                "count": 1
+            },
+            {
+                "id": 2859,
+                "name": "wolf_bones",
+                "count": 1
+            },
+            {
+                "id": 2859,
+                "name": "wolf_bones",
+                "count": 1
+            },
+            {
+                "id": 1942,
+                "name": "potato",
+                "count": 1
+            },
+            {
+                "id": 1957,
+                "name": "onion",
+                "count": 1
+            },
+            {
+                "id": 1965,
+                "name": "cabbage",
+                "count": 1
+            },
+            {
+                "id": 1982,
+                "name": "tomato",
+                "count": 1
+            },
+            {
+                "id": 2128,
+                "name": "equa_leaves",
+                "count": 1
+            },
+            {
+                "id": 1573,
+                "name": "doogleleaves",
+                "count": 1
+            }
+        ],
+        "worn": [
+            {
+                "id": 1329,
+                "name": "mithril_scimitar",
+                "count": 1
+            }
+        ],
+        "bank": [],
+        "varps": {
+            "4": -1,
+            "9": -1,
+            "13": -1,
+            "16": -1,
+            "28": -1,
+            "41": -1,
+            "54": -1,
+            "55": -1,
+            "56": -1,
+            "64": -1,
+            "104": -1,
+            "119": -1,
+            "120": -1,
+            "121": -1,
+            "123": -1,
+            "126": -1,
+            "163": -1,
+            "181": -1,
+            "205": -1,
+            "209": -1,
+            "217": -1,
+            "218": -1,
+            "257": -1,
+            "275": -1,
+            "276": -1,
+            "281": 1000,
+            "284": -1
+        }
+    }
+}
