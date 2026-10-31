@@ -28,7 +28,8 @@ export const AtSchema = z.object({
     x: z.number(),
     z: z.number(),
     level: z.number().int().optional(),
-    tolerance: z.number().int().min(1).default(DEFAULT_TOLERANCE),
+    /** Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile). */
+    tolerance: z.number().int().min(0).default(DEFAULT_TOLERANCE),
     /**
      * Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts):
      * `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through

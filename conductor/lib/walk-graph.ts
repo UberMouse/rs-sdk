@@ -314,8 +314,13 @@ export function walkGraph(input: {
                     { sigs, move: move([g.to]), reach: Math.max(g.width ?? 1, g.length ?? 1) + 1 },
                 ]);
         } else if (g.landings) {
+            // A stand's landings include the outcomes of its script's other paths, the stand itself among them (the
+            // Lumber Yard fence's busy path leaves the player where the teleport put it): none of those is a move.
             for (const l of g.landings) {
-                const from = g.landings.filter(o => sameTile(o.stand, l.stand)).map(o => o.landing);
+                if (sameTile(l.stand, l.landing)) continue;
+                const from = g.landings
+                    .filter(o => sameTile(o.stand, l.stand) && !sameTile(o.landing, o.stand))
+                    .map(o => o.landing);
                 addMove(l.stand, l.landing, sigs, move(from));
             }
         }

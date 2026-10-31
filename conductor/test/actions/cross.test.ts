@@ -59,6 +59,25 @@ const reactTo =
     a =>
         a.type === type ? effect : undefined;
 
+describe('cross: a stand among the landings', () => {
+    // The Lumber Yard fence (gertrudefence) from the north: the row's landings for the stand include the stand itself
+    // (the script's busy path leaves the player where the teleport put it), but standing there is no arrival.
+    const fence: Move = { ...gateMove, landings: [tile(STAND.x, STAND.z), LANDING] };
+
+    test('the tile the attempt started on is no landing: the wait goes on until the bot has crossed', async () => {
+        const driver = new TimelineDriver(base.series(8, (w, i) => w.player({ at: i < 4 ? STAND : LANDING })));
+        const r = await interpret(cross(driver, fence), { driver });
+        if (r.kind !== 'returned') throw new Error('cross did not return');
+        expect(r.value).toEqual({ ok: true, at: LANDING, attempts: 1 });
+        expect(driver.state().tick).toBeGreaterThanOrEqual(4);
+    });
+
+    test('a bot that never leaves the stand is no-move, not crossed', async () => {
+        const { result } = await run(fence, base.build());
+        expect(result).toMatchObject({ ok: false, reason: 'no-move' });
+    });
+});
+
 describe('cross: a loc op move', () => {
     test("sends the act's op on the loc found by its config id, and is crossed on a landing", async () => {
         const { result, sends } = await run(gateMove, base.build(), { react: reactTo('interactLoc', moveTo(LANDING)) });

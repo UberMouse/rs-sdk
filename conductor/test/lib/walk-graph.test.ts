@@ -206,6 +206,35 @@ describe('the walk search ignores every edge kind it does not walk', () => {
     });
 });
 
+describe('a gate row on an object with landings per stand', () => {
+    // The Lumber Yard fence: a stand's landings hold the outcomes of the script's other paths, the stand itself among them.
+    const stand = at(0, 3215, 3220);
+    const over = at(0, 3217, 3220);
+    const fence: Gate = {
+        trigger: 'oploc1,fence',
+        kind: 'gate',
+        loc: 'fence',
+        tile: at(0, 3216, 3220),
+        shape: 10,
+        angle: 0,
+        requires: [[]],
+        landings: [
+            { stand, landing: stand },
+            { stand, landing: at(0, 3215, 3221) },
+            { stand, landing: over, free: true },
+        ],
+        source: 't.rs2:1',
+    };
+
+    test('a landing on the stand itself is no move: the hop lands across, and the move lists the other landings', () => {
+        const way = nearestWay(WEST, [EAST], search(graphOf({ gates: [fence] })));
+        const hop = way?.hops[0];
+        expect(hop).toMatchObject({ kind: 'cross', stand, landing: over });
+        if (hop?.kind !== 'cross') return;
+        expect(hop.move.landings).toEqual([at(0, 3215, 3221), over]);
+    });
+});
+
 describe('the walk search makes scripted moves and teleports', () => {
     test('a scripted move: walked to its from tile, crossed, walked on, the move a hop of the way', () => {
         const way = nearestWay(WEST, [EAST], search(graphOf({ crossings: [move()] })));

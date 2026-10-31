@@ -9,11 +9,22 @@ import { CONNECTORS } from '../lib/connectors';
 import { walkGraph, type WalkWorld } from '../lib/walk-graph';
 import { WORLD } from '../lib/world-index';
 
-export type Router = (from: Waypoint, to: { x: number; z: number }, avoid: readonly DoorInfo[]) => PathResult;
+export type Router = (
+    from: Waypoint,
+    to: { x: number; z: number },
+    avoid: readonly DoorInfo[],
+    /** The tiles NPCs stand on (the walker's `occupied`), empty when it passed none. */
+    occupied?: readonly { x: number; z: number }[],
+) => PathResult;
 
 export interface FakePaths extends Pathfinder {
     /** Every findPath call, in order. */
-    readonly queries: { from: Waypoint; to: { x: number; z: number }; avoid: DoorInfo[] }[];
+    readonly queries: {
+        from: Waypoint;
+        to: { x: number; z: number };
+        avoid: DoorInfo[];
+        occupied: { x: number; z: number }[];
+    }[];
 }
 
 /** A door the collision data would know, on level 0 by default. */
@@ -42,9 +53,9 @@ export function fakePaths(
     const at = (level: number, x: number, z: number) => doors.find(d => d.level === level && d.x === x && d.z === z);
     return {
         queries,
-        findPath(from, to, avoid) {
-            queries.push({ from, to, avoid: [...avoid] });
-            return router(from, to, avoid);
+        findPath(from, to, avoid, occupied = []) {
+            queries.push({ from, to, avoid: [...avoid], occupied: [...occupied] });
+            return router(from, to, avoid, occupied);
         },
         doorsAlong(waypoints) {
             const found: DoorInfo[] = [];

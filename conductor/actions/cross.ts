@@ -196,7 +196,8 @@ export function* cross(ctx: ActionContext, m: Move, opts: CrossOptions = {}): Op
         const landed = (s: BotWorldState): boolean => {
             const p = here(s);
             if (!p) return false;
-            if (m.landings.some(l => sameTile(l, p))) return true;
+            // A landing that is the tile the attempt started on is no arrival: the move has not been made yet.
+            if (m.landings.some(l => sameTile(l, p) && !sameTile(l, start))) return true;
             return m.via === 'teleport' && (p.level !== start.level || chebyshev(p, start) >= TELEPORT_JUMP);
         };
         // REFUSAL's words are broad: they count only while the bot still stands where the attempt started.

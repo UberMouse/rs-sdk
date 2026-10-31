@@ -29,8 +29,17 @@ export interface PathResult {
 }
 
 export interface Pathfinder {
-    /** A route from `from` to `to` on `from.level`, routing around the doors in `avoid`. */
-    findPath(from: Waypoint, to: { x: number; z: number }, avoid: readonly DoorInfo[]): PathResult;
+    /**
+     * A route from `from` to `to` on `from.level`, routing around the doors in `avoid` and the tiles in
+     * `occupied` (where blockwalk NPCs stand now: the collision data cannot know them, and the server's walk
+     * does not pass through them). Tiles that are `from` or `to` are never blocked.
+     */
+    findPath(
+        from: Waypoint,
+        to: { x: number; z: number },
+        avoid: readonly DoorInfo[],
+        occupied?: readonly { x: number; z: number }[],
+    ): PathResult;
     /** The doors a route crosses or steps beside, in route order. */
     doorsAlong(waypoints: readonly Waypoint[]): DoorInfo[];
     /** The door the collision data knows at that tile. */
@@ -178,7 +187,7 @@ const CROSS_OFFSETS = [
 
 /** Routes over the collision data bundled with the SDK, indexed on the first query. */
 export const collisionPaths: Pathfinder = {
-    findPath(from, to, avoid) {
+    findPath(from, to, avoid, occupied = []) {
         // Only the source zone must be known; the destination's may be past a gate not yet opened.
         if (!isZoneAllocated(from.level, from.x, from.z))
             return {
@@ -189,9 +198,21 @@ export const collisionPaths: Pathfinder = {
         maskDoorsAndWebs();
         // A door the walk gave up on is walled again for this query; the SDK re-walls only its own kind.
         const shut = avoid.filter(isMasked);
-        for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, true);
+        // An occupied tile is walled for this query only, if it is open now (a tile with a wall or loc keeps its
+        // flags) and its zone is allocated (walling an unallocated zone would allocate it, open, for every later query).
+        const taken = occupied.filter(
+            t =>
+                !(t.x === from.x && t.z === from.z) &&
+                !(t.x === to.x && t.z === to.z) &&
+                isZoneAllocated(from.level, t.x, t.z) &&
+                isTileWalkable(from.level, t.x, t.z),
+        );
         let waypoints: Waypoint[];
+        // The walls go up inside the try: this is synchronous (nothing else sees the map meanwhile), and a throw
+        // midway still restores. Restoring a tile never walled is a no-op (an open tile has no loc flag to lose).
         try {
+            for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, true);
+            for (const t of taken) rsmod.changeLoc(t.x, t.z, from.level, 1, 1, false, false, true);
             waypoints = findLongPath(
                 from.level,
                 from.x,
@@ -203,6 +224,7 @@ export const collisionPaths: Pathfinder = {
             );
         } finally {
             for (const d of shut) rsmod.changeLoc(d.x, d.z, d.level, 1, 1, d.blockrange, false, false);
+            for (const t of taken) rsmod.changeLoc(t.x, t.z, from.level, 1, 1, false, false, false);
         }
         if (waypoints.length === 0 && !isZoneAllocated(from.level, to.x, to.z))
             return {

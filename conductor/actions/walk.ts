@@ -1074,7 +1074,30 @@ function route(w: Walk): PathResult {
             const door = w.paths.doorAt(TOLL_LEVEL, g.x, g.z);
             if (door && !avoid.includes(door)) avoid.push(door);
         }
-    return w.paths.findPath({ x: p.worldX, z: p.worldZ, level: p.level }, w.target, avoid);
+    const from = { x: p.worldX, z: p.worldZ, level: p.level };
+    // Round the NPCs standing now: the server's walk does not pass through them, so a route through one
+    // leaves the bot where it stands. When they leave no route to where the open ground does reach (a doorway
+    // one of them fills), the plain route is walked: it moves when they do.
+    const occupied = npcTiles(w.ctx.state());
+    if (occupied.length === 0) return w.paths.findPath(from, w.target, avoid);
+    const round = w.paths.findPath(from, w.target, avoid, occupied);
+    if (round.success && round.reachedDestination !== false) return round;
+    const plain = w.paths.findPath(from, w.target, avoid);
+    return plain.success && plain.reachedDestination !== false ? plain : round.success ? round : plain;
+}
+
+/**
+ * The tiles the NPCs near the bot stand on (a larger NPC's whole footprint from its south-west tile). `x`/`z` are
+ * the render position, which trails a moving NPC and is offset for a larger one: the route tile is `tileX`/`tileZ`.
+ */
+export function npcTiles(state: BotWorldState): Point[] {
+    const out: Point[] = [];
+    for (const n of state.nearbyNpcs ?? []) {
+        const size = Math.max(1, n.size ?? 1);
+        const sw = { x: n.tileX ?? n.x, z: n.tileZ ?? n.z };
+        for (let dx = 0; dx < size; dx++) for (let dz = 0; dz < size; dz++) out.push({ x: sw.x + dx, z: sw.z + dz });
+    }
+    return out;
 }
 
 /** Tiles from `from` along `waypoints`, and on to `target` in a line where a partial route stops short. */

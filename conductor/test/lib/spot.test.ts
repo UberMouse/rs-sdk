@@ -66,3 +66,35 @@ describe('the shared `at`: met on talk', () => {
         expect(r.result.reason).not.toMatch(/No connector/);
     });
 });
+
+describe('the shared `at`: an exact tile', () => {
+    test('tolerance 0 is that exact tile; below 0 is refused', () => {
+        expect(AtSchema.parse({ x: 1, z: 2, tolerance: 0 }).tolerance).toBe(0);
+        expect(AtSchema.safeParse({ x: 1, z: 2, tolerance: -1 }).success).toBe(false);
+    });
+
+    // The Blue Moon Inn chest (3218, 3396) is used from (3219, 3396) only, a wall between that tile and the room
+    // next door (3219, 3397): a tolerance of 1 would count the room as there.
+    const chest = world().loc('Chest', 3218, 3396, { options: ['Open'] });
+    const room = world().player({ at: { x: 3219, z: 3397 } });
+    const exact = { target: 'loc', name: '^Chest$', option: '^Open$', at: { x: 3219, z: 3396, tolerance: 0 } };
+
+    test('a bot one tile off is not there: the walk step runs', async () => {
+        const r = await simulate(interact, {
+            params: exact,
+            timeline: room.series(1, () => chest.player({ at: { x: 3219, z: 3397 } })),
+            react: walking(),
+        });
+        expect(r.steps[0]).toBe('walk');
+        expect(r.sends[0]).toBe('walk to (3219, 3396)');
+    });
+
+    test('with tolerance 1 the same bot counts as there and interacts', async () => {
+        const r = await simulate(interact, {
+            params: { ...exact, at: { ...exact.at, tolerance: 1 } },
+            timeline: room.series(1, () => chest.player({ at: { x: 3219, z: 3397 } })),
+            react: walking(),
+        });
+        expect(r.steps[0]).toBe('interact');
+    });
+});

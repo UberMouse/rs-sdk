@@ -234,7 +234,7 @@ export default defineTask({
     name: 'interact',
     description:
         'One interaction with an NPC, a loc or an inventory item by option, or one item used on a loc, done when its effect is seen. Params: `target` ("loc" | "npc" | "item"), ' +
-        '`name` (regex), `option` (regex on the option text, e.g. "Open", "Search", "Wear", "Talk-to"), optional `at` {x,z,level?,tolerance?} ' +
+        '`name` (regex), `option` (regex on the option text, e.g. "Open", "Search", "Wear", "Talk-to"), optional `at` {x,z,level?,tolerance? (0 = that exact tile, for a loc used from one side only)} ' +
         '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `npcId` (a number or list: the NPC type id, NearbyNpc.id) narrows an NPC match to those types (the woolly Sheep 43, not a sheared 42); "This sheep has already been shorn." on a `use` moves on to another NPC; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
         "(one pillar of six, a crate beside plain crates; a loc's tile is its south-west corner); `unreachable: true` (needs `at`) also takes a loc or NPC the client cannot route to " +
         'and sends the op from the stand tile, the server owning the reach check (swim to a rock, throw a rope across water); ' +
