@@ -85,6 +85,34 @@ test(
 );
 
 test(
+    'combat endWhenPackFull ends done on the first kill whose feathers do not fit, and reports its counts',
+    async () => {
+        await withFixtureBot(
+            {
+                position: COOP,
+                // 28 separate slots: nothing, not even a stack of feathers, can be picked up.
+                inventory: Array.from({ length: 28 }, () => ({ id: Items.LOGS, count: 1 })),
+            },
+            async ({ name }) => {
+                const run = await runTask(
+                    name,
+                    'combat',
+                    { target: 'Chicken', skill: 'Attack', area: AREA, loot: ['Feather'], endWhenPackFull: true },
+                    ['minutes:3'],
+                );
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.reason, detail).toContain('pack full');
+                expect(run.result.diagnostics?.kills, detail).toBeGreaterThanOrEqual(1);
+                expect(run.result.diagnostics?.lootPicked, detail).toBe(0);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);
+
+test(
     'combat task shoots chickens with a wielded bow and arrows until the Ranged XP target',
     async () => {
         await withFixtureBot(

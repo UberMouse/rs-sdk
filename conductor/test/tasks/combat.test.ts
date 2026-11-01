@@ -1855,6 +1855,130 @@ describe('combat: an eat the server ignored under fire', () => {
     });
 });
 
+/** A fight from tick 2 to `killAt`; the chicken is gone after it (a corpse is gone by then), and `extra` shapes every tick. */
+const fightThenGone = (killAt: number, extra: (w: World, i: number) => World = w => w, n = 30) =>
+    coop.series(n, (w, i) => {
+        if (i >= killAt) return extra(base.fighting(false).skill('Attack', 1, 25), i);
+        return extra(i >= 2 ? w.fighting(CHICKEN) : w, i);
+    });
+const fullPack = (w: World) => {
+    let f = w;
+    for (let i = 0; i < 28; i++) f = f.inv(`Junk ${i}`, 1, { id: 9000 + i });
+    return f;
+};
+
+describe('combat: kills, loot and full-pack diagnostics', () => {
+    const COW = 11;
+    test('kills counts the target dying, not another NPC leaving or a fight that broke off', async () => {
+        // A cow vanishes mid-fight (another player's kill): it is not ours.
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: fightThenGone(6, (w, i) => (i < 4 ? w.npc('Cow', COOP.x, COOP.z + 2, { index: COW }) : w)),
+            stops: xp(25),
+        });
+        expect(r.result.diagnostics?.kills).toBe(1);
+        // The fight ends with the chicken still standing alive: no kill.
+        const broke = await simulate(combat, {
+            params: PARAMS,
+            timeline: coop.series(30, (w, i) => (i >= 2 && i < 6 ? w.fighting(CHICKEN) : w)),
+            stops: [{ kind: 'ticks', amount: 12 }] as unknown as StopCondition[],
+        });
+        expect(broke.result.diagnostics?.kills).toBe(0);
+    });
+
+    test('a kill whose stop fires while still fighting counts; an engaged NPC still alive at the end does not', async () => {
+        // The chicken is gone on the killing blow but the fight state lingers (inCombat stays true).
+        const lingering = coop.series(12, (w, i) => {
+            if (i < 2) return w;
+            return i >= 6 ? base.fighting(CHICKEN).skill('Attack', 1, 25) : w.fighting(CHICKEN);
+        });
+        const gone = await simulate(combat, { params: PARAMS, timeline: lingering, stops: xp(25) });
+        expect(gone.result.diagnostics?.kills).toBe(1);
+        // XP target reached with the chicken still standing and fought: no kill.
+        const alive = await simulate(combat, {
+            params: PARAMS,
+            timeline: coop.series(12, (w, i) => (i >= 2 ? w.fighting(CHICKEN).skill('Attack', 1, i >= 6 ? 25 : 0) : w)),
+            stops: xp(25),
+        });
+        expect(alive.result.diagnostics?.kills).toBe(0);
+    });
+
+    test('a new fight beginning before the old target is seen gone still counts the old kill', async () => {
+        const SECOND = 12;
+        const tl = coop.series(14, (w, i) => {
+            if (i < 2) return w;
+            if (i < 6) return w.fighting(CHICKEN);
+            // Chicken 1 is gone; the bot has already turned on a second chicken.
+            return base.npc('Chicken', COOP.x + 1, COOP.z + 1, { index: SECOND, options: ['Attack'] }).fighting(SECOND);
+        });
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: tl,
+            stops: [{ kind: 'ticks', amount: 12 }] as unknown as StopCondition[],
+        });
+        // The first chicken died (counted when the second fight began); the second is alive at the end.
+        expect(r.result.diagnostics?.kills).toBe(1);
+    });
+
+    test('lootPicked counts the pickups', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: [
+                ...fightThenGone(6, (w, i) => (i < 6 ? w : feathersDropped(w)), 12),
+                ...fightThenGone(6, w => w.inv('Feather', 5, { id: FEATHER }), 12).slice(11),
+            ],
+            stops: [],
+        });
+        expect(r.sends).toContain('take Feather');
+        expect(r.result.diagnostics?.lootPicked).toBe(1);
+        expect(r.result.diagnostics?.kills).toBe(1);
+    });
+
+    test('fullPackTicks grows while loot lies in reach and the pack is full; a free slot stops it', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: fightThenGone(8, w => fullPack(feathersDropped(w))),
+            stops: xp(25),
+        });
+        expect(r.result.diagnostics?.fullPackTicks).toBeGreaterThan(0);
+        expect(r.result.diagnostics?.lootPicked).toBe(0);
+        const open = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: fightThenGone(8, w => feathersDropped(w)),
+            stops: xp(25),
+        });
+        expect(open.result.diagnostics?.fullPackTicks).toBe(0);
+    });
+
+    test('endWhenPackFull ends done after the fight, naming the full pack', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'], endWhenPackFull: true },
+            // The pack fills and the feathers drop on tick 4, mid-fight.
+            timeline: fightThenGone(8, (w, i) => (i >= 4 ? fullPack(feathersDropped(w)) : w)),
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toContain('pack full');
+        // Never walked off mid-fight: the one attack, then the end once the fight was over.
+        expect(r.sends).toEqual([ATTACK]);
+        expect(r.steps.at(-1)).toBe('pack-full');
+        expect(r.result.diagnostics?.kills).toBe(1);
+    });
+
+    test('without endWhenPackFull the run goes on, and a full pack with nothing to loot does not end it', async () => {
+        const off = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'] },
+            timeline: fightThenGone(8, (w, i) => (i >= 4 ? fullPack(feathersDropped(w)) : w)),
+        });
+        expect(off.steps).not.toContain('pack-full');
+        expect(off.result.reason).toBe('fight: no free reachable Chicken in the area');
+        const nothing = await simulate(combat, {
+            params: { ...PARAMS, loot: ['Feather'], endWhenPackFull: true },
+            timeline: fightThenGone(8, w => fullPack(w)),
+        });
+        expect(nothing.steps).not.toContain('pack-full');
+    });
+});
+
 describe('combat: seenOutsideArea diagnostic', () => {
     /** The only chicken stands 12 tiles out, beyond the area (radius 8). */
     const outside = chickenAt(base, COOP.x + 12, COOP.z);
@@ -1865,6 +1989,9 @@ describe('combat: seenOutsideArea diagnostic', () => {
         const r = await simulate(combat, { params: PARAMS, timeline: outside.series(1) });
         expect(r.result.reason).toBe('fight: no free reachable Chicken in the area');
         expect(r.result.diagnostics).toEqual({
+            kills: 0,
+            lootPicked: 0,
+            fullPackTicks: 0,
             idleTicks: IDLE,
             seenOutsideAreaTicks: IDLE,
             nearestOutsideArea: { name: 'Chicken', x: COOP.x + 12, z: COOP.z },
@@ -1897,7 +2024,13 @@ describe('combat: seenOutsideArea diagnostic', () => {
     test('nothing outside the area: counts idle ticks, no warning', async () => {
         const taken = base.npc('Chicken', COOP.x + 1, COOP.z, { options: ['Attack'], inCombat: true });
         const r = await simulate(combat, { params: PARAMS, timeline: taken.series(1) });
-        expect(r.result.diagnostics).toEqual({ idleTicks: IDLE, seenOutsideAreaTicks: 0 });
+        expect(r.result.diagnostics).toEqual({
+            kills: 0,
+            lootPicked: 0,
+            fullPackTicks: 0,
+            idleTicks: IDLE,
+            seenOutsideAreaTicks: 0,
+        });
         expect(r.result.warnings).toBeUndefined();
     });
 
@@ -1912,9 +2045,15 @@ describe('combat: seenOutsideArea diagnostic', () => {
     });
 
     test('a successful kill with no idling reports nothing', async () => {
-        const r = await simulate(combat, { params: PARAMS, timeline: kill(coop), react: walking(), stops: xp(25) });
+        const r = await simulate(combat, {
+            params: PARAMS,
+            timeline: fightThenGone(6),
+            react: walking(),
+            stops: xp(25),
+        });
         expect(r.result.status).toBe('done');
-        expect(r.result.diagnostics).toBeUndefined();
+        // No idling: the area report is empty, the counts are all there is.
+        expect(r.result.diagnostics).toEqual({ kills: 1, lootPicked: 0, fullPackTicks: 0 });
         expect(r.result.warnings).toBeUndefined();
     });
 

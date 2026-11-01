@@ -189,6 +189,15 @@ const Params = z
          * turns it off, only the `prayer` task does.
          */
         keepPrayersOn: z.boolean().default(false),
+        /**
+         * End the run `done` when `loot` (or `buryBones`) is set, a wanted ground item lies in reach and the pack is
+         * full so it cannot be picked up, after any fight in progress ends: a plan then goes on to a bank phase.
+         * Wanted loot includes bones when `buryBones` is set. `fullPackTicks` in the diagnostics is approximate (ticks
+         * between looks that both saw the pack blocking loot). Meant for non-stackable loot (herbs, hides, bones): a
+         * full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, feathers)
+         * that the game would still pick up. Default false: combat goes on fighting with the loot left on the ground.
+         */
+        endWhenPackFull: z.boolean().default(false),
     })
     .refine(p => p.minLevel === undefined || p.maxLevel === undefined || p.minLevel <= p.maxLevel, {
         message: 'minLevel is above maxLevel',
@@ -217,6 +226,14 @@ interface CombatMemory {
     levelUpClickedAtTick: number | null;
     /** The prayers this run turned on, which `onEnd` turns off again (a prayer already on at the start is not ours). */
     prayersTurnedOn: string[];
+    /** The NPC the bot is fighting (the cast step's `engaged` is its own local), until the fight is seen to end (a kill when it is gone or at 0 HP). */
+    fightTarget: { index: number; name: string } | null;
+    /** Run totals for the RESULT's diagnostics. */
+    kills: number;
+    lootPicked: number;
+    fullPackTicks: number;
+    /** The tick the full-pack count was last brought up to date, or null when the pack was not blocking loot then. */
+    fullPackNotedAt: number | null;
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
@@ -361,16 +378,75 @@ const inRange = (state: BotWorldState, p: CombatParams, at: { x: number; z: numb
 
 const lootKey = (i: { id: number; x: number; z: number }) => `${i.id}@${i.x},${i.z}`;
 
-/** Reachable wanted ground items near the fight spot, nearest first. */
+const lootNames = (p: CombatParams) => (p.buryBones ? [...p.loot, ...BONE_NAMES] : p.loot);
+
+/** Reachable wanted ground items near the fight spot, nearest first (none while the pack is full). */
 function wantedGroundItems(ctx: Ctx) {
-    const names = ctx.params.buryBones ? [...ctx.params.loot, ...BONE_NAMES] : ctx.params.loot;
-    if (names.length === 0 || ctx.inventoryFull()) return [];
+    if (ctx.inventoryFull()) return [];
+    return lootItems(ctx);
+}
+
+/** Wanted ground items in reach whatever the pack holds, nearest first. */
+function lootItems(ctx: Ctx) {
+    const names = lootNames(ctx.params);
+    if (names.length === 0) return [];
     return ctx
         .state()
         .groundItems.filter(i => names.some(n => exactName(n).test(i.name)))
         .filter(i => i.reachable !== false && i.distance <= LOOT_RADIUS && inRange(ctx.state(), ctx.params, i))
         .filter(i => (ctx.memory.lootSkipped.get(lootKey(i)) ?? -Infinity) <= ctx.state().tick)
         .sort((a, b) => a.distance - b.distance);
+}
+
+/** Nothing is fighting the bot and it is fighting nothing: the moment to loot or to end for a full pack. */
+const nothingFighting = (ctx: Ctx) => !fighting(ctx.state()) && attackers(ctx.state()).length === 0;
+
+/** `loot` is set, a wanted item lies in reach and the pack is full: the pickup is skipped for want of a slot. */
+const packBlocksLoot = (ctx: Ctx) => ctx.inventoryFull() && lootItems(ctx).length > 0;
+
+/** Brings `fullPackTicks` up to date: the ticks since the last look that also found the pack blocking loot. */
+function notePackFull(ctx: Ctx) {
+    const now = ctx.state().tick;
+    if (!packBlocksLoot(ctx)) {
+        ctx.memory.fullPackNotedAt = null;
+        return;
+    }
+    ctx.memory.fullPackTicks += now - (ctx.memory.fullPackNotedAt ?? now);
+    ctx.memory.fullPackNotedAt = now;
+}
+
+/** The engaged NPC is gone from view, or still listed at 0 HP. */
+const targetEnded = (state: BotWorldState, e: { index: number; name: string }) => {
+    const npc = state.nearbyNpcs.find(n => n.index === e.index && n.name === e.name);
+    return !npc || npc.hp === 0 || npc.healthPercent === 0;
+};
+
+/**
+ * Counts the kill of the NPC the bot was fighting once it is gone or at 0 HP, and forgets it. Waits for the fight to
+ * end unless `atEnd` (the run is over: `inCombat` outlasts a kill by ~20 ticks). An NPC still alive stays uncounted:
+ * a fight that broke off is no kill. A guard can cut a wait short, so any step may be the first to see the end.
+ */
+function settleKill(ctx: Ctx, state: BotWorldState = ctx.state(), atEnd = false) {
+    const e = ctx.memory.fightTarget;
+    if (!e || (!atEnd && fighting(state)) || !targetEnded(state, e)) return;
+    ctx.memory.kills++;
+    ctx.memory.fightTarget = null;
+}
+
+/** Makes `next` the fight target, first settling the previous one: counted if gone or at 0 HP, else dropped. */
+function setFightTarget(ctx: Ctx, state: BotWorldState, next: { index: number; name: string }) {
+    const prev = ctx.memory.fightTarget;
+    if (prev && prev.index !== next.index && targetEnded(state, prev)) ctx.memory.kills++;
+    ctx.memory.fightTarget = { index: next.index, name: next.name };
+}
+
+/** Remembers the NPC the bot is fighting, for `settleKill`. */
+function noteEngaged(ctx: Ctx, state: BotWorldState) {
+    const p = state.player;
+    if (!p || !fighting(state) || p.combat.targetType !== 'npc') return;
+    if (ctx.memory.fightTarget?.index === p.combat.targetIndex) return;
+    const npc = state.nearbyNpcs.find(n => n.index === p.combat.targetIndex);
+    if (npc) setFightTarget(ctx, state, npc);
 }
 
 /** A matching NPC the bot may attack now, wherever it stands: free, reachable, attackable, of a level the task wants. */
@@ -444,6 +520,7 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
         return { fail: `fight lasted over ${FIGHT_TIMEOUT_MS / 1000}s at (${p?.worldX},${p?.worldZ})` };
     }
     ctx.memory.fought = true;
+    noteEngaged(ctx, state);
     const { stopOnDialog } = ctx.params;
     const w = yield* wait(
         'kill',
@@ -452,6 +529,7 @@ function* waitForKill(ctx: Ctx): Op<Outcome> {
     );
     // The fight being timed is over; a later fight starts a fresh clock.
     if (!fighting(w.state)) ctx.memory.fightStartedAtTick = null;
+    settleKill(ctx, w.state);
     // The fight's end (Sir Mordred's scripted death) reaches the bot a tick or so before the dialog it opens; an attack
     // sent in that gap closes the dialog before the plan's `talk` can answer it. Give the dialog a moment to show.
     if (stopOnDialog && !fighting(w.state) && !w.state.dialog.isOpen)
@@ -564,12 +642,19 @@ export default defineTask({
         'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
         'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, unless `keepPrayersOn` or an open `stopOnDialog` dialog (below), failing when the prayer points run out; ' +
         '`keepPrayersOn: true` leaves them on instead, for a plan that walks, picks up or climbs on in a hostile area (they drain until the `prayer` task turns them off); a prayer an earlier phase kept on, or already on at the start, does not belong to this run, so a later combat phase never turns it off and only the `prayer` task ends it; the one other exception is `stopOnDialog` ending the run on an open quest dialog, which a prayer click would close, so the prayers stay on there whatever `keepPrayersOn` says; ' +
+        "`endWhenPackFull: true` ends the run `done` when `loot` is set, a wanted item lies in reach and the pack is full, after any fight ends (default false: combat keeps fighting), for a plan's bank phase; the RESULT's diagnostics carry `kills` (targets seen dead or gone after a fight; an NPC that left view counts too, a heuristic), `lootPicked` and `fullPackTicks` (approximate: ticks between looks that both saw loot in reach and the pack full). `buryBones` bones count as wanted loot for `endWhenPackFull`, which is meant for non-stackable loot (herbs, hides, bones): a full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, feathers). " +
         "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
         'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; the open dialog is also kept from the low-HP eat and the end-of-run settle and eat (above the HP floor, the larger of 8 and a quarter of max HP); a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
         'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
         '3253,3266; unverified).',
     params: Params,
-    diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
+    diagnostics(ctx) {
+        // The run can end on the tick the last kill lands, before any step settles it; settleKill is idempotent.
+        settleKill(ctx, ctx.state(), true);
+        const { kills, lootPicked, fullPackTicks } = ctx.memory;
+        const area = areaWatchReport(ctx.memory.areaWatch, ctx.params.area);
+        return { diagnostics: { ...area.diagnostics, kills, lootPicked, fullPackTicks }, warnings: area.warnings };
+    },
     memory: (): CombatMemory => ({
         areaWatch: newAreaWatch(),
         fightStartedAtTick: null,
@@ -579,6 +664,11 @@ export default defineTask({
         fought: false,
         levelUpClickedAtTick: null,
         prayersTurnedOn: [],
+        fightTarget: null,
+        kills: 0,
+        lootPicked: 0,
+        fullPackTicks: 0,
+        fullPackNotedAt: null,
     }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,
@@ -835,10 +925,20 @@ export default defineTask({
             },
         },
         {
+            name: 'pack-full',
+            // Loot in reach but no slot to take it: end for the plan's bank phase, once the fight is over.
+            when: ctx => ctx.params.endWhenPackFull && nothingFighting(ctx) && packBlocksLoot(ctx),
+            run(ctx) {
+                const left = lootItems(ctx).length;
+                settleKill(ctx);
+                notePackFull(ctx);
+                return { done: `pack full: ${left} wanted ground item(s) left, ${ctx.memory.kills} kills` };
+            },
+        },
+        {
             name: 'loot',
             // Never walk off to loot while fighting, or while another NPC is attacking the bot.
-            when: ctx =>
-                !fighting(ctx.state()) && attackers(ctx.state()).length === 0 && wantedGroundItems(ctx).length > 0,
+            when: ctx => nothingFighting(ctx) && wantedGroundItems(ctx).length > 0,
             *run(ctx) {
                 // Expired skips are dropped here, not in `when`/wantedGroundItems, which stay pure.
                 const tick = ctx.state().tick;
@@ -849,8 +949,10 @@ export default defineTask({
                 // Run-scoped, not a streak: loot stops applying between failures (skipped items), which
                 // would reset a streak; only a successful pickup clears it.
                 const lootFails = ctx.counter('lootFails');
+                settleKill(ctx);
                 const r = yield* pickup(ctx, item);
                 if (r.ok) {
+                    ctx.memory.lootPicked++;
                     lootFails.reset();
                     return;
                 }
@@ -884,6 +986,8 @@ export default defineTask({
                     yield* ticks(NO_PLAYER_WAIT_TICKS);
                     return;
                 }
+                settleKill(ctx, state);
+                notePackFull(ctx);
                 forgetGoneCastTarget(ctx, state);
                 // Keep casting at the NPC the bot is already fighting; else pick a free one.
                 const engaged =
@@ -893,6 +997,7 @@ export default defineTask({
                 const chosen = yield* chooseTarget(ctx, engaged);
                 if (!('target' in chosen)) return chosen.outcome;
                 const { target } = chosen;
+                setFightTarget(ctx, state, target);
 
                 const castFails = ctx.streak('castFails');
                 ctx.memory.fought = true;
@@ -924,6 +1029,8 @@ export default defineTask({
                     yield* ticks(NO_PLAYER_WAIT_TICKS);
                     return;
                 }
+                settleKill(ctx, state);
+                notePackFull(ctx);
                 if (fighting(state)) return yield* waitForKill(ctx);
                 ctx.memory.fightStartedAtTick = null;
 
