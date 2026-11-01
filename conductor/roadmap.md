@@ -703,6 +703,7 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 
 ## Review follow-ups
 
+- combat: the smoke itest "stopOnDialog beats Sir Mordred" failed in its follow-on `talk` ("continue-dialog: no dialog is open to continue") during the 3ddba6293 review; not run against HEAD, so unknown whether it predates it (robustness, test)
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
