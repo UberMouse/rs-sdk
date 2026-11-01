@@ -6,6 +6,7 @@ Fletching creates bows, arrows, crossbow bolts, and throwing darts from logs and
 
 | Spot | Centre (x, z) | Level | Notes | XP/hr | Verified |
 |---|---|---|---|---|---|
+| Seers' Village willows + bank | willows near (2711, 3510), Seers' bank | 41-99 (tested) | Willow longbow cut + strung from banked Bow strings, 13 per trip (Knife, carried Adamant axe, 13 strings); trip ~90 s: chop 48.5 s, cut+string ~30 s, bank ~12 s; 2,075 XP per log | ~1.06M (plan `fletch-99`, 981k in 55.7 min) | 2026-11-01 conductor3 local |
 | Arrow shafts (knife on normal logs), logs chopped nearby | (3224, 3202) knife spawn | 1-17 | 15 shafts per log, ~12 logs/min | ~139k (local, includes early levels) | 2026-10-09 conductor1 local |
 | Arrow shafts, Make 10 batches (`fletching` task) | anywhere | 60+ (no level-up breaks) | 15 shafts per log, ~0.8 s per log (20 logs in 26.4 s vs 48.0 s with Make 1) | ~200k (local; 187.5 XP per log (75 tenths x 2.5) at ~45 logs/min, 20-log runs, not a stats.ts figure) | 2026-10-11 conductor2w4 local |
 | Headless arrows (feathers on shafts) | anywhere | 17-27 | 1 feather + 1 shaft each, 95 in ~40 s | ~328k (local, includes feather XP) | 2026-10-09 conductor1 local |
