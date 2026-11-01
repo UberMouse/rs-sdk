@@ -80,3 +80,31 @@ test(
     },
     itestTimeout({ taskMinutes: 3 }),
 );
+
+test(
+    'bank task withdraws a name held in several bank slots across all of them',
+    async () => {
+        await withFixtureBot(
+            // Unidentified guam, marentill and tarromin all show as "Herb": one bank slot each, 4 + 5 + 6 held.
+            {
+                position: { x: 3254, z: 3420 },
+                inventory: [{ id: Items.BRONZE_AXE, count: 1 }],
+                bank: [
+                    { id: 199, count: 4 },
+                    { id: 201, count: 5 },
+                    { id: 203, count: 6 },
+                ],
+            },
+            async ({ name }) => {
+                const run = await runTask(name, 'bank', { withdraw: [{ item: 'Herb', count: 12, upTo: true }] }, [
+                    'minutes:3',
+                ]);
+                const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
+                expect(run.result.status, detail).toBe('done');
+                expect(run.result.inventoryDelta.Herb, detail).toBe(12);
+            },
+            { connect: false },
+        );
+    },
+    itestTimeout({ taskMinutes: 3 }),
+);

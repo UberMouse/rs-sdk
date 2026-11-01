@@ -289,6 +289,12 @@ const targetLabel = (item: RegExp | BankItem | number) =>
  * pattern), or all of it. `asNote` withdraws banknotes: the note/item toggle is synced first, as it
  * is sticky server-side, and the arrival is counted by name since a note has its own item id. Success
  * needs the full amount: a short fill is `partial-fill`.
+ *
+ * A pattern whose name is held in several bank slots (items of different ids sharing a display name,
+ * e.g. every grimy herb is "Herb" in this revision) is withdrawn across all of them, in slot order,
+ * until `amount` is met or they are exhausted; a short total is `partial-fill` with the sum. A bank
+ * item or slot number stays on its own id. Across several slots `item` is left undefined (no one
+ * arrived item stands for the total); read `amountWithdrawn`.
  */
 export function* withdraw(
     ctx: ActionContext,
@@ -299,7 +305,7 @@ export function* withdraw(
     const dispatch = asDispatch(amount);
     const valid = validateActionQuantity(dispatch, { allowAll: true, max: MAX_BANK_ACTION_QUANTITY });
     if (!valid.valid) return { ok: false, reason: 'invalid-amount', amountWithdrawn: 0, message: valid.message };
-    let s = ctx.state();
+    const s = ctx.state();
     if (!s.bank.isOpen) return { ok: false, reason: 'bank-not-open', amountWithdrawn: 0, message: 'Bank is not open' };
 
     let bankItem: BankItem | null | undefined;
@@ -316,8 +322,46 @@ export function* withdraw(
             amountWithdrawn: 0,
             message: `Bank item not found: ${targetLabel(item)}`,
         };
-    const { id: itemId, name: itemName } = bankItem;
     const asNote = opts.asNote ?? false;
+    // Only a pattern widens to every bank row of that name, one per item id; a slot number or a
+    // BankItem names its own id and keeps to it.
+    const name = bankItem.name;
+    const ids = !(item instanceof RegExp)
+        ? [bankItem.id]
+        : [...new Set(s.bank.items.filter(i => i.name === name).map(i => i.id))];
+    if (ids.length <= 1) return yield* withdrawRow(ctx, bankItem, dispatch, asNote);
+
+    let total = 0;
+    let remaining = dispatch;
+    for (const id of ids) {
+        const row = ctx.state().bank.items.find(i => i.id === id);
+        if (!row) continue;
+        const take = dispatch === -1 ? -1 : Math.min(remaining, row.count);
+        const one = yield* withdrawRow(ctx, row, take, asNote);
+        total += one.amountWithdrawn;
+        if (dispatch !== -1) remaining -= one.amountWithdrawn;
+        if (!one.ok) return { ...one, amountWithdrawn: total, message: `Withdrew ${name} x${total}; ${one.message}` };
+        if (dispatch !== -1 && remaining <= 0) break;
+    }
+    if (dispatch !== -1 && remaining > 0)
+        return {
+            ok: false,
+            reason: 'partial-fill',
+            amountWithdrawn: total,
+            message: `Withdrew ${name} x${total} of ${dispatch} requested across ${ids.length} bank slots`,
+        };
+    return {
+        ok: true,
+        amountWithdrawn: total,
+        item: undefined,
+        message: `Withdrew ${name} x${total} across ${ids.length} bank slots`,
+    };
+}
+
+/** One bank row's withdrawal (`dispatch` -1 = all of it). */
+function* withdrawRow(ctx: ActionContext, bankItem: BankItem, dispatch: number, asNote: boolean): Op<WithdrawResult> {
+    let s = ctx.state();
+    const { id: itemId, name: itemName } = bankItem;
     const requested = dispatch === -1 ? bankItem.count : dispatch;
 
     if (s.bank.noteMode !== asNote) {

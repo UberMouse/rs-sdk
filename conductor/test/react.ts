@@ -123,7 +123,11 @@ function restock(s: BotWorldState, item: { id: number; name: string }, held: num
         .filter(b => b.id !== item.id)
         .map(b => ({ name: b.name, count: b.count, id: b.id }));
     if (banked > 0) bank.push({ name: item.name, count: banked, id: item.id });
-    return world(s).inv(item.name, held, { id: item.id }).bank(bank, s.bank.noteMode).build();
+    // `inv` replaces by name, so rows of other ids sharing the name (every grimy herb is "Herb") are put back.
+    const others = s.inventory.filter(i => i.id !== item.id);
+    const next = world(s).inv(item.name, held, { id: item.id }).bank(bank, s.bank.noteMode).build();
+    const mine = next.inventory.filter(i => i.id === item.id);
+    return { ...next, inventory: [...others, ...mine].map((i, slot) => ({ ...i, slot })) };
 }
 
 /**

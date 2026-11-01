@@ -48,6 +48,9 @@ const lowHp: Guard = {
 /** The bank world, but a deposit never lands: its wait is still running when an abort comes. */
 const ignoresDeposits: TimelineOptions['react'] = (a, s) => (a.type === 'bankDeposit' ? undefined : bankWorld(a, s));
 
+const firstOnly: TimelineOptions['react'] = (a, s) =>
+    a.type === 'bankWithdraw' && a.slot === 0 && s.bank.items[0]?.id !== 199 ? undefined : bankWorld(a, s);
+
 describe('openBank', () => {
     test('uses the booth Bank option and succeeds once the bank is open', async () => {
         const { result, sends } = await runOp([idle.build(), idle.tick(1).build(), opened.tick(2).build()], openBank);
@@ -331,6 +334,76 @@ describe('withdraw', () => {
         expect(bySlot.sends[0]).toMatchObject({ slot: 0, amount: 1 });
         const byItem = await runOp([opened.build(), got(opened, 1)], ctx => withdraw(ctx, BANK, 1));
         expect(byItem.result.ok).toBe(true);
+    });
+
+    describe('one name in several bank slots (every grimy herb is "Herb")', () => {
+        const herbs = idle.bank([
+            { name: 'Herb', count: 6, id: 199 },
+            { name: 'Herb', count: 10, id: 201 },
+            { name: 'Herb', count: 10, id: 203 },
+        ]);
+        const run = (amount: number | 'all') =>
+            runOp([herbs.build(), herbs.tick(1).build()], ctx => withdraw(ctx, /^herb$/i, amount), {
+                react: bankWorld,
+            });
+
+        test('continues into the next slots until the amount is met', async () => {
+            const { result, sends } = await run(25);
+            expect(result).toMatchObject({ ok: true, amountWithdrawn: 25 });
+            expect(sends.map(a => (a.type === 'bankWithdraw' ? [a.slot, a.amount] : null))).toEqual([
+                // The bank closes the gap when a slot empties, so each next slot is looked up afresh.
+                [0, 6],
+                [0, 10],
+                [0, 9],
+            ]);
+        });
+
+        test('a total short of the amount is partial-fill with the sum', async () => {
+            const { result } = await run(100);
+            expect(result).toMatchObject({ ok: false, reason: 'partial-fill', amountWithdrawn: 26 });
+        });
+
+        test("'all' takes every slot", async () => {
+            const { result } = await run('all');
+            expect(result).toMatchObject({ ok: true, amountWithdrawn: 26 });
+        });
+
+        test('a bank item keeps to its own id', async () => {
+            const target = { slot: 1, id: 201, name: 'Herb', count: 10 };
+            const { result, sends } = await runOp(
+                [herbs.build(), herbs.tick(1).build()],
+                ctx => withdraw(ctx, target, 10),
+                { react: bankWorld },
+            );
+            expect(result).toMatchObject({ ok: true, amountWithdrawn: 10 });
+            expect(sends.map(a => (a.type === 'bankWithdraw' ? [a.slot, a.amount] : null))).toEqual([[1, 10]]);
+        });
+
+        test('a later slot that stops delivering fails with the sum so far', async () => {
+            const { result } = await runOp(
+                [herbs.build(), herbs.tick(1).build()],
+                ctx => withdraw(ctx, /^herb$/i, 25),
+                { react: firstOnly },
+            );
+            expect(result).toMatchObject({ ok: false, reason: 'timeout', amountWithdrawn: 6 });
+        });
+
+        test('a note withdrawal runs across the slots too', async () => {
+            const noted = herbs.bank(
+                [
+                    { name: 'Herb', count: 6, id: 199 },
+                    { name: 'Herb', count: 10, id: 201 },
+                ],
+                true,
+            );
+            const { result, sends } = await runOp(
+                [noted.build(), noted.tick(1).build()],
+                ctx => withdraw(ctx, /^herb$/i, 12, { asNote: true }),
+                { react: bankWorld },
+            );
+            expect(result).toMatchObject({ ok: true, amountWithdrawn: 12 });
+            expect(sends.filter(a => a.type === 'bankWithdraw')).toHaveLength(2);
+        });
     });
 
     test('fewer than asked arriving is partial-fill', async () => {

@@ -636,3 +636,50 @@ describe('bank: guards', () => {
         expect(r.sends).toEqual([OPEN, 'deposit Logs', CLOSE]);
     });
 });
+
+describe('bank: one name in several bank slots', () => {
+    const HERBS = [
+        { name: 'Herb', count: 6, id: 199 },
+        { name: 'Herb', count: 10, id: 201 },
+        { name: 'Herb', count: 10, id: 203 },
+    ];
+    const herbReact = bankReact(HERBS);
+
+    test('upTo takes from every slot until count is met', async () => {
+        const r = await simulate(bank, {
+            params: { area: AREA, withdraw: [{ item: 'Herb', count: 25, upTo: true }] },
+            timeline: standing.series(1),
+            react: herbReact,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.inventoryDelta).toEqual({ Herb: 25 });
+        expect(r.result.reason).toBe('finish: all 1 bank operations made');
+    });
+
+    test('upTo takes the sum when the slots hold fewer than count', async () => {
+        const r = await simulate(bank, {
+            params: { area: AREA, withdraw: [{ item: 'Herb', count: 100, upTo: true }] },
+            timeline: standing.series(1),
+            react: herbReact,
+        });
+        expect(r.result.status).toBe('done');
+        expect(r.result.inventoryDelta).toEqual({ Herb: 26 });
+        expect(r.result.reason).toBe('finish: all 1 bank operations made; up to: Herb 26/100');
+    });
+
+    test('a non-upTo entry is met by the sum, and fails only when the sum is short', async () => {
+        const met = await simulate(bank, {
+            params: { area: AREA, withdraw: [{ item: 'Herb', count: 25 }] },
+            timeline: standing.series(1),
+            react: herbReact,
+        });
+        expect(met.result.status).toBe('done');
+        expect(met.result.inventoryDelta).toEqual({ Herb: 25 });
+        const short = await simulate(bank, {
+            params: { area: AREA, withdraw: [{ item: 'Herb', count: 27 }] },
+            timeline: standing.series(1),
+            react: herbReact,
+        });
+        expect(short.result.reason).toBe('operate: bank holds 26 Herb, need 27');
+    });
+});

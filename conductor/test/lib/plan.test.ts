@@ -1033,6 +1033,30 @@ describe('the view', () => {
         expect(r.result.status).toBe('done');
     });
 
+    test('v.bank sums the slots that share a name', async () => {
+        const timeline = BASE.series(8, (w, i) =>
+            i === 2 || i === 3
+                ? w.bank([
+                      { name: 'Herb', count: 6, id: 199 },
+                      { name: 'Herb', count: 10, id: 201 },
+                      { name: 'Herb', count: 10, id: 203 },
+                  ])
+                : w,
+        );
+        const seen: (number | undefined)[] = [];
+        await sim(
+            plan(
+                [
+                    phase(train, {}, { when: v => (seen.push(v.bank('Herb')), v.bank('Herb') === 26) }),
+                    phase(watch, {}, { until: v => v.state.tick >= 6 }),
+                ],
+                v => v.runs('train') > 0,
+            ),
+            { timeline },
+        );
+        expect(seen).toEqual([undefined, 26]);
+    });
+
     test('a phase run starts with the bank as last seen open, the record its walks plan on (ExecuteOptions.bank)', async () => {
         const timeline = BASE.series(8, (w, i) =>
             i === 2 || i === 3 ? w.bank([{ name: 'Copper ore', count: 10 }]) : w,
