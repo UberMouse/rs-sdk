@@ -48,7 +48,8 @@ script walked the bot under attack and it died, 2026-10-11).
 4. **One check-in on a plan's first run** (a new draft, or one you changed; a promoted plan run
    unchanged gets none): right after starting it, start one check-in in the background, its sleep
    sized to when the riskiest untried phase should have run (the errands and the first loop: 120 to
-   300 s), and end your turn:
+   300 s; a phase that ends on an item count: the time that count needs, then read `v.free` against
+   its gate), and end your turn:
    `sleep 180; tail -n 30 $(ls -t conductor/runs/<bot>/*-plan-<name>.ndjson | head -1); ls -t
    conductor/runs/<bot>/*.ndjson | head -3; bun sdk/cli.ts <bot> | head -40`.
    When it reports, judge whether the plan does what you meant: the phase it chose, the bot's
@@ -225,6 +226,13 @@ export default definePlan({
   bank everything then: a stackable product (coins, arrow shafts, runes) takes one slot however
   many you hold, so it never justifies a trip of its own (banking coins every 300 gp while
   thieving wasted the run's time).
+- **Count slots before gating on an item count.** A phase that ends on `v.inv('X') >= N` needs
+  N <= 28 minus every slot the pack holds then (food, tools, key, shield, the Coins stack, and what
+  the phase's `loot` also picks up); write the sum in a plan comment, or end a loot phase on
+  `v.free === 0` instead. A gate the pack cannot meet runs to the `minutes` cap (herblore-druids,
+  2026-10-31: 10 herbs wanted, 19 slots held, 85 min for 9 herbs).
+- **Kill rates come from XP, not steps.** kills = melee XP gained / (4 x target HP x 25); a
+  `stepRuns.fight` is not a kill (herblore-druids reported 1,190 kills/h for a true ~450).
 
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
