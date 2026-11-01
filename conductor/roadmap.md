@@ -703,10 +703,10 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 
 ## Review follow-ups
 
-- combat: the smoke itest "stopOnDialog beats Sir Mordred" failed in its follow-on `talk` ("continue-dialog: no dialog is open to continue") during the 3ddba6293 review; not run against HEAD, so unknown whether it predates it (robustness, test)
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
+- combat: the smoke itest "stopOnDialog beats Sir Mordred" failed in its follow-on `talk` ("continue-dialog: no dialog is open to continue") during the 3ddba6293 review; not run against HEAD, so unknown whether it predates it (robustness, test)
 - walkTo: the Wizards' Tower stairs/ladder room (x 3103..3107, z 3159..3163) is entered by a diagonal elf door (3107,3162) that `sdk/collision-data.json` lacks, so `collisionPaths` finds no route in from outside and `walkTo` into the tower ends `no-path` (connectors work from inside the room); needs diagonal-door support in the SDK collision data or in `walkOnPlane` (game G3)
 - combat itest: the Mordred case's bot is left standing by Sir Mordred after the run; he respawns (100 ticks), attacks it, and the logged-off player cannot leave combat, so a combat smoke re-run within a few minutes fails `no free reachable Sir Mordred` until that player dies; needs integration-harness teardown that moves or logs out a fixture bot left in an aggressive NPC's range (contract T8)
 - walkTo: connector `hazard` is only logged (`walk: WARNING at ...`); add an opt-in `WalkOptions` gate (e.g. a combat floor on the Falador mine stairs: scorpions hunt combat 28 and under) that returns a distinct reason, and make the shop task use it before walking into the Dwarven Mine; touches tasks outside the walk change (safety S1)
