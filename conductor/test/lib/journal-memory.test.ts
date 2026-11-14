@@ -32,6 +32,12 @@ describe('journalOf', () => {
         expect(journalOf(withJournal(BASE, RUNE, [], shuffled))?.lines).toEqual(['first', 'second', 'third']);
     });
 
+    test('a line whose text does not parse is skipped, the rest read', () => {
+        const dump = journalDump(RUNE, ['first', 'second', 'third']);
+        dump[2] = '    #8147 type=4 btn=0 text="bad \\q escape"';
+        expect(journalOf(withJournal(BASE, RUNE, [], dump))?.lines).toEqual(['first', 'third']);
+    });
+
     test('null for another interface, a closed one, and a dump without text', () => {
         const lines = journalDump(RUNE, ['a line']);
         const other = world().modal(8135).build();

@@ -2367,6 +2367,37 @@ describe('the journal memory and observes tasks', () => {
         expect(still.result.reason).toBe('nothing left to do: a, b done (try: nothing to do); plan until not met');
     });
 
+    test('an observes phase whose when never goes false ends the plan failed after maxIdlePhases runs', async () => {
+        const r = await sim(plan([phase(glance, {})]));
+        expect(selected(r)).toEqual(['glance', 'glance', 'glance']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'glance looked 3 times in a row with no acting run between',
+        });
+        const longer = await sim(plan([phase(glance, {})]), { maxIdlePhases: 5 });
+        expect(selected(longer)).toHaveLength(5);
+    });
+
+    test('alternating observes phases are counted together', async () => {
+        const stare = { ...scripted('stare', [{ done: 'looked' }]), observes: true as const };
+        const r = await sim(
+            plan([phase(glance, {}, { when: v => v.runs('glance') <= v.runs('stare') }), phase(stare, {})]),
+        );
+        expect(selected(r)).toEqual(['glance', 'stare', 'glance']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'looked 3 times in a row across glance, stare with no acting run between',
+        });
+    });
+
+    test('an acting run between observes runs resets their count', async () => {
+        const r = await sim(
+            plan([phase(glance, {}, { when: v => v.runs('glance') < 2 || v.runs('train') >= 1 }), phase(train, {})]),
+        );
+        expect(selected(r)).toEqual(['glance', 'glance', 'train', 'glance', 'glance', 'glance']);
+        expect(r.result.reason).toBe('glance looked 3 times in a row with no acting run between');
+    });
+
     test('the journal event is logged on the first sight and on a change only', async () => {
         const r = await sim(
             plan([phase(peek, {}), phase(train, {})], v => v.runs('peek') >= 3),

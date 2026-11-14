@@ -57,7 +57,13 @@ export function interfaceTexts(s: BotWorldState): Map<number, string> {
     const texts = new Map<number, string>();
     for (const line of s.interface.debugInfo ?? []) {
         const m = DUMP_LINE.exec(line);
-        if (m) texts.set(Number(m[1]), JSON.parse(m[2]!) as string);
+        if (!m) continue;
+        // The dump's quoting can carry an escape JSON rejects: skip that line, not the whole dump.
+        try {
+            texts.set(Number(m[1]), JSON.parse(m[2]!) as string);
+        } catch {
+            continue;
+        }
     }
     return texts;
 }

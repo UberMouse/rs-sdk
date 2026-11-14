@@ -874,6 +874,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const fails = new Map<string, number>();
     /** The phase of each consecutive `until`-ended wait run, of any phase; cleared by any other run. */
     let waitRun: string[] = [];
+    /** The phase of each consecutive `TaskDef.observes` run, of any phase; cleared by any acting run. */
+    let lookRun: string[] = [];
     /** The phase that just failed with 'continue', skipped by the next selection. */
     let skip: string | null = null;
     /** The phases of the current run of idle phases, in order. */
@@ -1131,10 +1133,23 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             const after = await settlePhase(chosen, stateOrNull());
             // A look is outside the idle rail, the maxWaits count and the XP mark: the acting runs around it are judged as
             // if it had not run. A journal it saw change is progress, though, which the idle signature cannot see.
+            // Looks are bounded on their own, by maxIdlePhases: one whose `when` still holds after it ended done would
+            // otherwise be chosen again forever. A changed journal does not exempt a look from this count.
             if (observes) {
                 if (journalMoved) idle = [];
+                lookRun = [...lookRun, chosen.name];
+                if (lookRun.length >= maxIdlePhases) {
+                    const names = [...new Set(lookRun)];
+                    return finish(
+                        'failed',
+                        names.length === 1
+                            ? `${names[0]} looked ${lookRun.length} times in a row with no acting run between`
+                            : `looked ${lookRun.length} times in a row across ${names.join(', ')} with no acting run between`,
+                    );
+                }
                 continue;
             }
+            lookRun = [];
             if (after && totalXp(after) > xpMark) {
                 xpMark = totalXp(after);
                 endsSinceXp.clear();
