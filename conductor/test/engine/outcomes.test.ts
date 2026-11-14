@@ -4,7 +4,7 @@ import { type Op, send, wait } from '../../core/op';
 import type { TaskGuard } from '../../lib/interrupts';
 import { defineTask, type Outcome, type Step, type TaskDef } from '../../lib/task';
 import { act } from '../core/fixtures';
-import { timeline } from '../world';
+import { attackedFrom, type StateSpec, timeline, world } from '../world';
 import { runDef } from './harness';
 
 const step = (name: string, run: Step['run']): Step => ({ name, when: () => true, run });
@@ -140,7 +140,51 @@ describe('declared outcomes', () => {
         const g = await runDef(task([waits], { guards: [firesAt2(undefined, { ok: '' })] }), timeline(5));
         expect(g.result).toMatchObject({
             status: 'error',
-            reason: 'guard "tripwire": outcome code "ok" has no sentence on when it happens',
+            reason: 'guard "tripwire" of task "coded": outcome code "ok" has no sentence on when it happens',
         });
     });
+});
+
+/** Ticks 0..n-1 with `spec`, attacked (a goblin beside the bot) from tick 3 until tick 20. */
+const fighting = (n: number, spec: (t: number) => StateSpec = () => ({})) =>
+    timeline(n, spec).map((s, i) => attackedFrom(world(s), i, 20).build());
+
+/** Attacks, then ends with `outcome` at tick 6, mid-fight. */
+const endsMidFight = (outcome: Outcome) =>
+    step('fight', function* (): Op<Outcome> {
+        yield* send(act('attack'));
+        yield* wait('tick 6', s => s.tick >= 6, 1000);
+        return outcome;
+    });
+
+/** A task of endsMidFight that declares `won`. */
+const coded = (outcome: Outcome) => defineTask(task([endsMidFight(outcome)], { outcomes: { won: 'It won.' } }));
+
+describe('outcome codes through the fight settle', () => {
+    test("a done whose fight just settles keeps the step's code", async () => {
+        const r = await runDef(coded({ done: 'won', code: 'won' }), fighting(30));
+        expect(r.result).toMatchObject({ status: 'done', code: 'won', endedBy: 'fight' });
+        expect(r.result.reason).toStartWith('fight: won; fight settled in');
+    });
+
+    test("a guard that ends the run during the settle gives its own code, dropping the step's", async () => {
+        const died = await runDef(
+            coded({ done: 'won', code: 'won' }),
+            fighting(30, t => ({ hp: t >= 10 ? 0 : 10, dead: t === 10 })),
+        );
+        expect(died.result).toMatchObject({ status: 'failed', code: 'died', endedBy: 'interrupt:death' });
+        const starved = await runDef(
+            coded({ done: 'won', code: 'won' }),
+            fighting(30, t => ({ hp: t >= 10 ? 4 : 10 })),
+        );
+        expect(starved.result).toMatchObject({ status: 'failed', endedBy: 'interrupt:low-hp' });
+        expect(starved.result.code).toBeUndefined();
+    });
+});
+
+test('a code that is not a string, from untyped JS, ends the run error', async () => {
+    const outcome = { fail: 'x', code: 3 } as unknown as Outcome;
+    const r = await runDef(defineTask(task([decides(outcome)], { outcomes: { three: 'Three.' } })), timeline(5));
+    expect(r.result.status).toBe('error');
+    expect(r.result.code).toBeUndefined();
 });

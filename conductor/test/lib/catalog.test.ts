@@ -13,7 +13,7 @@ import {
     taskNames,
     undescribedFields,
 } from '../../lib/catalog';
-import { deathGuard, UNDER_ATTACK_NOTE, underAttackGuard } from '../../lib/interrupts';
+import { deathGuard, dialogGuard, UNDER_ATTACK_NOTE, underAttackGuard } from '../../lib/interrupts';
 import { Pattern, PATTERN_NOTE, patternParam } from '../../lib/spot';
 import type { TaskDef } from '../../lib/task';
 
@@ -89,6 +89,24 @@ describe('catalogEntry', () => {
         expect(Object.keys(entry)).toEqual(['name', 'description', 'rules', 'outcomes', 'params']);
         expect(entry.outcomes).toEqual({ attacked: 'The step saw it. A guard saw it.', died: DIED, fled: 'It ran.' });
         expect(catalogEntry(def(params, { outcomes: {} })).outcomes).toEqual({ died: DIED });
+    });
+
+    test('a code declared twice with the same sentence shows it once', () => {
+        const guard = { ...underAttackGuard, outcomes: { attacked: 'It was attacked.' } };
+        const entry = catalogEntry(def(z.object({}), { outcomes: { attacked: 'It was attacked.' }, guards: [guard] }));
+        expect(entry.outcomes?.attacked).toBe('It was attacked.');
+    });
+
+    test("a shared guard's codes are listed, and `allow` naming that guard leaves them out", () => {
+        // No shared guard a task may allow off declares a code today: lend the dialog guard one for the test.
+        const before = dialogGuard.outcomes;
+        dialogGuard.outcomes = { stuck: 'A dialog stayed open.' };
+        try {
+            expect(catalogEntry(def(z.object({}))).outcomes).toEqual({ died: DIED, stuck: 'A dialog stayed open.' });
+            expect(catalogEntry(def(z.object({}), { allow: ['dialog'] })).outcomes).toEqual({ died: DIED });
+        } finally {
+            dialogGuard.outcomes = before;
+        }
     });
 
     test('pickup, talk, interact and combat list the codes their plans branch on', async () => {

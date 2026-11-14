@@ -27,7 +27,8 @@ export interface Selection {
     reads: Record<string, Record<string, unknown>>;
     /** What the plan's own until read; null for a plan without one, or a log from before it was logged. */
     planReads: Record<string, unknown> | null;
-    last: { phase: string; status: TaskStatus; reason: string } | null;
+    /** PlanView['last'] as logged: `code` and `endedBy` absent where the result had none or the log predates them. */
+    last: { phase: string; status: TaskStatus; reason: string; code?: string; endedBy?: string } | null;
     inventory: Record<string, number>;
     free: number;
     bank: Record<string, number> | null;
@@ -132,12 +133,27 @@ function phasesOf(x: unknown): PlanParams['phases'] {
     });
 }
 
+/** ` (code x, by y)` for a `last` that has a code or an `endedBy`, else empty: shown after its status. */
+export function lastEndTags(last: NonNullable<Selection['last']>): string {
+    const tags = [last.code && `code ${last.code}`, last.endedBy && `by ${last.endedBy}`].filter(Boolean);
+    return tags.length ? ` (${tags.join(', ')})` : '';
+}
+
 /** A select event's `last`: the previous phase run's end, or null. */
 function lastOf(x: unknown): Selection['last'] {
     const o = record(x);
     const phase = str(o?.phase);
     const st = status(o?.status);
-    return phase && st ? { phase, status: st, reason: str(o?.reason) ?? '' } : null;
+    if (!phase || !st) return null;
+    const code = str(o?.code);
+    const endedBy = str(o?.endedBy);
+    return {
+        phase,
+        status: st,
+        reason: str(o?.reason) ?? '',
+        ...(code !== null && { code }),
+        ...(endedBy !== null && { endedBy }),
+    };
 }
 
 /**

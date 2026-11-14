@@ -45,15 +45,15 @@ const paramsSchema = (def: TaskDef) => z.toJSONSchema(def.params, { io: 'input' 
 
 /**
  * The codes a run of `def` can end with: its own, then each guard's it installs (the shared ones `allow` leaves on,
- * those a param can turn off included, and its own). A code declared twice shows both sentences.
+ * those a param can turn off included, and its own). A code declared twice shows each distinct sentence once.
  */
 function outcomesOf(def: TaskDef): Record<string, string> {
-    const out: Record<string, string> = {};
+    const sentences = new Map<string, Set<string>>();
     const guards = [...GUARDS.filter(g => !(def.allow ?? []).some(a => a === g.name)), ...(def.guards ?? [])];
     for (const declared of [def.outcomes, ...guards.map(g => g.outcomes)])
         for (const [code, sentence] of Object.entries(declared ?? {}))
-            out[code] = out[code] === undefined ? sentence : `${out[code]} ${sentence}`;
-    return out;
+            sentences.set(code, (sentences.get(code) ?? new Set()).add(sentence));
+    return Object.fromEntries([...sentences].map(([code, s]) => [code, [...s].join(' ')]));
 }
 
 export function catalogEntry(def: TaskDef): CatalogEntry {

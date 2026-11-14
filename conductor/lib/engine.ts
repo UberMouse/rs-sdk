@@ -296,13 +296,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     // A def built without defineTask is sized and its outcome codes checked here too; a bad `silent` or
     // `outcomes` fails the run once it has started.
     let stuckAfterMs = DEFAULT_STUCK_AFTER_MS;
-    let badWindow: string | null = null;
+    let badDeclaration: string | null = null;
     try {
         stuckAfterMs = taskStuckWindowMs(def);
         checkOutcomes(`task "${def.name}"`, def.outcomes);
-        for (const g of [...GUARDS, ...(def.guards ?? [])]) checkOutcomes(`guard "${g.name}"`, g.outcomes);
+        for (const g of [...GUARDS, ...(def.guards ?? [])])
+            checkOutcomes(`guard "${g.name}" of task "${def.name}"`, g.outcomes);
     } catch (e) {
-        badWindow = errMessage(e);
+        badDeclaration = errMessage(e);
     }
     const taskCodes = new Set(Object.keys(def.outcomes ?? {}));
     const guardCodes = new Map(
@@ -554,7 +555,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             `invalid params: ${parsed.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
         );
     }
-    if (badWindow) return finish('error', badWindow);
+    if (badDeclaration) return finish('error', badDeclaration);
     try {
         validateStops(stops, initial);
     } catch (e) {
