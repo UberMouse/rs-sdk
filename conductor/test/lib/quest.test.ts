@@ -679,6 +679,10 @@ describe('defineQuest: the compiled plan', () => {
                 `quest "test-quest": step "journal:pay": a name starting "journal:" is a step read's`,
             ],
             [{ steps: [chat, chat] }, 'quest "test-quest": step "chat": name used twice'],
+            [
+                { defaults: { onFail: 'continue' } },
+                `quest "test-quest": defaults.onFail 'continue' is a step's choice ("try this, carry on if it fails"), not a quest's: as a default it would also apply to the journal reads and the wait for completion`,
+            ],
             ...(['g', 'y', 'm', 'si'] as const).map((flags): [Partial<QuestDef>, string] => [
                 { steps: [step('pay', deed, { what: 'pay' }, { reached: journal(new RegExp('paid', flags)) })] },
                 // journal() adds the i flag: the message shows the pattern as normalised.

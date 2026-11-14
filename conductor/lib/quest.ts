@@ -85,7 +85,10 @@ export interface QuestDef {
     requires?: PlanDef['requires'];
     needs?: PlanNeed[];
     needsUnless?: Predicate;
-    /** Merged over QUEST_DEFAULTS. */
+    /**
+     * Merged over QUEST_DEFAULTS. A function `onFail` is allowed (as on a plan); the string 'continue' is refused:
+     * it is a step's own option, and as a default it would also apply to the journal reads and the wait for completion.
+     */
     defaults?: PlanDef['defaults'];
     settle?: boolean;
     /** In story order. */
@@ -208,6 +211,11 @@ const fail = (q: QuestDef, msg: string): never => {
 export function defineQuest(q: QuestDef): PlanDef {
     if (!QUESTS[q.id]) fail(q, `unknown quest id "${q.id}"; see QUESTS in lib/quests.ts`);
     if (!q.steps.length) fail(q, 'has no steps');
+    if (q.defaults?.onFail === 'continue')
+        fail(
+            q,
+            `defaults.onFail 'continue' is a step's choice ("try this, carry on if it fails"), not a quest's: as a default it would also apply to the journal reads and the wait for completion`,
+        );
     const seen = new Set<string>();
     for (const s of q.steps) {
         if (s.name === JOURNAL_PHASE) fail(q, `step "${s.name}": the name is the journal read's`);

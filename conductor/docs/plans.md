@@ -374,13 +374,13 @@ provisionally by run order until a read can confirm it.
 **When the journal is read.** Only for a quest with a journal mark, only while the quest tab shows
 it started (`v.questStarted`), and only with no dialog and no modal open: a click on the tab entry
 destroys an open chat dialog or shop, with no rejection and no way back. It is read (phase
-`journal`) at the plan's first selection, after a failed run, after a journal-mark step ended, and
+`journal`, or `journal:<step>` after a journal-mark step ended done) at the plan's first selection, after a failed run, after a journal-mark step ended, and
 while a journal-mark step is passed only provisionally and the journal has not been read since. A
 read costs about four ticks.
 
 **The `journal` task** (`tasks/journal.ts`; params `quest`, `expect?`, `withinTicks?`) clicks the
 quest's tab entry (`questlist:<id>`), sees interface 8134 open, closes it and ends `done` with the
-journal's last line (up to 120 characters); the plan run keeps the text. It refuses in preflight
+journal's last line (up to 120 characters); the plan run keeps the text. When it has an `expect` that never shows within `within` ticks (`withinTicks`), it still ends done, with ` (no "<expect>" within N ticks)` appended to its reason, and a `journal:<step>` read then lets the step run again. It refuses in preflight
 while a dialog or a modal is open (reason `preflight: journal not read: dialog open`, or `modal
 open`), and checks again before every click, failing `journal not read: ...` if one has turned up
 since. Other failures: the click failed, the journal opened is another quest's, it did not open
@@ -404,7 +404,8 @@ unknown quest id.
 **Failure policy and names.** A quest's phases default to `onFail: 'retry'`, `maxFails: 3`
 (`QUEST_DEFAULTS`; a step's own option or the quest's `defaults` overrides it), so a slip-prone talk
 needs no retry copies. No step is named `journal` or `complete`, starts `journal:`, or shares a name
-with another. The quest's `requires` merges over `QUEST_TAB_REQUIRED`.
+with another. A quest's `defaults.onFail` may not be `'continue'` (`defineQuest` refuses it: it is a step's choice, and as a default it would also apply to the journal reads and the wait for completion); a function is allowed.
+The quest's `requires` merges over `QUEST_TAB_REQUIRED`.
 
 **Writing one.** Take each stage's wording from the quest's `*_journal.rs2` under
 `server/content/scripts/quests/`, then confirm it against the `journal` events of a plan log (each
