@@ -46,7 +46,8 @@ const STALE_CLOSE_FAILS = failStreak({
     limit: FAIL_LIMIT,
     worstTicks: CLOSE_SHOP_WAIT_TICKS,
 });
-// A cut-off step run: the open, a trade that ran to its deadline, the close.
+// A cut-off step run: the open, a trade that ran to its deadline, the close. A ceiling: a trade that runs to its deadline
+// with no inventory change fails as a partial fill instead, so a cut-off that counts here is shorter than this.
 const CUT_OFFS = failStreak({
     name: 'cutOffs',
     limit: FAIL_LIMIT,

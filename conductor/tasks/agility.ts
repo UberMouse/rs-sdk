@@ -12,7 +12,7 @@ import {
 } from '../actions/course';
 import { EAT_WAIT_TICKS, eat } from '../actions/eat';
 import { OBSTACLE_SETTLE_TICKS, OBSTACLE_WAIT_TICKS } from '../actions/obstacle';
-import { timedOutAdvancing, walkTo, WALK_MAX_TICKS } from '../actions/walk';
+import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
 import { walkToArea, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { findFood, foodCount } from '../lib/interrupts';
@@ -27,12 +27,13 @@ const OBSTACLE_FAIL_LIMIT = 6;
 const FALL_LIMIT = 10;
 /** Ticks to wait after a refusal before trying the obstacle again. */
 const REFUSED_RETRY_TICKS = 3;
-// A failed obstacle waits OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS (and a refusal REFUSED_RETRY_TICKS more); a failed
-// walk toward its stand or loc can stall for WALK_MAX_TICKS, the longer of the two.
+// worstTicks is one failed obstacle attempt: its wait and settle, and a refusal's retry pause. The walks toward a stand
+// tile or a loc that count a miss are not in it: a walk that closes in moves the bot (visible), one that cannot ends
+// within a few ticks, and a stalled one is bounded by the WALK_TO_AREA_SILENT_TICKS entry below.
 const OBSTACLE_FAILS = failStreak({
     name: 'obstacleFails',
     limit: OBSTACLE_FAIL_LIMIT,
-    worstTicks: Math.max(WALK_MAX_TICKS, OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS + REFUSED_RETRY_TICKS),
+    worstTicks: OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS + REFUSED_RETRY_TICKS,
     what: 'obstacles',
 });
 /**
@@ -51,14 +52,6 @@ const STEP_TIMEOUT_MS = 300_000;
 const EAT_BELOW_FRACTION = 0.75;
 /** Eats in a row that did nothing before the run fails. */
 const EAT_FAIL_LIMIT = 3;
-/** Food a course's run needs to start with unless `minFood` says otherwise: the Wilderness course hurts and has no way out but its lap. */
-const DEFAULT_MIN_FOOD = { gnome: 0, barbarian: 0, wilderness: 3 } as const;
-/**
- * Food a lap of a course with a lap start (the Wilderness) must start with, capped by `minFood`: once the bot is at the
- * door with fewer it stops there. A lap costs up to 22% of max HP an obstacle and has no way out but its end, so a lap
- * begun on the last bite can run dry in the cave.
- */
-const LAP_FOOD_RESERVE = 2;
 // The falls streak and the eat step's eatFails stay hand-written: falls reset on any obstacle that pays out, and the eat
 // step's code is left as it is. Their stretches are listed as ticks.
 const SILENT = [
@@ -67,6 +60,14 @@ const SILENT = [
     failStreakTicks(FALL_LIMIT, CROSS_TICKS),
     failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
 ];
+/** Food a course's run needs to start with unless `minFood` says otherwise: the Wilderness course hurts and has no way out but its lap. */
+const DEFAULT_MIN_FOOD = { gnome: 0, barbarian: 0, wilderness: 3 } as const;
+/**
+ * Food a lap of a course with a lap start (the Wilderness) must start with, capped by `minFood`: once the bot is at the
+ * door with fewer it stops there. A lap costs up to 22% of max HP an obstacle and has no way out but its end, so a lap
+ * begun on the last bite can run dry in the cave.
+ */
+const LAP_FOOD_RESERVE = 2;
 
 const Params = z.object({
     course: z

@@ -20,24 +20,29 @@ export const COMBINE_SETTLE_TICKS = 3;
 /** A walk, then the op or a dialog of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
 // Each op waits up to its own *_WAIT_TICKS for an effect that never comes; a combine's no-effect use also waits out COMBINE_SETTLE_TICKS.
+// worstTicks: one failed use, the wait for its effect (USE_WAIT_TICKS).
 const COMBINE_FAILS = failStreak({
     name: 'combineFails',
     limit: FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS,
     what: 'tries',
 });
+// One use that changed nothing: the wait for its effect, then COMBINE_SETTLE_TICKS for a product or menu.
 const COMBINE_NO_EFFECT = failStreak({
     name: 'combineNoEffect',
     limit: FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS + COMBINE_SETTLE_TICKS,
 });
+// One failed drop: the wait for the item to leave the inventory (DROP_WAIT_TICKS).
 const DROP_FAILS = failStreak({ name: 'dropFails', limit: FAIL_LIMIT, worstTicks: DROP_WAIT_TICKS, what: 'drops' });
+// One failed unequip: the wait for the item to leave the equipment (UNEQUIP_WAIT_TICKS).
 const UNEQUIP_FAILS = failStreak({
     name: 'unequipFails',
     limit: FAIL_LIMIT,
     worstTicks: UNEQUIP_WAIT_TICKS,
     what: 'tries',
 });
+// One failed equip: the wait for the item to show as worn (EQUIP_WAIT_TICKS).
 const EQUIP_FAILS = failStreak({ name: 'equipFails', limit: FAIL_LIMIT, worstTicks: EQUIP_WAIT_TICKS });
 const SILENT = [
     CONVERSE_MAX_TICKS,

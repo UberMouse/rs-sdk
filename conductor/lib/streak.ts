@@ -72,6 +72,9 @@ export function failStreak(spec: StreakSpec & { what?: string }): PhraseStreak |
 export const MISSING_LIMIT = 3;
 export const MISSING_WAIT_TICKS = 2;
 
-/** The streak of looks that found no target: a task wraps it with its own failure text and its own wait. */
+/**
+ * The streak for a look-then-wait loop over a target that may be out of sight: each look that finds none counts
+ * with `missWith` (the task supplies the failure text), then the task waits MISSING_WAIT_TICKS before looking again.
+ */
 export const missingTargetStreak = (name: string): ReasonStreak =>
     failStreak({ name, limit: MISSING_LIMIT, worstTicks: MISSING_WAIT_TICKS });

@@ -43,8 +43,9 @@ const FAIL_LIMIT = 3;
 const NO_DIALOG = missingTargetStreak('noDialog');
 const NO_LOC = missingTargetStreak('noLoc');
 const NO_NPC = missingTargetStreak('noNpc');
-// A use or a talk that never lands waits up to USE_WAIT_TICKS / TALK_OPEN_TICKS each time.
+// One failed use: the wait for its effect (USE_WAIT_TICKS).
 const USE_FAILS = failStreak({ name: 'useFails', limit: FAIL_LIMIT, worstTicks: USE_WAIT_TICKS, what: 'uses' });
+// One failed talk: the wait for the dialog to open (TALK_OPEN_TICKS).
 const TALK_FAILS = failStreak({ name: 'talkFails', limit: FAIL_LIMIT, worstTicks: TALK_OPEN_TICKS });
 /**
  * Ticks a conversation that `travels` gets to carry the player away after its dialog closes: the sail proc's
@@ -58,7 +59,7 @@ export const TRAVEL_MIN_JUMP = 8;
 const FOLLOW_UP_OPEN_TICKS = 10;
 /** A walk, then a conversation of up to CONVERSE_MAX_TICKS, a press and the pages around it: all fit one step. */
 const STEP_TIMEOUT_MS = 480_000;
-/** A conversation changes nothing the watchdog sees until its item arrives: outlast the longest. */
+// A conversation changes nothing the watchdog sees until its item arrives: the window outlasts the longest, and each streak.
 const SILENT = [
     CONVERSE_MAX_TICKS + PRESS_MAX_TICKS,
     TALK_FAILS,

@@ -11,7 +11,7 @@ import {
     PORTAL,
     USE_OPTION,
 } from '../lib/runecraft';
-import { failStreak, MISSING_LIMIT, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
+import { failStreak, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 
 /** Aubury's rune shop, south-east Varrock (the rune-mysteries plan's stand). */
@@ -27,14 +27,14 @@ const FAIL_LIMIT = 3;
 const PORTAL_TOLERANCE = 2;
 const STEP_TIMEOUT_MS = 360_000;
 const NO_AUBURY = missingTargetStreak('noAubury');
-// Each look for the portal that finds none also walks to the nearest known one (WALK_MAX_TICKS) and waits.
-const NO_PORTAL = failStreak({
-    name: 'noPortal',
-    limit: MISSING_LIMIT,
-    worstTicks: WALK_MAX_TICKS + MISSING_WAIT_TICKS,
-});
+// A look that finds no portal walks to the nearest known one, but the look that reaches the limit returns before its walk, so
+// at most two walks happen; they are covered by WALK_FAILS below (a walk that closes in moves the bot, one that cannot ends fast).
+const NO_PORTAL = missingTargetStreak('noPortal');
+// One failed walk to Aubury, capped at WALK_MAX_TICKS.
 const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+// One failed teleport: the wait for the jump (TELEPORT_WAIT_TICKS).
 const TELEPORT_FAILS = failStreak({ name: 'teleportFails', limit: FAIL_LIMIT, worstTicks: TELEPORT_WAIT_TICKS });
+// One failed portal use: the walk to it and the wait to leave (PORTAL_WAIT_TICKS covers both).
 const PORTAL_FAILS = failStreak({ name: 'portalFails', limit: FAIL_LIMIT, worstTicks: PORTAL_WAIT_TICKS });
 const SILENT = [TELEPORT_FAILS, PORTAL_FAILS, WALK_FAILS, NO_AUBURY, NO_PORTAL];
 

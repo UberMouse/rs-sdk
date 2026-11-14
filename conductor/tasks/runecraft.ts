@@ -32,12 +32,22 @@ const CRAFT_DELAY_TICKS = 3;
 const FAIL_LIMIT = 3;
 const NO_PORTAL = missingTargetStreak('noPortal');
 const NO_ALTAR = missingTargetStreak('noAltar');
-const LEAVE_FAILS = failStreak({ name: 'leaveFails', limit: FAIL_LIMIT, worstTicks: LEAVE_WAIT_TICKS });
-const CRAFT_FAILS = failStreak({ name: 'craftFails', limit: FAIL_LIMIT, worstTicks: CRAFT_WAIT_TICKS });
+// One failed portal use: the wait to leave the temple (LEAVE_WAIT_TICKS).
+const LEAVE_FAILS = failStreak({
+    name: 'leaveFails',
+    limit: FAIL_LIMIT,
+    worstTicks: LEAVE_WAIT_TICKS,
+    what: 'portal uses',
+});
+// One failed craft: the wait for the essence to go (CRAFT_WAIT_TICKS; CRAFT_DELAY_TICKS follows only a success).
+const CRAFT_FAILS = failStreak({ name: 'craftFails', limit: FAIL_LIMIT, worstTicks: CRAFT_WAIT_TICKS, what: 'crafts' });
+// One failed entry: the wait to land in the temple (ENTER_WAIT_TICKS).
 const ENTER_FAILS = failStreak({ name: 'enterFails', limit: FAIL_LIMIT, worstTicks: ENTER_WAIT_TICKS });
 // A walk toward the ruins ends within WALK_MAX_TICKS.
 const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
-const RUINS_ABSENT = failStreak({ name: 'ruinsAbsent', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+// Counts arrivals at the ruins that find none: the first arrival moved the bot (visible), the repeats are re-walks from
+// within the tolerance that end at once, so one attempt is a tick.
+const RUINS_ABSENT = failStreak({ name: 'ruinsAbsent', limit: FAIL_LIMIT, worstTicks: 1 });
 const STEP_TIMEOUT_MS = 360_000;
 const SILENT = [ENTER_FAILS, LEAVE_FAILS, CRAFT_FAILS, WALK_FAILS, RUINS_ABSENT, NO_PORTAL, NO_ALTAR];
 
@@ -125,7 +135,7 @@ export default defineTask({
                     if (w.kind === 'met') return;
                 }
                 yield* log('the portal did not take us out');
-                return LEAVE_FAILS.missWith(ctx, `${FAIL_LIMIT} portal uses in a row failed`);
+                return LEAVE_FAILS.miss(ctx);
             },
         },
         {
@@ -158,7 +168,7 @@ export default defineTask({
                     return;
                 }
                 yield* log(`craft failed: ${sent.ok ? 'the essence stayed in the inventory' : sent.message}`);
-                return CRAFT_FAILS.missWith(ctx, `${FAIL_LIMIT} crafts in a row failed`);
+                return CRAFT_FAILS.miss(ctx);
             },
         },
         {

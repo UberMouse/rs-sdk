@@ -9,6 +9,7 @@ import { TICK_MS } from '../../lib/util';
 import shop from '../../tasks/shop';
 import { door, fakePaths, noCrossings } from '../paths';
 import { shopReact, walking } from '../react';
+import { withSilentTicks } from '../silent';
 import { simulate, type Simulation } from '../simulate';
 import { type World, world } from '../world';
 
@@ -205,19 +206,12 @@ describe('shop: the trip', () => {
         );
         const behindDoor = carrying.player({ at: from }).loc('Door', shut.x, shut.z, { options: ['Open'] });
         // The watchdog's 90 s is shorter than three walks standing still: out of the way.
-        const r = await simulate(
-            {
-                ...shop,
-                silent: [...(shop.silent ?? []), (10 * DEFAULT_STUCK_AFTER_MS) / TICK_MS],
-                stuckAfterMs: undefined,
-            },
-            {
-                params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
-                timeline: behindDoor.series(1),
-                pathfinder: paths,
-                react: walking(react, () => true),
-            },
-        );
+        const r = await simulate(withSilentTicks(shop, (10 * DEFAULT_STUCK_AFTER_MS) / TICK_MS), {
+            params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
+            timeline: behindDoor.series(1),
+            pathfinder: paths,
+            react: walking(react, () => true),
+        });
         const budget = walkBudgetTicks(15);
         const message = `Walk to (3212, 3247) ran out of its ${budget} ticks at (${from.x}, ${from.z})`;
         expect(r.result.status).toBe('failed');

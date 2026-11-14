@@ -34,7 +34,7 @@ import { squareReachesWilderness, WILDERNESS_MIN_FOOD, wildernessFoodRefusal } f
 /** Failed walks or interactions in a row before the task fails. */
 const FAIL_LIMIT = 3;
 const MISSING = missingTargetStreak('missing');
-// An interaction that never lands waits up to INTERACT_WAIT_TICKS each time.
+// One failed interaction: the wait for its effect (INTERACT_WAIT_TICKS, which includes the walk up to the target).
 const INTERACT_FAILS = failStreak({ name: 'interactFails', limit: FAIL_LIMIT, worstTicks: INTERACT_WAIT_TICKS });
 /** One interaction wait, its settle and the dialog answers it opens (CONVERSE_MAX_TICKS) fit one step; the walk is a step of its own. */
 const STEP_TIMEOUT_MS = 360_000;
