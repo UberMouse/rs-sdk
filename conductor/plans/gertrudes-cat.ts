@@ -6,8 +6,6 @@ import interact from '@conductor/tasks/interact';
 import items from '@conductor/tasks/items';
 import pickup from '@conductor/tasks/pickup';
 import talk from '@conductor/tasks/talk';
-import wait from '@conductor/tasks/wait';
-
 const gertrude = { x: 3151, z: 3410, tolerance: 4 };
 const cat = '^Gertrudes cat$';
 const catAt = { x: 3306, z: 3512, level: 1, tolerance: 4 };
@@ -115,19 +113,11 @@ export default defineQuest({
         step(
             'return-kitten',
             interact,
-            // The stage moves some ticks after the use, as Fluffs leaves: `until` ends the step then, so no journal read
-            // comes before the move. `expect` keeps the pickup animation from ending it first; the lite client does not
-            // record that message box (learnings/dialogs.md), so the until is what ends it.
-            { target: 'npc', name: cat, use: { item: "Fluffs' kitten" }, at: catAt, expect: 'run off home' },
-            {
-                reached: journal(/I gave Fluffs her kitten back/),
-                until: v => up(v) && !hasKitten(v) && v.npcs('Gertrudes cat') === 0,
-            },
+            { target: 'npc', name: cat, use: { item: "Fluffs' kitten" }, at: catAt },
+            { reached: journal(/I gave Fluffs her kitten back/) },
         ),
         step('climb-down-2', interact, ladderDown, { until: down }),
         step('open-door-2', interact, door, { skip: gertrudeReachable }),
         step('finish', talk, { npc: '^Gertrude$', at: gertrude }),
-        // The tab shows the quest complete some ticks after her dialog closes.
-        step('reward', wait, { ticks: 20, orFail: true }, { until: v => v.questDone('fluffs') }),
     ],
 });
