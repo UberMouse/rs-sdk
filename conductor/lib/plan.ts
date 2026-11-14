@@ -1069,9 +1069,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 endsSinceXp.clear();
             }
             // A retried failure is bounded by maxFails, not the idle rail: retrying in an unchanged state is its point.
-            // So is a wait its phase's `until` ended (TaskDef.waits): the world it waited on is outside the idle signature.
-            // The idle run built up so far is kept as it is: neither extends nor resets it. A plan stop or the plan's
-            // `until` returned above, so a PHASE_UNTIL reason here is the phase's own.
+            // A wait its phase's `until` ended (TaskDef.waits) is left out too: what it waited on (an NPC moving) can be
+            // outside the idle signature. The idle run built up so far is kept as it is: neither extends nor resets it.
+            // A plan stop or the plan's `until` returned above, so a PHASE_UNTIL reason here is the phase's own.
             const waited = chosen.task.waits === true && result.reason === PHASE_UNTIL;
             if (decision === 'retry' || waited) {
                 prevDone = null;
