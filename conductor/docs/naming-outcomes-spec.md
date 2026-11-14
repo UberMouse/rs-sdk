@@ -140,7 +140,7 @@ or docs that name the old params.
   (`stop` is the old `true`).
 - combat: `endWhenPackFull: boolean` becomes `onFull: 'continue' | 'stop'`, default `continue`.
 - pickup: `maxWaitSeconds` becomes `maxWaitTicks`, integer, default the tick count of the old
-  default (90 s is 150 ticks); behaviour for the default is unchanged to the tick; every promoted
+  default (90 s is 225 ticks at 400 ms a tick; an earlier draft of this line said 150, which was wrong); behaviour for the default is unchanged to the tick; every promoted
   plan that passes `maxWaitSeconds` passes the equal tick count (seconds × 1000 / 400, rounded
   up; list each plan and both values).
 - spell-items `item` uses `patternParam` (same matching as today; if today's hand-made regex

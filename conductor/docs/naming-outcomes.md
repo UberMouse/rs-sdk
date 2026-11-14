@@ -60,8 +60,10 @@ here is the conductor's, made under the "drive this" instruction; each is marked
 - combat `endWhenPackFull: boolean` → `onFull: 'continue' | 'stop'`, default `continue`.
   Neither old name is in any plan. The enum values keep `drop` for the gathering tasks: `continue`
   and `drop` are different behaviours and get different words.
-- pickup `maxWaitSeconds` → `maxWaitTicks` (default 150 = 90 s), in 7 plans, edited with it.
-- `spell-items.item` uses `patternParam`; `shop.at` uses `AtSchema`.
+- pickup `maxWaitSeconds` → `maxWaitTicks` (default 225 = 90 s), in 7 plans, edited with it.
+- `spell-items.item` uses `patternParam`. `shop.at` keeps its own `{x, z}` shape: its walk step
+  ignores `level`, `tolerance` and `met`, so taking `AtSchema` would list fields shop does not
+  honour. Moving shop onto the shared walk step is a follow-up.
 - **Not renamed** (**Assumption**): `npc`, `target`, `name`, `item`, `food`, `product`. They are in
   40 to 60 plans each, the catalog text now states exact or pattern per field, and a rename
   splits the stats history for every method. Recorded in the roadmap as a known wart.
