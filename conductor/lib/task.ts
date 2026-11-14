@@ -169,6 +169,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * (stepBudgetTicks). Default DEFAULT_STEP_TIMEOUT_MS (engine.ts); raise it for steps that walk far.
      */
     stepTimeoutMs?: number;
+    /**
+     * A run of this task that changes nothing is a wait, not a stall (the `wait` task): a plan leaves a run of it
+     * that its phase's `until` ended out of the idle rail (runPlan), bounded by DEFAULT_MAX_WAITS consecutive `until`-ended waits, of any phase. A run that ends any other way counts as usual.
+     */
+    waits?: true;
 }
 
 /** A generator step's tick budget: its `stepTimeoutMs` in ticks, rounded up, as the engine enforces it. */

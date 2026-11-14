@@ -36,7 +36,7 @@ const basement = (v: PlanView) => pz(v) > 9600 && pz(v) < 9695;
 const insideHouse = (v: PlanView) => west(v) && px(v) >= 2531 && px(v) <= 2541 && pz(v) >= 3262 && pz(v) <= 3271;
 const nearBerries = (v: PlanView) => surface(v) && px(v) >= 2655 && px(v) <= 2680 && pz(v) >= 3470 && pz(v) <= 3510;
 const inWood = (v: PlanView) => surface(v) && px(v) >= 2620 && px(v) <= 2700 && pz(v) >= 3440 && pz(v) <= 3515;
-const wearing = (v: PlanView) => n(v, 'Gas mask') === 0;
+const wearing = (v: PlanView) => v.state.equipment.some(i => /^gas mask$/i.test(i.name));
 
 // stage markers
 const hasMask = (v: PlanView) => n(v, 'Gas mask') > 0 || v.state.equipment.some(i => /^gas mask$/i.test(i.name));
