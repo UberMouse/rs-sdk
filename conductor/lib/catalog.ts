@@ -3,7 +3,7 @@
 import { readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { z } from 'zod/v4';
-import { Pattern } from './spot';
+import { isPatternParam, isPatternSchema, PATTERN_NOTE } from './spot';
 import type { TaskDef } from './task';
 
 export const TASKS_DIR = resolve(import.meta.dir, '../tasks');
@@ -84,32 +84,44 @@ const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonopt
 const LEAVES = new Set(['string', 'number', 'boolean', 'bigint', 'enum', 'literal', 'date', 'null', 'any', 'unknown']);
 
 /**
- * The schema under its wrappers, and whether any layer, the inner one included, carries a description.
- * `Pattern`'s own says only what kind of value it is, not what the param means, so it does not count.
+ * The schema under its wrappers; whether any layer, the inner one included, carries a description; and the
+ * description `--list` shows for it (the outermost one). A description on a Pattern layer counts only when
+ * `patternParam` made it: one inherited from `Pattern` says what kind of value it is, not what the param means.
  */
-function unwrap(s: z.ZodType): { core: z.ZodType; described: boolean } {
+function unwrap(s: z.ZodType): { core: z.ZodType; described: boolean; shown: string | undefined } {
     let described = false;
+    let shown: string | undefined;
     for (let cur = s; ;) {
-        if (cur.description !== undefined && cur.description !== Pattern.description) described = true;
+        if (cur.description !== undefined) {
+            shown ??= cur.description;
+            if (!isPatternSchema(cur) || isPatternParam(cur)) described = true;
+        }
         const d = defOf(cur);
         if (WRAPPERS.has(d.type) && d.innerType) cur = d.innerType;
         else if (d.type === 'pipe' && d.in) cur = d.in;
-        else return { core: cur, described };
+        else return { core: cur, described, shown };
     }
 }
 
-function walkField(s: z.ZodType, path: string, out: Set<string>): void {
-    const { core, described } = unwrap(s);
-    if (!described) out.add(path);
+/** What the walk finds: fields with no description, and Pattern schemas whose shown description lacks PATTERN_NOTE. */
+interface Found {
+    undescribed: Set<string>;
+    noNote: Set<string>;
+}
+
+function walkField(s: z.ZodType, path: string, out: Found): void {
+    if (!unwrap(s).described) out.undescribed.add(path);
+    walkPart(s, path, out);
+}
+
+/** A schema's own note check and the fields inside it; on its own, for what is not a field (an array's element, a union's arm, the root). */
+function walkPart(s: z.ZodType, path: string, out: Found): void {
+    const { core, shown } = unwrap(s);
+    if (isPatternSchema(core) && !shown?.includes(PATTERN_NOTE)) out.noNote.add(path);
     walkInside(core, path, out);
 }
 
-/** The fields inside a schema that is not itself a field: an array's element, a union's arm, the root. */
-function walkPart(s: z.ZodType, path: string, out: Set<string>): void {
-    walkInside(unwrap(s).core, path, out);
-}
-
-function walkInside(core: z.ZodType, path: string, out: Set<string>): void {
+function walkInside(core: z.ZodType, path: string, out: Found): void {
     const d = defOf(core);
     if (d.type === 'object') {
         for (const [key, field] of Object.entries(d.shape ?? {})) walkField(field, path ? `${path}.${key}` : key, out);
@@ -127,13 +139,27 @@ function walkInside(core: z.ZodType, path: string, out: Set<string>): void {
  * A field is described when its schema or any wrapper of it (optional, default, a pipe's input) has one,
  * so a field typed as a described shared sub-schema (`AreaSchema`) is described through it; the fields
  * inside are still checked. A union is one field and needs its own description, whatever its arms carry;
- * the fields of an object arm are checked at the union's path. A field typed `Pattern` must be described
- * at its use: `Pattern`'s description does not say what the param means.
+ * the fields of an object arm are checked at the union's path. A field typed `Pattern` (any schema with
+ * its regex check) must be described at its use, with `patternParam` or on a wrapper: `Pattern`'s own
+ * description does not say what the param means.
  */
 export function undescribedFields(def: Pick<TaskDef, 'params'>): string[] {
-    const out = new Set<string>();
+    return [...walk(def).undescribed];
+}
+
+/**
+ * The path of every Pattern schema in the params (a field, an array's element, a union's arm) whose
+ * description, as `--list` shows it, lacks PATTERN_NOTE: the reader is not told it is a regex or how it
+ * matches. `patternParam` adds the note; describing a Pattern field any other way drops it.
+ */
+export function patternsWithoutNote(def: Pick<TaskDef, 'params'>): string[] {
+    return [...walk(def).noNote];
+}
+
+function walk(def: Pick<TaskDef, 'params'>): Found {
+    const out: Found = { undescribed: new Set(), noNote: new Set() };
     walkPart(def.params, '', out);
-    return [...out];
+    return out;
 }
 
 /**

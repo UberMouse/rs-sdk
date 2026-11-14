@@ -28,10 +28,11 @@ import {
     itemMatches,
     matcher,
     onTile,
-    Pattern,
+    patternParam,
     TileSchema,
     walkToSpotStep,
 } from '../lib/spot';
+import { HOLD_HP_FLOOR_FRACTION, HOLD_HP_FLOOR_MIN } from '../lib/engine';
 import { isLevelUp, isUnlockPage } from '../lib/interrupts';
 import { defineTask, type TaskContext } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -63,16 +64,14 @@ const STUCK_AFTER_MS = stuckWindowMs(
 
 const Params = z
     .object({
-        npc: Pattern.optional().describe('The NPC to talk to, by name; omit for a run that only uses items.'),
+        npc: patternParam('The NPC to talk to, by name; omit for a run that only uses items.').optional(),
         at: AtSchema.optional(),
-        option: Pattern.default(TALK_OPTION.source).describe(
-            'The NPC option that starts the conversation, a regex on its text.',
-        ),
+        option: patternParam('The NPC option that starts the conversation, by its text.').default(TALK_OPTION.source),
         choices: z
-            .array(Pattern)
+            .array(patternParam('The option to click at one multi-option page, by its text.'))
             .default([])
             .describe(
-                'The choices of the conversation, in order: a regex on the text of the option to click at each multi-option page. "Click here to continue" pages pass by themselves and need no entry.',
+                'The choices of the conversation, in order: one per multi-option page. "Click here to continue" pages pass by themselves and need no entry.',
             ),
         use: z
             .object({
@@ -80,9 +79,9 @@ const Params = z
                     .array(ItemSpec)
                     .min(1)
                     .describe(
-                        'The inventory items to use, one each in order: a name regex, or `{ id }` for one exact item (the murky, blessed and plain buckets of water share a name).',
+                        'The inventory items to use, one each in order: a name, or `{ id }` for one exact item (the murky, blessed and plain buckets of water share a name).',
                     ),
-                onLoc: Pattern.describe('The loc to use them on, by name.'),
+                onLoc: patternParam('The loc to use them on, by name.'),
                 tile: TileSchema.optional().describe(
                     'Picks the loc standing on this tile instead of the nearest of that name (one of several monuments).',
                 ),
@@ -95,7 +94,7 @@ const Params = z
             .boolean()
             .default(false)
             .describe(
-                'Continue a dialog that is already open (a previous step opened it: a crate\'s "Hide-in", a drop that left an NPC talking): answer `choices` and click through, never look for anyone; fails after a short wait when no dialog is open. It also starts while the bot is under attack, since the open dialog is the way out of the fight, and the low-HP eat then waits until the dialog is answered, above the HP floor.',
+                `Continue a dialog that is already open (a previous step opened it: a crate's "Hide-in", a drop that left an NPC talking): answer \`choices\` and click through, never look for anyone; fails after a short wait when no dialog is open. It also starts while the bot is under attack, since the open dialog is the way out of the fight, and the low-HP eat then waits until the dialog is answered, while HP is above the larger of ${HOLD_HP_FLOOR_MIN} and ${HOLD_HP_FLOOR_FRACTION * 100}% of max HP.`,
             ),
         travels: z
             .boolean()
@@ -118,10 +117,10 @@ const Params = z
                     .string()
                     .regex(COMPONENT_NAME)
                     .describe('The component to click, named as in interface.pack (`death_dice:com_28`).'),
-                ready: Pattern.optional().describe(
+                ready: patternParam(
                     'A text the interface shows when the button is live; the click waits for it (a hidden button drops the click).',
-                ),
-                until: Pattern.describe('The text the interface shows once the click took effect.'),
+                ).optional(),
+                until: patternParam('The text the interface shows once the click took effect.'),
             })
             .optional()
             .describe(
@@ -296,7 +295,6 @@ export default defineTask({
         '`travels` needs an `npc` to talk to and not `continue`: a teleport inside an open dialog (the Merlin crate) is done when the dialog closes.',
         '`press` follows a conversation with an `npc` and cannot be combined with `travels`.',
         '`amount` answers a prompt the conversation with an `npc` ends in; not with `travels`.',
-        '`press.component` must be a component in interface.pack.',
     ],
     spots: [
         'Death Plateau dice game with Harold (stage 50+, gamble open): {"npc":"Harold","choices":["gamble"],"amount":1000,"press":{"component":"death_dice:com_28","ready":"Your roll","until":"You (win|lose)"}}. Harold wins ties, 15 of 36 rolls win, his gold is 100 plus the net losses of the player, the IOU comes with a win over a bet larger than that, max bet 1000, ~47 ticks a game; the reason ends with "You win!" or "You lose!", and the plan reads the coins and IOU. The door of his bedroom (upstairs in the Burthorpe inn) knocks with a dialog, so enter the room first.',

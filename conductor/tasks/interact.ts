@@ -23,7 +23,7 @@ import {
     itemMatches,
     matcher,
     onTile,
-    Pattern,
+    patternParam,
     TileSchema,
     walkToSpotStep,
 } from '../lib/spot';
@@ -58,19 +58,17 @@ const Params = z
         target: z
             .enum(['loc', 'npc', 'item'])
             .describe('What is interacted with: an NPC or a loc standing near, or an item in the inventory.'),
-        name: Pattern.describe("The target's name."),
-        option: Pattern.optional().describe(
-            'The option to send, a regex on the option text: "Open", "Search", "Wear", "Talk-to"...',
-        ),
+        name: patternParam("The target's name."),
+        option: patternParam('The option to send, by its text: "Open", "Search", "Wear", "Talk-to"...').optional(),
         at: AtSchema.optional(),
-        expect: Pattern.optional().describe(
+        expect: patternParam(
             'The outcome to wait for: only a game message or dialog page matching it after the send is the effect, so it ' +
                 'is the way to wait for a specific later message. Without it the effect is any state change: a dialog or ' +
                 'interface opened, a message box (the Chaos altar Check), the inventory or worn items changed (so any ' +
                 'inventory change ends a `use`), an animation, the loc changed, or the player moved by the game (a ' +
                 'teleport, swim, door pass-through, gangplank or whistle); a bare game message only when nothing else ' +
                 'shows. Pass it (e.g. "you milk the cow") when the exact outcome matters.',
-        ),
+        ).optional(),
         tile: TileSchema.optional().describe(
             'The exact tile of the loc or NPC, instead of the nearest one of that name: one of six pillars, a crate beside plain crates, one of three "Ledge" locs. A loc\'s tile is its south-west corner.',
         ),
@@ -93,7 +91,7 @@ const Params = z
             .boolean()
             .default(false)
             .describe(
-                `Send an \`opIndex\` op whose published label destroys or releases the item (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}, or a label starting with one, as Release All); without it such an op is refused.`,
+                `Send an \`opIndex\` op whose published label destroys or releases the item (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}, or a label starting with one, such as Release All); without it such an op is refused.`,
             ),
         unreachable: z
             .boolean()
@@ -108,10 +106,10 @@ const Params = z
                 `Use this inventory item on the loc or NPC instead of sending an option: a key on a door, a rope on a rock, a rune on a pillar, an empty bucket on a cow. A use the server discarded is sent again (to another match, for an NPC; "This sheep has already been shorn." also moves on to another), up to ${FAIL_LIMIT} tries in a row; one that got a message or no effect is not.`,
             ),
         choices: z
-            .array(Pattern)
+            .array(patternParam('The option to click at one multi-option page, by its text.'))
             .default([])
             .describe(
-                "Answers the dialog the interaction itself opens, as `talk`'s `choices`: a regex on the option text per multi-option page, in order; continue pages pass by themselves. The task is done once that dialog has closed after the last choice; the interaction must open one (else the run fails saying it opened none), and the dialog guard is off for the run. Without it no dialog is answered: the guard clicks continue pages away and declines a choice (use `talk` to converse).",
+                "Answers the dialog the interaction itself opens, as `talk`'s `choices`: one per multi-option page, in order; continue pages pass by themselves. The task is done once that dialog has closed after the last choice; the interaction must open one (else the run fails saying it opened none), and the dialog guard is off for the run. Without it no dialog is answered: the guard clicks continue pages away and declines a choice (use `talk` to converse).",
             ),
         wilderness: z
             .boolean()
@@ -124,7 +122,7 @@ const Params = z
             .int()
             .min(0)
             .default(WILDERNESS_MIN_FOOD)
-            .describe('Food items a `wilderness` run must carry to start (at least 1 whatever is set).'),
+            .describe('The food count for `wilderness` (at least 1 whatever is set).'),
     })
     .refine(p => (p.option === undefined) !== (p.use === undefined), 'give an option, or a use (not both)')
     .refine(p => p.use === undefined || p.target === 'loc' || p.target === 'npc', 'a use works on a loc or an NPC')
@@ -263,9 +261,9 @@ export default defineTask({
     spots: [
         'Bloated toad (Big Chompy Bird Hunting), placed inside the bait zone x2631-2639, z2962-2971: {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"}. The client publishes its op 1 as Drop but the server places the bait: the toad leaves the inventory and a Bloated toad NPC stands there.',
         'Ardougne sheep field, shearing: {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"}.',
-        'Coffin: {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}.',
+        'Coffin in the Lumbridge Chapel graveyard (Restless Ghost): {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}.',
         'Rope on a rock across water: {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}.',
-        'Port Sarim jeweller Door: opening it starts the beggar\'s question, answered with `choices: ["Yes certainly"]`.',
+        "Port Sarim jeweller's Door at (3016,3246), Merlin's Crystal once the Lady of the Lake was asked for Excalibur: opening it starts the beggar's question, answered with `choices: [\"Yes certainly\"]` (wiki/quests/merlins-crystal.md).",
         'Used by wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
     ],
     params: Params,

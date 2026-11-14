@@ -7,12 +7,13 @@ import {
     catalogEntry,
     listCatalog,
     loadTask,
+    patternsWithoutNote,
     summaryLine,
     TASKS_DIR,
     taskNames,
     undescribedFields,
 } from '../../lib/catalog';
-import { Pattern } from '../../lib/spot';
+import { Pattern, PATTERN_NOTE, patternParam } from '../../lib/spot';
 import type { TaskDef } from '../../lib/task';
 
 /** A def with only what the catalog reads. */
@@ -144,9 +145,17 @@ describe('undescribedFields', () => {
         expect(fields(z.object({ area: AreaSchema.optional() }))).toEqual([]);
     });
 
-    test("Pattern's own description does not describe a field: one at its use does", () => {
-        const params = z.object({ bare: Pattern, opt: Pattern.optional(), used: Pattern.describe('the tree name') });
-        expect(fields(params)).toEqual(['bare', 'opt']);
+    test("Pattern's own description does not describe a field, nor a clone's: patternParam or a wrapper does", () => {
+        const params = z.object({
+            bare: Pattern,
+            opt: Pattern.optional(),
+            clone: Pattern.min(1),
+            direct: Pattern.describe('the tree name'),
+            used: patternParam('The tree name.'),
+            usedOpt: patternParam('The tree name.').optional(),
+            wrapped: Pattern.optional().describe('the tree name'),
+        });
+        expect(fields(params)).toEqual(['bare', 'opt', 'clone', 'direct']);
     });
 
     test('a root pipe is walked on its input side', () => {
@@ -165,6 +174,39 @@ describe('undescribedFields', () => {
         expect(() => fields(z.object({ m: z.record(z.string(), z.number()).describe('m') }))).toThrow(
             'no walk for a record',
         );
+    });
+});
+
+const noNote = (params: z.ZodType) => patternsWithoutNote({ params });
+
+describe('patternsWithoutNote', () => {
+    test('a Pattern described without the note is reported; with patternParam it passes', () => {
+        const params = z.object({
+            direct: Pattern.describe('The tree name.'),
+            wrapped: patternParam('The tree name.').optional().describe('The tree name.'),
+            used: patternParam('The tree name.'),
+            usedDefault: patternParam('The tree name.').default('^Tree$'),
+        });
+        expect(noNote(params)).toEqual(['direct', 'wrapped']);
+        expect(patternParam('The tree name.').description).toBe(`The tree name. ${PATTERN_NOTE}`);
+    });
+
+    test("array elements and union arms are checked; a bare Pattern there keeps Pattern's own note", () => {
+        const params = z.object({
+            list: z.array(Pattern.describe('one')).describe('d'),
+            bareList: z.array(Pattern).describe('d'),
+            item: z.union([Pattern.describe('a name'), z.object({ name: Pattern.describe('n') })]).describe('d'),
+        });
+        expect(noNote(params)).toEqual(['list[]', 'item', 'item.name']);
+    });
+
+    test('a plain string is not a Pattern', () => {
+        expect(noNote(z.object({ s: z.string().describe('s'), r: z.string().regex(/a/).describe('r') }))).toEqual([]);
+    });
+
+    test('patternParam keeps the regex check', () => {
+        expect(patternParam('x').safeParse('(').success).toBe(false);
+        expect(patternParam('x').safeParse('^a$').success).toBe(true);
     });
 });
 
@@ -194,6 +236,8 @@ const MAX_DESCRIPTION = 900;
 /** What a task breaks of the catalog's rules, one line each; empty when it keeps them all. */
 function catalogProblems(task: TaskDef): string[] {
     const problems = undescribedFields(task).map(f => `param ${f} has no description`);
+    for (const f of patternsWithoutNote(task))
+        problems.push(`param ${f} is a Pattern whose description lacks PATTERN_NOTE: describe it with patternParam`);
     if (task.description.length > MAX_DESCRIPTION)
         problems.push(`description is ${task.description.length} characters, over ${MAX_DESCRIPTION}`);
     for (const key of ['rules', 'spots'] as const)

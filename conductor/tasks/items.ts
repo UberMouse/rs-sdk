@@ -8,7 +8,7 @@ import { unequip } from '../actions/unequip';
 import { useItemOnItem } from '../actions/use';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, wait } from '../core/op';
-import { AtSchema, matcher, Pattern, walkToSpotStep } from '../lib/spot';
+import { AtSchema, matcher, patternParam, walkToSpotStep } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { INVENTORY_SLOTS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -40,13 +40,13 @@ export const WORN_SLOTS: Record<string, number> = {
 
 const ItemRef = z
     .union([
-        Pattern,
+        patternParam('The item name.'),
         z.object({
-            name: Pattern.describe('The item name.'),
+            name: patternParam('The item name.'),
             id: z.number().int().nonnegative().optional().describe('Its obj id, to tell apart items sharing a name.'),
         }),
     ])
-    .describe('An item: a name regex, or `{ name, id }` pinned to an obj id.');
+    .describe('An item: a name, or `{ name, id }` pinned to an obj id.');
 type ItemRef = z.infer<typeof ItemRef>;
 
 const nameOf = (r: ItemRef) => (typeof r === 'string' ? r : r.name);
@@ -66,9 +66,9 @@ const Params = z
                 product: ItemRef.optional().describe(
                     `What the combine makes: done when it appears. A combine that keeps both inputs needs it, else it fails after ${FAIL_LIMIT} uses that changed nothing.`,
                 ),
-                choice: Pattern.optional().describe(
+                choice: patternParam(
                     'The option to pick when the use opens a choice menu (Pot of flour on a Bucket of water: "Pastry dough"); a menu with no `choice` fails.',
-                ),
+                ).optional(),
             })
             .optional()
             .describe(
@@ -77,7 +77,7 @@ const Params = z
         drop: z
             .array(
                 z.object({
-                    item: Pattern.describe('The inventory item to drop, by name.'),
+                    item: patternParam('The inventory item to drop, by name.'),
                     count: z
                         .number()
                         .int()
@@ -93,18 +93,22 @@ const Params = z
                 'Drop these inventory items where the bot stands, or at `at`. Only what is named is ever dropped.',
             ),
         unequip: z
-            .array(Pattern)
+            .array(
+                patternParam(
+                    `\`all\`, a slot name (${Object.keys(WORN_SLOTS).join(', ')}), or failing those a worn item's name.`,
+                ),
+            )
             .min(1)
             .optional()
             .describe(
-                `Take worn items off into the inventory: \`all\`, a slot name (${Object.keys(WORN_SLOTS).join(', ')}) or an item name pattern. For places that refuse worn gear (the Entrana boat, the Glarial tomb).`,
+                'Take worn items off into the inventory. For places that refuse worn gear (the Entrana boat, the Glarial tomb).',
             ),
         equip: z.array(ItemRef).min(1).optional().describe('Wear these inventory items.'),
         at: AtSchema.optional().describe(
             'Where to stand first; the task walks only when it is given (for a drop on a spot, `tolerance` 1).',
         ),
         choices: z
-            .array(Pattern)
+            .array(patternParam('The option to click at one multi-option page, by its text.'))
             .default([])
             .describe(
                 'For `drop`: the choices of a dialog the drop opens, answered in order; without them the dialog is left open for the next task (a `talk` with `continue`).',
@@ -237,7 +241,7 @@ export default defineTask({
         'Inventory and equipment steps quest plans need: combines two inventory items, drops named items, takes worn ' +
         'items off, or wears inventory items. Done when the combine has made its product or used an item up, the drops ' +
         'are made, nothing named is worn any more, or everything named is worn. Any dialog the drop opens (a level-up ' +
-        'too) ends it, the dialog left open or answered with `choices`: check the result reason. `unequip` fails when the inventory has no room. Refuses an `at` in the Wilderness.',
+        'too) ends it: check the result reason. `unequip` fails when the inventory has no room. Refuses an `at` in the Wilderness.',
     rules: [
         'Give exactly one of `combine`, `drop`, `unequip`, `equip`.',
         '`choices` belongs to `drop`.',

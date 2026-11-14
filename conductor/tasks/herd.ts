@@ -5,7 +5,7 @@ import { messageCursor, messageSince } from '../actions/messages';
 import { walkTo } from '../actions/walk';
 import { log, send, wait } from '../core/op';
 import { defineTask, type TaskContext } from '../lib/task';
-import { Pattern, matcher } from '../lib/spot';
+import { patternParam, matcher } from '../lib/spot';
 
 // Herding: an NPC that a prod (op1) moves one tile directly away from the player, as the diseased sheep of
 // Sheep Herder do (server/content/scripts/quests/quest_sheepherder/scripts/npcs/diseased_sheep.rs2: the larger
@@ -44,7 +44,7 @@ const RectParam = z.object({
 });
 
 const Params = z.object({
-    name: Pattern.describe('The NPC to herd, by name: "^Diseased sheep 2$".'),
+    name: patternParam('The NPC to herd, by name: "^Diseased sheep 2$".'),
     from: TileParam.optional().describe(
         'Which copy to herd: the one nearest this tile when the run starts. Omit for the nearest to the bot.',
     ),

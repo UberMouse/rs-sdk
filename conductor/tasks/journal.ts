@@ -5,7 +5,7 @@ import { interfaceOpen, resolveComponent } from '../actions/press';
 import { send, ticks, wait } from '../core/op';
 import { JOURNAL_INTERFACE, journalOf, journalReadBlocker } from '../lib/journal-memory';
 import { journalTitle, QUESTS, questIdByJournalTitle } from '../lib/quests';
-import { Pattern } from '../lib/spot';
+import { patternParam } from '../lib/spot';
 import { defineTask } from '../lib/task';
 import { stuckWindowMs } from '../lib/watchdog';
 
@@ -35,9 +35,9 @@ const Params = z.object({
             error: v => `unknown quest id ${JSON.stringify(v.input)}: the ids are the keys of QUESTS in lib/quests.ts`,
         })
         .describe('The quest whose journal to read: a QUESTS id from lib/quests.ts (`cook`, `dragon`).'),
-    expect: Pattern.optional().describe(
-        'A regex source the journal should show, matched case-insensitively against its lines joined by single spaces: read again every 4 ticks until it shows or `withinTicks` pass.',
-    ),
+    expect: patternParam(
+        'Text the journal should show, matched against its lines joined by single spaces: read again every 4 ticks until it shows or `withinTicks` pass.',
+    ).optional(),
     withinTicks: z
         .number()
         .int()

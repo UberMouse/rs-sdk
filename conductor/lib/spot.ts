@@ -19,11 +19,25 @@ const isPattern = (source: string) => {
         return false;
     }
 };
-export const Pattern = z
-    .string()
-    .refine(isPattern, 'not a valid regular expression')
-    .describe('A case-insensitive regex given as a string.');
+/** How a `Pattern` is matched (by `matcher`), told wherever one is a param. */
+export const PATTERN_NOTE =
+    'A case-insensitive regex given as a string, matched anywhere in the text: "Sheep" also matches any longer text containing it, "^Sheep$" only "Sheep" itself.';
+export const Pattern = z.string().refine(isPattern, 'not a valid regular expression').describe(PATTERN_NOTE);
 export const matcher = (source: string) => new RegExp(source, 'i');
+
+const describedAtUse = new WeakSet<z.ZodType>();
+/** `Pattern` described at its use: `sentence` (what the param means), then PATTERN_NOTE. Same shape and checks. */
+export function patternParam(sentence: string): typeof Pattern {
+    const schema = Pattern.describe(`${sentence} ${PATTERN_NOTE}`);
+    describedAtUse.add(schema);
+    return schema;
+}
+/** Whether `schema` was made by `patternParam`. */
+export const isPatternParam = (schema: z.ZodType): boolean => describedAtUse.has(schema);
+
+/** Whether `schema` carries Pattern's regex check: `Pattern` or a schema made from it. */
+export const isPatternSchema = (schema: z.ZodType): boolean =>
+    (schema.def as { checks?: { def?: { fn?: unknown } }[] }).checks?.some(c => c.def?.fn === isPattern) ?? false;
 
 export const AtSchema = z
     .object({
@@ -74,9 +88,9 @@ export const onTile = (thing: { x: number; z: number; level?: number }, tile: Ti
     (tile.level === undefined || (thing.level ?? tile.level) === tile.level);
 
 export const ItemSpec = z
-    .union([Pattern, z.object({ id: z.number().int().describe('The item id.') })])
+    .union([patternParam("The item's name."), z.object({ id: z.number().int().describe('The item id.') })])
     .describe(
-        'An inventory item to use: a name regex, or `{ id }` for one exact item (three buckets of water share a name).',
+        'An inventory item to use: a name, or `{ id }` for one exact item (three buckets of water share a name).',
     );
 export type ItemSpec = z.infer<typeof ItemSpec>;
 

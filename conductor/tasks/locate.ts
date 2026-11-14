@@ -4,7 +4,7 @@ import { messageCursor, messageSince } from '../actions/messages';
 import { ROUTE_TOO_LONG, timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, wait } from '../core/op';
 import { AreaSchema, type Area, refuseArea, returnToAreaStep } from '../lib/area';
-import { ItemSpec, itemLabel, itemMatches, matcher, missingItem, Pattern } from '../lib/spot';
+import { ItemSpec, itemLabel, itemMatches, matcher, missingItem, patternParam } from '../lib/spot';
 import { defineTask } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
@@ -36,19 +36,19 @@ export const COMPASS_HINT = '\\b(?:north-?east|north-?west|south-?east|south-?we
 
 const Params = z.object({
     item: ItemSpec.describe(
-        "The inventory item whose option prints the hint (a name regex or `{ id }`): the Hunters' talisman.",
+        "The inventory item whose option prints the hint (a name or `{ id }`): the Hunters' talisman.",
     ),
-    option: Pattern.describe('The item option that asks for a hint, a regex on the option text: "Locate".'),
-    hint: Pattern.default(COMPASS_HINT).describe(
+    option: patternParam('The item option that asks for a hint, by its text: "Locate".'),
+    hint: patternParam(
         'A game message carrying a compass word (north, south-east, ...; +z is north): the direction to walk.',
-    ),
-    stop: Pattern.describe('A game message that ends the run done: the target is found ("The Draugen is here").'),
-    moved: Pattern.default('moved elsewhere').describe(
+    ).default(COMPASS_HINT),
+    stop: patternParam('A game message that ends the run done: the target is found ("The Draugen is here").'),
+    moved: patternParam(
         'A game message saying the thing hunted moved off and the hint now points at a new one (the server re-locates it by itself): the step sizes start over. Without this match no relocation is noticed.',
-    ),
-    target: Pattern.optional().describe(
+    ).default('moved elsewhere'),
+    target: patternParam(
         "An NPC name; the run is done as soon as one stands in view (checked before each locate), even if it is another hunter's.",
-    ),
+    ).optional(),
     step: z
         .number()
         .int()

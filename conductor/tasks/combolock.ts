@@ -177,7 +177,9 @@ export default defineTask({
         'door varp), after which the door opens like any door; a door that just opens with no lock (already solved, ' +
         'e.g. a restart) is done too.',
     rules: ['`door: "peer"` needs Peer\'s trial started (the door says "a combination lock ... a riddle").'],
-    spots: ["Verified live: Peer's door (riddles MIND and WIND) and the tribal door (KURT)."],
+    spots: [
+        `Verified live: Peer's door in Rellekka (${DOORS.peer.tile.x},${DOORS.peer.tile.z}; riddles MIND and WIND) and the tribal door in Handelmort Mansion (${DOORS.tribal.tile.x},${DOORS.tribal.tile.z}; KURT).`,
+    ],
     params: Params,
     memory: (): Memory => ({
         tried: false,
