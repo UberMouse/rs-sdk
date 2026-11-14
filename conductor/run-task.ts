@@ -1,6 +1,6 @@
 // Run one catalog task, or a plan of them, on one bot and print a single machine-readable result.
 //
-//   bun conductor/run-task.ts --list
+//   bun conductor/run-task.ts --list [<task>... | --all]
 //   bun conductor/run-task.ts <bot> <task> [--params '<json>'] [--until <stop>]... [--takeover]
 //   bun conductor/run-task.ts <bot> --plan <file> [--until <stop>]... [--takeover]
 //   either form also takes --objective <title> --journal <abs path> (together): when the run ends, run-task
