@@ -20,8 +20,10 @@ const logged = (r: Simulation) => r.events.flatMap(e => (e.type === 'log' ? [e.m
  * Runs the eat step (with `opts` over combat's options) on a bot that stays hurt; eat n lands when `lands[n]` is
  * true (the food leaves the inventory) and is ignored otherwise. Done once every eat in `lands` was sent.
  */
-function run(lands: boolean[], opts: Partial<EatStepOptions<typeof params>> = {}) {
+async function run(lands: boolean[], opts: Partial<EatStepOptions<typeof params>> = {}) {
     let eats = 0;
+    let tried = 0;
+    const pick = opts.food ?? foodInInventory;
     const react = (action: BotAction, state: BotWorldState) => {
         if (action.type !== 'useInventoryItem') return undefined;
         return lands[eats++] ? consume(action, state) : undefined;
@@ -32,17 +34,22 @@ function run(lands: boolean[], opts: Partial<EatStepOptions<typeof params>> = {}
         params: z.object({ food: z.array(z.string()), eatBelow: z.number() }),
         silent: [EAT_FAILS],
         steps: [
-            { name: 'end', when: () => eats >= lands.length, run: () => ({ done: 'end' }) },
+            {
+                name: 'end',
+                when: () => eats >= lands.length && (lands.length > 0 || tried > 0),
+                run: () => ({ done: 'end' }),
+            },
             eatStep<typeof params>({
                 wants: wantsToEat,
-                food: foodInInventory,
                 streak: EAT_FAILS,
-                failText: (food, r) => `could not eat ${food.name}: ${r.message}`,
+                failText: (f, r) => `could not eat ${f.name}: ${r.message}`,
                 ...opts,
+                food: (s, p) => (tried++, pick(s, p)),
             }),
         ],
     });
-    return runDef(def, hurt.series(1), { react, params });
+    const result = await runDef(def, hurt.series(1), { react, params });
+    return Object.assign(result, { tried });
 }
 
 describe('eatStep', () => {
@@ -57,7 +64,8 @@ describe('eatStep', () => {
         const r = await run([], { food: () => undefined });
         expect(r.result.status).toBe('done');
         expect(r.sends).toEqual([]);
-        expect(r.steps).toEqual(['end']);
+        expect(r.tried).toBeGreaterThanOrEqual(1);
+        expect(r.steps).toEqual(['eat', 'end']);
     });
 
     test('fails with the given text at the streak limit', async () => {
