@@ -2,13 +2,14 @@
 // nature runes) -> iron platebodies at the Varrock East anvil (3247,3404) -> bank. 25 ore = 25 bars = 5 platebodies.
 // Needs Magic 43, Smithing 18+, a hammer, a Staff of fire worn, ore + nature runes banked. Never carries coal.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import smithing from '@conductor/tasks/smithing';
 import spellItems from '@conductor/tasks/spell-items';
 import travel from '@conductor/tasks/travel';
 
-const anvil = { x: 3247, z: 3404, radius: 5 };
-const eastBank = { x: 3254, z: 3420, radius: 3 };
+const anvil = place('anvil:varrock', { near: { x: 3247, z: 3404 } }).area(5);
+const eastBank = place('bank:varrock-east-bank').area(3);
 type V = { state: { player?: { worldX: number; worldZ: number } | null } };
 const far = (v: V, c: { x: number; z: number }, r: number) => {
     const p = v.state.player;

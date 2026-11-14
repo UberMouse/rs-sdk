@@ -2,6 +2,7 @@
 // then Rimmington iron/clay/containers, Port Sarim flour + redberries (Wydin), iron bars at the Falador furnace,
 // a pie dish at the Barbarian Village wheel, dough, pie shell, uncooked pie, cooked on a Falador range.
 import { definePlan, phase, type PlanView } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import crafting from '@conductor/tasks/crafting';
 import fill from '@conductor/tasks/fill';
@@ -12,11 +13,11 @@ import shop from '@conductor/tasks/shop';
 import smithing from '@conductor/tasks/smithing';
 
 const FURN = { x: 2975, z: 3368, radius: 5 };
-const WBANK = { x: 2947, z: 3368, radius: 4 };
+const WBANK = place('bank:falador-west-bank').area(4);
 const MINE = { x: 2980, z: 3240, radius: 14 };
 const SINK = { x: 2966, z: 3209, radius: 6 };
-const WHEEL = { x: 3086, z: 3410, radius: 6 };
-const RANGE = { x: 3039, z: 3366, tolerance: 3 };
+const WHEEL = place('pottery-wheel:barbarian-village').area(6);
+const RANGE = place('range:asgarnia', { near: { x: 3039, z: 3366 } }).at({ tolerance: 3 });
 const L15 = (v: PlanView) => v.level('Smithing') >= 15;
 const water = (v: PlanView) => v.inv(/^(bucket|jug) of water$/i);
 const clay = (v: PlanView) => v.inv(/^(soft )?clay$/i);

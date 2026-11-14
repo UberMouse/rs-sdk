@@ -2,6 +2,7 @@
 // Runs until the run's --until (a level, or minutes); the cooked fish are the account's food stock.
 // The lure spots hop between (3238,3251-3252) and (3239,3241-3242): the fishing area covers both.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import cooking from '@conductor/tasks/cooking';
 import fishing from '@conductor/tasks/fishing';
@@ -9,7 +10,7 @@ import fishing from '@conductor/tasks/fishing';
 const cooked = /^(trout|salmon)$/i;
 const raw = /^raw (trout|salmon)$/i;
 const pot = { x: 3232, z: 3238, radius: 5 };
-const vbank = { x: 3254, z: 3420, radius: 3 };
+const vbank = place('bank:varrock-east-bank').area(3);
 const keep = ['Fly fishing rod', 'Feather', 'Coins'];
 
 export default definePlan({

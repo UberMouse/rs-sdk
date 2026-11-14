@@ -1,6 +1,7 @@
 // Fetch an axe + tinderbox at Draynor bank, chop the Draynor willows until full, burn the logs
 // on open ground by the bank/trees, repeat. Dark wizards there hunt combat <= 40.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import firemaking from '@conductor/tasks/firemaking';
 import woodcutting from '@conductor/tasks/woodcutting';
@@ -21,7 +22,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3092, z: 3243, radius: 3 },
+                area: place('bank:draynor-bank').area(3),
                 depositAllExcept: ['Coins', 'Steel axe', 'Tinderbox'],
                 withdraw: [
                     { item: 'Adamant axe', count: 1, upTo: true },

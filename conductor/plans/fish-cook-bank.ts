@@ -1,6 +1,7 @@
 // Fish at the Draynor net spot, cook at the Lumbridge cooking pot (3232,3238), bank the cooked
 // fish at Draynor so every fishing trip starts empty. Ends with 20+ cooked fish in the bank.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import cooking from '@conductor/tasks/cooking';
 import fishing from '@conductor/tasks/fishing';
@@ -17,7 +18,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3092, z: 3243, radius: 3 },
+                area: place('bank:draynor-bank').area(3),
                 depositAllExcept: ['Small fishing net'],
                 withdraw: [{ item: 'Small fishing net', count: 1 }],
             },
@@ -25,7 +26,7 @@ export default definePlan({
         ),
         phase(
             bank,
-            { area: { x: 3092, z: 3243, radius: 3 }, depositAllExcept: ['Small fishing net'] },
+            { area: place('bank:draynor-bank').area(3), depositAllExcept: ['Small fishing net'] },
             { name: 'bank-cooked', when: v => v.inv(cooked) > 0 && v.inv(/^raw /i) === 0 },
         ),
         phase(

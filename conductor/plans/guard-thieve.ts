@@ -1,10 +1,11 @@
 // Pickpocket Falador guards; food and coins at Falador East (one account-wide bank).
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import thieving from '@conductor/tasks/thieving';
 
 const area = { x: 3006, z: 3321, radius: 8 };
-const bankArea = { x: 3013, z: 3355, radius: 5 };
+const bankArea = place('bank:falador-east-bank').area(5);
 const food = /^(trout|salmon)$/i;
 
 export default definePlan({

@@ -555,6 +555,60 @@ on its own.
       that did not finish.
     - The wiki page for Gertrude's Cat is misspelt `wiki/quests/gertudes-cat.md`.
   - Named places: done in part 2026-11-15 (`place()` in `lib/places.ts`, `tools/places.ts`; design `conductor/docs/named-places.md`, how-to `conductor/docs/plans.md` Places by name). Follow-ups: plan parameters; level-band stages; a curated table of unindexed gathering and fighting areas; the coordinates 1 to 3 tiles off a stand (plan-migration); quest-plan coordinates.
+    Plan-migration near-misses (task 3 left these literal; file:line (x,z) -> nearest place, tiles off; the d=1 to 3 cases may be the same spot, check the stand in game before moving one; the exact `to` points and waypoints, 5 of them, also stay literal because `stand` carries a level):
+    - agility-wilderness.ts:9 (3094,3492) -> bank:edgeville-bank, 1
+    - agility-wilderness.ts:45 (3094,3492) -> bank:edgeville-bank, 1
+    - catherby-swordfish.ts:29 (2812,3441) -> bank:catherby-bank, 3
+    - catherby-swordfish.ts:31 (2650,3295) -> range:east-ardougne, 3
+    - fm-99.ts:48 (2945,3368) -> bank:falador-west-bank, 2
+    - herblore-finish.ts:9 (2947,3367) -> bank:falador-west-bank, 1
+    - herblore-finish.ts:32 (2891,3438) -> water-source:asgarnia, 1
+    - fletch-99.ts:53 (2711,3471) -> spinning-wheel:seers-village, 1
+    - fletch-99.ts:59 (2727,3494) -> bank:seers-village-bank, 1
+    - fletch-99.ts:74 (2727,3494) -> bank:seers-village-bank, 1
+    - knight-thieve.ts:13 (2657,3285) -> bank:ardougne-south-bank, 2
+    - knight-thieve.ts:15 (2817,3444) -> range:catherby, 1
+    - knight-thieve.ts:76 (2834,3443) -> water-source:catherby, 3
+    - knight-thieve-bankfood.ts:9 (2657,3285) -> bank:ardougne-south-bank, 2
+    - baby-blues-prayer.ts:109 (2947,3370) -> bank:falador-west-bank, 2
+    - baby-blues-prayer.ts:115 (2947,3367) -> bank:falador-west-bank, 1
+    - iron-smith.ts:10 (3188,3421) -> anvil:varrock, 3
+    - iron-smith.ts:11 (3225,3256) -> furnace:lumbridge, 1
+    - iron-smith.ts:74 (3188,3425) -> anvil:varrock, 1
+    - melee40.ts:79 (2475,3401) -> spinning-wheel:tree-gnome-stronghold, 3
+    - khazard-superheat.ts:9 (2651,3165) -> anvil:port-khazard, 1
+    - earth-runecraft.ts:54 (3238,3404) -> range:varrock, 1
+    - crafting80.ts:17 (2475,3398) -> spinning-wheel:tree-gnome-stronghold, 1
+    - crafting80.ts:66 (2475,3401) -> spinning-wheel:tree-gnome-stronghold, 3
+    - pottery-craft.ts:14 (3086,3408) -> pottery-oven:barbarian-village, 2
+    - pottery-craft.ts:67 (3038,3353) -> water-source:asgarnia, 1
+    - pottery-craft.ts:72 (3038,3353) -> water-source:asgarnia, 1
+    - earth-runecraft-28.ts:40 (3238,3404) -> range:varrock, 1
+    - flax-spin.ts:26 (2711,3471) -> spinning-wheel:seers-village, 1
+    - flax-spin.ts:31 (2727,3494) -> bank:seers-village-bank, 1
+    - giants-att-def.ts:11 (3094,3492) -> bank:edgeville-bank, 1
+    - hill-giants.ts:11 (3094,3492) -> bank:edgeville-bank, 1
+    - ks-prep.ts:15 (2975,3368) -> furnace:falador, 1
+    - ks-prep.ts:18 (2966,3209) -> water-source:rimmington, 1
+    - iron-bulk.ts:10 (3188,3421) -> anvil:varrock, 3
+    - iron-bulk.ts:14 (3272,3185) -> furnace:al-kharid, 2
+    - iron-bulk.ts:55 (3188,3425) -> anvil:varrock, 1
+    - superheat-mine.ts:35 (3247,3406) -> anvil:varrock, 2
+    - magic-blast-giants.ts:14 (3094,3492) -> bank:edgeville-bank, 1
+    - magic-blast-giants.ts:119 (3254,3418) -> bank:varrock-east-bank, 2
+    - iron-varrock-99.ts:25 (2947,3367) -> bank:falador-west-bank, 1
+    - ranged-dragons.ts:84 (2947,3370) -> bank:falador-west-bank, 2
+    - ranged-dragons.ts:108 (2947,3367) -> bank:falador-west-bank, 1
+    - prayer-99.ts:66 (2947,3370) -> bank:falador-west-bank, 2
+    - prayer-99.ts:72 (2947,3367) -> bank:falador-west-bank, 1
+    - superheat-banked.ts:32 (3247,3406) -> anvil:varrock, 2
+    - catherby-shark-fallback.ts:24 (2812,3441) -> bank:catherby-bank, 3
+    - catherby-shark-fallback.ts:26 (2650,3295) -> range:east-ardougne, 3
+    - thieving-40.ts:20 (3292,3172) -> water-source:al-kharid, 1
+    - thieving-40.ts:29 (3271,3180) -> range:al-kharid, 1
+    - wc-oaks-99.ts:21 (2947,3367) -> bank:falador-west-bank, 1
+    - willow-longbows.ts:33 (2726,3495) -> bank:seers-village-bank, 2
+    - agility-52.ts:38 (3238,3404) -> range:varrock, 1
   - Task catalog: done 2026-11-14 (every param described on its schema field, `rules` and `spots`, `--list` an index and `--list <task>` an entry, a guard test; design `conductor/docs/task-catalog.md`). Follow-ups:
     - `MAX_FAILURE_DAMAGE = 2` in `conductor/tasks/thieving.ts` understates the pickpocket damage of Knights, Watchmen and Paladins (3) and the Hero (4) in the pickpocket dbrow, so a no-food run on those targets can drop below the low-HP line after one caught attempt and end "no food" where it should have waited to regenerate. The `STUN_TICKS` comment in `conductor/actions/pickpocket.ts` says 8 for every target though the Hero's stun is 10, and the task's wait of 8 + 2 ticks leaves no slack for it.
     - `fletching` stringing XP is 0.1 below the cut for willow shortbows and maple longbows; the catalog says "about the same", a wording note.

@@ -1,5 +1,6 @@
 // Catherby: buy a harpoon (Harry) -> harpoon tuna/swordfish -> cook at the Catherby range -> bank at Catherby.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import cooking from '@conductor/tasks/cooking';
 import fishing from '@conductor/tasks/fishing';
@@ -7,8 +8,8 @@ import travel from '@conductor/tasks/travel';
 
 const cooked = /^(shark|swordfish|tuna|trout|salmon)$/i;
 const rawAny = /^raw /i;
-const range = { x: 2817, z: 3443, radius: 5 };
-const bankArea = { x: 2809, z: 3441, radius: 3 };
+const range = place('range:catherby', { near: { x: 2817, z: 3443 } }).area(5);
+const bankArea = place('bank:catherby-bank').area(3);
 
 export default definePlan({
     name: 'catherby-shark-fallback',

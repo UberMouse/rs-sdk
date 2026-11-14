@@ -1,6 +1,7 @@
 // Crafting 1 -> 80: Khazard shears -> shear sheep north of Ardougne -> spin wool at the Gnome Stronghold wheel
 // (to Crafting 10), then pick Stronghold flax -> spin bow strings -> bank them at the Stronghold bank, looping.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import interact from '@conductor/tasks/interact';
 import pick from '@conductor/tasks/pick';
@@ -53,7 +54,7 @@ export default definePlan({
         ),
         phase(
             bank,
-            { area: { x: 2445, z: 3425, radius: 4, level: 1 }, depositAllExcept: [] },
+            { area: place('bank:gnome-stronghold-bank').area(4), depositAllExcept: [] },
             { name: 'bank-strings', when: v => v.inv('Bow string') > 0 && v.inv('Flax') === 0 },
         ),
         phase(
@@ -75,7 +76,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 2655, z: 3283, radius: 5 },
+                area: place('bank:ardougne-south-bank').area(5),
                 depositAllExcept: [],
                 withdraw: [
                     { item: 'Shears', count: 1 },

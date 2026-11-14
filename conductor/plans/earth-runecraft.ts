@@ -1,6 +1,7 @@
 // Earth runecraft: bank errand -> air trips while Runecraft < 9 -> hunt Men near Aubury for an Earth talisman
 // -> earth loop (Aubury teleport -> mine essence until full -> portal back -> earth ruins craft).
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import { inEssenceMine } from '@conductor/lib/runecraft';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
@@ -24,7 +25,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3185, z: 3436, radius: 6 },
+                area: place('bank:varrock-west-bank').area(6),
                 depositAllExcept: ['Adamant pickaxe', 'Coins'],
                 withdraw: [{ item: 'Air talisman', count: 1 }],
             },
