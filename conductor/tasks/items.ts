@@ -19,7 +19,6 @@ const FAIL_LIMIT = 3;
 export const COMBINE_SETTLE_TICKS = 3;
 /** A walk, then the op or a dialog of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
-// Each op waits up to its own *_WAIT_TICKS for an effect that never comes; a combine's no-effect use also waits out COMBINE_SETTLE_TICKS.
 // worstTicks: one failed use, the wait for its effect (USE_WAIT_TICKS).
 const COMBINE_FAILS = failStreak({
     name: 'combineFails',

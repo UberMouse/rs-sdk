@@ -28,10 +28,10 @@ const NEAR_STAND_TILES = 2;
 /** Approaches in a row that do not reach the stand tile before the task fails. */
 const APPROACH_FAIL_LIMIT = 4;
 /**
- * The longest approach is a walk to a far stand tile that never moves the bot (a door on the way that never opens
- * spends the walk's whole budget); the short step takes APPROACH_WAIT_TICKS. worstTicks is the walk op's cap, a
- * deliberate upper bound: the budget reaches it at a route of 76 tiles, which a copy fenced off from the bot can need,
- * and walkTo's no-progress cut-off need not end the streak sooner, since the stand tile moves with the NPC.
+ * The longest approach is a walk to a far stand tile; the short step takes APPROACH_WAIT_TICKS. worstTicks is the walk
+ * op's cap (WALK_MAX_TICKS), a deliberate upper bound: a route of 70 or more tiles reaches it (walkBudgetTicks), which a
+ * copy fenced off from the bot can need. walkTo's no-progress cut-off is kept per target, which moves with the NPC, so
+ * it need not end the streak sooner.
  */
 const APPROACH_FAILS = failStreak({
     name: 'approachFails',

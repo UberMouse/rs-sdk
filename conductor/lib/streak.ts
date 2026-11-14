@@ -16,15 +16,6 @@ export interface FailStreak {
     clear(ctx: StreakContext): void;
 }
 
-/** A streak declared with a `what`: `miss` gives the standard sentence, `missWith` still takes the caller's own text. */
-export interface PhraseStreak extends ReasonStreak {
-    /**
-     * Counts one failure; at `limit`, the run's failure "<limit> <what> in a row failed (last: <last>)". The result
-     * must be returned from the step: dropped, the streak counts but never fails the run.
-     */
-    miss(ctx: StreakContext, last?: string): { fail: string } | undefined;
-}
-
 /** A streak declared without a `what`: the caller writes the failure text each time. */
 export interface ReasonStreak extends FailStreak {
     /**
@@ -32,6 +23,15 @@ export interface ReasonStreak extends FailStreak {
      * step: dropped, the streak counts but never fails the run.
      */
     missWith(ctx: StreakContext, reason: string): { fail: string } | undefined;
+}
+
+/** A streak declared with a `what`: `miss` gives the standard sentence, `missWith` still takes the caller's own text. */
+export interface PhraseStreak extends ReasonStreak {
+    /**
+     * Counts one failure; at `limit`, the run's failure "<limit> <what> in a row failed (last: <last>)". The result
+     * must be returned from the step: dropped, the streak counts but never fails the run.
+     */
+    miss(ctx: StreakContext, last?: string): { fail: string } | undefined;
 }
 
 interface StreakSpec {
@@ -74,7 +74,7 @@ export const MISSING_WAIT_TICKS = 2;
 
 /**
  * The streak for a look-then-wait loop over a target that may be out of sight: each look that finds none counts
- * with `missWith` (the task supplies the failure text), then the task waits MISSING_WAIT_TICKS before looking again.
+ * with `missWith` (the task supplies the failure text), then the task waits MISSING_WAIT_TICKS before looking again (it may walk before the wait).
  */
 export const missingTargetStreak = (name: string): ReasonStreak =>
     failStreak({ name, limit: MISSING_LIMIT, worstTicks: MISSING_WAIT_TICKS });

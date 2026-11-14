@@ -33,8 +33,7 @@ const silentTicks = (task: { silent?: readonly (FailStreak | number)[] }) =>
 const WALK_STREAK = 4 * WALK_MAX_TICKS;
 
 describe('a migrated task lists the silent stretches it must outlast', () => {
-    // [task, ticks its silent must contain]; the window is computed from the list, and the stuck windows
-    // describe below holds every task to its floor.
+    // [task, ticks its silent must contain]; the stuck windows tests below hold every task to its floor.
     const pinned = [
         ['bank', bank, [WALK_STREAK]],
         ['combat', combat, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],

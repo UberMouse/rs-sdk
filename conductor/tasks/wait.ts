@@ -5,8 +5,9 @@ import { stuckWindowMs } from '../lib/watchdog';
 
 /** The longest wait one run takes. */
 export const MAX_WAIT_TICKS = 1500;
-// One wait that changes nothing for its whole length: neither the watchdog nor the step budget may end it.
-const WINDOW_MS = stuckWindowMs(MAX_WAIT_TICKS);
+// One wait that changes nothing for its whole length: neither the watchdog nor the step budget may end it, so the step
+// timeout equals the stuck window.
+const STEP_TIMEOUT_MS = stuckWindowMs(MAX_WAIT_TICKS);
 
 const Params = z.object({
     ticks: z.number().int().min(1).max(MAX_WAIT_TICKS).describe(`Game ticks to wait, 1 to ${MAX_WAIT_TICKS}.`),
@@ -26,7 +27,7 @@ export default defineTask({
         '(death, low HP, dialogs) still act at every tick of it.',
     params: Params,
     silent: [MAX_WAIT_TICKS],
-    stepTimeoutMs: WINDOW_MS,
+    stepTimeoutMs: STEP_TIMEOUT_MS,
     waits: true,
     steps: [
         {

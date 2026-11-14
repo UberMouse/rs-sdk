@@ -113,10 +113,10 @@ const FISH_FAILS = failStreak({
     what: 'fish attempts',
 });
 /**
- * The no-spot wait, and one cast for the hand-written spot-move count: a hop ends the cast's wait early and the
- * next cast walks the bot to the new spot, which the watchdog sees; a cast that waits it out is a FISH_FAILS miss.
+ * The spot-move count needs no entry of its own: a hop ends the cast's wait early and the next cast walks the bot to
+ * the new spot, which the watchdog sees; a cast that waits it out is a FISH_FAILS miss.
  */
-const SILENT = [FISH_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_SPOT_GIVE_UP_TICKS, FISH_WAIT_TICKS];
+const SILENT = [FISH_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_SPOT_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 /** The no-spot wait runs inside one step, so its step budget must cover it (plus the walk and a cast). */

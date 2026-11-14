@@ -77,6 +77,7 @@ const CAST_FAIL_LIMIT = 6;
 /** Casts at one target before the run gives up on it: a chicken takes two or three, a level-gap cow ten. */
 const CASTS_PER_TARGET_LIMIT = 40;
 const LOOT_FAIL_LIMIT = 9;
+const EAT_FAIL_LIMIT = 3;
 /**
  * How long a ground item a pickup failed on is left alone (20 s): long enough not to retry in a tight
  * loop, short enough that a transient failure (another player's fight in the way, a momentary block)
@@ -87,43 +88,43 @@ const LOOT_SKIP_TICKS = Math.ceil(20_000 / TICK_MS);
 const FIGHT_GIVE_UP_TICKS = FIGHT_TIMEOUT_TICKS + FIGHT_SLICE_TICKS;
 /** The loot give-up: LOOT_FAIL_LIMIT pickups each waiting out a full timeout and grace. */
 const LOOT_GIVE_UP_TICKS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS);
-// One failed attack: a walk to a far NPC that never moves the bot, then the attack's send, wait and retry wait.
+/** One failed attack: a walk to a far NPC that never moves the bot, then the attack's send, wait and retry wait. */
 const ATTACK_FAILS = failStreak({
     name: 'attackFails',
     limit: ATTACK_FAIL_LIMIT,
     worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
     what: 'attacks',
 });
-// One failed cast: the cast's wait and the retry tick.
+/** One failed cast: the cast's wait and the retry tick. */
 const CAST_FAILS = failStreak({
     name: 'castFails',
     limit: CAST_FAIL_LIMIT,
     worstTicks: CAST_WAIT_TICKS + 1,
     what: 'casts',
 });
-// One unanswered level-up click: its send, the wait for the next page and the retry tick.
+/** One unanswered level-up click: its send, the wait for the next page and the retry tick. */
 const LEVEL_UP_FAILS = failStreak({
     name: 'levelUpFails',
     limit: LEVEL_UP_FAIL_LIMIT,
     worstTicks: SEND_TICKS + LEVEL_UP_WAIT_TICKS + 1,
 });
-// One failed equip: the wait for the item to show as worn (EQUIP_WAIT_TICKS).
+/** One failed equip: the wait for the item to show as worn (EQUIP_WAIT_TICKS). */
 const EQUIP_FAILS = failStreak({ name: 'equipFails', limit: EQUIP_FAIL_LIMIT, worstTicks: EQUIP_WAIT_TICKS });
-// One failed style try: the wait for the style list, or a send and the wait for the combat tab to show the style.
+/** One failed style try: the wait for the style list, or a send and the wait for the combat tab to show the style. */
 const STYLE_FAILS = failStreak({
     name: 'styleFails',
     limit: STYLE_FAIL_LIMIT,
     worstTicks: Math.max(STYLE_LIST_WAIT_TICKS, SEND_TICKS + STYLE_WAIT_TICKS),
 });
-// One failed prayer click: the wait for the prayer to show as on (PRAYER_WAIT_TICKS).
+/** One failed prayer click: the wait for the prayer to show as on (PRAYER_WAIT_TICKS). */
 const PRAYER_FAILS = failStreak({ name: 'prayerFails', limit: PRAYER_FAIL_LIMIT, worstTicks: PRAYER_WAIT_TICKS });
-// One failed bury: its send and the wait for a bone to leave the inventory.
+/** One failed bury: its send and the wait for a bone to leave the inventory. */
 const BURY_FAILS = failStreak({ name: 'buryFails', limit: BURY_FAIL_LIMIT, worstTicks: SEND_TICKS + BURY_WAIT_TICKS });
-const EAT_FAIL_LIMIT = 3;
 /**
- * The watchdog (static) waits for the longest of the specific failures, so each can report its reason:
+ * The watchdog waits for the longest of the specific failures, so each can report its reason:
  * the fight and loot give-ups, the walks back to the area, the wait for a respawn, the eat step's failed eats
- * (each waiting out EAT_WAIT_TICKS) and each fail streak.
+ * (each waiting out EAT_WAIT_TICKS) and each fail streak. The send tick of the cast, equip and prayer streaks is
+ * inside the window's margin.
  */
 const SILENT = [
     FIGHT_GIVE_UP_TICKS,

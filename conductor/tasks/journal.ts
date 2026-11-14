@@ -26,7 +26,8 @@ export const JOURNAL_MAX_WITHIN_TICKS = 100;
  * A read moves none of what the watchdog watches, so the whole run is one silent stretch.
  */
 export const JOURNAL_MAX_RUN_TICKS = 4 * JOURNAL_OPEN_TICKS + JOURNAL_MAX_WITHIN_TICKS + JOURNAL_CLOSE_TICKS + 1;
-const WINDOW_MS = stuckWindowMs(JOURNAL_MAX_RUN_TICKS);
+// The run is one silent stretch, so the step timeout equals the stuck window.
+const STEP_TIMEOUT_MS = stuckWindowMs(JOURNAL_MAX_RUN_TICKS);
 
 const Params = z.object({
     quest: z
@@ -64,7 +65,7 @@ export default defineTask({
     params: Params,
     observes: true,
     silent: [JOURNAL_MAX_RUN_TICKS],
-    stepTimeoutMs: WINDOW_MS,
+    stepTimeoutMs: STEP_TIMEOUT_MS,
     // The refusals are a preflight's: a step would see the state only after the dialog guard had answered an open
     // dialog and the engine had closed a modal left open before the run.
     preflight(ctx) {

@@ -29,7 +29,8 @@ const FALL_LIMIT = 10;
 const REFUSED_RETRY_TICKS = 3;
 // worstTicks is one failed obstacle attempt: its wait and settle, and a refusal's retry pause. The walks toward a stand
 // tile or a loc that count a miss are not in it: a walk that closes in moves the bot (visible), one that cannot ends
-// within a few ticks, and a stalled one is bounded by the WALK_TO_AREA_SILENT_TICKS entry below.
+// `stuck` within tens of ticks (its legs stop after STOPPED_TICKS without a move), so the failed walks of one streak
+// stay under the WALK_TO_AREA_SILENT_TICKS entry below.
 const OBSTACLE_FAILS = failStreak({
     name: 'obstacleFails',
     limit: OBSTACLE_FAIL_LIMIT,

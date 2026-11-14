@@ -74,14 +74,14 @@ const REGEN_CAP_TICKS = 800;
 const REGEN_SLICE_LIMIT = REGEN_CAP_TICKS / REGEN_SLICE_TICKS;
 const STEP_TIMEOUT_MS = 300_000;
 
-// One attempt that never reaches the NPC: a walk to it that never moves the bot, then the send and the op's waits.
+/** One attempt that never reaches the NPC: a walk to it that never moves the bot, then the send and the op's waits. */
 const PICK_FAILS = failStreak({
     name: 'pickFails',
     limit: PICK_FAIL_LIMIT,
     worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
     what: 'pickpockets',
 });
-// One refused attempt: the send and the op's waits, then the stun wait it sets.
+/** One refused attempt: the send and the op's waits, then the stun wait it sets. */
 const BLOCKED = failStreak({
     name: 'blocked',
     limit: BLOCKED_LIMIT,
