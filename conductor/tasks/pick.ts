@@ -1,12 +1,13 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import type { NearbyLoc } from '../../sdk/types';
 import { PICK_OPTION, PICK_WAIT_TICKS, pick } from '../actions/pick';
-import { log, type Op, wait } from '../core/op';
-import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
+import { log, type Op } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { waitForRespawn } from '../lib/respawn';
 import { countItems, exactName, ticksToSeconds } from '../lib/util';
 
 /** Ticks with no pickable loc at all before failing (40 s); above flax's 10-tick respawn (pickables.rs2 loc_del(10)). */
@@ -83,30 +84,20 @@ function plantOfKind(params: PickParams): (loc: NearbyLoc) => boolean {
     return l => name.test(l.name) && l.reachable === true && l.options.some(o => PICK_OPTION.test(o));
 }
 
-/** Nothing to pick: stay put (returnToAreaStep keeps us inside) and wait for a respawn, failing after NO_LOC_GIVE_UP_TICKS. */
-function* waitForRespawn(ctx: Ctx): Op<Outcome> {
-    const now = ctx.state().tick;
-    if (ctx.memory.noLocSinceTick === null) {
-        ctx.memory.noLocSinceTick = now;
-        yield* log(`no ${ctx.params.loc} to pick, waiting for a respawn`);
-    }
-    const since = ctx.memory.noLocSinceTick;
+/** Nothing to pick: wait for a respawn, failing after NO_LOC_GIVE_UP_TICKS with none. */
+function* waitForPlant(ctx: Ctx): Op<Outcome> {
     const isPickable = pickable(ctx.params);
-    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, plantOfKind(ctx.params));
-    const respawn = yield* trackIdle(
-        ctx,
-        ctx.memory.areaWatch,
-        seen,
-        wait('respawn', s => s.nearbyLocs.some(isPickable), Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now)),
-    );
-    if (respawn.kind === 'met') return;
-    const seconds = ticksToSeconds(respawn.state.tick - since);
-    const { area } = ctx.params;
-    return {
-        fail: area
-            ? `area depleted: no reachable ${ctx.params.loc} in radius ${area.radius} for ${seconds}s`
-            : `no reachable ${ctx.params.loc} nearby for ${seconds}s`,
-    };
+    return yield* waitForRespawn(ctx, {
+        since: { get: () => ctx.memory.noLocSinceTick, set: t => (ctx.memory.noLocSinceTick = t) },
+        giveUpTicks: NO_LOC_GIVE_UP_TICKS,
+        label: 'respawn',
+        until: s => s.nearbyLocs.some(isPickable),
+        log: `no ${ctx.params.loc} to pick, waiting for a respawn`,
+        watch: ctx.memory.areaWatch,
+        seen: s => outsideSighting(s, ctx.params.area, s.nearbyLocs, plantOfKind(ctx.params)),
+        target: ctx.params.loc,
+        area: ctx.params.area,
+    });
 }
 
 export default defineTask({
@@ -156,7 +147,7 @@ export default defineTask({
                     .state()
                     .nearbyLocs.filter(pickable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
-                if (!loc) return yield* waitForRespawn(ctx);
+                if (!loc) return yield* waitForPlant(ctx);
                 ctx.memory.noLocSinceTick = null;
                 const picked = yield* pick(ctx, loc, exactName(ctx.params.item));
                 if (picked.ok) {

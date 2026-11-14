@@ -1,13 +1,14 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyNpc } from '../../sdk/types';
+import type { NearbyNpc } from '../../sdk/types';
 import { FISH_WAIT_TICKS, countAny, fish, tileOf } from '../actions/fish';
 import { drop } from '../actions/drop';
-import { log, type Op, wait } from '../core/op';
-import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
+import { log, type Op } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { waitForRespawn } from '../lib/respawn';
 import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
 
 interface Method {
@@ -217,50 +218,37 @@ function pickKind(ctx: Ctx): { kind: MethodName; spots: NearbyNpc[] } | null {
     return null;
 }
 
-/** No spot of the kind in reach: stay put (returnToAreaStep keeps us inside) and wait, failing after NO_SPOT_GIVE_UP_TICKS. */
+/** No spot of the kind in reach: wait, failing after NO_SPOT_GIVE_UP_TICKS with none. */
 function* waitForSpot(ctx: Ctx): Op<Outcome> {
-    const now = ctx.state().tick;
-    if (ctx.memory.noSpotSinceTick === null) {
-        ctx.memory.noSpotSinceTick = now;
-        yield* log(`no ${kinds(ctx.params).join('/')} fishing spot available, waiting`);
-    }
-    const since = ctx.memory.noSpotSinceTick;
-    const left = Math.max(0, since + NO_SPOT_GIVE_UP_TICKS - now);
     const isFishable = kinds(ctx.params).map(k => fishable(ctx.params, k));
     const ofKinds = kinds(ctx.params).map(ofMethod);
-    const seen = (s: BotWorldState) =>
-        outsideSighting(
-            s,
-            ctx.params.area,
-            s.nearbyNpcs
-                .filter(n => ofKinds.some(ok => ok(n)))
-                .map(n => ({ name: n.name, ...tileOf(n), distance: n.distance })),
-            () => true,
-        );
-    const found = yield* trackIdle(
-        ctx,
-        ctx.memory.areaWatch,
-        seen,
-        wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left),
-    );
-    if (found.kind === 'met') return;
-    const seconds = ticksToSeconds(found.state.tick - since);
-    const { area } = ctx.params;
-    const kindsText = kinds(ctx.params).join('/');
     const outsideKinds = kinds(ctx.params).map(k => ({ k, ok: ofMethod(k) }));
-    let where = '';
-    for (const n of found.state.nearbyNpcs) {
-        const hit = outsideKinds.find(o => o.ok(n));
-        if (hit) {
-            where = `; ${hit.k} spot exists outside area at (${tileOf(n).x},${tileOf(n).z})`;
-            break;
-        }
-    }
-    return {
-        fail: area
-            ? `area depleted: no reachable ${kindsText} fishing spot in radius ${area.radius} for ${seconds}s${where}`
-            : `no reachable ${kindsText} fishing spot nearby for ${seconds}s`,
-    };
+    return yield* waitForRespawn(ctx, {
+        since: { get: () => ctx.memory.noSpotSinceTick, set: t => (ctx.memory.noSpotSinceTick = t) },
+        giveUpTicks: NO_SPOT_GIVE_UP_TICKS,
+        label: 'fishing spot',
+        until: s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))),
+        log: `no ${kinds(ctx.params).join('/')} fishing spot available, waiting`,
+        watch: ctx.memory.areaWatch,
+        seen: s =>
+            outsideSighting(
+                s,
+                ctx.params.area,
+                s.nearbyNpcs
+                    .filter(n => ofKinds.some(ok => ok(n)))
+                    .map(n => ({ name: n.name, ...tileOf(n), distance: n.distance })),
+                () => true,
+            ),
+        target: `${kinds(ctx.params).join('/')} fishing spot`,
+        area: ctx.params.area,
+        areaSuffix: end => {
+            for (const n of end.nearbyNpcs) {
+                const hit = outsideKinds.find(o => o.ok(n));
+                if (hit) return `; ${hit.k} spot exists outside area at (${tileOf(n).x},${tileOf(n).z})`;
+            }
+            return '';
+        },
+    });
 }
 
 export default defineTask({

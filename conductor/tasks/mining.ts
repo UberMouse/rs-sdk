@@ -1,9 +1,9 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import type { NearbyLoc } from '../../sdk/types';
 import { drop, dropOres } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
-import { log, type Op, wait } from '../core/op';
-import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
+import { log, type Op } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting } from '../lib/area-watch';
 import {
     type Area,
     AreaSchema,
@@ -17,6 +17,7 @@ import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
 import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { waitForRespawn } from '../lib/respawn';
 import { countItems, exactName, findSkill, ticksToSeconds } from '../lib/util';
 
 /**
@@ -175,33 +176,23 @@ function rockOfKind(params: MiningParams): (loc: NearbyLoc) => boolean {
     return r => ids.has(r.id) && r.reachable === true && r.options.some(o => MINE_OPTION.test(o));
 }
 
-/** No minable rock: mined-out rocks count as none, so stay put (returnToAreaStep keeps us inside) and wait, until the give-up. */
-function* waitForRespawn(ctx: Ctx): Op<Outcome> {
+/** No minable rock (mined-out rocks count as none): wait for a respawn in chunks, until the give-up. */
+function* waitForRock(ctx: Ctx): Op<Outcome> {
     const d = derive(ctx.params);
-    const now = ctx.state().tick;
     const label = d.rocks.join('/');
-    if (ctx.memory.noRockSinceTick === null) {
-        ctx.memory.noRockSinceTick = now;
-        yield* log(`no ${label} rock available, waiting for a respawn`);
-    }
-    const since = ctx.memory.noRockSinceTick;
-    const left = Math.max(0, since + d.giveUpTicks - now);
     const isMinable = minable(ctx.params);
-    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, rockOfKind(ctx.params));
-    const respawn = yield* trackIdle(
-        ctx,
-        ctx.memory.areaWatch,
-        seen,
-        wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS)),
-    );
-    if (respawn.kind === 'met' || respawn.state.tick - since < d.giveUpTicks) return;
-    const seconds = ticksToSeconds(respawn.state.tick - since);
-    const { area } = ctx.params;
-    return {
-        fail: area
-            ? `area depleted: no reachable ${label} rock in radius ${area.radius} for ${seconds}s`
-            : `no reachable ${label} rock nearby for ${seconds}s`,
-    };
+    return yield* waitForRespawn(ctx, {
+        since: { get: () => ctx.memory.noRockSinceTick, set: t => (ctx.memory.noRockSinceTick = t) },
+        giveUpTicks: d.giveUpTicks,
+        label: 'rock respawn',
+        until: s => s.nearbyLocs.some(isMinable),
+        log: `no ${label} rock available, waiting for a respawn`,
+        watch: ctx.memory.areaWatch,
+        seen: s => outsideSighting(s, ctx.params.area, s.nearbyLocs, rockOfKind(ctx.params)),
+        chunkTicks: RESPAWN_CHUNK_TICKS,
+        target: `${label} rock`,
+        area: ctx.params.area,
+    });
 }
 
 /** Within this many tiles of a rock cluster's rock the bot sees it (walkToArea stops 2 tiles short). */
@@ -320,7 +311,7 @@ export default defineTask({
                         const failure = yield* walkToArea(ctx, spot);
                         return failure ? { fail: failure } : undefined;
                     }
-                    return yield* waitForRespawn(ctx);
+                    return yield* waitForRock(ctx);
                 }
                 ctx.memory.noRockSinceTick = null;
                 const mined = yield* mine(ctx, rock, d.orePattern);
