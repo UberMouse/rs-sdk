@@ -38,7 +38,11 @@ export function* closeModalUntil(
     return { ok: false, reason: 'timeout', message: `${what} still open after two closes` };
 }
 
-/** An open op's failure: only `timeout` means an open was sent that can still land. */
+/**
+ * An open op's failure: only `timeout` means an open was sent that can still land. The union is
+ * closed on purpose: a new modal op's open reason must be added here, and the `F extends
+ * OpenFailure` constraint flags a missing one.
+ */
 type OpenFailure = Failure<
     | 'no-bank-found'
     | 'npc-not-found'

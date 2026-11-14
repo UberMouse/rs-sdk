@@ -1,5 +1,5 @@
-// What an op reads besides its arguments. A task step passes its TaskContext; a test or an
-// integration test passes its driver.
+// What an op reads besides its arguments, and the result types ops share (`Failure`,
+// `ReasonOf`). A task step passes its TaskContext; a test or an integration test passes its driver.
 import type { BotWorldState } from '../../sdk/types';
 import type { WalkWorld } from '../lib/walk-graph';
 import type { Pathfinder } from './paths';

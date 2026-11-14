@@ -95,6 +95,16 @@ describe('lintPlan', () => {
         ]);
     });
 
+    test('a reason compared with a template literal without substitutions is flagged', () => {
+        expect(lintPlan(plan('a'), 'const h = v => v.last?.reason === `no food`;')).toEqual([
+            flagged(1, 'v.last?.reason === `no food`'),
+        ]);
+    });
+
+    test('a status test alone is not a reason match', () => {
+        expect(lintPlan(plan('a'), "const h = v => v.last?.status === 'failed';")).toEqual([]);
+    });
+
     test('a reason match after a code test in the same && chain is allowed (game text the ending carries)', () => {
         const src =
             "const won = v => v.last?.phase === 'a' && v.last.code === 'dialog' && (/Not hurt Dad/i.test(v.last.reason));";

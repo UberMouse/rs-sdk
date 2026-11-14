@@ -12,7 +12,10 @@ import { failStreakTicks } from '../lib/watchdog';
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
 const WAIT_TICKS = 5;
+/** The longest wait the param allows: 300 s. */
 const MAX_WAIT_TICKS = 750;
+/** The wait when the param is left out: 90 s. */
+const DEFAULT_WAIT_TICKS = 225;
 /** Walking to a far area outlasts the default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
@@ -60,7 +63,7 @@ const Params = z.object({
         .int()
         .positive()
         .max(MAX_WAIT_TICKS)
-        .default(225)
+        .default(DEFAULT_WAIT_TICKS)
         .describe(
             'Give up when a wanted item has not appeared in the area for this many ticks. Ground spawns respawn in about 100 ticks.',
         ),
@@ -122,8 +125,8 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
         yield* log(`no ${want} in the area, waiting for a respawn`);
     }
     if (now - ctx.memory.noItemSinceTick >= maxWaitTicks) {
-        // The reason keeps its wording in seconds.
-        return { fail: `no ${want} appeared in the area within ${+((maxWaitTicks * TICK_MS) / 1000).toFixed(1)}s` };
+        // Reasons stay in seconds, as plans and logs have always read them.
+        return { fail: `no ${want} appeared in the area within ${(maxWaitTicks * TICK_MS) / 1000}s` };
     }
     const seen = (s: BotWorldState) => outsideSighting(s, area, s.groundItems, g => exactName(want).test(g.name));
     yield* trackIdle(ctx, ctx.memory.areaWatch, seen, ticks(WAIT_TICKS));
