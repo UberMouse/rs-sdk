@@ -12,7 +12,7 @@ const open = (lines: string[], title = RUNE) => withJournal(BASE, title, lines);
 
 describe('journalOf', () => {
     test('the title and the non-empty lines, in component order', () => {
-        // 8150 is the fourth line component: 8145, then 8147 on.
+        // The second line component (8147) is empty.
         const dump = journalDump(RUNE, [
             'I spoke to Duke Horacio.',
             '',
