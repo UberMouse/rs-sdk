@@ -347,10 +347,11 @@ since the cursor chooses) plus three kinds of evidence:
 
 **The cursor** is the step to run: from the base, the first step not passed. A step is passed when
 its `skip` holds, when its `until` holds, or, if it has a `done`, when that holds (judged by the
-`done` alone: a step that has run but whose `done` does not hold runs again). Without a `done`, a
-step with no `reached` is passed once it has run: the last acting run was a later step, or this step
-and it ended `done`; a step with `onFail: 'continue'` is passed once its run ended either way
-("try this, carry on if it fails"). A step with a predicate `reached` and no `done` is passed only by
+`done` alone unless the step has `onFail: 'continue'`: a step that has run but whose `done` does not
+hold runs again). Without a `done`, a step with no `reached` is passed once it has run: the last
+acting run was a later step, or this step and it ended `done`. A step with `onFail: 'continue'` is
+passed once its run ended either way, even when it has a `done` that does not hold ("try this, carry
+on if it fails"); `defineQuest` refuses one that also has a `reached`. A step with a predicate `reached` and no `done` is passed only by
 the base. When every step is passed the plan runs `complete`, a wait of 20 ticks a run that ends
 when the quest tab shows the quest done, and the plan ends `done` then.
 

@@ -53,8 +53,9 @@ export interface QuestStep {
     until?: Phase['until'];
     /**
      * As a phase's. The string 'continue' also moves the story on: run order passes the step once its run ended,
-     * failed or done ("try this, carry on if it fails"). A `done` still judges the step alone, and a journal mark
-     * still needs a fresh journal to confirm it. A function that returns 'continue' does not move the story on.
+     * failed or done ("try this, carry on if it fails"), even when it has a `done` that does not hold; its `done`,
+     * `skip` and `until` still pass it early when they hold. With a `reached` it is refused by defineQuest. A function
+     * that returns 'continue' does not move the story on.
      */
     onFail?: Phase['onFail'];
     maxFails?: Phase['maxFails'];
@@ -151,7 +152,8 @@ function walk(q: QuestDef, v: PlanView, toCursor: boolean): { at: number | null;
     const passed = (s: QuestStep, i: number): boolean | 'provisional' => {
         if (s.skip && call(s, 'skip', s.skip)) return true;
         if (s.until && call(s, 'until', s.until)) return true;
-        if (s.done) return call(s, 'done', s.done);
+        // A 'continue' step is also passed by its own ended run, though its `done` does not hold.
+        if (s.done) return call(s, 'done', s.done) || (s.onFail === 'continue' && ranPast(i));
         if (s.reached === undefined) return ranPast(i);
         // A predicate `reached` is passed only by the base; a journal mark also by run order until a fresh journal
         // (read since the last acting run) can confirm it.
@@ -217,6 +219,12 @@ export function defineQuest(q: QuestDef): PlanDef {
         // The step read hands the task the pattern's source alone: any flag but `i` would be lost there.
         if (s.reached !== undefined && isMark(s.reached) && s.reached.journal.flags.replace('i', '') !== '')
             fail(q, `step "${s.name}": journal pattern ${s.reached.journal} has a flag other than i`);
+        if (s.onFail === 'continue' && s.reached !== undefined)
+            fail(
+                q,
+                `step "${s.name}": onFail 'continue' with a reached: the story cannot carry on past a step it depends ` +
+                    `on reaching; use the default retry, or drop reached for done`,
+            );
     }
     const read = (v: PlanView) => needsRead(q, v);
     // The journal-mark step the last acting run was, when it ended done: the read then waits for its pattern.

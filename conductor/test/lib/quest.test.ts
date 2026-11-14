@@ -277,15 +277,32 @@ describe('defineQuest: a quest without journal marks', () => {
             expect(ran(again)).toEqual(['chat', 'finish']);
         });
 
-        test('with a done that does not hold is judged by the done: the story stays at it', async () => {
+        describe('with a done', () => {
             const def = quest([
                 step('chat', deed, { what: 'chat' }, { onFail: 'continue', done: v => v.questStarted(ID) }),
                 finish,
             ]);
-            const r = await run(def, storyWorld({ refuse: { chat: 1 } }, story));
-            // The runner skips the failed phase at the next selection, and the cursor is still on it.
-            expect(ran(r)).toEqual(['chat failed']);
-            expect(r.result.reason).toContain('no phase applies');
+
+            test('that does not hold, fails and is followed by the next step', async () => {
+                const r = await run(def, storyWorld({ refuse: { chat: 1 } }, story));
+                expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+                expect(ran(r)).toEqual(['chat failed', 'finish']);
+            });
+
+            test('that holds, is stepped over without running', async () => {
+                const r = await run(def, storyWorld({ progress: 'started' }, story));
+                expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+                expect(ran(r)).toEqual(['finish']);
+            });
+
+            test('stays passed while the next step fails, and runs again after a restart', async () => {
+                const first = await run(def, storyWorld({ refuse: { chat: 1, finish: 3 } }, story));
+                expect(ran(first)).toEqual(['chat failed', 'finish failed', 'finish failed', 'finish failed']);
+                // A new runPlan has no last run, and the done does not hold: the chat runs again.
+                const again = await simulatePlan(def, { driver: first.driver });
+                expect(again.result.status).toBe('done');
+                expect(ran(again)).toEqual(['chat', 'finish']);
+            });
         });
 
         test('a function onFail that returns continue does not move the story on', async () => {
@@ -566,7 +583,12 @@ describe('cursor and needsRead', () => {
 
     test("at most one compiled phase's when holds, over views covering every phase selected", () => {
         const tryChat = step('chat', deed, { what: 'chat' }, { onFail: 'continue' });
-        for (const qd of [q, { ...q, steps: q.steps.map(s => (s.name === 'chat' ? tryChat : s)) }]) {
+        const tryChatDone = step('chat', deed, { what: 'chat' }, { onFail: 'continue', done: v => v.held('x') > 1 });
+        const variants = [tryChat, tryChatDone].map(t => ({
+            ...q,
+            steps: q.steps.map(s => (s.name === 'chat' ? t : s)),
+        }));
+        for (const qd of [q, ...variants]) {
             const def = defineQuest(qd);
             const selected = new Set<string>();
             const lasts = [
@@ -622,6 +644,21 @@ describe('defineQuest: the compiled plan', () => {
         expect(invalidParams(bad)).toEqual([
             'phase "pay" has invalid params: what: Invalid input: expected string, received number',
         ]);
+    });
+
+    test("refuses a step with onFail 'continue' and a reached, a predicate or a journal mark", () => {
+        const reacheds: NonNullable<QuestStep['reached']>[] = [v => v.questStarted(ID), journal(/paid/)];
+        for (const reached of reacheds)
+            expect(() =>
+                defineQuest({
+                    id: ID,
+                    name: 'test-quest',
+                    steps: [step('pay', deed, { what: 'pay' }, { onFail: 'continue', reached })],
+                }),
+            ).toThrow(
+                `quest "test-quest": step "pay": onFail 'continue' with a reached: the story cannot carry on past a ` +
+                    `step it depends on reaching; use the default retry, or drop reached for done`,
+            );
     });
 
     test('refuses an unknown quest id, no steps, a reserved step name, a name used twice, a flag other than i', () => {

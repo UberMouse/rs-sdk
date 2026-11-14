@@ -357,7 +357,8 @@ proves it.
 **Amendment (2026-11-14, from the code review of Tasks 4 and 4b):** a journal mark is always
 case-insensitive (`journal()` adds the `i` flag, so the cursor and the step read agree). A step
 whose own `onFail` is the string `'continue'` is run past once its run has ended, failed or done
-("try this, carry on if it fails"); a `done` still judges such a step alone, and a function
+("try this, carry on if it fails"): its own ended run passes it even when it has a `done` that
+does not hold; `'continue'` with a `reached` is refused when the quest is defined; a function
 `onFail` does not move the story on. The `journal` task sizes its watchdog for its longest run and
 closes only the journal.
 
