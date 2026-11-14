@@ -182,21 +182,23 @@ export default definePlan({
 });
 ```
 
-- `definePlan({ name, description?, phases, until?, requires?, defaults?, settle? })`: `name` matches `[a-z0-9-]+`;
-  the plan's `until(v)` ends the whole plan `done`; `requires: { '<what>': v => ... }` names what
-  the plan needs throughout (chop-burn: `'combat level 5+'`), checked before every phase choice;
-  one that fails ends the plan `failed` with `plan requires <what>`. Without an `until`, a plan
-  runs until `--until`, a failure or a rail.
-- `phase(task, params, { name?, when?, until?, onFail?, maxFails?, settle? })`: `task` is the task module's
-  default export; `params` are its params (`bun conductor/run-task.ts --list` shows each schema,
+- `definePlan({ name, description?, phases, until?, requires?, defaults?, settle? })`: `name`
+  matches `[a-z0-9-]+`; the plan's `until(v)` ends the whole plan `done`; `requires: { '<what>':
+  v => ... }` names what the plan needs throughout (chop-burn: `'combat level 5+'`), checked
+  before every phase choice; one that fails ends the plan `failed` with `plan requires <what>`.
+  Without an `until`, a plan runs until `--until`, a failure or a rail.
+- `phase(task, params, { name?, when?, until?, onFail?, maxFails?, settle? })`: `task` is the task
+  module's default export; `params` are its params (`bun conductor/run-task.ts --list` shows each schema,
   and a task file's description names its verified spots). `name` defaults to the task's name and
   must be unique (name two bank phases). `when(v)`: may it start (default always).
   `until(v)`: ends the phase `done` early, checked every tick. `onFail`: `'fail'` (default),
   `'continue'` (skip it for the next selection, so a fallback below gets the turn), `'retry'`
-  (eligible at once: a slip-prone climb or pickup), or `r => ...` returning those; `maxFails` (default 3)
-  consecutive failures fail the plan anyway. `defaults: { onFail?, maxFails? }` covers phases
-  that set none; `settle: false` skips the between-phase settle. A timed wait: the `wait` task
-  (`ticks`, `orFail`) with an `until`.
+  (eligible at once: a slip-prone climb or pickup), or `r => ...` returning those; `maxFails`
+  (default 3) consecutive failures fail the plan anyway. `defaults: { onFail?, maxFails? }` covers
+  phases that set none; `settle: false` skips the between-phase settle.
+- A timed wait is the `wait` task (`ticks`) with an `until`; `orFail` ends the run failed when the
+  ticks run out, so that phase needs an `until`. A phase whose `until` ends its wait 50 times in a
+  row (`DEFAULT_MAX_WAITS`) fails the plan.
 - **Size a gathering `area` to overshoot, never undershoot.** It must cover every tile the targets
   can occupy, including where fishing spots move to and every rock or tree of the kind, plus a
   margin. Size it from the site's Box (its Roam for npcs) plus the margin: copy the site row's
@@ -208,13 +210,15 @@ export default definePlan({
   over x 2836-2860. When a run shows targets the world index doesn't list, say so under lessons
   with the tiles.
 - The view `v`: `v.inv(item)` (pack; exact name, case-insensitive, or a RegExp), `v.held`/`v.worn`,
-  `v.full`, `v.free`, `v.bank(item)` (as last seen open this plan; `undefined` before),
-  `v.level(skill)`, `v.hp` (`{ current, max }`), `v.combatLevel`, `v.coins`, `v.runs(phase)`,
-  `v.last` (`{ phase, status, reason }` or `null`), `v.lastDone(...names)`/`v.lastFailed(...names)`,
-  `v.x`/`v.z`/`v.floor`/`v.within(spot)`, `v.npcs`/`v.locs`/`v.ground(name, within?)`,
-  `v.said(pattern, sinceTicks?)`, `v.questStarted(id)`, `v.state` for anything else. Predicates are
-  pure: no I/O, no clock, no state of their own. `requires` can spread `combatAtLeast(n)` and
-  `levelAtLeast(skill, n)`.
+  `v.full`, `v.free`, `v.bank(item)` (as last seen open; `undefined` before),
+  `v.level(skill)`, `v.hp` (`{ current, max }`), `v.combatLevel`, `v.coins`, `v.last`
+  (`{ phase, status, reason }` or `null`), `v.runs(phase)` and `v.lastDone`/`v.lastFailed(...names)`
+  (an unknown phase name throws), `v.x`/`v.z`/`v.floor`, `v.within(spot)` (a square: the larger of
+  the x and z differences; `spot` is `{ x, z, radius?, tolerance?, level? }`, the exact tile with
+  neither), `v.npcs`/`v.locs`/`v.ground(name, within?)` (counts, like `v.held`/`v.worn`;
+  `v.ground` counts piles, not the items in one), `v.said(pattern, sinceTicks?)`,
+  `v.questStarted(id)`, `v.state` (the rest). Predicates are pure: no I/O, clock or state.
+  `requires` can spread `combatAtLeast(n)` and `levelAtLeast(skill, n)`.
 - A `when` that picks a processing phase tests that phase's own input, not a family of items (a
   bowl phase gated on "anything unfired" also matched unfired pots, pottery-craft, 2026-10-11).
 - One-shot: `when: v => v.runs('withdraw') === 0`, ended by the plan's `until` (`v.runs('burn') > 0`).
@@ -242,10 +246,11 @@ What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <
 requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase failing with
 `onFail: 'fail'` or `maxFails` times in a row, a predicate throwing (`error`), a phase ending
 `error`, a death (`failed`, `<phase>: died ...`, also between two phases; whatever `onFail` says),
-and the idle rail (3 phases in a row with no XP, each ending
-where it started or in a state already seen: the plan ends `done` with `nothing left to do: ...` when
-they all ended `done` (also at the first instant repeat of a done phase), and `failed` with `phases
-make no progress` when any failed or stalled). A params typo fails the plan at once. An `until` that holds in combat waits for the fight to end.
+and the idle rail (3 phases in a row with no XP, each ending where it started or in a state
+already seen: the plan ends `done` with `nothing left to do: ...` when they all ended `done` (also
+at the first instant repeat of a done phase), and `failed` with `phases make no progress` when any
+failed or stalled). A params typo fails it at once. An `until`
+that holds in combat waits for the fight to end.
 
 **Where plans live.** Reuse a promoted plan in `conductor/plans/` as it is when it fits. Write a
 new one, or change one, as a draft: `conductor/runs/<bot>/plans/<name>.ts` (copy the
@@ -272,9 +277,10 @@ then journals the run itself when it ends.
   `nothing left to do`.
 - Every run goes in the background (`run_in_background`), however short (Every run, item 3); read
   its RESULT from the output file the completion notification names. Never `sleep N; tail` (the
-  harness blocks it) and never a `pgrep` loop: a run you started reports its own end. Runners have no Monitor tool; the completion notification is the only wake-up. The one
-  `pgrep` wait is for a run a cut-off runner left (`running` still set, above), always with the
-  anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell and never ends.
+  harness blocks it) and never a `pgrep` loop: a run you started reports its own end. Runners have
+  no Monitor tool; the completion notification is the only wake-up. The one `pgrep` wait is for a
+  run a cut-off runner left (`running` still set, above), always with the anchored pattern: an
+  unanchored `"run-task.ts <bot> "` matches the waiting shell and never ends.
 - `No game client is attached`: stop and report it; don't start a client. `already has N
   controller(s) attached`: someone else drives the bot; wait or report, never route around.
 - Work toward the goal runs as a plan, its first loop included. A plain task run,
@@ -297,11 +303,12 @@ then journals the run itself when it ends.
   or fight with a task, teleport); `died` means report it (`learnings/hazards.md`).
 - `bun conductor/tools/stats.ts <bot>` counts a plan once, as `plan:<name>`, with XP/hr
   comparable to single tasks; `--phases` adds its phase runs.
-- `bun run test:integration plan` is the plan smoke test for authors; you never run integration tests.
+- `bun run test:integration plan` is the plan smoke test for authors; you never run integration
+  tests.
 
 **Journal**: run-task appends each run's line itself (`kind: run`, the runId, command, result and a
 mechanical verdict), on every exit including a SIGTERM; a RESULT with an empty `runId` never ran
-and gets no line. Don't journal runs by hand. Add a
+and gets no line (count nothing in `spent`, and fix its cause). Don't journal runs by hand. Add a
 line only for judgement the mechanical one lacks (what a run showed, the next change), and for a
 run killed so hard it printed no RESULT (`running` still set, above):
 
@@ -363,8 +370,8 @@ Come back only when:
   a quest or unlock, a different goal being the better use of time;
 - the goal looks unreachable as set.
 
-Before any return, leave the bot as safe as you can: no plan or task running, out of combat as far
-as a plan can manage, at a bank or the spot (not in a hazard from
+Before any return, leave the bot as safe as you can: no plan or task running, and, as far as a
+plan can manage, out of combat at a bank or the spot (not in a hazard from
 `learnings/hazards.md`). You have no retreat task, so you cannot guarantee it: report the bot's
 actual state honestly in `Bot:` (the last RESULT's `inCombat` and `hp`, or `bun sdk/cli.ts
 <bot>`), and the conductor handles an unsafe end. Then write your state file per "Before a

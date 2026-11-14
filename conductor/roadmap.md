@@ -405,7 +405,7 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   `inv` only, and the bank `upTo` took 27 of 155 feathers (fixed f2491ac8a); (c) `runs()` resets on restart. Proposal:
   `plan` validator (in `run-task.ts --plan` load) warns on a phase that is the last of its skill with no `until`, and
   on a `shop buy` whose `when` lacks a coin or bank-held check; document in `conductor/docs/plans.md`.
-  Partly done (plan-primitives branch): `lib/plan-lint.ts` (run by `test/plans.test.ts` over every promoted plan) checks
+  Partly done: the plan lint, `lib/plan-lint.ts` (run by `test/plans.test.ts` over every promoted plan) checks
   params, phase names and axe patterns, and `plans.md` documents `retry`, `wait` and the view members; the unbounded
   last-of-skill phase and the `shop buy` coin check are still not linted.
 - **Runner wait idiom (done: task-runner.md already says so since 1e8b41494/fafa3391d; that runner predates them; Monitor note added)**: the thieving runner lost ~30 turns to harness-blocked `sleep N;
@@ -543,8 +543,10 @@ on its own.
   smithing, shop, firemaking, `lib/area.ts`) and their tests; re-review the tasks.
 - **Plan-primitives follow-ups** (design: `conductor/docs/plan-primitives.md`):
   - Quest layer: `defineQuest({ id, steps })` compiling to phases, replacing hand-built stage tracking in quest plans.
-  - Quest layer: a stage cursor from a step's `done` evidence, a stage probe and a persisted per-bot record.
-  - Quest layer: the stage probe (read an open quest journal's text), spiked on a worker first.
+  - Quest layer: a stage cursor from a step's `done` evidence and a persisted per-bot record. The
+    stage probe's spike is done (journal text reads from `state.interface.debugInfo` on the lite
+    client; the browser client would need `debugInfo` added; see `conductor/docs/plan-primitives.md`);
+    what remains is the `defineQuest` design with the cursor.
   - Audit: generate the task catalog text from the param schemas (`.describe()`), as `wait` does.
   - Audit: declared silent streaks in place of hand-summed `stuckAfterMs`; one streak-then-fail helper, `waitForRespawn` and eat step.
   - Audit: one name for the full-inventory policy param, and exact names against pattern sources.
