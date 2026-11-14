@@ -63,7 +63,7 @@ export default defineTask({
         'browser client publishes no journal text.',
     params: Params,
     observes: true,
-    stuckAfterMs: WINDOW_MS,
+    silent: [JOURNAL_MAX_RUN_TICKS],
     stepTimeoutMs: WINDOW_MS,
     // The refusals are a preflight's: a step would see the state only after the dialog guard had answered an open
     // dialog and the engine had closed a modal left open before the run.

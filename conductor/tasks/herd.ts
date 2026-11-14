@@ -5,6 +5,7 @@ import { messageCursor, messageSince } from '../actions/messages';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, send, wait } from '../core/op';
 import { failStreak } from '../lib/streak';
+import { failStreakTicks } from '../lib/watchdog';
 import { defineTask, type TaskContext } from '../lib/task';
 import { patternParam, matcher } from '../lib/spot';
 
@@ -26,7 +27,12 @@ const MAX_AHEAD = 2;
 const NEAR_STAND_TILES = 2;
 /** Approaches in a row that do not reach the stand tile before the task fails. */
 const APPROACH_FAIL_LIMIT = 4;
-/** The longest approach is a walk to a far stand tile that never moves the bot; the short step takes APPROACH_WAIT_TICKS. */
+/**
+ * The longest approach is a walk to a far stand tile that never moves the bot (a door on the way that never opens
+ * spends the walk's whole budget); the short step takes APPROACH_WAIT_TICKS. worstTicks is the walk op's cap, a
+ * deliberate upper bound: the budget reaches it at a route of 76 tiles, which a copy fenced off from the bot can need,
+ * and walkTo's no-progress cut-off need not end the streak sooner, since the stand tile moves with the NPC.
+ */
 const APPROACH_FAILS = failStreak({
     name: 'approachFails',
     limit: APPROACH_FAIL_LIMIT,
@@ -49,7 +55,7 @@ const NO_PROGRESS_LIMIT = 12;
  * The no-progress count resets only on a new best, so it is not a fail streak. The NPC can step to and fro
  * with the bot never moving; each prod waits PROD_WAIT_TICKS at most, and a catch-up wait as long can follow it.
  */
-const NO_PROGRESS_SILENT_TICKS = NO_PROGRESS_LIMIT * 2 * PROD_WAIT_TICKS;
+const NO_PROGRESS_SILENT_TICKS = failStreakTicks(NO_PROGRESS_LIMIT, 2 * PROD_WAIT_TICKS);
 /**
  * `goneIsDone` counts only within this many tiles (Chebyshev) of the goal: the state shows the NPC up to MAX_AHEAD
  * steps late and the Sheep Herder gate zone (the jump) is 3 tiles wide, beside the pen.

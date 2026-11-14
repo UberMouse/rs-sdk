@@ -51,11 +51,13 @@ const FLETCH_FAILS = failStreak({
     worstTicks: FLETCH_CLOSE_TICKS + FLETCH_MENU_TICKS + FLETCH_MAKE_TICKS,
     what: 'fletch attempts',
 });
+/** The longest feather attempt that changes nothing: the use's wait for the game to act, then the wait for shafts to leave. */
 const FEATHER_FAILS = failStreak({
     name: 'featherFails',
     limit: FLETCH_FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS + FEATHER_WAIT_TICKS,
 });
+/** The longest stringing attempt that changes nothing: the use's wait for the game to act, then the wait for a bow to be strung. */
 const STRING_FAILS = failStreak({
     name: 'stringFails',
     limit: FLETCH_FAIL_LIMIT,

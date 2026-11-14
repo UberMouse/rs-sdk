@@ -25,7 +25,7 @@ export default defineTask({
         'respawn); done when the ticks run out, or failed with `orFail`. It sends nothing, and the shared guards ' +
         '(death, low HP, dialogs) still act at every tick of it.',
     params: Params,
-    stuckAfterMs: WINDOW_MS,
+    silent: [MAX_WAIT_TICKS],
     stepTimeoutMs: WINDOW_MS,
     waits: true,
     steps: [
