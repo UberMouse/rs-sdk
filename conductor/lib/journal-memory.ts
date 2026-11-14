@@ -17,6 +17,13 @@ export interface Journal {
     lines: string[];
 }
 
+/**
+ * Why a click on a quest-tab entry must not go out now, or null: the click destroys an open chat dialog or main
+ * modal. An open journal is no blocker: the journal task reads it as it shows. The task and the quest layer both ask this.
+ */
+export const journalReadBlocker = (s: BotWorldState): 'dialog open' | 'modal open' | null =>
+    s.dialog.isOpen ? 'dialog open' : s.modalOpen && !interfaceOpen(s, JOURNAL_INTERFACE) ? 'modal open' : null;
+
 /** The journal `s` shows open, or null: another interface, none, or a dump without the title's text. */
 export function journalOf(s: BotWorldState): Journal | null {
     if (!interfaceOpen(s, JOURNAL_INTERFACE)) return null;

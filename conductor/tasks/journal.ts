@@ -3,7 +3,7 @@ import type { BotWorldState } from '../../sdk/types';
 import { CLEANUP_CLOSE_WAIT_TICKS, closeModalUntil } from '../actions/modal';
 import { interfaceOpen, resolveComponent } from '../actions/press';
 import { send, ticks, wait } from '../core/op';
-import { JOURNAL_INTERFACE, journalOf } from '../lib/journal-memory';
+import { JOURNAL_INTERFACE, journalOf, journalReadBlocker } from '../lib/journal-memory';
 import { journalTitle, QUESTS, questIdByJournalTitle } from '../lib/quests';
 import { Pattern } from '../lib/spot';
 import { defineTask } from '../lib/task';
@@ -50,9 +50,7 @@ const Params = z.object({
 /** Nothing of a main modal shows: what the click opened is gone. */
 const noModal = (s: BotWorldState) => !s.interface.isOpen && !s.modalOpen;
 const journalShown = (s: BotWorldState) => interfaceOpen(s, JOURNAL_INTERFACE);
-/** Why a click on the entry must not go out: it would destroy an open chat dialog or a main modal. */
-const clickBlocker = (s: BotWorldState) =>
-    s.dialog.isOpen ? 'dialog open' : s.modalOpen && !journalShown(s) ? 'modal open' : null;
+const clickBlocker = journalReadBlocker;
 
 export default defineTask({
     name: 'journal',

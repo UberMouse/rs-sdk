@@ -4,6 +4,7 @@ import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { resolveComponent } from '../../actions/press';
 import type { Effect } from '../../core/drivers/timeline';
 import { send, ticks, wait } from '../../core/op';
+import { JOURNAL_INTERFACE } from '../../lib/journal-memory';
 import { invalidParams, type PlanDef, type PlanView } from '../../lib/plan';
 import { lintPlan } from '../../lib/plan-lint';
 import {
@@ -21,7 +22,7 @@ import { defineTask } from '../../lib/task';
 import { act } from '../core/fixtures';
 import { withQuestJournal } from '../journal';
 import { type PlanSimulation, simulatePlan } from '../simulate';
-import { world } from '../world';
+import { BANK_INTERFACE, SHOP_INTERFACE, world } from '../world';
 
 const ID = 'cook';
 const ENTRY = resolveComponent(`questlist:${ID}`)!.componentId;
@@ -485,11 +486,14 @@ function fakeView(o: {
     journal?: string;
     age?: number;
     dialog?: boolean;
+    /** A main modal open: an interface id. */
+    modal?: number;
     held?: number;
 }): PlanView {
     const known: Partial<PlanView> = {
         state: world()
             .dialog(o.dialog ? {} : false)
+            .modal(o.modal ?? false)
             .build(),
         last: o.last ?? null,
         quest: () => o.progress ?? 'none',
@@ -567,6 +571,16 @@ describe('cursor and needsRead', () => {
         expect(n({ progress: 'started', age: 1, last: last('chat', 'failed') })).toBe(true);
         expect(n({ progress: 'done' })).toBe(false);
         expect(needsRead({ ...q, steps: [q.steps[0]!, q.steps[3]!] }, fakeView({ progress: 'started' }))).toBe(false);
+    });
+
+    test('an open journal does not block a read; a shop, a bank or a dialog does', () => {
+        const ranPay = { progress: 'started', held: 1, last: last('pay'), journal: 'go', age: 0 } as const;
+        expect(n({ progress: 'started', modal: JOURNAL_INTERFACE })).toBe(true);
+        expect(c({ ...ranPay, modal: JOURNAL_INTERFACE })).toBe(2);
+        for (const blocker of [{ modal: SHOP_INTERFACE }, { modal: BANK_INTERFACE }, { dialog: true }]) {
+            expect(n({ progress: 'started', ...blocker })).toBe(false);
+            expect(c({ ...ranPay, ...blocker })).toBe(3);
+        }
     });
 
     test('a step whose until holds is passed, and a throw names the step and predicate', () => {

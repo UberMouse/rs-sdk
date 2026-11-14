@@ -4,6 +4,7 @@
 import type { z } from 'zod/v4';
 import journalTask, { JOURNAL_WITHIN_TICKS } from '../tasks/journal';
 import waitTask from '../tasks/wait';
+import { journalReadBlocker } from './journal-memory';
 import {
     definePlan,
     type Phase,
@@ -110,8 +111,8 @@ const COMPLETE_PHASE = 'complete';
 /** Ticks of each `complete` wait. */
 export const COMPLETE_WAIT_TICKS = 20;
 
-/** A journal read now would destroy the open dialog or modal (tasks/journal.ts). */
-const blocked = (v: PlanView) => v.state.dialog.isOpen || v.state.modalOpen;
+/** A journal read now would destroy the open dialog or modal. */
+const blocked = (v: PlanView) => journalReadBlocker(v.state) !== null;
 
 /** The step index of the last acting run, or undefined when it was none of the quest's steps (or there was none). */
 const lastStep = (q: QuestDef, v: PlanView): number | undefined => {

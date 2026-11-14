@@ -175,9 +175,13 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      */
     waits?: true;
     /**
-     * A task that only looks (the quest journal read). In a plan (runPlan) its runs do not become `v.last`, leave
-     * `skip` and `prevDone` as they were, stay out of the idle rail and the `maxWaits` count (except that one during
-     * which a journal text changed clears the idle run), and do not age the journal (`v.journalAge`).
+     * A task that only looks, such as the quest journal read. In a plan (runPlan), the acting runs around a look are
+     * judged as if it had not run. A look does not become `v.last`. It leaves `skip` and `prevDone` as they were. It
+     * does not age the journal (`v.journalAge`). It is not counted by the idle rail or by `maxWaits`.
+     *
+     * Two things still count. A look during which a journal text changed resets the idle run, since that change is
+     * progress. And consecutive looks, of any phase, are counted on their own: `maxIdlePhases` of them with no acting
+     * run between ends the plan failed.
      */
     observes?: true;
 }
