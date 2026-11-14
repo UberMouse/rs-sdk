@@ -1305,6 +1305,16 @@ describe('combat: stopOnDialog', () => {
         expect(r.sends).toEqual([ATTACK]);
         expect(r.driver.state().dialog.isOpen).toBe(true);
         expect(r.result.stepRuns['interrupt:dialog']).toBeUndefined();
+        expect(r.result.holdsDialog).toBe(true);
+    });
+
+    test('a run that holds no dialog has no holdsDialog key', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: coop.series(8, (w, i) => (i >= 2 ? w.fighting(CHICKEN) : w)),
+            stops: xp(25),
+        });
+        expect('holdsDialog' in r.result).toBe(false);
     });
 
     /** Mordred's "death": the dialog opens with food held, and the fight is still on (he is healed). */
@@ -1349,6 +1359,22 @@ describe('combat: stopOnDialog', () => {
             timeline: stillFightingAt(5),
         });
         expect(r.sends).toContain('Eat Shrimps');
+    });
+
+    test('below the HP floor the dialog is not held, so the result does not say so', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(5),
+        });
+        expect('holdsDialog' in r.result).toBe(false);
+    });
+
+    test('just above the HP floor the result says the dialog is held', async () => {
+        const r = await simulate(combat, {
+            params: { ...PARAMS, stopOnDialog: true },
+            timeline: stillFightingAt(11),
+        });
+        expect(r.result.holdsDialog).toBe(true);
     });
 
     test('low HP in a fight with no dialog open still eats', async () => {

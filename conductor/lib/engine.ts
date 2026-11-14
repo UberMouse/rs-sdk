@@ -541,6 +541,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             logFile,
             ...(extra.diagnostics && Object.keys(extra.diagnostics).length > 0 && { diagnostics: extra.diagnostics }),
             ...(extra.warnings && extra.warnings.length > 0 && { warnings: extra.warnings }),
+            ...(keepsDialog && { holdsDialog: true as const }),
         };
         for (const w of extra.warnings ?? []) say(`warning: ${w}`);
         emit({ type: 'result', ...result });

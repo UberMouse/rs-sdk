@@ -248,7 +248,7 @@ let signalResult: TaskResult | PlanResult | null = null;
  * A run that ends with the bot under attack, `done` included, gets lib/epilogue.ts: eat, run, teleport, hold the
  * bot's own fight. Up to EPILOGUE_TICKS (60 s); SIGNAL_EPILOGUE_TICKS (20 s) for a done run and when `signalPath` is set. Before the process exits and the guards with it. The result keeps its
  * status and reason and gains an `epilogue`. Skipped when the client is gone or another controller took the bot
- * over (no connection to act through).
+ * over (no connection to act through), and when the run holds its dialog open (`needsEpilogue`).
  */
 function withEpilogue(
     sdk: BotSDK,
@@ -261,6 +261,7 @@ function withEpilogue(
 ): Promise<TaskResult> {
     const runStartTick = startTick;
     if (killSignalled && !signalPath) return Promise.resolve(result);
+    if (result.holdsDialog) say('epilogue: skipped: the run holds its dialog open for the next phase');
     if (!needsEpilogue(result) || sdk.getConnectionState() !== 'connected' || resultLine.printed)
         return Promise.resolve(result);
     // Its own driver, unrecorded: a recording replays the run's decisions, which end where the run did.

@@ -2444,3 +2444,45 @@ describe('the journal memory and observes tasks', () => {
         ]);
     });
 });
+
+describe('runPlan: a phase run that holds its dialog', () => {
+    /** Ends done at once, holding the open dialog for the next phase (as combat's stopOnDialog does). */
+    const holder = defineTask({
+        name: 'holder',
+        description: 'plan test: ends holding its dialog',
+        params: z.object({}),
+        // The dialog is open from the first state: the dialog guard would answer it before the step.
+        allow: ['dialog'],
+        holdsDialog: (_p, s) => s.dialog.isOpen,
+        steps: [{ name: 'stop', when: () => true, run: () => ({ done: 'dialog opened' }) }],
+    });
+    /** Answers a dialog: it allows the dialog guard, so its start leaves the dialog open. */
+    const answer = { ...scripted('answer', [{ done: 'answered' }]), allow: ['dialog'] as const };
+    const choiceOpen = [BASE.dialog({ options: ['Yes', 'No'] }).build()];
+
+    test('a plan ending on it says so, and nothing between the run and the end acts on the bot', async () => {
+        const r = await sim(
+            plan([phase(holder, {})], v => v.last?.phase === 'holder'),
+            { timeline: choiceOpen },
+        );
+        expect(r.result.status).toBe('done');
+        expect(r.result.holdsDialog).toBe(true);
+        expect(r.driver.commands.filter(c => c.type === 'send')).toEqual([]);
+        expect(r.driver.state().dialog.isOpen).toBe(true);
+    });
+
+    test('the next phase starts with the dialog still open, and a plan ending after it holds nothing', async () => {
+        const r = await sim(
+            plan(
+                [phase(holder, {}, { when: v => v.last === null }), phase(answer, {})],
+                v => v.last?.phase === 'answer',
+            ),
+            { timeline: choiceOpen },
+        );
+        expect(r.runs.map(x => x.phase)).toEqual(['holder', 'answer']);
+        expect(r.runs[0]!.result.holdsDialog).toBe(true);
+        expect(r.runs[1]!.events.find(e => e.type === 'step')?.step).toBe('try');
+        expect(r.driver.commands.filter(c => c.type === 'send')).toEqual([]);
+        expect('holdsDialog' in r.result).toBe(false);
+    });
+});
