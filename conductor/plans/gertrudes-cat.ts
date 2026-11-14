@@ -115,9 +115,9 @@ export default defineQuest({
         step(
             'return-kitten',
             interact,
-            // The stage moves some ticks after the use, as Fluffs leaves: `until` ends the step then, so the journal read
-            // after it sees the move. `expect` keeps the pickup animation from ending it first; the lite client does not
-            // record that message box (the same interface as the crate's just before), so the until is what ends it.
+            // The stage moves some ticks after the use, as Fluffs leaves: `until` ends the step then, so no journal read
+            // comes before the move. `expect` keeps the pickup animation from ending it first; the lite client does not
+            // record that message box (learnings/dialogs.md), so the until is what ends it.
             { target: 'npc', name: cat, use: { item: "Fluffs' kitten" }, at: catAt, expect: 'run off home' },
             {
                 reached: journal(/I gave Fluffs her kitten back/),
