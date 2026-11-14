@@ -170,9 +170,7 @@ describe('undescribedFields', () => {
 
 /** Tasks that do not yet keep the catalog's rules. A task is added only by being exempted here, and this list must reach empty: the guard fails a listed task that keeps the rules. */
 const NOT_YET = [
-    'agility',
     'bank',
-    'combat',
     'cooking',
     'crafting',
     'essence-mine',
@@ -184,15 +182,11 @@ const NOT_YET = [
     'mining',
     'pick',
     'pickup',
-    'prayer',
     'runecraft',
     'shop',
     'smithing',
     'spell-items',
     'spinning',
-    'teleport',
-    'thieving',
-    'travel',
     'woodcutting',
 ];
 const MAX_DESCRIPTION = 900;

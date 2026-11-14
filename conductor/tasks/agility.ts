@@ -8,6 +8,7 @@ import {
     spotOf,
     type Course,
     type Obstacle,
+    WILDERNESS,
 } from '../actions/course';
 import { eat } from '../actions/eat';
 import { OBSTACLE_SETTLE_TICKS, OBSTACLE_WAIT_TICKS } from '../actions/obstacle';
@@ -56,16 +57,28 @@ const DEFAULT_MIN_FOOD = { gnome: 0, barbarian: 0, wilderness: 3 } as const;
 const LAP_FOOD_RESERVE = 2;
 
 const Params = z.object({
-    course: z.enum(['gnome', 'barbarian', 'wilderness']).default('gnome'),
-    /** Stop after this many completed laps; omit to run until a `--until` stop. */
-    laps: z.number().int().min(1).optional(),
-    /**
-     * Food items (anything with an Eat option) the bot must carry to start; the run stops at a lap's edge once it
-     * is short (none left; on the Wilderness course, fewer than 2 or `minFood`, whichever is lower, at the door). Default
-     * 0 on the gnome and barbarian courses, 3 on the Wilderness course, where it is at least 1. A Wilderness run can still
-     * end `failed` at the low-HP guard if the food runs out mid-lap (the lap has no way out).
-     */
-    minFood: z.number().int().min(0).optional(),
+    course: z
+        .enum(['gnome', 'barbarian', 'wilderness'])
+        .default('gnome')
+        .describe("The course to run; each one's start, XP and hazards are in `spots`."),
+    laps: z
+        .number()
+        .int()
+        .min(1)
+        .optional()
+        .describe('Stop after this many completed laps; omit to run until a `--until` stop.'),
+    minFood: z
+        .number()
+        .int()
+        .min(0)
+        .optional()
+        .describe(
+            "Food items (anything with an Eat option) the bot must carry to start; the run stops at a lap's edge once " +
+                `it is short (none left; on the Wilderness course, fewer than ${LAP_FOOD_RESERVE} or \`minFood\`, whichever ` +
+                `is lower, at the door). Default by course: ${Object.entries(DEFAULT_MIN_FOOD)
+                    .map(([c, n]) => `${c} ${n}`)
+                    .join(', ')}; on the Wilderness course it is at least 1.`,
+        ),
 });
 
 type AgilityParams = z.infer<typeof Params>;
@@ -172,21 +185,33 @@ function* crossNext(ctx: Ctx, o: Obstacle): Op<Outcome> {
 export default defineTask({
     name: 'agility',
     description:
-        'Run laps of an agility course for Agility XP. Param `course`: "gnome" (Tree Gnome Stronghold, Agility 1, no failure, ' +
-        `about 86.5 XP per lap before the server's 25x; course start ${GNOME.start.x},${GNOME.start.z}), ` +
-        '"barbarian" (Barbarian Outpost, Agility 35; start north of the pipe at (2552,3562) or anywhere in the yard; rope swing, log, net, ledge, ' +
-        'ladder, three walls, 139.5 XP a lap before 25x; the rope, log and ledge can fail, 9-17% HP each; falls into the pit under the rope are ' +
-        'climbed out of and retried; carry food, `minFood`) or "wilderness" (Wilderness course at (2998,3915), Agility 52, Wilderness level ~53: ' +
-        'PvP risk, white wolves in the field south of the door, skeletons in the pit cave; ridge, pipe, rope, stepping stones, log, rocks, ridge, ' +
-        "601 XP a lap before 25x; every obstacle but the pipe can fail for 15-22% HP; needs `minFood` (default 3, at least 1) food to start and ends at a lap's edge " +
-        'short of food (fewer than 2 at the door; a run fails at the low-HP guard if food runs out mid-lap, and when `laps` is not reached); the Wilderness guard is off for it). `laps` stops after that many completed laps, else it runs until a `--until` stop. ' +
-        'Each obstacle is picked from where the bot stands, so it resumes mid-lap and re-routes after a fall; it only walks on the ground and the ' +
-        "course's own obstacles are the plane changes. The bot must start at the course (within the course's reach of its start, on the course): " +
-        'this task does not travel: run the `travel` task to {x:2474,z:3436} (gnome; Lumbridge is about 700 tiles away, wolves on the way), ' +
-        '{x:2552,z:3562} (barbarian) or {x:2998,z:3915} (wilderness; the walk refuses the Wilderness, so stand at its edge first; ' +
-        'travel with wilderness:true). WILDERNESS: carry only food and no valuables (a PvP or skeleton death loses the whole inventory); ' +
-        'a `done` run (laps reached, or out of food) leaves the bot in the Wilderness at the door (2998,~3915), so the caller must ' +
-        'travel out immediately (a plan puts a leave-the-Wilderness travel step after every wilderness agility run).',
+        'Runs laps of an agility course for Agility XP. Each obstacle is picked from where the bot stands, so it ' +
+        "resumes mid-lap and re-routes after a fall; it only walks on the ground and the course's own obstacles are the " +
+        "plane changes. This task does not travel. Done after `laps` laps, or at a lap's edge once short of food " +
+        '(failed instead when `laps` is not reached). On the Wilderness course a run can still fail at the low-HP ' +
+        'guard if the food runs out mid-lap (the lap has no way out). The Wilderness guard is off for that course, and a `done` run there (laps reached, or ' +
+        `out of food) leaves the bot in the Wilderness at the door (${WILDERNESS.start.x},~${WILDERNESS.start.z}), so ` +
+        'the caller must travel out immediately (a plan puts a leave-the-Wilderness travel step after every ' +
+        'wilderness agility run).',
+    rules: [
+        `The bot's base Agility level must reach the course's: ${Object.entries(COURSES)
+            .map(([c, k]) => `${c} ${k.agilityLevel}`)
+            .join(', ')}.`,
+        `The bot must start at the course: on it, within the course's reach of its start (${Object.entries(COURSES)
+            .map(([c, k]) => `${c} ${k.reach}`)
+            .join(', ')} tiles). Run \`travel\` there first.`,
+    ],
+    spots: [
+        `"gnome": Tree Gnome Stronghold, no failure, about 86.5 XP per lap before the server's 25x; course start ` +
+            `{x:${GNOME.start.x},z:${GNOME.start.z}}, the \`travel\` target (Lumbridge is about 700 tiles away, wolves on the way).`,
+        '"barbarian": Barbarian Outpost; start north of the pipe at (2552,3562) (travel to {x:2552,z:3562}) or anywhere in the yard. ' +
+            'Rope swing, log, net, ledge, ladder, three walls, 139.5 XP a lap before 25x; the rope, log and ledge can fail, 9-17% HP each; ' +
+            'falls into the pit under the rope are climbed out of and retried; carry food, `minFood`.',
+        `"wilderness": Wilderness course at (${WILDERNESS.start.x},${WILDERNESS.start.z}), Wilderness level ~53: PvP risk, white wolves in the field ` +
+            'south of the door, skeletons in the pit cave. Ridge, pipe, rope, stepping stones, log, rocks, ridge, 601 XP a lap before 25x; ' +
+            'every obstacle but the pipe can fail for 15-22% HP. The walk refuses the Wilderness, so stand at its edge first, then ' +
+            `travel to {x:${WILDERNESS.start.x},z:${WILDERNESS.start.z}} with wilderness:true. Carry only food and no valuables (a PvP or skeleton death loses the whole inventory).`,
+    ],
     params: Params,
     memory: (): AgilityMemory => ({ laps: 0 }),
     allowWilderness: params => params.course === 'wilderness',
