@@ -1340,6 +1340,19 @@ describe('the view', () => {
         expect(seen).toEqual({ npcs: [2, 1, 3, 1], locs: [2, 1, 0], ground: [2, 1] });
     });
 
+    test('a global regex reads the same on every call, for said and for a pattern member', async () => {
+        const state = BASE.message('You catch a shrimp.')
+            .npc('Cow', LX + 1, LZ)
+            .build();
+        const seen = await look(state, v => {
+            const said = /shrimp/g;
+            const npcs = /^cow$/gi;
+            const inv = /^bones$/giy;
+            return [1, 2, 3].map(() => [v.said(said), v.npcs(npcs), v.inv(inv)]);
+        });
+        expect(seen).toEqual([1, 2, 3].map(() => [true, 1, 24]));
+    });
+
     test('said matches a dialog line, a page across its lines, the open dialog and game messages, not player chat', async () => {
         const state = BASE.recentDialog(['Hello there.', 'I need some'])
             .recentDialog(['flour please.'])

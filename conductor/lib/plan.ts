@@ -74,7 +74,8 @@ export interface PlanView {
     /**
      * Whether `pattern` matches a line of a recent dialog page, a whole page with its lines joined by single spaces
      * (for text the client wraps across lines), the open dialog's text, or a game message (not player chat). With
-     * `sinceTicks`, only pages and messages from at most that many ticks before `state.tick`.
+     * `sinceTicks`, only pages and messages from at most that many ticks before `state.tick`; the open dialog is
+     * always current, so it is not filtered.
      */
     said(pattern: RegExp, sinceTicks?: number): boolean;
     /** The previous phase run ended `done` and, when names are given, was one of them; throws on an unknown name. */
@@ -145,7 +146,9 @@ export interface PlanNeed {
     label?: string;
 }
 
-const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
+/** A copy without `g` and `y`, which keep `lastIndex` between `test` calls and so would miss matches on a later read. */
+const stateless = (re: RegExp) => (re.global || re.sticky ? new RegExp(re.source, re.flags.replace(/[gy]/g, '')) : re);
+const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : stateless(item));
 const COINS = exactName('Coins');
 
 /** What a need is called in the start event and the failure reason: its label, else its name or pattern source. */
@@ -585,7 +588,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             npcs: (name, within) => countNear(s.nearbyNpcs, pattern(name), within),
             locs: (name, within) => countNear(s.nearbyLocs, pattern(name), within),
             ground: (item, within) => countNear(s.groundItems, pattern(item), within),
-            said: (re, sinceTicks) => {
+            said: (pat, sinceTicks) => {
+                const re = stateless(pat);
                 const fresh = (e: { tick: number }) => sinceTicks === undefined || s.tick - e.tick <= sinceTicks;
                 if (s.dialog.isOpen && s.dialog.text !== undefined && re.test(s.dialog.text)) return true;
                 if (s.recentDialogs.some(d => fresh(d) && (d.text.some(l => re.test(l)) || re.test(d.text.join(' ')))))
