@@ -51,8 +51,18 @@ you never commit, and you only touch the bot you were given.
   instead of working around it.
 - One file per task: `conductor/tasks/<name>.ts`, `name` matching the filename. Put shared
   helpers in `conductor/lib/` only when a second task needs them.
-- `description` is for the conductor's catalog: what it does, requirements, known good spots; keep
-  it true to the code.
+- The catalog text is what the conductor and runners read (`--list` is the index, `--list <task>` a
+  task's entry), so write it to these rules; `conductor/test/lib/catalog.test.ts` fails a task that breaks
+  them. Describe each param on its schema field with `.describe()`, one or two sentences saying what it
+  means and what it changes, never repeating the type, default or range the schema prints. A regex
+  param is `patternParam('<sentence>')`, which adds the matching note: never write "regex" yourself. A
+  plain string naming an item, NPC or loc says how it is matched. Numbers (ticks, levels, caps) are
+  interpolated from the code's constants. `description` says what the task does, how it ends done or
+  failed and what it refuses, opening with one short sentence that is its line in the index, at most 900
+  characters. `rules` holds the rules across params and the start requirements (JSON Schema drops
+  `.refine`). `spots` holds verified places, example params and "used by" pointers. Say each fact once.
+  A task using the under-attack guard uses `UNDER_ATTACK_NOTE`. After a deliberate params change,
+  regenerate the shape fixture: `UPDATE_CATALOG_SHAPES=1 bun test conductor/test/lib/catalog.test.ts`.
 - Params carry the variation (location, target, what to do when full); don't hard-code one spot
   when the task makes sense in several.
 - `preflight` refuses early on missing requirements (items, levels) with a clear reason.

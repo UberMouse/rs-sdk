@@ -10,7 +10,7 @@ Could this task cost the account something that takes many runs to get back?
 - **S2 Item loss.** Drop, sell, destroy and alch patterns can only match items meant to go
   (G2 applies doubly here); valuables are banked, not dropped; equipment is never dropped.
 - **S3 Wilderness and PvP.** No route or spot crosses into the Wilderness unless the task
-  exists for it and says so in its description.
+  exists for it and says so in its catalog entry.
 - **S4 Money.** Buying is bounded (amount and price) and checks coins first; selling checks it
   isn't selling below a sane price or selling gear the account still needs.
 - **S5 One controller.** The task doesn't start background loops, timers or second connections

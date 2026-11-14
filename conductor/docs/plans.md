@@ -128,7 +128,7 @@ export default definePlan({
   fetch: `[{ item: 'Pot' }, { item: 'Nails', count: 12 }, { item: /pickaxe$/i, label: 'pickaxe' }]` (a name
   or pattern as `v.inv` takes; unlike `v.inv`, worn items count). Checked once at the start, before any phase: a short one ends the
   plan `failed` with `plan needs 1 Pot (held 0), 12 Nails (held 0)`, which is what a runner reads (`--list` lists
-  tasks only; the RESULT's reason carries it). It is not `requires`, as the plan consumes the items. A plan is
+  tasks only, not plans; the RESULT's reason carries it). It is not `requires`, as the plan consumes the items. A plan is
   restart-safe and resumed mid-quest with some needs already used, so `needsUnless(v)` skips the check when it holds, e.g.
   `v => v.quest(ID) !== 'none'`. The `start` event lists the need labels.
 - `method` (optional) is the id of the training method the plan runs, a record of
@@ -487,7 +487,7 @@ Consequences for the other loops:
 
 ## The examples as plans
 
-Spots in capitals are constants the plan declares; the verified ones are in each task's description.
+Spots in capitals are constants the plan declares; the verified ones are in each task's `spots` (`--list <task>`).
 
 ```ts
 // 1. chop -> burn: above. 2. chop -> fletch: the same with fletching in place of firemaking.

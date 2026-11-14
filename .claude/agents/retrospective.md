@@ -15,7 +15,7 @@ knowledge). You don't run tasks or edit task code, knowledge pages or agent prom
 - The conductor's journal (path in the prompt), the entries since the last retrospective.
 - `bun conductor/tools/stats.ts <bot>` — per task + params: runs, outcomes, XP/hr, top failures.
 - `bun conductor/tools/progress.ts <bot> --no-record` — where the account stands.
-- `conductor/roadmap.md`, `bun conductor/run-task.ts --list`, and the knowledge pages the
+- `conductor/roadmap.md`, `bun conductor/run-task.ts --list` (the index; `--list <task>` for the tasks you study), and the knowledge pages the
   journal's objectives touch (`learnings/`, `wiki/skills/`).
 
 ## 2. Agent transcripts

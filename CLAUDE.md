@@ -114,7 +114,7 @@ runs them and handles death, low HP, dialogs and stops at every wait (design:
   `--local`. One shared server runs from the main checkout, where its database and player saves
   live; worktrees use it as is (`save.ts` and `load.ts` ask the engine where its saves are). The
   Grand Exchange is off locally, so a `.sav` file is the whole saved state of an offline player.
-- Tasks: `bun conductor/run-task.ts --list` for the catalog;
+- Tasks: `bun conductor/run-task.ts --list` for the catalog index, `--list <task>` for a task's params, rules and spots;
   `bun conductor/run-task.ts {username} <task> --params '<json>' --until minutes:1` to run one.
   Plans compose tasks into one looping run: `bun conductor/run-task.ts {username} --plan <file>
   --until minutes:1` (promoted plans in `conductor/plans/`, drafts in

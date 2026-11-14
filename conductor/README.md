@@ -128,7 +128,8 @@ no engines for NixOS); `up.sh` runs it.
 ## Tasks
 
 ```bash
-bun conductor/run-task.ts --list
+bun conductor/run-task.ts --list            # index: one line per task
+bun conductor/run-task.ts --list mining     # a task's description, rules, spots and params
 bun conductor/run-task.ts conductor1 woodcutting --params '{"area":{"x":3195,"z":3220}}' --until minutes:1
 ```
 
