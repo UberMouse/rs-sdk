@@ -213,8 +213,9 @@ export interface PlanDef {
     /**
      * Whether, after a phase run the plan goes on from, the runner reads ticks (at most PHASE_SETTLE_READS) until
      * two states in a row have the same idleSignature before it selects again: a task can end before the move or
-     * pickup it caused is published. Default true; costs at least one tick per phase boundary. A phase's own
-     * `settle` overrides it after that phase's runs.
+     * pickup it caused is published. The first read is compared with the run's end state, so a boundary costs 1 to
+     * PHASE_SETTLE_READS (5) ticks. HP is not part of the comparison, so a fight that changes only HP settles at
+     * once. Default true. A phase's own `settle` overrides it after that phase's runs.
      */
     settle?: boolean;
     /**
@@ -1068,8 +1069,11 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 endsSinceXp.clear();
             }
             // A retried failure is bounded by maxFails, not the idle rail: retrying in an unchanged state is its point.
-            // The idle run built up so far is kept as it is: a retry neither extends nor resets it.
-            if (decision === 'retry') {
+            // So is a wait its phase's `until` ended (TaskDef.waits): the world it waited on is outside the idle signature.
+            // The idle run built up so far is kept as it is: neither extends nor resets it. A plan stop or the plan's
+            // `until` returned above, so a PHASE_UNTIL reason here is the phase's own.
+            const waited = chosen.task.waits === true && result.reason === PHASE_UNTIL;
+            if (decision === 'retry' || waited) {
                 prevDone = null;
                 continue;
             }

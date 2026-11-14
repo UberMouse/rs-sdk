@@ -24,9 +24,11 @@ import {
 } from '../../lib/plan';
 import { QUEST_TAB_REQUIRED } from '../../lib/quests';
 import { SETTLE_TICKS } from '../../lib/engine';
+import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Outcome } from '../../lib/task';
 import { countItems, TICK_MS } from '../../lib/util';
 import chopBurnPlan from '../../plans/chop-burn';
+import waitTask from '../../tasks/wait';
 import woodcutting from '../../tasks/woodcutting';
 import { act } from '../core/fixtures';
 import { type PlanSimulation, simulatePlan, type SimulatePlanOptions } from '../simulate';
@@ -904,6 +906,10 @@ describe('onFail', () => {
     });
 });
 
+// A Guard steps beside the bot on every tick 9 mod 10 of the first 100, then stays: outside the idle signature.
+const guardEvery10 = BASE.series(100, (w, i) => (i % 10 === 9 ? w.npcBeside('Guard') : w));
+const guardBeside = (v: PlanView) => v.npcs('Guard', 1) > 0;
+
 describe('rails', () => {
     const noop = scripted('noop', [{ done: 'nothing to do' }]);
     const handBack = [phase(noop, {}, { name: 'a', when: v => v.last?.phase !== 'a' }), phase(noop, {}, { name: 'b' })];
@@ -937,6 +943,30 @@ describe('rails', () => {
         const r = await sim(plan([phase(failing('a'), {}, { onFail: 'retry', maxFails: 5 })]));
         expect(selected(r)).toEqual(['a', 'a', 'a', 'a', 'a']);
         expect(r.result).toMatchObject({ status: 'failed', reason: 'a failed 5 times in a row: try: cannot' });
+    });
+
+    test("waits their phase's until ends are left out of the idle rail: more than three in a row run", async () => {
+        const def = plan([phase(waitTask, { ticks: 50 }, { until: guardBeside })], v => v.runs('wait') >= 5);
+        const r = await sim(def, { timeline: guardEvery10 });
+        expect(r.runs.map(x => x.result.reason)).toEqual(Array(5).fill('until met'));
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        // The same runs of a task that does not declare `waits` are idle: the instant repeat ends the plan.
+        const notWaits = { ...waitTask, waits: undefined };
+        const stall = await sim(plan([phase(notWaits, { ticks: 50 }, { until: guardBeside })]), {
+            timeline: guardEvery10,
+        });
+        expect(selected(stall)).toEqual(['wait', 'wait']);
+        expect(stall.result.reason).toBe(`${NOTHING}: wait done (until met)`);
+    });
+
+    test('waits that run their ticks out with nothing changed end the plan as the rail does', async () => {
+        const waits = [
+            phase(waitTask, { ticks: 2 }, { name: 'a', when: v => v.last?.phase !== 'a' }),
+            phase(waitTask, { ticks: 2 }, { name: 'b' }),
+        ];
+        const r = await sim(plan(waits));
+        expect(selected(r)).toEqual(['a', 'b', 'a']);
+        expect(r.result).toMatchObject({ status: 'done', reason: `${NOTHING}: a, b done (wait: waited 2 ticks)` });
     });
 
     test('a phase chosen again that ends done at once in the state it started in ends the plan done, without waiting', async () => {
@@ -1114,7 +1144,11 @@ describe('phase runs', () => {
  * `nextTick` that hands out `ticks` in turn (throwing an Error one), then the last state again a tick on. `reads`
  * counts the plan's nextTick calls.
  */
-async function settling(def: PlanDef, ticks: (BotWorldState | Error)[], opts: { nextTick?: boolean } = {}) {
+async function settling(
+    def: PlanDef,
+    ticks: (BotWorldState | Error)[],
+    opts: { nextTick?: boolean; stops?: StopCondition[] } = {},
+) {
     let cur = BASE.build();
     const queue = [...ticks];
     const events: Record<string, unknown>[] = [];
@@ -1135,7 +1169,7 @@ async function settling(def: PlanDef, ticks: (BotWorldState | Error)[], opts: { 
         runId: 'plan-1',
         logFile: '/logs/plan-1.ndjson',
         sinks,
-        stops: [],
+        stops: opts.stops ?? [],
         state: () => cur,
         ...(opts.nextTick !== false && { nextTick }),
         newPhaseRun: (p, index) => ({
@@ -1251,6 +1285,30 @@ describe('the settle after a phase run', () => {
         );
         expect(stalled.result).toMatchObject({ status: 'done', reason: 'plan until met' });
         expect(settles(stalled)).toEqual([]);
+    });
+
+    test('a minutes stop that comes true on a settle read ends the plan done before another phase starts', async () => {
+        const r = await settling(
+            stay(() => false),
+            [{ ...BASE.build(), tick: 60_000 / TICK_MS }],
+            { stops: [{ kind: 'minutes', minutes: 1 }] },
+        );
+        expect(r.result).toMatchObject({ status: 'done', reason: 'reached 1 min' });
+        expect(r.events.filter(e => e.type === 'phase-start')).toHaveLength(1);
+        expect(r.result.recent.map(x => x.reason)).toEqual(['try: stayed']);
+    });
+
+    test('a respawn a settle read shows ends the plan failed: died between phases', async () => {
+        const base = BASE.build();
+        const r = await settling(
+            stay(() => false),
+            [{ ...base, tick: 1, player: { ...base.player!, respawnCount: 1 } }],
+        );
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'died between phases (1 respawn since the plan started); last: stay done: try: stayed',
+        });
+        expect(r.events.filter(e => e.type === 'phase-start')).toHaveLength(1);
     });
 });
 
