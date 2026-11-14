@@ -116,6 +116,7 @@ test(
                         eatBelow: 0.5,
                         buryBones: true,
                         area: { ...GIANTS, radius: 12 },
+                        allowMaxed: true,
                     },
                     [`minutes:${MINUTES}`],
                 );
