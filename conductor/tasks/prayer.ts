@@ -12,14 +12,11 @@ import {
 import { log } from '../core/op';
 import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { TICK_MS } from '../lib/util';
-import { DEFAULT_STUCK_AFTER_MS, STUCK_MARGIN_MS } from '../lib/watchdog';
+import { DEFAULT_WINDOW_TICKS } from '../lib/watchdog';
 
 const FAIL_LIMIT = 3;
 /** A toggle is one send and one PRAYER_WAIT_TICKS wait for the prayer to switch. */
-const SET_FAILS = failStreak({ name: 'setFails', limit: FAIL_LIMIT, worstTicks: PRAYER_WAIT_TICKS, what: 'toggles' });
-/** The streak alone would shrink the window below the default it had; this keeps it there. */
-const DEFAULT_WINDOW_TICKS = (DEFAULT_STUCK_AFTER_MS - STUCK_MARGIN_MS) / TICK_MS;
+const SET_FAILS = failStreak({ name: 'setFails', limit: FAIL_LIMIT, worstTicks: PRAYER_WAIT_TICKS });
 
 const PrayerName = z
     .string()

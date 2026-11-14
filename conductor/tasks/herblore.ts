@@ -4,27 +4,23 @@ import { brewPotion, cleanHerb, HERB_WAIT_TICKS } from '../actions/herblore';
 import { log } from '../core/op';
 import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { countItemId, findSkill, TICK_MS } from '../lib/util';
-import { DEFAULT_STUCK_AFTER_MS, STUCK_MARGIN_MS } from '../lib/watchdog';
+import { countItemId, findSkill } from '../lib/util';
+import { DEFAULT_WINDOW_TICKS } from '../lib/watchdog';
 
 /** Consecutive failed uses of one kind before the task fails. */
 const FAIL_LIMIT = 3;
 /** Each use is one send and one HERB_WAIT_TICKS wait for the product. */
-const CLEAN_FAILS = failStreak({ name: 'cleanFails', limit: FAIL_LIMIT, worstTicks: HERB_WAIT_TICKS, what: 'cleans' });
+const CLEAN_FAILS = failStreak({ name: 'cleanFails', limit: FAIL_LIMIT, worstTicks: HERB_WAIT_TICKS });
 const UNFINISHED_FAILS = failStreak({
     name: 'unfinishedFails',
     limit: FAIL_LIMIT,
     worstTicks: HERB_WAIT_TICKS,
-    what: 'unfinished potions',
 });
 const FINISH_FAILS = failStreak({
     name: 'finishFails',
     limit: FAIL_LIMIT,
     worstTicks: HERB_WAIT_TICKS,
-    what: 'potions',
 });
-/** The streaks alone would shrink the window below the default it had; this keeps it there. */
-const DEFAULT_WINDOW_TICKS = (DEFAULT_STUCK_AFTER_MS - STUCK_MARGIN_MS) / TICK_MS;
 
 /**
  * The herbs the Herblore scripts know (server/content/scripts/skill_herblore/configs/herbs.obj for the

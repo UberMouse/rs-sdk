@@ -18,6 +18,13 @@ export const stuckWindowMs = (...silent: (FailStreak | number)[]): number =>
 /** The window of a task that gives neither `silent` nor `stuckAfterMs`. */
 export const DEFAULT_STUCK_AFTER_MS = 90_000;
 
+/**
+ * The ticks of the default window (DEFAULT_STUCK_AFTER_MS less the margin). A task whose own silent stretches are all
+ * shorter than this lists it in `silent`: sizing the window from them alone would shrink it below the default the
+ * task had before, and a window must not shrink below that.
+ */
+export const DEFAULT_WINDOW_TICKS = (DEFAULT_STUCK_AFTER_MS - STUCK_MARGIN_MS) / TICK_MS;
+
 interface WindowSpec {
     readonly name: string;
     readonly silent?: readonly (FailStreak | number)[];

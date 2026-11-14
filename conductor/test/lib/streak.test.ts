@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
 import { ticks } from '../../core/op';
-import { failStreak, type FailStreak } from '../../lib/streak';
+import { failStreak, type FailStreak, type PhraseStreak } from '../../lib/streak';
 import { type Counter, defineTask, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import { assertWindowCovers, failStreakTicks, stuckWindowMs, taskStuckWindowMs } from '../../lib/watchdog';
@@ -9,6 +9,7 @@ import { runDef } from '../engine/harness';
 import { timeline } from '../world';
 
 const fills = () => failStreak({ name: 'fillFails', limit: 3, worstTicks: 50, what: 'fills' });
+const reasons = () => failStreak({ name: 'fillFails', limit: 3, worstTicks: 50 });
 
 /** The two context parts a streak reads, for a task named `t` listing `silent`; one count per name. */
 function ctxOf(silent: (FailStreak | number)[]) {
@@ -44,11 +45,18 @@ describe('failStreak', () => {
     });
 
     test('missWith fails with the caller text as given', () => {
-        const s = fills();
+        const s = reasons();
         const ctx = ctxOf([s]);
         expect(s.missWith(ctx, 'unused')).toBeUndefined();
         expect(s.missWith(ctx, 'unused')).toBeUndefined();
         expect(s.missWith(ctx, 'out of buckets')).toEqual({ fail: 'out of buckets' });
+    });
+
+    test('a streak declared without a what has no miss, and one with a what has no missWith', () => {
+        // @ts-expect-error miss needs the what that builds its sentence
+        expect(reasons().miss).toBeUndefined();
+        // @ts-expect-error a streak with a what fails with its sentence, not caller text
+        expect(fills().missWith).toBeUndefined();
     });
 
     test('clear resets the count, so the limit counts misses in a row', () => {
@@ -64,11 +72,12 @@ describe('failStreak', () => {
 
     test('miss, missWith and clear throw for a streak the task does not list in its silent', () => {
         const s = fills();
+        const r = reasons();
         // Another streak of the same name is not this one.
         const ctx = ctxOf([fills(), 10]);
         const message = 'task "t" uses fail streak "fillFails" without listing it in its silent';
         expect(() => s.miss(ctx, 'a')).toThrow(message);
-        expect(() => s.missWith(ctx, 'a')).toThrow(message);
+        expect(() => r.missWith(ctx, 'a')).toThrow(message);
         expect(() => s.clear(ctx)).toThrow(message);
         expect(ctx.counts.get('fillFails')).toBeUndefined();
     });
@@ -165,7 +174,7 @@ describe('assertWindowCovers', () => {
 const zOf = (ctx: Parameters<Step['when']>[0]) => ctx.state().player?.worldZ ?? 0;
 
 /** Misses `s` each tick while z is not 2; idles otherwise. */
-const steps = (s: FailStreak): Step[] => [
+const steps = (s: PhraseStreak): Step[] => [
     {
         name: 'miss',
         when: ctx => zOf(ctx) !== 2,

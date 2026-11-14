@@ -55,13 +55,11 @@ const FEATHER_FAILS = failStreak({
     name: 'featherFails',
     limit: FLETCH_FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS + FEATHER_WAIT_TICKS,
-    what: 'feather attempts',
 });
 const STRING_FAILS = failStreak({
     name: 'stringFails',
     limit: FLETCH_FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS + STRING_WAIT_TICKS,
-    what: 'stringing attempts',
 });
 
 const Params = z.object({

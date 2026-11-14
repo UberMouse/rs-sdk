@@ -31,7 +31,6 @@ const APPROACH_FAILS = failStreak({
     name: 'approachFails',
     limit: APPROACH_FAIL_LIMIT,
     worstTicks: WALK_MAX_TICKS,
-    what: 'approaches',
 });
 /** Prods in a row that do not move the NPC before the task fails. */
 const PROD_FAIL_LIMIT = 4;
@@ -43,7 +42,6 @@ const PROD_MISSES = failStreak({
     name: 'prodMisses',
     limit: PROD_FAIL_LIMIT,
     worstTicks: (MAX_AHEAD + 1) * PROD_WAIT_TICKS,
-    what: 'prods',
 });
 /** Prods in a row without the route getting shorter than ever before; the NPC wanders back, so some are lost. */
 const NO_PROGRESS_LIMIT = 12;
