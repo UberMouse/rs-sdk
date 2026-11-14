@@ -40,6 +40,15 @@ order; `conductor/actions/press.ts` already has `interfaceTexts(state)` (compone
 `interfaceOpen` and `pressComponent`; a click on a quest-tab entry opens the journal two ticks
 later, closing takes two ticks, and the click destroys an open chat dialog or main modal.
 
+**Amendment (2026-11-14, found by Task 2's smoke test):** the journal's title is the name the
+quest's journal script passes to `~quest_journal("<name>", ...)`, which differs from the tab name
+for 16 of the 68 quests (Cook's Assistant shows "The Cook's Quest"). So wherever Tasks 1 and 2 say
+the title is mapped or compared through `QUESTS[id].name`, read: through the quest's journal
+title, `QuestInfo.journalTitle` where it is set and `name` otherwise. `quests.test.ts` checks each
+row's journal title against the `quest_journal` literal of the quest's journal script. Task 2's
+smoke test expects the `cook` run's reason to match `/Lumbridge Castle/` (its last line), not
+`/Cook/`. Task 2 carries this fix, including the Task 1 code it touches.
+
 ## Task 1 — Journal memory, its view members, and `observes` tasks
 
 **Files:** `conductor/lib/journal-memory.ts` (new), `conductor/lib/plan.ts` (`PlanView`, `runPlan`:
@@ -64,10 +73,10 @@ wrapped so states a phase reads are observed too):
 
 **View members** (documented in their doc comments):
 
-| Member | Meaning |
-| --- | --- |
+| Member                     | Meaning                                                                                                                                                                                                                      |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `journalSays(id, pattern)` | `undefined` when this plan run has not seen the quest's journal; else whether `pattern` matches the kept text. The pattern is tested statelessly (the existing `stateless` helper). Unknown quest id throws like `quest(id)` |
-| `journalAge(id)` | `undefined` when not seen; else the number of acting phase runs that ended since it was last seen (0 right after a read) |
+| `journalAge(id)`           | `undefined` when not seen; else the number of acting phase runs that ended since it was last seen (0 right after a read)                                                                                                     |
 
 **`TaskDef.observes?: true`**: a task that only looks. For a run of such a task in a plan, the
 runner:
@@ -185,18 +194,18 @@ with `until: v => v.questDone(id)`, so everything that takes a plan takes a ques
 **The cursor**, a pure function of the view, for steps `0..n-1`:
 
 - `holds(i)`: for a predicate `reached`, its value; for a `JournalMark`, `v.journalSays(id,
-  pattern) === true`.
+pattern) === true`.
 - `base` = one past the last `i` whose `holds(i)` is true; 0 when none.
 - `ranPast(i)`: the last acting run (`v.last`) is a step `j` of this quest with `j > i`, or `j === i`
   and it ended done.
 - A step `i >= base` is **passed** when any of:
-  - `skip(v)` is true;
-  - it has `done` and `done(v)` is true;
-  - it has neither `done` nor `reached`, and `ranPast(i)`;
-  - it has a predicate `reached` and no `done`: never (only `base` passes it);
-  - it has a `JournalMark` and no `done`: `ranPast(i)` and the journal cannot confirm it now,
-    meaning `blocked(v)` (below) is true. With a fresh journal that does not match, it is not
-    passed and runs again.
+    - `skip(v)` is true;
+    - it has `done` and `done(v)` is true;
+    - it has neither `done` nor `reached`, and `ranPast(i)`;
+    - it has a predicate `reached` and no `done`: never (only `base` passes it);
+    - it has a `JournalMark` and no `done`: `ranPast(i)` and the journal cannot confirm it now,
+      meaning `blocked(v)` (below) is true. With a fresh journal that does not match, it is not
+      passed and runs again.
 - The cursor is the first step `>= base` that is not passed. When every step is passed and the
   quest is not done, no phase applies and the plan fails as plans do today.
 

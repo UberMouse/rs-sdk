@@ -21,7 +21,8 @@ Runs on worker `conductor3w1` (lite client, mid Dragon Slayer, scripts
 
 - Clicking a quest's tab entry (`questlist:<id>`, ids in `server/content/pack/interface.pack`) opens
   interface 8134 two ticks later, and `state.interface.debugInfo` lists its components: the title
-  (`#8144`, the quest's tab name) and the journal lines (`#8145`, `#8147`-`#8195`). Closing takes
+  (`#8144`, the name the quest's journal script gives, which is not the tab name for 16 of the 68
+  quests) and the journal lines (`#8145`, `#8147`-`#8195`). Closing takes
   two ticks. 5 of 5 runs each way.
 - A walk in progress carries on through the click and the close.
 - **The click destroys an open chat dialog or shop**, with no rejection and no way back. So a read
@@ -37,8 +38,8 @@ Runs on worker `conductor3w1` (lite client, mid Dragon Slayer, scripts
 
 - **Journal memory, like bank memory.** The plan runner already remembers the bank from any state in
   which it was open. It does the same for the journal: any state with interface 8134 open is parsed
-  (title to quest id through `QUESTS[id].name`) and kept. Predicates stay pure: `v.journalSays(id,
-  pattern)` reads the memory and is `undefined` before the first read; `v.journalAge(id)` counts
+  (title to quest id through the quest's journal title in `lib/quests.ts`) and kept. Predicates stay pure: `v.journalSays(id,
+pattern)` reads the memory and is `undefined` before the first read; `v.journalAge(id)` counts
   the acting phase runs since.
 - **The read is a catalog task, `journal`**, run as an ordinary phase: click the entry, see the
   journal, close it. It refuses to click while a dialog or modal is open. It is marked `observes`:
@@ -46,13 +47,13 @@ Runs on worker `conductor3w1` (lite client, mid Dragon Slayer, scripts
 - **`defineQuest` compiles to a plan.** Steps are listed in story order; the result is a `PlanDef`,
   so `run-task.ts --plan`, the plan log, the viewer, recordings and replay are unchanged.
 - **Two kinds of evidence on a step.**
-  - `reached`: the story is past this step. A predicate, or `journal(/pattern/)`. The last step
-    whose `reached` holds sets the base; everything up to it is behind.
-  - `done`: this step needs no run now (the item is held, the bot is upstairs). Checked for the
-    steps after the base.
-  - A step with neither is passed once it has run: when the previous acting run was a later step,
-    or this step ending done. After a restart such a step runs again, so it must be harmless to
-    repeat. That is the trade made instead of a persisted record.
+    - `reached`: the story is past this step. A predicate, or `journal(/pattern/)`. The last step
+      whose `reached` holds sets the base; everything up to it is behind.
+    - `done`: this step needs no run now (the item is held, the bot is upstairs). Checked for the
+      steps after the base.
+    - A step with neither is passed once it has run: when the previous acting run was a later step,
+      or this step ending done. After a restart such a step runs again, so it must be harmless to
+      repeat. That is the trade made instead of a persisted record.
 - **No persisted per-bot record.** `load.ts` puts a different save under the same account name, so a
   record on disk keyed by bot would be wrong exactly when a quest is being tested. The journal gives
   the stage for every quest; within a stage, items and position do.
