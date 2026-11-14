@@ -3,14 +3,21 @@ import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { drop, dropOres } from '../actions/drop';
 import { MINE_OPTION, MINE_WAIT_TICKS, mine } from '../actions/mine';
 import { log, type Op, wait } from '../core/op';
-import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { type Area, AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
+import {
+    type Area,
+    AreaSchema,
+    inArea,
+    refuseArea,
+    returnToAreaStep,
+    walkToArea,
+    WALK_TO_AREA_SILENT_TICKS,
+} from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
+import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, ticksToSeconds } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Every rock is named "Rocks" and a mined-out rock is still named "Rocks" with a Mine option
@@ -78,6 +85,12 @@ const REFUSED_ROCKS: readonly RockName[] = ['runite'];
 const giveUpTicksFor = (ticks: number) => Math.max(MIN_GIVE_UP_TICKS, ticks + GIVE_UP_MARGIN_TICKS);
 /** Consecutive failed attempts before the task fails. */
 const MINE_FAIL_LIMIT = 8;
+const MINE_FAILS = failStreak({
+    name: 'mineFails',
+    limit: MINE_FAIL_LIMIT,
+    worstTicks: MINE_WAIT_TICKS,
+    what: 'attempts',
+});
 /**
  * Give-up of the slowest accepted rock (adamantite): stuckAfterMs is static, so a full respawn wait is
  * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes
@@ -85,12 +98,7 @@ const MINE_FAIL_LIMIT = 8;
  * but the give-up is in game ticks, so the margin assumes the local tick length (TICK_MS); a
  * slower-ticking server could fire the watchdog before the slowest give-up.
  */
-export const SILENT_STREAK_TICKS = [
-    giveUpTicksFor(ROCKS.adamantite.respawnTicks),
-    failStreakTicks(MINE_FAIL_LIMIT, MINE_WAIT_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const SILENT = [giveUpTicksFor(ROCKS.adamantite.respawnTicks), MINE_FAILS, WALK_TO_AREA_SILENT_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -243,7 +251,7 @@ export default defineTask({
     // Mining a rock cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -316,14 +324,12 @@ export default defineTask({
                 }
                 ctx.memory.noRockSinceTick = null;
                 const mined = yield* mine(ctx, rock, d.orePattern);
-                const mineFails = ctx.streak('mineFails');
                 if (mined.ok) {
-                    mineFails.reset();
+                    MINE_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`mine failed: ${mined.message}`);
-                if (mineFails.add() >= MINE_FAIL_LIMIT)
-                    return { fail: `${MINE_FAIL_LIMIT} attempts in a row failed (last: ${mined.message})` };
+                return MINE_FAILS.miss(ctx, mined.message);
             },
         },
     ],

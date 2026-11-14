@@ -2,9 +2,10 @@
 // `at` param, the regex param type, and the step that walks to the spot.
 import { z } from 'zod/v4';
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
-import { timedOutAdvancing, walkTo } from '../actions/walk';
+import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log } from '../core/op';
 import type { Step, TaskContext } from './task';
+import { failStreakTicks } from './watchdog';
 
 const DEFAULT_TOLERANCE = 3;
 
@@ -115,6 +116,9 @@ export function atSpot(at: At | undefined, state: BotWorldState): boolean {
         (at.level === undefined || p.level === at.level)
     );
 }
+
+/** What walkToSpotStep(failLimit)'s failed walks can hold a task silent for, for its `silent` list. */
+export const walkToSpotSilentTicks = (failLimit: number): number => failStreakTicks(failLimit, WALK_MAX_TICKS);
 
 /** The step that walks to `params.at` until the bot stands there; `failLimit` walks in a row failing ends the run. */
 export function walkToSpotStep<P extends { at?: At }, M extends object>(failLimit: number): Step<P, M> {

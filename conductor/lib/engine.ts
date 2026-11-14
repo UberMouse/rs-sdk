@@ -310,6 +310,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             emit({ type: 'log', msg, data });
         },
         startTick: initial.tick,
+        task: { name: def.name, ...(def.silent && { silent: def.silent }) },
         memory: def.memory?.() ?? {},
         previousPos: null,
         counter: name => mapCounter(counters, name),

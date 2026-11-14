@@ -1,10 +1,11 @@
 // "Stay near here": the area param, the walk back to it, and which targets count as inside it.
 // Every task that works one spot (trees, rocks, fishing spots, monsters) shares this.
 import { z } from 'zod/v4';
-import { timedOutAdvancing, walkTo } from '../actions/walk';
+import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { distance } from './util';
+import { failStreakTicks } from './watchdog';
 import { squareReachesWilderness } from './wilderness';
 
 /** Radius floor: the walk tolerance is radius - 1, so a smaller area could never be reached. */
@@ -18,6 +19,8 @@ const WORK_REACH = 2;
 const MAX_WALK_TOLERANCE = 3;
 /** Consecutive failed walks to the area before the task fails. */
 export const WALK_FAIL_LIMIT = 3;
+/** What walkToArea's failed walks can hold a task silent for, for its `silent` list. */
+export const WALK_TO_AREA_SILENT_TICKS = failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS);
 
 export const AreaSchema = z
     .object({
