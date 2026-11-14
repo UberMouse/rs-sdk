@@ -119,10 +119,12 @@ export interface Phase {
      * `defaults`, else DEFAULT_MAX_FAILS.
      */
     maxFails?: number;
+    /** Whether the runner settles after this phase's runs (see `PlanDef.settle`); default the plan's. */
+    settle?: boolean;
 }
 
 /** A phase's optional fields, as `phase()` takes them. */
-export type PhaseOptions = Partial<Pick<Phase, 'name' | 'when' | 'until' | 'onFail' | 'maxFails'>>;
+export type PhaseOptions = Partial<Pick<Phase, 'name' | 'when' | 'until' | 'onFail' | 'maxFails' | 'settle'>>;
 
 export const DEFAULT_MAX_FAILS = 3;
 export const DEFAULT_MAX_IDLE_PHASES = 3;
@@ -136,6 +138,8 @@ const PHASE_UNTIL = 'until met';
 const PLAN_UNTIL = 'plan until met';
 /** States a plan that ended done reads on for XP the client publishes a state late (a quest reward lump), see `settleXp`. */
 export const PLAN_SETTLE_TICKS = 4;
+/** Most states the runner reads after a phase run waiting for two in a row with one idleSignature, see `PlanDef.settle`. */
+export const PHASE_SETTLE_READS = 5;
 
 /** A phase of `task`; `params` are type-checked against the task's schema input. */
 export function phase<S extends z.ZodType, M extends object>(
@@ -206,6 +210,13 @@ export interface PlanDef {
     requires?: Record<string, Predicate>;
     /** `onFail` and `maxFails` for every phase that sets none of its own. */
     defaults?: Pick<Phase, 'onFail' | 'maxFails'>;
+    /**
+     * Whether, after a phase run the plan goes on from, the runner reads ticks (at most PHASE_SETTLE_READS) until
+     * two states in a row have the same idleSignature before it selects again: a task can end before the move or
+     * pickup it caused is published. Default true; costs at least one tick per phase boundary. A phase's own
+     * `settle` overrides it after that phase's runs.
+     */
+    settle?: boolean;
     /**
      * Items the plan expects held when it starts and does not fetch itself (pack plus worn). Checked once, before any
      * phase: a short one ends the plan `failed` with `plan needs 1 Pot (held 0), 12 Nails (held 0)`. Not `requires`,
@@ -705,6 +716,33 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         }
     };
 
+    /**
+     * The world after a phase run once it stops changing (see `PlanDef.settle`), from `after`, the state read as the
+     * run returned. Off the phase run: its driver reads none of these, so its recording and duration don't hold them.
+     */
+    const settlePhase = async (p: Phase, after: BotWorldState | null): Promise<BotWorldState | null> => {
+        if (!opts.nextTick || !(p.settle ?? def.settle ?? true)) return after;
+        let prev = after;
+        let reads = 0;
+        while (reads < PHASE_SETTLE_READS) {
+            let s: BotWorldState;
+            try {
+                s = await opts.nextTick();
+            } catch {
+                // A client that stopped publishing: the selection reads the last state seen.
+                break;
+            }
+            reads++;
+            observe(s);
+            const same = prev !== null && idleSignature(prev) === idleSignature(s);
+            prev = s;
+            if (same) break;
+        }
+        const changed = (after && idleSignature(after)) !== (prev && idleSignature(prev));
+        if (reads > 1 || changed) emit({ type: 'settle', phase: p.name, reads, changed });
+        return prev;
+    };
+
     const finish = async (status: TaskStatus, reason: string): Promise<PlanResult> => {
         // The plan's duration is up to its end; the settle's ticks are not the plan's work.
         endedAt = now();
@@ -1023,12 +1061,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 if (decision === 'continue') skip = chosen.name;
             }
 
-            const after = stateOrNull();
+            // Settled before the retry's early return too: every selection reads a world that stopped changing.
+            const after = await settlePhase(chosen, stateOrNull());
             if (after && totalXp(after) > xpMark) {
                 xpMark = totalXp(after);
                 endsSinceXp.clear();
             }
             // A retried failure is bounded by maxFails, not the idle rail: retrying in an unchanged state is its point.
+            // The idle run built up so far is kept as it is: a retry neither extends nor resets it.
             if (decision === 'retry') {
                 prevDone = null;
                 continue;

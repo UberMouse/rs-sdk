@@ -12,10 +12,13 @@ import {
     phase,
     type PlanView,
     recordReads,
+    type PhaseOptions,
     type PhaseRun,
+    PHASE_SETTLE_READS,
     type PlanDef,
     planParams,
     PLAN_SETTLE_TICKS,
+    runPlan,
     type PlanResult,
     type Predicate,
 } from '../../lib/plan';
@@ -657,7 +660,8 @@ describe("the plan's until and stops", () => {
     });
 
     test("a minutes stop counts from the plan's start, across phases", async () => {
-        const r = await sim(chopBurn(), { stops: [{ kind: 'minutes', minutes: 1 }] });
+        // Unsettled, so the minute runs out inside a phase run rather than in a settle between two.
+        const r = await sim({ ...chopBurn(), settle: false }, { stops: [{ kind: 'minutes', minutes: 1 }] });
         expect(r.result).toMatchObject({ status: 'done', reason: 'reached 1 min', durationMs: 60_000 });
         expect(r.runs.length).toBeGreaterThan(4);
         expect(r.runs.at(-1)!.result.reason).toBe('reached 1 min');
@@ -797,6 +801,17 @@ describe('onFail', () => {
         const reset = await sim(plan([phase(scripted('primary', outcomes), {}, { onFail: 'retry', maxFails: 2 })]));
         expect(selected(reset)).toEqual(['primary', 'primary', 'primary', 'primary']);
         expect(reset.result.reason).toBe('primary failed 2 times in a row: try: busy');
+    });
+
+    test("'retry' counts its failures across another phase's done runs: only its own done clears them", async () => {
+        const r = await sim(
+            plan([
+                phase(train, {}, { when: v => v.last?.phase !== 'train' }),
+                phase(busy(), {}, { onFail: 'retry', maxFails: 3 }),
+            ]),
+        );
+        expect(selected(r)).toEqual(['train', 'primary', 'train', 'primary', 'train', 'primary']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'primary failed 3 times in a row: try: busy' });
     });
 
     test('the function form may return retry; a death still ends the plan', async () => {
@@ -1091,6 +1106,151 @@ describe('phase runs', () => {
         });
         expect(closed).toEqual(['phase-0-train']);
         expect(r.result).toMatchObject({ status: 'error', reason: 'phase "train" threw: log broke' });
+    });
+});
+
+/**
+ * Runs `def` from BASE with phase runs that see the world as the plan last read it and change nothing, and a plan
+ * `nextTick` that hands out `ticks` in turn (throwing an Error one), then the last state again a tick on. `reads`
+ * counts the plan's nextTick calls.
+ */
+async function settling(def: PlanDef, ticks: (BotWorldState | Error)[], opts: { nextTick?: boolean } = {}) {
+    let cur = BASE.build();
+    const queue = [...ticks];
+    const events: Record<string, unknown>[] = [];
+    let reads = 0;
+    const sinks = {
+        event: (e: Record<string, unknown>) => events.push(e),
+        print: () => {},
+        screenshot: async () => null,
+    };
+    const nextTick = async () => {
+        reads++;
+        const next = queue.shift() ?? { ...cur, tick: cur.tick + 1 };
+        if (next instanceof Error) throw next;
+        return (cur = next);
+    };
+    const result = await runPlan(def, {
+        botName: 'tester',
+        runId: 'plan-1',
+        logFile: '/logs/plan-1.ndjson',
+        sinks,
+        stops: [],
+        state: () => cur,
+        ...(opts.nextTick !== false && { nextTick }),
+        newPhaseRun: (p, index) => ({
+            driver: new TimelineDriver([cur]),
+            sinks: { ...sinks, event: () => {} },
+            runId: `phase-${index}-${p.name}`,
+            logFile: `/logs/phase-${index}.ndjson`,
+        }),
+    });
+    return { result, events, reads, selected: events.filter(e => e.type === 'select').map(e => e.phase) };
+}
+/** BASE with the player `dx` tiles east of its start, `tick` ticks on. */
+const eastBy = (dx: number, tick = dx) => ({
+    ...world(BASE.build())
+        .player({ at: { x: LX + dx, z: LZ } })
+        .build(),
+    tick,
+});
+const settles = (r: { events: Record<string, unknown>[] }) => r.events.filter(e => e.type === 'settle');
+/** A phase done at once that changes nothing, chosen while the bot stands where it started. */
+const goPhase = (opts: PhaseOptions = {}) =>
+    phase(scripted('go', [{ done: 'went' }]), {}, { when: v => v.x === LX, ...opts });
+/** A one-phase plan whose phase is done at once and changes nothing. */
+const stay = (until: Predicate) =>
+    definePlan({ name: 'test-plan', phases: [phase(scripted('stay', [{ done: 'stayed' }]), {})], until });
+
+describe('the settle after a phase run', () => {
+    test('the next selection sees the state published after the run: a phase gated on it is chosen', async () => {
+        const there = phase(scripted('there', [{ done: 'arrived' }]), {}, { when: v => v.x === LX + 1 });
+        const r = await settling(
+            definePlan({ name: 'test-plan', phases: [goPhase(), there], until: v => v.runs('there') >= 1 }),
+            [eastBy(1), eastBy(1, 2)],
+        );
+        expect(r.selected).toEqual(['go', 'there']);
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        // Only go's settle read more than one state; there's read one, unchanged.
+        expect(settles(r)).toEqual([{ type: 'settle', phase: 'go', reads: 2, changed: true }]);
+    });
+
+    test('a state that keeps changing ends the settle at PHASE_SETTLE_READS reads', async () => {
+        const xs: number[] = [];
+        const probe = phase(scripted('probe', [{ done: 'x' }]), {}, { when: v => (xs.push(v.x), false) });
+        const once = phase(scripted('go', [{ done: 'went' }]), {}, { when: v => v.runs('go') < 1 });
+        const r = await settling(
+            definePlan({ name: 'test-plan', phases: [once, probe] }),
+            [1, 2, 3, 4, 5, 6, 7].map(dx => eastBy(dx)),
+        );
+        expect(r.reads).toBe(PHASE_SETTLE_READS);
+        expect(xs).toEqual([LX + PHASE_SETTLE_READS]);
+        expect(settles(r)).toEqual([{ type: 'settle', phase: 'go', reads: PHASE_SETTLE_READS, changed: true }]);
+        expect(r.result.reason).toStartWith('no phase applies');
+    });
+
+    test('a run whose settled state differs from its start is not idle; one whose settled state equals it is', async () => {
+        // Each run ends where it started, and only the settle sees it moved.
+        const moved = await settling(
+            stay(v => v.runs('stay') >= 3),
+            [1, 1, 2, 2, 3, 3].map((dx, i) => eastBy(dx, i + 1)),
+        );
+        expect(moved.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        // Back where it started once the settle ends: idle, so the instant repeat ends the plan.
+        const back = await settling(
+            stay(() => false),
+            [eastBy(1), { ...BASE.build(), tick: 2 }, { ...BASE.build(), tick: 3 }],
+        );
+        expect(back.selected).toEqual(['stay', 'stay']);
+        expect(back.result.reason).toStartWith('nothing left to do: stay done');
+        expect(settles(back)).toEqual([{ type: 'settle', phase: 'stay', reads: 3, changed: false }]);
+    });
+
+    test('settle false on the plan or the phase skips it, and without nextTick there is none', async () => {
+        const plans = [
+            definePlan({ name: 'test-plan', phases: [goPhase()], settle: false }),
+            definePlan({ name: 'test-plan', phases: [goPhase({ settle: false })] }),
+        ];
+        for (const def of plans) {
+            const r = await settling(def, [eastBy(1)]);
+            // Unsettled, the second selection still sees the start, and go repeats in place: only the end-of-plan settle reads.
+            expect(r.selected).toEqual(['go', 'go']);
+            expect(r.reads).toBe(PLAN_SETTLE_TICKS);
+            expect(settles(r)).toEqual([]);
+        }
+        const none = await settling(definePlan({ name: 'test-plan', phases: [goPhase()] }), [eastBy(1)], {
+            nextTick: false,
+        });
+        expect(none.selected).toEqual(['go', 'go']);
+        expect(none.result.reason).toStartWith('nothing left to do');
+        // A phase's own settle wins over the plan's.
+        const there = phase(scripted('there', [{ done: 'arrived' }]), {}, { when: v => v.x === LX + 1 });
+        const own = await settling(
+            definePlan({
+                name: 'test-plan',
+                phases: [goPhase({ settle: true }), there],
+                settle: false,
+                until: v => v.runs('there') >= 1,
+            }),
+            [eastBy(1)],
+        );
+        expect(own.selected).toEqual(['go', 'there']);
+    });
+
+    test('a nextTick that throws ends the settle with the last state read, and the plan goes on', async () => {
+        const there = phase(scripted('there', [{ done: 'arrived' }]), {}, { when: v => v.x === LX + 1 });
+        const def = definePlan({ name: 'test-plan', phases: [goPhase(), there], until: v => v.runs('there') >= 1 });
+        const r = await settling(def, [eastBy(1), new Error('client stopped publishing')]);
+        expect(r.selected).toEqual(['go', 'there']);
+        expect(r.result.status).toBe('done');
+        expect(settles(r)[0]).toEqual({ type: 'settle', phase: 'go', reads: 1, changed: true });
+        // Thrown at the first read: the run's own end state stands, and nothing changed to log.
+        const stalled = await settling(
+            definePlan({ name: 'test-plan', phases: [goPhase()], until: v => v.runs('go') >= 1 }),
+            [new Error('client stopped publishing')],
+        );
+        expect(stalled.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(settles(stalled)).toEqual([]);
     });
 });
 
