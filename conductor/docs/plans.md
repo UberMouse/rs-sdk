@@ -231,6 +231,9 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   something else ends at once; so does a consumer with nothing to consume), and two that undo each
   other (deposit then withdraw, walk there then back), each changing the state but the plan going
   nowhere.
+  Two kinds of run do not count toward it: a failure that `onFail: 'retry'` retried, and a run of a
+  `waits` task (the `wait` task) that its phase's `until` ended. They are bounded instead by
+  `maxFails` and by `DEFAULT_MAX_WAITS` consecutive waits of one phase.
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
 - **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]

@@ -40,3 +40,10 @@ test('every promoted plan passes the plan lint', async () => {
     );
     expect(problems).toEqual([]);
 });
+
+test('the plans axe pattern takes every real axe and not a broken one, pickaxe, battleaxe or thrownaxe', () => {
+    const axe = /^(?!broken ).* axe$/i;
+    for (const name of ['Bronze axe', 'Steel axe', 'Rune axe', 'Dragon axe']) expect(axe.test(name)).toBe(true);
+    for (const name of ['Broken axe', 'Bronze pickaxe', 'Bronze battleaxe', 'Bronze thrownaxe'])
+        expect(axe.test(name)).toBe(false);
+});

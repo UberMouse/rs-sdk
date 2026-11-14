@@ -5,7 +5,7 @@ import bank from '@conductor/tasks/bank';
 import firemaking from '@conductor/tasks/firemaking';
 import woodcutting from '@conductor/tasks/woodcutting';
 
-const hasAxe = (v: { inv(i: RegExp): number }) => v.inv(/ axe$/i) > 0;
+const hasAxe = (v: { inv(i: RegExp): number }) => v.inv(/^(?!broken ).* axe$/i) > 0;
 
 export default definePlan({
     name: 'willow-burn',
