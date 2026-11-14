@@ -93,11 +93,10 @@ const MINE_FAILS = failStreak({
     what: 'attempts',
 });
 /**
- * Give-up of the slowest accepted rock (adamantite): stuckAfterMs is static, so a full respawn wait is
- * not reported as a stall. It also outlasts MINE_FAIL_LIMIT timed-out mines in a row (nothing changes
- * during one), and one more, so the specific failure reason surfaces first. The watchdog is wall-clock
- * but the give-up is in game ticks, so the margin assumes the local tick length (TICK_MS); a
- * slower-ticking server could fire the watchdog before the slowest give-up.
+ * The watchdog window (defineTask derives it from these) outlasts the slowest accepted rock's give-up
+ * (adamantite), so a full respawn wait is not reported as a stall, and the mine fail streak. The
+ * give-up is in game ticks and the window is wall-clock, so the margin assumes the local tick length
+ * (TICK_MS); a slower-ticking server could fire the watchdog before the slowest give-up.
  */
 const SILENT = [giveUpTicksFor(ROCKS.adamantite.respawnTicks), MINE_FAILS, WALK_TO_AREA_SILENT_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */

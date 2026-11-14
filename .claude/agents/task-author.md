@@ -215,7 +215,7 @@ because stopping half way leaves the world in a state no later step can finish o
 
 Game time is ticks (`state.tick`, 400 ms each). No `Date.now()`, `setTimeout` or `sleep` in core,
 action or task logic. Budgets are tick counts as named constants; to bound "no tree for 2 minutes"
-remember the tick you started at (`NO_TREE_GIVE_UP_TICKS` in `waitForRespawn`). The only
+remember the tick you started at (`NO_TREE_GIVE_UP_TICKS` in woodcutting, passed to the shared `waitForRespawn` in lib/respawn.ts). The only
 millisecond number is the contract's `stepTimeoutMs` (a generator step gets it as a tick budget,
 `stepBudgetTicks` in `lib/task.ts`, and reads what is left of it with `ctx.stepTicksLeft()`).
 Never set `stuckAfterMs`: list in `silent` every stretch that can leave XP, position, HP and
