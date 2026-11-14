@@ -136,14 +136,12 @@ export default defineTask({
         `\`flee\`, once out of combat there, failing if still in combat after ${FLEE_SETTLE_LOOPS} ticks). Fails where ` +
         `the route breaks: no path, a locked gate, or ${WALK_FAIL_LIMIT} failed walks in a row. Never enters the ` +
         'Wilderness unless `wilderness: true`.',
-    rules: [
-        'Without `wilderness: true`, `to` and every waypoint must lie outside the Wilderness.',
-        "The connectors cover the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar, Glarial's tomb (its ladder out only: a pebble move enters it).",
-        'Carry food (a dozen or more) on long trips: monsters en route cost HP.',
-    ],
+    rules: ['Without `wilderness: true`, `to` and every waypoint must lie outside the Wilderness.'],
     spots: [
         "The Gnome Stronghold's agility course start is {x:2474,z:3436}; the route from Lumbridge (about 700 tiles) " +
             'crosses White Wolf Mountain, where wolves attack and cost HP.',
+        "The connectors cover the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar and Glarial's tomb (its ladder out only: a pebble move enters it).",
+        'On any long trip carry food (a dozen or more): monsters en route cost HP.',
         'Wilderness agility course door {x:2998,z:3915} from Edgeville, with `wilderness: true`; skeletons and wolves en ' +
             'route cost HP. Carry only food and no valuables: a PvP or skeleton death loses the inventory.',
     ],

@@ -36,7 +36,7 @@ const Params = z.object({
         })
         .describe('The quest whose journal to read: a QUESTS id from lib/quests.ts (`cook`, `dragon`).'),
     expect: patternParam(
-        'Text the journal should show, matched against its lines joined by single spaces: read again every 4 ticks until it shows or `withinTicks` pass.',
+        `Text the journal should show, matched against its lines joined by single spaces: read again every ${JOURNAL_REREAD_TICKS} ticks until it shows or \`withinTicks\` pass.`,
     ).optional(),
     withinTicks: z
         .number()
@@ -57,7 +57,7 @@ export default defineTask({
     description:
         "Reads a quest's journal: clicks its quest-tab entry, sees the journal open, closes it, and ends done with " +
         "the last line; the plan's journal memory keeps the text. With `expect`, a journal that does not show it is " +
-        'read again every 4 ticks for up to `withinTicks` (default 20) from the first read; the task ends done either ' +
+        'read again for up to `withinTicks` from the first read; the task ends done either ' +
         'way, its reason saying when the expected text never showed. It refuses to click while a dialog or modal is ' +
         'open (the click would destroy it): in preflight, and before every re-read. Needs the lite client: the ' +
         'browser client publishes no journal text.',

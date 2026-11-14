@@ -70,7 +70,7 @@ const Params = z.object({
                     .boolean()
                     .default(false)
                     .describe(
-                        'Take the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; a stackable item per the obj configs needs one free slot, or none if a stack is held), An item the bank holds none of, or that has no room, is skipped, not a failure; a short or skipped entry is named in the done reason.',
+                        'Take the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; a stackable item per the obj configs needs one free slot, or none if a stack is held). An item the bank holds none of, or that has no room, is skipped, not a failure; a short or skipped entry is named in the done reason.',
                     ),
             }),
         )

@@ -41,7 +41,7 @@ not a gap to wave through; which changes need unit tests is contract T8
 the bot can't run the task (missing gear, dead), say so in the evidence so reviewers don't wait
 on it.
 
-If the change touches only a task's `description` or comments, run `contract` and
+If the change touches only a task's catalog text (`description`, param `.describe()`, `rules`, `spots`) or comments, run `contract` and
 `code-quality` alone. If it changes one file and fewer than ~80 lines (tests aside), run
 `contract`, `robustness` and `safety`, plus `game-semantics` when it encodes a game rule (a
 requirement, a loc's behaviour, a drop). Otherwise run all five. Retro #8: 62% of findings were

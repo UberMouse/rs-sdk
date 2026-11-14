@@ -224,8 +224,8 @@ const Params = z
                 'End the run `done` the moment a quest dialog opens, leaving it open for a following `talk` (Sir ' +
                     "Mordred's death opens Morgan Le Faye's choice, which the engine's dialog guard would answer \"No. He " +
                     'deserves to die."). The guard is off for the run, so the task clicks level-up dialogs away itself. ' +
-                    `While the dialog is open the engine eats only below the larger of ${HOLD_HP_FLOOR_MIN} HP and ` +
-                    `${Math.round(HOLD_HP_FLOOR_FRACTION * 100)}% of max HP; a dialog open before any fight fails the run.`,
+                    `While the dialog is open the engine holds it while HP is above the larger of ${HOLD_HP_FLOOR_MIN} HP and ` +
+                    `${Math.round(HOLD_HP_FLOOR_FRACTION * 100)}% of max HP (rounded up) and eats at or below it; a dialog open before any fight fails the run.`,
             ),
         respawnWaitTicks: z
             .number()
