@@ -297,6 +297,63 @@ it, and reported as such.
       the knowledge skill names) with provenance.
 - [ ] Out of scope: any other plan.
 
+## Task 4b — Delayed stages: a confirming read that waits, and a wait for completion
+
+Added 2026-11-14 from Task 4's live runs: a quest script often moves the stage some ticks after the
+step's task has ended (Gertrude's Cat: about 12 ticks after the kitten is used, about 9 after the
+last dialog), so a read straight after the step sees the old stage and the step runs again, and a
+quest completed by a delayed script ends "no phase applies".
+
+**Files:** `conductor/tasks/journal.ts`, `conductor/lib/quest.ts`, their tests
+(`conductor/test/tasks/journal.test.ts`, `conductor/test/lib/quest.test.ts`),
+`conductor/plans/gertrudes-cat.ts`, `wiki/quests/gertudes-cat.md` if a fact changes.
+
+**The `journal` task waits for an expected line.** New optional params `expect` (a regex source,
+matched case-insensitively against the journal's lines joined by single spaces, the text
+`v.journalSays` tests) and `withinTicks` (default 20, 1 to 100). With `expect`: when the journal
+read does not match, the task closes it, waits 4 ticks and reads again, until it matches or
+`withinTicks` have passed since the first read. Every click keeps the no-dialog, no-modal check.
+It ends **done** either way (the journal was read; whether it matched is the plan's to judge),
+with the reason `journal: <last line>` and, when the wait ran out, `(no "<expect>" within N
+ticks)` appended. Without `expect` the task is unchanged.
+
+**`journal(pattern, { within })`.** A `JournalMark` takes an optional `within` (ticks, default 20).
+For each step with a `JournalMark`, `defineQuest` compiles a read phase named `journal:<step>`
+with `{ quest, expect: pattern.source, withinTicks: within }`, selected when a read is needed and
+the last acting run was that step ending done. The plain `journal` phase takes every other needed
+read. Both are `observes` runs. A pattern's flags other than `i` are refused at definition (it is
+passed to the task as a source and matched case-insensitively there; `v.journalSays` uses the
+pattern as written).
+
+**The wait for completion.** `defineQuest` appends a last phase named `complete`:
+`phase(wait, { ticks: 20, orFail: true }, { until: v => v.questDone(id) })`, selected when no read
+is needed and every step is passed (`cursor` is null). It is retried under the quest's defaults,
+so a quest that never completes fails with the wait's reason after `maxFails` waits, where it
+failed "no phase applies" before. `journal`, `complete` and any name starting `journal:` are
+refused as step names.
+
+**`gertrudes-cat`** drops its `reward` step, and `return-kitten` drops what it only needed for the
+delayed stage if the confirming read now covers it (keep whatever the live run shows is still
+needed, and say which). One live run from `lib:gertrudes-cat-start` to quest done on `conductor3w1`
+proves it.
+
+### Acceptance criteria
+
+- [ ] Journal task unit tests: `expect` matching at the first read (one open and close, no wait);
+      matching at the third read (three opens, done, reason without the suffix); never matching
+      (done with the suffix after `withinTicks`); a dialog opening between reads ends the run
+      failed with `journal not read: dialog open` and no further click.
+- [ ] Quest unit tests: after a mark step ends done the phase selected is `journal:<step>` with
+      that step's pattern and `within`; after a failed run or at the first selection it is
+      `journal`; a stage that moves 10 ticks after the step is confirmed without the step running
+      twice; `complete` runs when every step is passed and ends the plan done when the quest
+      completes during it; a quest that never completes fails after `maxFails` waits; the reserved
+      names and the flag check each have a test.
+- [ ] The live `RESULT` line (status done, `plan until met`) is quoted, with the plan's phase
+      order from its log showing `journal:return-kitten` and `complete`.
+- [ ] `bun test conductor` and `bun run verify:conductor` pass; `smoke/journal` still passes.
+- [ ] Out of scope: other plans; docs (Task 5).
+
 ## Task 5 — Docs and agent prompts
 
 **Files:** `conductor/docs/plans.md` (a section on quests: `defineQuest`, `step`, the two kinds of
