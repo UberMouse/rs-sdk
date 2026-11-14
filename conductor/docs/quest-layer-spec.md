@@ -244,6 +244,15 @@ with the `g` or `y` flag.
 - [ ] The cursor and `needsRead` are exported for tests and are pure (same view, same answer).
 - [ ] Out of scope: converting a plan; docs.
 
+**Amendment (2026-11-14, found building Task 3):** as first written, a `JournalMark` step passed
+provisionally while a dialog was open stopped being passed once the next step ran and the dialog
+closed, so it ran a second time. The rule is now: a `JournalMark` step with no `done` is passed
+when `ranPast(i)` and the journal is not fresh (`blocked(v)` or `v.journalAge(id) !== 0`); with a
+fresh journal (`journalAge` 0) that does not match, it is not passed. And the journal read is also
+needed (same guards: started, not blocked, `journalAge > 0`) while any `JournalMark` step at or
+after `base` with no `done` is passed that way, so the confirmation happens at the first selection
+with no dialog or modal open.
+
 ## Task 4 — `gertrudes-cat` as a quest, proven live
 
 **Files:** `conductor/plans/gertrudes-cat.ts` (rewritten with `defineQuest`, same plan name and
