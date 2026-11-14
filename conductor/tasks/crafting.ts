@@ -20,11 +20,11 @@ import {
 } from '../actions/pottery';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, type Outcome, wait } from '../core/op';
-import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak, type ReasonStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const WHEEL = /potter'?s wheel/i;
 const OVEN = /pottery oven/i;
@@ -43,7 +43,16 @@ export const OP_MAX_TICKS = Math.max(SHAPE_MAX_TICKS, FIRE_WAIT_TICKS, SOFTEN_WA
 export const STATION_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - OP_MAX_TICKS);
 /** The longest attempt that changes nothing the watchdog sees: a walk that never moves the bot, then the op. */
 export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_MAX_TICKS;
-const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
+const streakOf = (name: string) => failStreak({ name, limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
+const SHAPE_FAILS = streakOf('shapeFails');
+const FIRE_FAILS = streakOf('fireFails');
+const SOFTEN_FAILS = failStreak({
+    name: 'softenFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'softens',
+});
+const SILENT = [SHAPE_FAILS, FIRE_FAILS, SOFTEN_FAILS, WALK_TO_AREA_SILENT_TICKS];
 
 const Params = z.object({
     product: z
@@ -90,8 +99,9 @@ function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
 }
 
 interface StationWork {
-    /** The verb the log line uses ("shape failed"); the streak is `<verb>Fails`. */
+    /** The verb the log line uses ("shape failed"). */
     verb: string;
+    fails: ReasonStreak;
     /** "shapes" or "firings", for the failure after FAIL_LIMIT in a row. */
     plural: string;
     station: RegExp;
@@ -104,28 +114,25 @@ interface StationWork {
 
 /** One attempt at a station step: find the station, walk up to it, run its op; FAIL_LIMIT failures in a row end the run. */
 function* workAtStation(ctx: Ctx, w: StationWork): Op<Outcome> {
-    const fails = ctx.streak(`${w.verb}Fails`);
     const short = w.noun.split(' ').at(-1) ?? w.noun;
     const seen = yield* wait('station in view', st => findStation(st, w.station) !== null, STATION_WAIT_TICKS);
     const station = findStation(seen.state, w.station);
     if (!station) {
-        return fails.add() >= FAIL_LIMIT
-            ? { fail: `no reachable ${w.noun} nearby (pass \`area\` at the ${short})` }
-            : undefined;
+        return w.fails.missWith(ctx, `no reachable ${w.noun} nearby (pass \`area\` at the ${short})`);
     }
     const walkFailed = yield* walkToStation(ctx, station);
     if (walkFailed) {
         yield* log(`walk to the ${short} failed: ${walkFailed}`);
-        return fails.add() >= FAIL_LIMIT ? { fail: `can't reach the ${short} (${walkFailed})` } : undefined;
+        return w.fails.missWith(ctx, `can't reach the ${short} (${walkFailed})`);
     }
     const r = yield* w.op(station);
     if (r.ok) {
-        fails.reset();
+        w.fails.clear(ctx);
         return;
     }
     yield* log(`${w.verb} failed: ${r.message}`, { reason: r.reason });
     if (w.fatal.includes(r.reason)) return { fail: r.message };
-    if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} ${w.plural} in a row failed (last: ${r.message})` };
+    return w.fails.missWith(ctx, `${FAIL_LIMIT} ${w.plural} in a row failed (last: ${r.message})`);
 }
 
 export default defineTask({
@@ -147,7 +154,7 @@ export default defineTask({
     ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
     guards: [underAttackGuard],
 
     preflight(ctx) {
@@ -189,15 +196,13 @@ export default defineTask({
             name: 'soften',
             when: ctx => softenable(ctx.state()) > 0,
             *run(ctx) {
-                const fails = ctx.streak('softenFails');
                 const r = yield* soften(ctx);
                 if (r.ok) {
-                    fails.reset();
+                    SOFTEN_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`soften failed: ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} softens in a row failed (last: ${r.message})` };
+                return SOFTEN_FAILS.miss(ctx, r.message);
             },
         },
         {
@@ -206,6 +211,7 @@ export default defineTask({
             run: ctx =>
                 workAtStation(ctx, {
                     verb: 'shape',
+                    fails: SHAPE_FAILS,
                     plural: 'shapes',
                     station: WHEEL,
                     noun: "potter's wheel",
@@ -220,6 +226,7 @@ export default defineTask({
             run: ctx =>
                 workAtStation(ctx, {
                     verb: 'fire',
+                    fails: FIRE_FAILS,
                     plural: 'firings',
                     station: OVEN,
                     noun: 'pottery oven',

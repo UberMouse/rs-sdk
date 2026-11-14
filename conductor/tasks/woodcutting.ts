@@ -3,13 +3,12 @@ import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { CHOP_OPTION, CHOP_WAIT_TICKS, chop } from '../actions/chop';
 import { drop } from '../actions/drop';
 import { log, type Op, wait } from '../core/op';
-import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 // Each tree drops exactly one log item; dropping by that exact name keeps other *logs items safe.
 const TREES = {
@@ -24,16 +23,18 @@ const AXE = /(^|\s)axe$/i;
 const NO_TREE_GIVE_UP_TICKS = 300;
 /** Consecutive failed chops before the task fails. */
 const CHOP_FAIL_LIMIT = 8;
+const CHOP_FAILS = failStreak({
+    name: 'chopFails',
+    limit: CHOP_FAIL_LIMIT,
+    worstTicks: CHOP_WAIT_TICKS,
+    what: 'chops',
+});
 /**
  * Nothing changes while a chop times out, so the watchdog must outlast CHOP_FAIL_LIMIT timeouts in a row
  * for the task to report them; one more chop wait covers the sends between them and slow ticks. That is
  * also above the no-tree give-up and the engine default (90s), so a full respawn wait is not a stall.
  */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(CHOP_FAIL_LIMIT, CHOP_WAIT_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const SILENT = [CHOP_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_TREE_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -133,7 +134,7 @@ export default defineTask({
     // Chopping a tree cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -178,14 +179,12 @@ export default defineTask({
                 if (!tree) return yield* waitForRespawn(ctx);
                 ctx.memory.noTreeSinceTick = null;
                 const chopped = yield* chop(ctx, tree, TREES[ctx.params.tree].logs);
-                const chopFails = ctx.streak('chopFails');
                 if (chopped.ok) {
-                    chopFails.reset();
+                    CHOP_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`chop failed: ${chopped.message}`);
-                if (chopFails.add() >= CHOP_FAIL_LIMIT)
-                    return { fail: `${CHOP_FAIL_LIMIT} chops in a row failed (last: ${chopped.message})` };
+                return CHOP_FAILS.miss(ctx, chopped.message);
             },
         },
     ],

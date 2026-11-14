@@ -21,10 +21,10 @@ import {
 import { drop } from '../actions/drop';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
+import { failStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const BARS = ['bronze', 'iron', 'steel', 'mithril', 'adamant', 'runite'] as const;
 type Metal = (typeof BARS)[number];
@@ -139,9 +139,12 @@ const OP_SILENT_TICKS =
  * bot, then the op.
  */
 export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_SILENT_TICKS;
+const streakOf = (name: string) => ({ name, limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
+const DROP_FAILS = failStreak({ ...streakOf('dropFails'), what: 'drops of the products' });
+const SMELT_FAILS = failStreak(streakOf('smeltFails'));
+const SMITH_FAILS = failStreak(streakOf('smithFails'));
 /** FAIL_LIMIT failed attempts in a row, and one more, so the task's own failure reason surfaces before the watchdog's. */
-export const SILENT_STREAK_TICKS = [failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS)];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const SILENT = [DROP_FAILS, SMELT_FAILS, SMITH_FAILS, WALK_TO_AREA_SILENT_TICKS];
 
 const Params = z.object({
     mode: z
@@ -273,7 +276,7 @@ export default defineTask({
     params: Params,
     memory: (): SmithingMemory => ({ directFrom: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -317,13 +320,10 @@ export default defineTask({
             *run(ctx) {
                 // `when` only passes for a known product.
                 const product = lookupProduct(ctx.params.product) as { name: SmithingProduct };
-                const fails = ctx.streak('dropFails');
                 const r = yield* drop(ctx, productItem(ctx.params.bar, product.name), 'all');
-                if (r.ok) return fails.reset();
+                if (r.ok) return DROP_FAILS.clear(ctx);
                 yield* log(`drop failed: ${r.message}`, { reason: r.reason });
-                return fails.add() >= FAIL_LIMIT
-                    ? { fail: `${FAIL_LIMIT} drops of the products in a row failed (last: ${r.message})` }
-                    : undefined;
+                return DROP_FAILS.miss(ctx, r.message);
             },
         },
         {
@@ -345,13 +345,13 @@ export default defineTask({
             when: ctx => ctx.params.mode === 'smelt',
             *run(ctx) {
                 const recipe = SMELT[ctx.params.bar];
-                const fails = ctx.streak('smeltFails');
                 // A furnace can be paired with an option-less decoy loc; require the Smelt option.
                 const furnace = findStation(ctx, FURNACE, l => l.options.some(o => SMELT_OPTION.test(o)), false);
                 if (!furnace) {
-                    return fails.add() >= FAIL_LIMIT
-                        ? { fail: 'no furnace with a Smelt option nearby (pass `area` at the furnace)' }
-                        : undefined;
+                    return SMELT_FAILS.missWith(
+                        ctx,
+                        'no furnace with a Smelt option nearby (pass `area` at the furnace)',
+                    );
                 }
                 const direct = !needsWalk(ctx, furnace);
                 const from = ctx.state().player;
@@ -363,13 +363,12 @@ export default defineTask({
                 if (!r.ok) {
                     if (direct && from) ctx.memory.directFrom = { x: from.worldX, z: from.worldZ };
                     yield* log(`smelt failed: ${r.message}`);
-                    if (fails.add() < FAIL_LIMIT) return;
                     // A click the furnace never acted on is the legacy "used no ore" failure.
                     const what = r.reason === 'timeout' ? 'used no ore' : 'failed';
-                    return { fail: `${FAIL_LIMIT} smelts in a row ${what} (last: ${r.message})` };
+                    return SMELT_FAILS.missWith(ctx, `${FAIL_LIMIT} smelts in a row ${what} (last: ${r.message})`);
                 }
                 ctx.memory.directFrom = null;
-                fails.reset();
+                SMELT_FAILS.clear(ctx);
             },
         },
         {
@@ -379,31 +378,26 @@ export default defineTask({
                 const product = lookupProduct(ctx.params.product);
                 if (!product) return { fail: `unknown product "${ctx.params.product}"` };
                 const recipe = SMELT[ctx.params.bar];
-                const fails = ctx.streak('smithFails');
                 const anvil = findStation(ctx, ANVIL, () => true, true);
                 if (!anvil) {
-                    return fails.add() >= FAIL_LIMIT
-                        ? { fail: 'no reachable anvil nearby (pass `area` at the anvil)' }
-                        : undefined;
+                    return SMITH_FAILS.missWith(ctx, 'no reachable anvil nearby (pass `area` at the anvil)');
                 }
                 const direct = !needsWalk(ctx, anvil);
                 const from = ctx.state().player;
                 const walkFailed = yield* walkToStation(ctx, anvil);
                 if (walkFailed) {
                     yield* log(`walk to the anvil failed: ${walkFailed}`);
-                    return fails.add() >= FAIL_LIMIT ? { fail: `can't reach the anvil (${walkFailed})` } : undefined;
+                    return SMITH_FAILS.missWith(ctx, `can't reach the anvil (${walkFailed})`);
                 }
                 const r = yield* smith(ctx, anvil, product.name, exactName(recipe.bar));
                 if (!r.ok) {
                     if (direct && from) ctx.memory.directFrom = { x: from.worldX, z: from.worldZ };
                     yield* log(`smith failed: ${r.message}`, { reason: r.reason });
                     if (r.reason === 'no-hammer') return { fail: 'no hammer in inventory' };
-                    return fails.add() >= FAIL_LIMIT
-                        ? { fail: `${FAIL_LIMIT} smiths in a row failed (last: ${r.message})` }
-                        : undefined;
+                    return SMITH_FAILS.missWith(ctx, `${FAIL_LIMIT} smiths in a row failed (last: ${r.message})`);
                 }
                 ctx.memory.directFrom = null;
-                fails.reset();
+                SMITH_FAILS.clear(ctx);
             },
         },
     ],

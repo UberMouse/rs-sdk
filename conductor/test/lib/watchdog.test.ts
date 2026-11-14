@@ -5,15 +5,16 @@ import { WALK_MAX_TICKS } from '../../actions/walk';
 import { loadTask, taskNames } from '../../lib/catalog';
 import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
+import type { FailStreak } from '../../lib/streak';
 import { failStreakTicks, STUCK_MARGIN_MS, stuckWindowMs } from '../../lib/watchdog';
 import bank, { SILENT_STREAK_TICKS as bankStreaks } from '../../tasks/bank';
 import combat, { SILENT_STREAK_TICKS as combatStreaks } from '../../tasks/combat';
-import firemaking, { SILENT_STREAK_TICKS as firemakingStreaks } from '../../tasks/firemaking';
+import firemaking from '../../tasks/firemaking';
 import mining from '../../tasks/mining';
-import pickup, { SILENT_STREAK_TICKS as pickupStreaks } from '../../tasks/pickup';
+import pickup from '../../tasks/pickup';
 import shop, { SILENT_STREAK_TICKS as shopStreaks } from '../../tasks/shop';
-import smithing, { SILENT_STREAK_TICKS as smithingStreaks } from '../../tasks/smithing';
-import woodcutting, { SILENT_STREAK_TICKS as woodcuttingStreaks } from '../../tasks/woodcutting';
+import smithing from '../../tasks/smithing';
+import woodcutting from '../../tasks/woodcutting';
 
 describe('the watchdog helpers', () => {
     test('a window is the longest silent stretch in wall-clock time plus the margin', () => {
@@ -25,8 +26,9 @@ describe('the watchdog helpers', () => {
     });
 });
 
-/** Mining declares its streaks in `silent`; the table reads them as ticks. */
-const miningStreaks = (mining.silent ?? []).map(s => (typeof s === 'number' ? s : s.silentTicks));
+/** Migrated tasks declare their streaks in `silent`; the table reads them as ticks. */
+const silentTicks = (task: { silent?: readonly (FailStreak | number)[] }) =>
+    (task.silent ?? []).map(s => (typeof s === 'number' ? s : s.silentTicks));
 
 /** A walk that never moves the bot, WALK_FAIL_LIMIT (3) times, and one more: 4 * 200 ticks. */
 const WALK_STREAK = 4 * WALK_MAX_TICKS;
@@ -37,11 +39,11 @@ describe('every walking task outlasts each fail streak it has', () => {
         ['bank', bank.stuckAfterMs, bankStreaks, [WALK_STREAK]],
         ['shop', shop.stuckAfterMs, shopStreaks, [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
         ['combat', combat.stuckAfterMs, combatStreaks, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],
-        ['firemaking', firemaking.stuckAfterMs, firemakingStreaks, [WALK_STREAK]],
-        ['smithing', smithing.stuckAfterMs, smithingStreaks, []],
-        ['woodcutting', woodcutting.stuckAfterMs, woodcuttingStreaks, [WALK_STREAK]],
-        ['mining', mining.stuckAfterMs, miningStreaks, [WALK_STREAK]],
-        ['pickup', pickup.stuckAfterMs, pickupStreaks, [WALK_STREAK, 750]],
+        ['firemaking', firemaking.stuckAfterMs, silentTicks(firemaking), [WALK_STREAK]],
+        ['smithing', smithing.stuckAfterMs, silentTicks(smithing), []],
+        ['woodcutting', woodcutting.stuckAfterMs, silentTicks(woodcutting), [WALK_STREAK]],
+        ['mining', mining.stuckAfterMs, silentTicks(mining), [WALK_STREAK]],
+        ['pickup', pickup.stuckAfterMs, silentTicks(pickup), [WALK_STREAK, 750]],
     ] as const;
 
     test.each(table)('%s', (_name, stuckAfterMs, streaks, pinned) => {

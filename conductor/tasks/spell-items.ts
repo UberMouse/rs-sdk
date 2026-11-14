@@ -3,9 +3,9 @@ import { Spells } from '../../sdk/spells';
 import { CAST_ITEM_WAIT_TICKS, castOnItem } from '../actions/cast-item';
 import { log } from '../core/op';
 import { PATTERN_NOTE } from '../lib/spot';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 interface SpellInfo {
     name: string;
@@ -33,7 +33,12 @@ const SPELLS: Record<(typeof SPELL_NAMES)[number], SpellInfo> = {
 /** Consecutive casts with no effect (no XP, no refusal) before the task fails. */
 const CAST_FAIL_LIMIT = 3;
 /** Nothing changes while a cast times out, so the watchdog must outlast the failures in a row. */
-const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(CAST_FAIL_LIMIT, CAST_ITEM_WAIT_TICKS));
+const CAST_FAILS = failStreak({
+    name: 'castFails',
+    limit: CAST_FAIL_LIMIT,
+    worstTicks: CAST_ITEM_WAIT_TICKS,
+    what: 'casts',
+});
 
 const regexSource = z.string().refine(
     s => {
@@ -101,7 +106,7 @@ export default defineTask({
     ],
     params: Params,
     memory: (): SpellMemory => ({ casts: 0 }),
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: [CAST_FAILS],
 
     preflight(ctx) {
         const spell = SPELLS[ctx.params.spell];
@@ -135,9 +140,8 @@ export default defineTask({
                 if (!item) return { fail: 'no target item left (stop-none should have ended the run)' };
                 const spell = SPELLS[ctx.params.spell];
                 const cast = yield* castOnItem(ctx, item, spell.component, spell.name, spell.hold);
-                const fails = ctx.streak('castFails');
                 if (cast.ok) {
-                    fails.reset();
+                    CAST_FAILS.clear(ctx);
                     ctx.memory.casts++;
                     return;
                 }
@@ -145,8 +149,7 @@ export default defineTask({
                 // A server refusal repeats until something changes, so it ends the run at once.
                 if (cast.reason === 'no-runes' || cast.reason === 'level' || cast.reason === 'refused')
                     return { fail: cast.message };
-                if (fails.add() >= CAST_FAIL_LIMIT)
-                    return { fail: `${CAST_FAIL_LIMIT} casts in a row failed (last: ${cast.message})` };
+                return CAST_FAILS.miss(ctx, cast.message);
             },
         },
     ],

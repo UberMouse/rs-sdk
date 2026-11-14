@@ -5,11 +5,11 @@ import { drop } from '../actions/drop';
 import { collisionPaths } from '../actions/paths';
 import { WALK_MAX_TICKS, timedOutAdvancing, walkTo } from '../actions/walk';
 import { type Op, log, scan, ticks } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
+import { failStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Raw foods this task cooks (free-world ones), by lowercase item name: the Cooking level from
@@ -49,12 +49,14 @@ const STEP_TIMEOUT_MS = 120_000;
 const SOURCE_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - COOK_WAIT_TICKS);
 /** The longest attempt the watchdog sees nothing change in: a walk that never moves the bot, then a cook that does nothing. */
 const ATTEMPT_SILENT_TICKS = SOURCE_WALK_TICKS + COOK_WAIT_TICKS;
+const COOK_FAILS = failStreak({
+    name: 'cookFails',
+    limit: COOK_FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'cooks',
+});
 /** The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`. */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(COOK_FAIL_LIMIT, ATTEMPT_SILENT_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const SILENT = [COOK_FAILS, WALK_TO_AREA_SILENT_TICKS];
 /** Standing places around a source, nearest ring first: its 8 neighbours, then the ring beyond (a wider source). */
 const APPROACH_RINGS = [1, 2];
 const tileKey = (tx: number, tz: number) => `${tx},${tz}`;
@@ -204,7 +206,7 @@ export default defineTask({
     params: Params,
     memory: (): CookingMemory => ({ approached: [], source: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -237,7 +239,6 @@ export default defineTask({
             name: 'cook',
             when: () => true,
             *run(ctx) {
-                const fails = ctx.streak('cookFails');
                 let source = usable(ctx, ctx.state().nearbyLocs);
                 // Beyond what the state lists: the extended scan sees further.
                 if (!source) source = usable(ctx, yield* scan());
@@ -259,13 +260,12 @@ export default defineTask({
                 const r = yield* cookOnce(ctx, source);
                 if (r === 'again') return;
                 if (r === null) {
-                    fails.reset();
+                    COOK_FAILS.clear(ctx);
                     return;
                 }
                 if ('fail' in r) return r;
                 yield* log(`cook failed: ${r.failure}`);
-                if (fails.add() >= COOK_FAIL_LIMIT)
-                    return { fail: `${COOK_FAIL_LIMIT} cooks in a row failed (last: ${r.failure})` };
+                return COOK_FAILS.miss(ctx, r.failure);
             },
         },
     ],
