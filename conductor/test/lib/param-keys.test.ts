@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { z } from 'zod/v4';
+import { loadTask, taskNames } from '../../lib/catalog';
 import { paramKeys, unknownParams, unknownParamsReason } from '../../lib/param-keys';
 
 const Obj = z.object({ a: z.number(), b: z.string().optional() });
@@ -53,4 +54,10 @@ describe('unknownParamsReason', () => {
             'unknown param "x" (none takes no params)',
         );
     });
+});
+
+test("every catalog task's top-level keys can be listed, so a key it does not take is refused", async () => {
+    const unlisted: string[] = [];
+    for (const name of taskNames()) if (!paramKeys((await loadTask(name)).params)) unlisted.push(name);
+    expect(unlisted).toEqual([]);
 });
