@@ -75,12 +75,23 @@ describe('lintPlan', () => {
             'const b = v => !!v.last?.reason.match(/unreachable/);',
             "const c = ({ reason }) => reason.includes('dialog');",
             "const d = v => v.last?.code === 'dialog' || /Dad/.test(v.last.reason);",
+            "const e = v => v.last?.reason.startsWith('Cannot');",
+            "const f = v => v.last?.reason.endsWith('blocked');",
+            "const g = v => v.last?.reason.indexOf('wall') >= 0;",
+            "const h = v => v.last?.reason === 'no food';",
+            "const i = v => 'no food' !== v.last?.reason;",
+            "const j = v => v.last?.code === 'x' && v.last.reason === 'game text';",
         ].join('\n');
         expect(lintPlan(plan('a'), src)).toEqual([
             flagged(1, "/attacked/.test(v.last.reason ?? '')"),
             flagged(2, 'v.last?.reason.match(/unreachable/)'),
             flagged(3, "reason.includes('dialog')"),
             flagged(4, '/Dad/.test(v.last.reason)'),
+            flagged(5, "v.last?.reason.startsWith('Cannot')"),
+            flagged(6, "v.last?.reason.endsWith('blocked')"),
+            flagged(7, "v.last?.reason.indexOf('wall')"),
+            flagged(8, "v.last?.reason === 'no food'"),
+            flagged(9, "'no food' !== v.last?.reason"),
         ]);
     });
 

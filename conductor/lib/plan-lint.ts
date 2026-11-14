@@ -21,8 +21,8 @@ const rewritesText = (re: ts.Node) =>
     ts.isPropertyAccessExpression(re.parent.expression) &&
     TEXT_METHODS.has(re.parent.expression.name.text);
 
-/** String methods that match a reason's text: `reason.includes('x')`, `reason.match(/x/)`. */
-const MATCH_METHODS = new Set(['includes', 'match', 'matchAll', 'search']);
+/** String methods that match a reason's text: `reason.includes('x')`, `reason.match(/x/)`, `reason.startsWith('x')`. */
+const MATCH_METHODS = new Set(['includes', 'match', 'matchAll', 'search', 'startsWith', 'endsWith', 'indexOf']);
 /** `e` without the parentheses, `!` and `?? ''` that wrap a value for a match. */
 const unwrap = (e: ts.Expression): ts.Expression => {
     for (;;) {
@@ -44,6 +44,13 @@ const matchesReason = (call: ts.CallExpression) => {
     const method = call.expression.name.text;
     if (method === 'test') return call.arguments.some(isReason);
     return MATCH_METHODS.has(method) && isReason(call.expression.expression);
+};
+const isLiteral = (e: ts.Expression) => ts.isStringLiteralLike(unwrap(e));
+/** Whether `n` compares a reason with a string literal (`reason === 'x'`, either side, `!==` too). */
+const comparesReason = (n: ts.BinaryExpression) => {
+    const k = n.operatorToken.kind;
+    if (k !== ts.SyntaxKind.EqualsEqualsEqualsToken && k !== ts.SyntaxKind.ExclamationEqualsEqualsToken) return false;
+    return (isReason(n.left) && isLiteral(n.right)) || (isReason(n.right) && isLiteral(n.left));
 };
 /** Whether `n` holds a `.code === …` (or `!==`) comparison. */
 const hasCodeCheck = (n: ts.Node): boolean =>
@@ -85,6 +92,10 @@ export function lintPlan(def: PlanDef, source: string): string[] {
                     `${where(n)}: ${n.getText(file)} matches a reason's text, which may be reworded: branch on \`last.code\``,
                 );
         } else if (ts.isBinaryExpression(n)) {
+            if (comparesReason(n) && !afterCodeCheck(n))
+                problems.push(
+                    `${where(n)}: ${n.getText(file)} matches a reason's text, which may be reworded: branch on \`last.code\``,
+                );
             const op = n.operatorToken.kind;
             if (op === ts.SyntaxKind.EqualsEqualsEqualsToken || op === ts.SyntaxKind.ExclamationEqualsEqualsToken) {
                 const text = ts.tokenToString(op);
