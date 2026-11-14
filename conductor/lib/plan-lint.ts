@@ -21,6 +21,50 @@ const rewritesText = (re: ts.Node) =>
     ts.isPropertyAccessExpression(re.parent.expression) &&
     TEXT_METHODS.has(re.parent.expression.name.text);
 
+/** String methods that match a reason's text: `reason.includes('x')`, `reason.match(/x/)`. */
+const MATCH_METHODS = new Set(['includes', 'match', 'matchAll', 'search']);
+/** `e` without the parentheses, `!` and `?? ''` that wrap a value for a match. */
+const unwrap = (e: ts.Expression): ts.Expression => {
+    for (;;) {
+        if (ts.isParenthesizedExpression(e) || ts.isNonNullExpression(e)) e = e.expression;
+        else if (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.QuestionQuestionToken) e = e.left;
+        else return e;
+    }
+};
+/** A result's `.reason`, or a variable named `reason`. */
+const isReason = (e: ts.Expression) => {
+    const u = unwrap(e);
+    return (
+        (ts.isPropertyAccessExpression(u) && u.name.text === 'reason') || (ts.isIdentifier(u) && u.text === 'reason')
+    );
+};
+/** Whether a call matches a reason's text: `re.test(reason)`, or one of MATCH_METHODS on it. */
+const matchesReason = (call: ts.CallExpression) => {
+    if (!ts.isPropertyAccessExpression(call.expression)) return false;
+    const method = call.expression.name.text;
+    if (method === 'test') return call.arguments.some(isReason);
+    return MATCH_METHODS.has(method) && isReason(call.expression.expression);
+};
+/** Whether `n` holds a `.code === …` (or `!==`) comparison. */
+const hasCodeCheck = (n: ts.Node): boolean =>
+    (ts.isBinaryExpression(n) &&
+        (n.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken ||
+            n.operatorToken.kind === ts.SyntaxKind.ExclamationEqualsEqualsToken) &&
+        [n.left, n.right].some(side => ts.isPropertyAccessExpression(side) && side.name.text === 'code')) ||
+    (ts.forEachChild(n, hasCodeCheck) ?? false);
+/**
+ * Whether `n` runs only after a code test in the same `&&` chain (`last.code === 'dialog' && /Dad/.test(reason)`):
+ * the code picks the ending and the text is game text it carries, not our wording.
+ */
+const afterCodeCheck = (n: ts.Node): boolean => {
+    for (let child = n, p = n.parent; p; child = p, p = p.parent) {
+        if (ts.isParenthesizedExpression(p)) continue;
+        if (!ts.isBinaryExpression(p) || p.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken) return false;
+        if (p.right === child && hasCodeCheck(p.left)) return true;
+    }
+    return false;
+};
+
 /** The problems of a plan module: its default export `def` and its source text. Empty when it is clean. */
 export function lintPlan(def: PlanDef, source: string): string[] {
     const problems = invalidParams(def);
@@ -36,6 +80,10 @@ export function lintPlan(def: PlanDef, source: string): string[] {
         if (ts.isCallExpression(n)) {
             const name = calleeName(n.expression);
             if (name !== undefined && PHASE_CALLS.has(name)) for (const a of n.arguments) checkName(a, `${name}(...)`);
+            if (matchesReason(n) && !afterCodeCheck(n))
+                problems.push(
+                    `${where(n)}: ${n.getText(file)} matches a reason's text, which may be reworded: branch on \`last.code\``,
+                );
         } else if (ts.isBinaryExpression(n)) {
             const op = n.operatorToken.kind;
             if (op === ts.SyntaxKind.EqualsEqualsEqualsToken || op === ts.SyntaxKind.ExclamationEqualsEqualsToken) {

@@ -2,6 +2,7 @@
 import { describe, expect, test } from 'bun:test';
 import type { PlanDef, PlanView } from '../../lib/plan';
 import clockTower from '../../plans/clock-tower';
+import monksFriend from '../../plans/monks-friend';
 import trollStronghold from '../../plans/troll-stronghold';
 
 type Last = NonNullable<PlanView['last']>;
@@ -73,5 +74,23 @@ describe("troll-stronghold: Dad's fight ending on his dialog", () => {
             outsideArena,
         );
         expect(when(trollStronghold, 'dad-end', other)).toBe(false);
+    });
+});
+
+describe('monks-friend: Omad out of reach behind the chapel door sends the plan to open it', () => {
+    const inside = { at: [2604, 3209] as [number, number] };
+    const door = (last: Last) => when(monksFriend, 'omad-door', view(last, inside));
+
+    test("talk's and interact's unreachable failures", () => {
+        const talk = 'talk: no reachable /^Brother Omad$/ in sight (1 in view but unreachable from here)';
+        expect(door({ phase: 'party', status: 'failed', reason: talk, code: 'unreachable' })).toBe(true);
+        const interact = 'interact: no reachable loc /^Door$/ in sight (1 in view but unreachable from here)';
+        expect(door({ phase: 'omad-door', status: 'failed', reason: interact, code: 'unreachable' })).toBe(true);
+    });
+
+    test("a walk's no-path failure, whose reason says unreachable but has no code, does not", () => {
+        const reason =
+            'walk: No path to (2614, 3259) from (2604, 3209): Destination (2614, 3259) is unreachable — path ends 3 tiles away';
+        expect(door({ phase: 'cedric-ask', status: 'failed', reason })).toBe(false);
     });
 });

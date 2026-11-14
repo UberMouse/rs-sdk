@@ -91,11 +91,12 @@ describe('catalogEntry', () => {
         expect(catalogEntry(def(params, { outcomes: {} })).outcomes).toEqual({ died: DIED });
     });
 
-    test('pickup, talk and combat list the codes their plans branch on', async () => {
+    test('pickup, talk, interact and combat list the codes their plans branch on', async () => {
         expect(await codes('pickup')).toEqual(['attacked', 'died']);
         expect(await codes('talk')).toEqual(['died', 'unreachable']);
         expect(await codes('combat')).toEqual(['dialog', 'died']);
         expect(await codes('woodcutting')).toEqual(['attacked', 'died']);
+        expect(await codes('interact')).toEqual(['died', 'unreachable']);
     });
 });
 
