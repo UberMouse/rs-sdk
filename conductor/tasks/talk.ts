@@ -306,7 +306,7 @@ export default defineTask({
     ],
     outcomes: {
         unreachable:
-            'No `npc` the bot can reach was found, and one or more stand in view that the client cannot route to from here.',
+            'No `npc` the bot can reach was found, and one or more stand in view that the bot has no route to from here.',
     },
     spots: [
         'Death Plateau dice game with Harold (stage 50+, gamble open): {"npc":"Harold","choices":["gamble"],"amount":1000,"press":{"component":"death_dice:com_28","ready":"Your roll","until":"You (win|lose)"}}. Harold wins ties, 15 of 36 rolls win, his gold is 100 plus the net losses of the player, the IOU comes with a win over a bet larger than that, max bet 1000, ~47 ticks a game; the reason ends with "You win!" or "You lose!", and the plan reads the coins and IOU. The door of his bedroom (upstairs in the Burthorpe inn) knocks with a dialog, so enter the room first.',

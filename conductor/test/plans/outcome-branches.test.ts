@@ -42,7 +42,7 @@ describe('clock-tower: a fetch cut short by an attack goes to the fight', () => 
         expect(fight(last)).toBe(true);
     });
 
-    test("the under-attack guard's wording the reason match missed", () => {
+    test('any attacked-coded failure, whatever its wording', () => {
         const reason = 'interrupt:under-attack: under attack by an unknown attacker for 40 ticks at (2613,9639)';
         expect(fight({ phase: 'get-black', status: 'failed', reason, code: 'attacked' })).toBe(true);
         expect(fight({ phase: 'get-black', status: 'failed', reason, endedBy: 'interrupt:under-attack' })).toBe(false);

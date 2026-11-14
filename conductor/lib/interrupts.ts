@@ -413,10 +413,7 @@ export const underAttackGuard: TaskGuard<UnderAttackEpisode> = {
     name: 'under-attack',
     policy: 'abort',
     outcomes: {
-        attacked:
-            "The under-attack guard ended the run: an attacker it does not wait out (auto-retaliate off, or above the bot's " +
-            `combat level), a fight with no hp change for ${NO_PROGRESS_TICKS} ticks, or an attacker it cannot see that ` +
-            `took ${UNKNOWN_ATTACKER_HP_LOSS} hp or lasted ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks.`,
+        attacked: 'The under-attack guard gave up on a fight it could not or would not wait out.',
     },
     episode: () => ({ startHp: null, unknownSince: null, last: null }),
     when: isAttacked,

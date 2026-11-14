@@ -255,7 +255,7 @@ export default defineTask({
     ],
     outcomes: {
         unreachable:
-            'No target the bot can reach was found, and one or more stand in view that the client cannot route to from here.',
+            'No target the bot can reach was found, and one or more stand in view that the bot has no route to from here.',
     },
     spots: [
         'Bloated toad (Big Chompy Bird Hunting), placed inside the bait zone x2631-2639, z2962-2971: {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"}. The client publishes its op 1 as Drop but the server places the bait: the toad leaves the inventory and a Bloated toad NPC stands there.',

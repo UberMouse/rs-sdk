@@ -191,7 +191,7 @@ export async function listCatalog(args: string[], dir = TASKS_DIR): Promise<stri
         const lines: string[] = [];
         for (const name of all) lines.push(summaryLine(await loadTask(name, dir)));
         lines.push(
-            "A task's full entry (description, rules, spots, params as JSON Schema): bun conductor/run-task.ts --list <task> [<task>...]; every task's: --list --all",
+            "A task's full entry (description, rules, outcomes, spots, params as JSON Schema): bun conductor/run-task.ts --list <task> [<task>...]; every task's: --list --all",
         );
         return lines.join('\n');
     }

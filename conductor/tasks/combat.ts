@@ -742,7 +742,7 @@ export default defineTask({
         'Each of `prayers` needs its Prayer level, and the bot needs prayer points left to start.',
     ],
     outcomes: {
-        dialog: 'With `stopOnDialog`, a dialog opened after a fight and is left open for the next phase (done).',
+        dialog: 'With `stopOnDialog`, a dialog opens after a fight and is left open for the next phase (done).',
     },
     spots: [
         'Lumbridge chickens: `area` {x:3231,z:3295,radius:8}; fenced coop with a gate; verified.',
