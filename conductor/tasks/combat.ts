@@ -2,9 +2,9 @@ import { z } from 'zod/v4';
 import { type BotWorldState, type NearbyNpc, PRAYER_LEVELS } from '../../sdk/types';
 import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { CAST_DELAY_TICKS, CAST_WAIT_TICKS, cast } from '../actions/cast';
-import { eat } from '../actions/eat';
-import { equip } from '../actions/equip';
-import { prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
+import { EAT_WAIT_TICKS, eat } from '../actions/eat';
+import { EQUIP_WAIT_TICKS, equip } from '../actions/equip';
+import { PRAYER_WAIT_TICKS, prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
@@ -17,7 +17,7 @@ import {
     type Sighting,
     WILDERNESS_MARGIN,
 } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
 import { squareReachesWilderness } from '../lib/wilderness';
 import { HOLD_HP_FLOOR_FRACTION, HOLD_HP_FLOOR_MIN } from '../lib/engine';
@@ -26,7 +26,8 @@ import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 import { MAX_XP } from '../lib/xp';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
+import { failStreak } from '../lib/streak';
+import { failStreakTicks } from '../lib/watchdog';
 
 const SKILLS = ['Attack', 'Strength', 'Defence', 'Ranged', 'Magic'] as const;
 
@@ -86,24 +87,60 @@ const LOOT_SKIP_TICKS = Math.ceil(20_000 / TICK_MS);
 const FIGHT_GIVE_UP_TICKS = FIGHT_TIMEOUT_TICKS + FIGHT_SLICE_TICKS;
 /** The loot give-up: LOOT_FAIL_LIMIT pickups each waiting out a full timeout and grace. */
 const LOOT_GIVE_UP_TICKS = LOOT_FAIL_LIMIT * (PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS);
+// One failed attack: a walk to a far NPC that never moves the bot, then the attack's send, wait and retry wait.
+const ATTACK_FAILS = failStreak({
+    name: 'attackFails',
+    limit: ATTACK_FAIL_LIMIT,
+    worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
+    what: 'attacks',
+});
+// One failed cast: the cast's wait and the retry tick.
+const CAST_FAILS = failStreak({
+    name: 'castFails',
+    limit: CAST_FAIL_LIMIT,
+    worstTicks: CAST_WAIT_TICKS + 1,
+    what: 'casts',
+});
+// One unanswered level-up click: its send, the wait for the next page and the retry tick.
+const LEVEL_UP_FAILS = failStreak({
+    name: 'levelUpFails',
+    limit: LEVEL_UP_FAIL_LIMIT,
+    worstTicks: SEND_TICKS + LEVEL_UP_WAIT_TICKS + 1,
+});
+// One failed equip: the wait for the item to show as worn (EQUIP_WAIT_TICKS).
+const EQUIP_FAILS = failStreak({ name: 'equipFails', limit: EQUIP_FAIL_LIMIT, worstTicks: EQUIP_WAIT_TICKS });
+// One failed style try: the wait for the style list, or a send and the wait for the combat tab to show the style.
+const STYLE_FAILS = failStreak({
+    name: 'styleFails',
+    limit: STYLE_FAIL_LIMIT,
+    worstTicks: Math.max(STYLE_LIST_WAIT_TICKS, SEND_TICKS + STYLE_WAIT_TICKS),
+});
+// One failed prayer click: the wait for the prayer to show as on (PRAYER_WAIT_TICKS).
+const PRAYER_FAILS = failStreak({ name: 'prayerFails', limit: PRAYER_FAIL_LIMIT, worstTicks: PRAYER_WAIT_TICKS });
+// One failed bury: its send and the wait for a bone to leave the inventory.
+const BURY_FAILS = failStreak({ name: 'buryFails', limit: BURY_FAIL_LIMIT, worstTicks: SEND_TICKS + BURY_WAIT_TICKS });
+const EAT_FAIL_LIMIT = 3;
 /**
  * The watchdog (static) waits for the longest of the specific failures, so each can report its reason:
- * the fight and loot give-ups, the walks back to the area (WALK_FAIL_LIMIT of them, each up to
- * WALK_MAX_TICKS without moving the bot) and the attacks (ATTACK_FAIL_LIMIT of them, each a failed walk
- * to a far NPC and then the attack's wait).
+ * the fight and loot give-ups, the walks back to the area, the wait for a respawn, the eat step's failed eats
+ * (each waiting out EAT_WAIT_TICKS) and each fail streak.
  */
-export const SILENT_STREAK_TICKS = [
+const SILENT = [
     FIGHT_GIVE_UP_TICKS,
     MAX_RESPAWN_WAIT_TICKS + NO_TARGET_WAIT_TICKS,
     LOOT_GIVE_UP_TICKS,
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    failStreakTicks(ATTACK_FAIL_LIMIT, WALK_MAX_TICKS + AFTER_WALK_TICKS),
-    failStreakTicks(CAST_FAIL_LIMIT, CAST_WAIT_TICKS + 1),
+    WALK_TO_AREA_SILENT_TICKS,
+    failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
+    ATTACK_FAILS,
+    CAST_FAILS,
+    LEVEL_UP_FAILS,
+    EQUIP_FAILS,
+    STYLE_FAILS,
+    PRAYER_FAILS,
+    BURY_FAILS,
 ];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Ground items further than this are not worth leaving the fight spot for. */
 const LOOT_RADIUS = 6;
-const EAT_FAIL_LIMIT = 3;
 /** Ticks the dialog may trail the end of the fight that opens it (the client's state packets and the interface update are separate). */
 const DIALOG_LAG_TICKS = 3;
 const STEP_TIMEOUT_MS = 300_000;
@@ -742,7 +779,7 @@ export default defineTask({
         fullPackNotedAt: null,
     }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
     startInCombat: startsInCombat,
     // The dialog is kept open past the end of the run, so neither the low-hp eat nor the engine's fight settle and
     // eat before leaving may close it (the engine only holds above its HP floor).
@@ -814,7 +851,6 @@ export default defineTask({
             when: ctx => ctx.params.stopOnDialog && ctx.state().dialog.isOpen,
             *run(ctx) {
                 const s = ctx.state();
-                const levelUpFails = ctx.streak('levelUpFails');
                 // A level-up lands mid-fight like any other fight's; it is not what the plan waits for. Nor is
                 // the unlock page that follows its click.
                 const clicked = ctx.memory.levelUpClickedAtTick;
@@ -844,11 +880,14 @@ export default defineTask({
                     : null;
                 if (moved?.kind === 'met') {
                     ctx.memory.levelUpClickedAtTick = s.tick;
-                    levelUpFails.reset();
+                    LEVEL_UP_FAILS.clear(ctx);
                     return;
                 }
-                if (levelUpFails.add() >= LEVEL_UP_FAIL_LIMIT)
-                    return { fail: `level-up dialog would not clear${sent.success ? '' : `: ${sent.message}`}` };
+                const failed = LEVEL_UP_FAILS.missWith(
+                    ctx,
+                    `level-up dialog would not clear${sent.success ? '' : `: ${sent.message}`}`,
+                );
+                if (failed) return failed;
                 yield* ticks(1);
             },
         },
@@ -862,7 +901,6 @@ export default defineTask({
                 return pending(weapon) || pending(shield) || (!!ammo && carried(s, ammo));
             },
             *run(ctx) {
-                const equipFails = ctx.streak('equipFails');
                 for (const n of [ctx.params.weapon, ctx.params.shield, ctx.params.ammo]) {
                     // Fresh state per item: equipping the weapon may have moved the shield's slot.
                     const s = ctx.state();
@@ -870,8 +908,9 @@ export default defineTask({
                     const item = s.inventory.find(i => exactName(n).test(i.name));
                     if (!item) continue;
                     const r = yield* equip(ctx, item);
-                    if (!r.ok && equipFails.add() >= EQUIP_FAIL_LIMIT)
-                        return { fail: `cannot equip ${n}: ${r.message}` };
+                    if (r.ok) continue;
+                    const failed = EQUIP_FAILS.missWith(ctx, `cannot equip ${n}: ${r.message}`);
+                    if (failed) return failed;
                 }
             },
         },
@@ -889,14 +928,14 @@ export default defineTask({
                 const s = ctx.state();
                 const cs = s.combatStyle;
                 const style = styleFor(s, ctx.params.skill);
-                const styleFails = ctx.streak('styleFails');
                 if (!style) {
                     if (cs?.known && cs.styles.length > 0)
                         return {
                             fail: `no combat style trains ${ctx.params.skill} with ${ctx.params.weapon ?? 'current weapon'}`,
                         };
                     // The client has not published a real style list yet (login, or lagging the equip step).
-                    if (styleFails.add() >= STYLE_FAIL_LIMIT) return { fail: 'combat style list never loaded' };
+                    const failed = STYLE_FAILS.missWith(ctx, 'combat style list never loaded');
+                    if (failed) return failed;
                     yield* ticks(STYLE_LIST_WAIT_TICKS);
                     return;
                 }
@@ -915,8 +954,11 @@ export default defineTask({
                     : null;
                 if (set?.kind === 'met') {
                     yield* log(`combat style ${style.name} (${style.type}) for ${ctx.params.skill}`);
-                } else if (styleFails.add() >= STYLE_FAIL_LIMIT) {
-                    return { fail: `could not set combat style ${style.name} for ${ctx.params.skill}` };
+                } else {
+                    return STYLE_FAILS.missWith(
+                        ctx,
+                        `could not set combat style ${style.name} for ${ctx.params.skill}`,
+                    );
                 }
             },
         },
@@ -937,19 +979,18 @@ export default defineTask({
                 return fighting(s) || attackers(s).length > 0 || !!pickTarget(s, p).target;
             },
             *run(ctx) {
-                const prayerFails = ctx.streak('prayerFails');
                 for (const name of prayersOff(ctx.state(), ctx.params)) {
                     const r = yield* setPrayer(ctx, name, true);
                     if (r.ok) {
-                        prayerFails.reset();
+                        PRAYER_FAILS.clear(ctx);
                         if (!ctx.memory.prayersTurnedOn.includes(name)) ctx.memory.prayersTurnedOn.push(name);
                         yield* log(`prayer ${name} on`);
                         continue;
                     }
                     if (r.reason === 'no-points') return { fail: 'out of prayer points' };
                     if (r.reason === 'level') return { fail: r.message };
-                    if (prayerFails.add() >= PRAYER_FAIL_LIMIT)
-                        return { fail: `could not turn ${name} on: ${r.message}` };
+                    const failed = PRAYER_FAILS.missWith(ctx, `could not turn ${name} on: ${r.message}`);
+                    if (failed) return failed;
                 }
             },
         },
@@ -977,7 +1018,6 @@ export default defineTask({
                 const opt = bones?.optionsWithIndex.find(o => BURY_OPTION.test(o.text));
                 if (!bones || !opt) return { fail: 'bones have no Bury option' };
                 const before = countBones(s);
-                const buryFails = ctx.streak('buryFails');
                 // No op buries: one send, and the effect (one bone fewer) is checked below.
                 const sent = yield* send({
                     type: 'useInventoryItem',
@@ -988,11 +1028,8 @@ export default defineTask({
                 const buried = sent.success
                     ? yield* wait('bury bones', st => countBones(st) < before, BURY_WAIT_TICKS)
                     : null;
-                if (buried?.kind !== 'met') {
-                    if (buryFails.add() >= BURY_FAIL_LIMIT) return { fail: 'bones did not bury' };
-                    return;
-                }
-                buryFails.reset();
+                if (buried?.kind !== 'met') return BURY_FAILS.missWith(ctx, 'bones did not bury');
+                BURY_FAILS.clear(ctx);
             },
         },
         {
@@ -1070,11 +1107,10 @@ export default defineTask({
                 const { target } = chosen;
                 setFightTarget(ctx, state, target);
 
-                const castFails = ctx.streak('castFails');
                 ctx.memory.fought = true;
                 const r = yield* cast(ctx, target, COMBAT_SPELLS[name].component, name);
                 if (r.ok) {
-                    castFails.reset();
+                    CAST_FAILS.clear(ctx);
                     const casts = countCast(ctx, target);
                     if (casts >= CASTS_PER_TARGET_LIMIT)
                         return { fail: `${casts} casts did not kill ${target.name} at (${target.x},${target.z})` };
@@ -1085,8 +1121,8 @@ export default defineTask({
                 if (r.reason === 'no-runes') return { fail: `out of runes for ${name}: ${r.message}` };
                 if (r.reason === 'level') return { fail: r.message };
                 yield* log(`cast ${name} on ${target.name} failed: ${r.message}`);
-                if (castFails.add() >= CAST_FAIL_LIMIT)
-                    return { fail: `${CAST_FAIL_LIMIT} casts in a row failed (last: ${r.message})` };
+                const failed = CAST_FAILS.miss(ctx, r.message);
+                if (failed) return failed;
                 yield* ticks(ATTACK_RETRY_TICKS);
             },
         },
@@ -1109,15 +1145,14 @@ export default defineTask({
                 if (!('target' in chosen)) return chosen.outcome;
                 const { target } = chosen;
 
-                const attackFails = ctx.streak('attackFails');
                 const result = yield* walkAndAttack(ctx, target);
                 if (result.ok) {
-                    attackFails.reset();
+                    ATTACK_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`attack ${target.name} failed: ${result.message}`);
-                if (attackFails.add() >= ATTACK_FAIL_LIMIT)
-                    return { fail: `${ATTACK_FAIL_LIMIT} attacks in a row failed (last: ${result.message})` };
+                const failed = ATTACK_FAILS.miss(ctx, result.message);
+                if (failed) return failed;
                 yield* ticks(ATTACK_RETRY_TICKS);
             },
         },

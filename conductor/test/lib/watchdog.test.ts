@@ -8,7 +8,7 @@ import { TICK_MS } from '../../lib/util';
 import type { FailStreak } from '../../lib/streak';
 import { failStreakTicks, STUCK_MARGIN_MS, stuckWindowMs } from '../../lib/watchdog';
 import bank from '../../tasks/bank';
-import combat, { SILENT_STREAK_TICKS as combatStreaks } from '../../tasks/combat';
+import combat from '../../tasks/combat';
 import firemaking from '../../tasks/firemaking';
 import mining from '../../tasks/mining';
 import pickup from '../../tasks/pickup';
@@ -37,6 +37,7 @@ describe('a migrated task lists the silent stretches it must outlast', () => {
     // describe below holds every task to its floor.
     const pinned = [
         ['bank', bank, [WALK_STREAK]],
+        ['combat', combat, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],
         ['shop', shop, [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
         ['firemaking', firemaking, [WALK_STREAK]],
         ['woodcutting', woodcutting, [WALK_STREAK]],
@@ -50,14 +51,12 @@ describe('a migrated task lists the silent stretches it must outlast', () => {
 });
 
 describe('every walking task outlasts each fail streak it has', () => {
-    // combat has not migrated: it exports its own list of streak windows in ticks.
     test('combat', () => {
         const stuckAfterMs = combat.stuckAfterMs;
         expect(stuckAfterMs).toBeDefined();
-        for (const ticks of combatStreaks)
+        for (const ticks of silentTicks(combat))
             expect(stuckAfterMs ?? 0).toBeGreaterThanOrEqual(ticks * TICK_MS + STUCK_MARGIN_MS);
-        for (const ticks of [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]) expect(combatStreaks).toContain(ticks);
-        expect(stuckAfterMs).toBe(stuckWindowMs(...combatStreaks));
+        expect(stuckAfterMs).toBe(stuckWindowMs(...silentTicks(combat)));
     });
 
     test('the walking tasks outlast a full run of failed walks, as the engine default does not', () => {
