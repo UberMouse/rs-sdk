@@ -47,7 +47,7 @@ A plan is an ordered list of **phases**. A phase is one catalog task with params
 
 - `when(v)`: whether the phase may start. Default: always.
 - `until(v)`: optional; ends the phase `done` early. Checked at every tick of the phase.
-- `onFail`: what a `failed` or `stuck` phase means for the plan. Default `'fail'`. A death always ends the plan, whatever this says.
+- `onFail`: what a `failed` or `stuck` phase means for the plan. Default the plan's `defaults.onFail`, else `'fail'`. A death always ends the plan, whatever this says.
 
 The runner does what the engine does with steps, one level up:
 
@@ -59,8 +59,16 @@ The runner does what the engine does with steps, one level up:
    counts.
 2. Run it as a normal `executeTask`: its own preflight, memory, guards, watchdog, step budget and
    leftover-modal close.
-3. It ends `done` (by itself or by its `until`): back to 1. It ends `failed` or `stuck`: apply its
+3. It ends `done` (by itself or by its `until`): the runner settles the world (below), then back to 1. It ends `failed` or `stuck`: apply its
    `onFail`. It ends `error`: the plan ends `error` (a bug, not the world).
+
+**The settle.** A task can end before the move or pickup it caused is published, so after a phase run
+the plan goes on from, the runner reads states (at most `PHASE_SETTLE_READS`, 5) until two in a row
+have the same idle signature (XP, inventory, position; HP is not part of it), then selects. The first
+read is compared with the run's end state, so a boundary costs 1 to 5 ticks. It is on by default;
+`definePlan({ settle: false })` turns it off for the plan and a phase's `settle` overrides the plan's
+after that phase's runs. A `settle` log event (`phase`, `reads`, `changed`) is written when the settle
+read more than once or saw a change.
 
 A phase's `when` is checked only at step 1, between phase runs, never during one: a phase without its own `until` keeps running past the level or count at which a later phase's `when` would hold. Put an `until` on an open-ended training phase when a later stage starts at a level. [v 2026-10-23 conductor3 local]
 
@@ -100,15 +108,20 @@ export default definePlan({
 ```
 
 - `phase(task, params, opts?)` takes the task's default export, so `params` is type-checked against
-  `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails? }`; `name`
+  `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails?, settle? }`; `name`
   defaults to the task's name and must be unique in the plan when a task appears twice (two bank
   phases).
-- `definePlan({ name, description?, phases, until?, requires?, method? })`. The plan's own `until(v)` ends
+- `definePlan({ name, description?, phases, until?, requires?, defaults?, settle?, needs?, needsUnless?, method? })`. The plan's own `until(v)` ends
   the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
   (`'combat level 5+'` above: the walk between the spots passes Giant spiders that attack lower
   levels): each is checked before every phase choice, and one that does not hold ends the plan
   `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
-  `no phase applies`.
+  `no phase applies`. `combatAtLeast(n)` and `levelAtLeast(skill, n)` build such an entry to spread
+  in: `requires: { ...combatAtLeast(5), ...levelAtLeast('smithing', 30) }`.
+- `defaults: { onFail?, maxFails? }` gives every phase that sets none of its own that `onFail` and
+  `maxFails`; a phase's own option wins.
+- A phase's params are parsed against its task's schema before the plan acts (`invalidParams`
+  lists the failures), so a typo fails the plan at once.
 - `needs` (optional, with `needsUnless`) declares the items a plan expects held when it starts and does not
   fetch: `[{ item: 'Pot' }, { item: 'Nails', count: 12 }, { item: /pickaxe$/i, label: 'pickaxe' }]` (a name
   or pattern as `v.inv` takes; unlike `v.inv`, worn items count). Checked once at the start, before any phase: a short one ends the
@@ -142,6 +155,15 @@ keeps every phase choice re-derivable from a run's recorded states.
 | `v.questDone(id)`   | the quest tab shows the quest green                                     |
 | `v.runs(phase)`     | times that phase has run in this plan                                   |
 | `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
+| `v.x` / `v.z`       | the player's tile; `v.floor` its level (0 the surface); 0 with no player |
+| `v.within(spot)`    | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev |
+| `v.held(item)`      | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only) |
+| `v.npcs(name, within?)` / `v.locs(...)` | nearby NPCs / locs of that name, at most `within` tiles away |
+| `v.ground(item, within?)` | ground piles of that name (piles, not the items stacked in them)  |
+| `v.said(pattern, sinceTicks?)` | a recent dialog line or page, the open dialog or a game message matches |
+| `v.lastDone(...names)` / `v.lastFailed(...names)` | the previous run ended `done` / `failed` or `stuck`, as one of `names` when given; an unknown name throws |
+| `v.combatLevel` / `v.coins` | the player's combat level; Coins in the pack                    |
+| `v.questStarted(id)` | the quest tab shows the quest yellow                                   |
 
 `v.quest` and `v.questDone` take the id of `conductor/lib/quests.ts` (the content's `questlist:` name:
 `imp`, `runemysteries`, `priest`, `fortress`, ...; an unknown id throws). Quest varps are not sent to the
@@ -167,15 +189,31 @@ today's chain step "withdraw first". A one-shot chain ends through the plan's `u
 
 ### `onFail`
 
-`'fail' | 'continue' | (r: TaskResult) => 'fail' | 'continue'`
+`'fail' | 'continue' | 'retry' | (r: TaskResult) => 'fail' | 'continue' | 'retry'`
 
 `'continue'` goes back to selection with that phase skipped for the next selection, so a fallback
 phase below it gets the turn. A phase that fails `continue` this many times in a row (`maxFails`,
-default 3) fails the plan. A preflight refusal is a `failed` phase like any other: preflight is never
+default `defaults.maxFails`, else 3) fails the plan. A preflight refusal is a `failed` phase like any other: preflight is never
 used as an implicit `when`, so a missing tinderbox fails loudly rather than leaving the plan chopping
 forever.
 
 A phase that fails `continue` with no fallback phase whose `when` holds leaves nothing to select, so the plan ends `failed` with `no phase applies` after that one failure; give a `continue` phase a fallback (a restock, a travel phase). [v 2026-10-23 conductor3 local]
+
+`'retry'` leaves the phase eligible at once, so it is the one to use for a slip-prone action (a rock
+climb, a key pickup) that should simply be tried again: its failure stays out of the idle rail, and
+`maxFails` consecutive failures fail the plan (`<phase> failed N times in a row: <reason>`), under
+`'continue'` and `'retry'` alike. `maxFails` is not only for `'continue'`.
+
+### The `wait` task
+
+`wait` (`conductor/tasks/wait.ts`, params `ticks` 1 to 1500 and `orFail`, default false) waits that
+many game ticks and sends nothing; the shared guards still act at every tick. It ends `done` when the
+ticks run out (`failed` with `orFail`), or earlier through its phase's `until`: an NPC arriving, a
+respawn. Use it in place of a pickup of a never-held item as a timer. Its task sets `TaskDef.waits`,
+so a run its phase's `until` ended stays out of the idle rail (what it waited on may not be in the
+idle signature); `DEFAULT_MAX_WAITS` (50, `RunPlanOptions.maxWaits`) consecutive such runs of one
+phase, reset by any other run, fail the plan: `<phase> waited N times in a row with its until met
+each time`.
 
 ## The runner's safety rails
 
@@ -194,12 +232,12 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
 - **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]
-- **Stale view after a cast, jump or pickup.** The next phase selection can read the pre-action inventory or loc view and re-pick the same phase (a spell cast wastes a 25-tick bloom; repeated jumps). Guard such a phase with `v.last` plus a short walking settle phase. An `items drop` of several named items fails preflight if one is absent: one phase per junk item. A `pickup` can fail "attacked while picking up" near monsters: two identical phases with `onFail: 'continue'`. [v 2026-10-24 questw1 local]
-- **A random-roll failure counts as idle.** A try that can fail without changing anything (a skill roll such as replacing a railing: no XP, same inventory and position) is an idle phase run, and 3 in a row end the plan. Follow each failure with a short `travel` nudge phase to a fresh tile (picked e.g. by `hp % 7`), so the state changes. [v 2026-10-24 questw7 local]
-- **Dialog scenes that close and reopen count as idle.** A scene whose pages close and reopen between pages (an arrest, the King below the tree, a cutscene) shows the rail repeated no-change phases and ends the plan. Pair `talk continue` gap phases that alternate on the game tick, so the state differs between runs, and key a post-cutscene wait on the dialog tick of a line of the scene (Grand Tree: "headache", < 80 ticks). [v 2026-10-31 questw6 local]
-- **Quest-plan gotchas (Troll Stronghold proof).** (1) Position and inventory lag the end of an `interact` (it ends on "the loc is gone" before the bot moves): a gate on the new position or item needs "`v.last` was X and done" as an alternative, or the idle rail ends the plan. (2) Slip-prone obstacles (rock climbs at low Agility fail about 22%, a key pickup) get a `-b` duplicate phase with `onFail: 'continue'`; the default `onFail` ends the plan and `maxFails` alone does not retry. (3) A plain `talk continue` phase swallows a whole fight's dialog: gate a fight's end-of-fight dialog on the fight's `v.runs` count. (4) A `prayer` off phase must sit first in phase order or later phases pre-empt it; `combat` with `keepPrayersOn` leaves prayers on after the fight so one `prayer` phase can cover fight, pickup and stairs. (5) `interact` `at` needs tolerance >= 1. [v 2026-10-31 questw2 local]
+- **Stale view after a cast, jump or pickup.** The next phase selection can read the pre-action inventory or loc view and re-pick the same phase (a spell cast wastes a 25-tick bloom; repeated jumps). Guard such a phase with `v.last` plus a short walking settle phase (a new plan gets the between-phase settle and `v.lastDone`/`v.lastFailed` instead). An `items drop` of several named items fails preflight if one is absent: one phase per junk item. A `pickup` can fail "attacked while picking up" near monsters: two identical phases with `onFail: 'continue'` (a new plan: one phase with `onFail: 'retry'`). [v 2026-10-24 questw1 local]
+- **A random-roll failure counts as idle.** A try that can fail without changing anything (a skill roll such as replacing a railing: no XP, same inventory and position) is an idle phase run, and 3 in a row end the plan. Follow each failure with a short `travel` nudge phase to a fresh tile (picked e.g. by `hp % 7`), so the state changes. A new plan uses `onFail: 'retry'` on the try instead, which stays out of the idle rail. [v 2026-10-24 questw7 local]
+- **Dialog scenes that close and reopen count as idle.** A scene whose pages close and reopen between pages (an arrest, the King below the tree, a cutscene) shows the rail repeated no-change phases and ends the plan. Pair `talk continue` gap phases that alternate on the game tick, so the state differs between runs, and key a post-cutscene wait on the dialog tick of a line of the scene (Grand Tree: "headache", < 80 ticks). A new plan keys on `v.said(pattern, sinceTicks)` and puts the wait in a `wait` phase. [v 2026-10-31 questw6 local]
+- **Quest-plan gotchas (Troll Stronghold proof).** (1) Position and inventory lag the end of an `interact` (it ends on "the loc is gone" before the bot moves): a gate on the new position or item needs "`v.last` was X and done" as an alternative, or the idle rail ends the plan (a new plan uses `v.x`/`v.z`/`v.within` and the settle, which waits for the move to be published). (2) Slip-prone obstacles (rock climbs at low Agility fail about 22%, a key pickup) get a `-b` duplicate phase with `onFail: 'continue'`; the default `onFail` ends the plan and `maxFails` alone does not retry (a new plan uses `onFail: 'retry'` on one phase). (3) A plain `talk continue` phase swallows a whole fight's dialog: gate a fight's end-of-fight dialog on the fight's `v.runs` count. (4) A `prayer` off phase must sit first in phase order or later phases pre-empt it; `combat` with `keepPrayersOn` leaves prayers on after the fight so one `prayer` phase can cover fight, pickup and stairs. (5) `interact` `at` needs tolerance >= 1. [v 2026-10-31 questw2 local]
 - **Quest-plan gotchas (Witch's House, Demon Slayer proofs).** (1) An `interact` `at` within x/z tolerance on the wrong level never walks: give it `level` explicitly (the Varrock kitchen sink after Captain Rovin on level 2). (2) Combat's low-HP eat takes the first edible inventory slot: put real food before cheese-like edibles in a save's pack. (3) `wear` reports done if the bot only moved: gate on the item leaving the pack. (4) `combat` against a multi-form NPC reports failed after each form dies (it waits for the same name): `onFail: 'continue'`. [v 2026-11-01 questw4 local]
-- **Timed waits (Big Chompy Bird Hunting proof).** A pickup-based timed wait must name an item never held (that plan uses Cannonball): one naming a held item finishes at once. A wait that always "fails" by design needs a large `maxFails`. [v 2026-11-01 questw3 local]
+- **Timed waits (Big Chompy Bird Hunting proof).** A pickup-based timed wait must name an item never held (that plan uses Cannonball): one naming a held item finishes at once. A wait that always "fails" by design needs a large `maxFails`. A new plan uses the `wait` task with an `until`. [v 2026-11-01 questw3 local]
 - **Quest-plan gotchas (Shilo Village proof).** (1) A spot the walker treats as disconnected (the waterfall exit bank (2928,2947)) needs a `travel` waypoint first ((2921,2997)). (2) Random-fail crossings that drop the bot on a bank with no route back need fallback phases, not just a `-b` duplicate. (3) Hostile mobs that block `interact` ("in combat ... handle the attacker first") need a capped `combat` phase ahead of it. [v 2026-11-01 questw5 local]
 
 - **End-of-run epilogue.** A plan (or plain task) that ends, whatever its status (`done` included), while the bot is under attack gets `lib/epilogue.ts` from run-task before the process exits, since the low-HP and death guards stop with the run. For at most 60 s (20 s, `SIGNAL_EPILOGUE_TICKS` = 50 ticks, for a `done` run), each pass: eat while HP is under the eat line; teleport (lumbridge/varrock/falador/camelot, if the Magic level and runes are held) when HP is low with no food, or fell by 15% of max or more after a walk leg; hold and defend when the only foe is the bot's own fight target and HP is above the eat line; else walk away from the attacker (toward the last tile the bot stood out of combat when that lies away from the fight, else directly away; never deeper into the Wilderness), ending the legs early once HP falls with the fight still on, then stand and defend. With auto-retaliate off standing would not defend, so it teleports at once if it can and otherwise keeps walking (`retaliate off` among the actions). It never attacks, does nothing when the bot is not under attack, and is skipped for a vanished client or a taken-over bot. The RESULT keeps the run's status, reason, `durationMs` and XP (these exclude the epilogue) and gains `epilogue: {actions, ended, cutShort?, hpBefore, hpAfter, maxHp, inCombat, ticks}`; the final `hp`/`inCombat`/`finalPos` are re-read after it. The NDJSON `result` event is written before the epilogue runs; the epilogue is in the RESULT line and a separate `epilogue` log event. `ended` is one of: `safe` (not under attack and no hit for `RECENT_HIT_TICKS` (10) at the last state read; a chaser outside attack reach that has not hit yet counts), `timeout` (still under attack when the budget ran out), `died` (the bot died during it, or earlier in the run: the state shown is a respawn), `no player in state`, `out of time` (cancelled past the budget plus grace), `cut short` (aborted by something else; the reason is in `cutShort`). A cut-short epilogue (including a driver that throws mid-epilogue) keeps the actions done so far and `hpBefore`. The epilogue also runs for `stopped` runs (an `--until` stop mid-fight) and holds or defends up to its budget, deliberately. The first SIGTERM/SIGHUP (not SIGINT) kills the run, runs the epilogue capped at 50 ticks (a 30 s wall backstop closes its driver if the game stops ticking), prints the RESULT with the `epilogue` and exits 143/129; a signal during the run's own epilogue waits for it under the same backstop, so a non-`done` run's 60 s epilogue is cut at 30 s and its RESULT prints without the `epilogue`; a second signal prints the RESULT at once and exits. It cannot set auto-retaliate (no op). Ranged or fire attackers (Elvarg's dragonfire) are not solved by walking: eating or teleporting is the defence. [v 2026-10-31 local]
@@ -399,9 +437,18 @@ phase(combat, { target: 'Cow', area: COWS, food: ['Trout'], loot: ['Cowhide'] },
 ## Tests
 
 - Unit (`bun test conductor`, scripted worlds through `simulate`): phase selection order; `until`
-  ending a phase and the plan going on; `until` waiting out combat; `onFail` fail, continue, the
+  ending a phase and the plan going on; `until` waiting out combat; `onFail` fail, continue, retry, the
   function form and `maxFails`; the no-progress rail; params checked up front; plan `--until` across
   phases; `v.bank` remembered across phases; predicate exceptions.
+- Plan lint (`lintPlan`, `conductor/lib/plan-lint.ts`; `conductor/test/plans.test.ts` runs it over every
+  promoted plan): (1) params that fail their task's schema; (2) a phase name that is no phase of the
+  plan, in `v.runs`/`lastDone`/`lastFailed` (and the helpers `ran`, `lastWas`, `lastIs`) arguments or
+  compared with `.phase` by `===`/`!==`; (3) a RegExp literal that matches both `Bronze axe` and
+  `Bronze pickaxe` (an unanchored `/axe$/i`), skipping one passed to `.replace`, `.replaceAll` or
+  `.split`. It cannot see a phase name inside an array literal
+  (`['a', 'b'].includes(v.last?.phase ?? '')`), a name held in a variable or built by a template
+  literal, `==`/`!=`, a `switch` on the phase, or a pattern built with `new RegExp(...)` or given as a
+  string.
 - Smoke (`conductor/test/integration/smoke/plan.itest.ts`): chop-burn on a worker, two full cycles.
 
 ## Later, not in the first cut

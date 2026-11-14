@@ -405,6 +405,9 @@ status (`idea` / `authoring` / `in review` / `in catalog`).
   `inv` only, and the bank `upTo` took 27 of 155 feathers (fixed f2491ac8a); (c) `runs()` resets on restart. Proposal:
   `plan` validator (in `run-task.ts --plan` load) warns on a phase that is the last of its skill with no `until`, and
   on a `shop buy` whose `when` lacks a coin or bank-held check; document in `conductor/docs/plans.md`.
+  Partly done (plan-primitives branch): `lib/plan-lint.ts` (run by `test/plans.test.ts` over every promoted plan) checks
+  params, phase names and axe patterns, and `plans.md` documents `retry`, `wait` and the view members; the unbounded
+  last-of-skill phase and the `shop buy` coin check are still not linted.
 - **Runner wait idiom (done: task-runner.md already says so since 1e8b41494/fafa3391d; that runner predates them; Monitor note added)**: the thieving runner lost ~30 turns to harness-blocked `sleep N;
   cmd` calls and a nonexistent Monitor tool (transcript aeed6c5a: turns 77/144/153/196/200); the plan run is a
   background command, so say in task-runner.md: wait with `while pgrep ...; do sleep 10; done` in one call (the form
@@ -538,6 +541,17 @@ on its own.
   the budget and make "a loop inside a step is bounded" a review-lens criterion. Touches
   `lib/engine.ts`, `lib/task.ts`, `actions/walk.ts` and `context.ts`, the walking tasks (combat,
   smithing, shop, firemaking, `lib/area.ts`) and their tests; re-review the tasks.
+- **Plan-primitives follow-ups** (design: `conductor/docs/plan-primitives.md`):
+  - Quest layer: `defineQuest({ id, steps })` compiling to phases, replacing hand-built stage tracking in quest plans.
+  - Quest layer: a stage cursor from a step's `done` evidence, a stage probe and a persisted per-bot record.
+  - Quest layer: the stage probe (read an open quest journal's text), spiked on a worker first.
+  - Audit: generate the task catalog text from the param schemas (`.describe()`), as `wait` does.
+  - Audit: declared silent streaks in place of hand-summed `stuckAfterMs`; one streak-then-fail helper, `waitForRespawn` and eat step.
+  - Audit: one name for the full-inventory policy param, and exact names against pattern sources.
+  - Audit: outcome codes in place of failure-wording matches (`clock-tower`, `monks-friend`, `troll-stronghold`; about 91 reason strings).
+  - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.
+  - Migrate promoted plans to the view members and primitives (`retry`, `wait`, `defaults`, `v.said`, `v.held`) when next touched or re-run.
+  - fm-99, willow-burn and oak-draynor-drop count an axe with `v.inv` (the pack only), so a wielded axe reads as none and triggers a needless fetch or purchase; `v.held` (pack plus worn) fixes it, to be changed with a run.
 
 ## Max route
 

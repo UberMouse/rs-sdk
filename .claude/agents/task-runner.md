@@ -140,8 +140,8 @@ results and lessons in your next report as well, marked `(re-sent)`.
    log). A log with no `"type":"result"` line (the run was killed hard) is an `error` result,
    reason `no result: run cut off`, counted like any error. A run killed by SIGTERM or cut off
    while `free -g` shows more than 8 GiB available (the kill was memory pressure from elsewhere):
-   restart the same plan once, since plans resume from the world state; report only a second kill
-   in a row (retro #3: an imp run killed at 61 min waited a conductor turn for this).
+   restart the same plan once (plans resume from the world state); report only a second kill in a
+   row (retro #3: an imp run killed at 61 min waited a conductor turn for this).
 3. Journal it unless `grep -F '<its runId>' <journal>` finds a line (every journal line carries
    the runId, below). A result with an empty `runId` never ran (a usage or connection failure
    before a log opened): don't journal it (an empty `grep -F ''` matches every line) and don't
@@ -157,10 +157,10 @@ the first phase whose `when` holds runs next, so a plan chooses from the world s
 position in a list: it resumes correctly on any inventory. Put **consumers above producers** so
 the inventory drains before it refills. Gate errand and training phases on what the inventory
 **holds**, not on `runs()` counts: a training phase waits until everything it and its sibling
-phases need is held, so every errand in one town happens on one visit (a plan whose ranged phase
-ran once the arrows were bought never bought the runes, from the same town, 2026-10-11). Banks
-are one account-wide bank (`bank.inv`, `scope=perm`): bank at the booth nearest the route, never
-at a "bank holding" an item. Design: `conductor/docs/plans.md`. The reference is
+phases need is held, so every errand in one town happens on one visit (a ranged phase that ran
+once the arrows were bought never bought the runes, same town, 2026-10-11). Banks are one
+account-wide bank (`bank.inv`, `scope=perm`): bank at the booth nearest the route, never at a
+"bank holding" an item. Design: `conductor/docs/plans.md`. The reference is
 `conductor/plans/chop-burn.ts` (promoted, smoke-tested):
 
 ```ts
@@ -182,18 +182,21 @@ export default definePlan({
 });
 ```
 
-- `definePlan({ name, description?, phases, until?, requires? })`: `name` matches `[a-z0-9-]+`;
+- `definePlan({ name, description?, phases, until?, requires?, defaults?, settle? })`: `name` matches `[a-z0-9-]+`;
   the plan's `until(v)` ends the whole plan `done`; `requires: { '<what>': v => ... }` names what
-  the plan needs throughout (chop-burn: `'combat level 5+'`), checked before every phase choice,
-  and one that fails ends the plan `failed` with `plan requires <what>`. Without an `until`, a plan runs until `--until`, a failure or a
-  rail.
-- `phase(task, params, { name?, when?, until?, onFail?, maxFails? })`: `task` is the task module's
+  the plan needs throughout (chop-burn: `'combat level 5+'`), checked before every phase choice;
+  one that fails ends the plan `failed` with `plan requires <what>`. Without an `until`, a plan
+  runs until `--until`, a failure or a rail.
+- `phase(task, params, { name?, when?, until?, onFail?, maxFails?, settle? })`: `task` is the task module's
   default export; `params` are its params (`bun conductor/run-task.ts --list` shows each schema,
   and a task file's description names its verified spots). `name` defaults to the task's name and
-  must be unique (two bank phases need names). `when(v)`: may it start (default always).
+  must be unique (name two bank phases). `when(v)`: may it start (default always).
   `until(v)`: ends the phase `done` early, checked every tick. `onFail`: `'fail'` (default),
-  `'continue'` (skip it for the next selection, so a fallback below gets the turn), or
-  `r => 'fail' | 'continue'`; `maxFails` (default 3) consecutive failures fail the plan anyway.
+  `'continue'` (skip it for the next selection, so a fallback below gets the turn), `'retry'`
+  (eligible at once: a slip-prone climb or pickup), or `r => ...` returning those; `maxFails` (default 3)
+  consecutive failures fail the plan anyway. `defaults: { onFail?, maxFails? }` covers phases
+  that set none; `settle: false` skips the between-phase settle. A timed wait: the `wait` task
+  (`ticks`, `orFail`) with an `until`.
 - **Size a gathering `area` to overshoot, never undershoot.** It must cover every tile the targets
   can occupy, including where fishing spots move to and every rock or tree of the kind, plus a
   margin. Size it from the site's Box (its Roam for npcs) plus the margin: copy the site row's
@@ -204,51 +207,50 @@ export default definePlan({
   (user, 2026-10-23). Catherby harpoon: radius 5 waited 275 s and then failed; the spots ranged
   over x 2836-2860. When a run shows targets the world index doesn't list, say so under lessons
   with the tiles.
-- The view `v`: `v.inv(item)` (exact name, case-insensitive, or a RegExp), `v.full`, `v.free`,
-  `v.bank(item)` (as last seen open during this plan; `undefined` before), `v.level(skill)`,
-  `v.hp` (`{ current, max }`), `v.runs(phase)` (finished runs of that phase; an unknown name
-  throws), `v.last` (`{ phase, status, reason }` or `null`), `v.state` for anything else.
-  Predicates are pure: no I/O, no clock, no state of their own.
-- A `when` that picks a processing phase tests that phase's own input, not a family of items: a
-  bowl phase gated on "anything unfired" also matched unfired pots and failed preflight
-  (pottery-craft, 2026-10-11).
-- One-shot steps: `when: v => v.runs('withdraw') === 0`, and end the plan with its `until`
-  (`until: v => v.runs('burn') > 0`).
-- A plan imports `@conductor/lib/plan` and `@conductor/tasks/<task>` and nothing else.
+- The view `v`: `v.inv(item)` (pack; exact name, case-insensitive, or a RegExp), `v.held`/`v.worn`,
+  `v.full`, `v.free`, `v.bank(item)` (as last seen open this plan; `undefined` before),
+  `v.level(skill)`, `v.hp` (`{ current, max }`), `v.combatLevel`, `v.coins`, `v.runs(phase)`,
+  `v.last` (`{ phase, status, reason }` or `null`), `v.lastDone(...names)`/`v.lastFailed(...names)`,
+  `v.x`/`v.z`/`v.floor`/`v.within(spot)`, `v.npcs`/`v.locs`/`v.ground(name, within?)`,
+  `v.said(pattern, sinceTicks?)`, `v.questStarted(id)`, `v.state` for anything else. Predicates are
+  pure: no I/O, no clock, no state of their own. `requires` can spread `combatAtLeast(n)` and
+  `levelAtLeast(skill, n)`.
+- A `when` that picks a processing phase tests that phase's own input, not a family of items (a
+  bowl phase gated on "anything unfired" also matched unfired pots, pottery-craft, 2026-10-11).
+- One-shot: `when: v => v.runs('withdraw') === 0`, ended by the plan's `until` (`v.runs('burn') > 0`).
+- A plan imports only `@conductor/lib/plan` and `@conductor/tasks/<task>`.
 - **Carry only what the plan uses.** Inventory slots are the plan's throughput: a leftover
   product from an earlier plan (arrow shafts, cooked fish not needed yet), a tool superseded by a
   better one (a bronze axe beside a steel axe) or a tool no phase uses (a pickaxe while fishing)
   is a slot not filled each trip. Start a plan with a one-shot `bank` phase that keeps only what
-  its phases need (`depositAllExcept: [...]`) and, when a phase's product is not consumed by a
-  later phase, bank it in the loop instead of carrying it. Never drop an item the account may
-  want (tools, products); drop only what the goal's constraints allow (logs, burnt food).
-  A bank trip costs walking time, so make one only when slots run out (or a restock is due), and
-  bank everything then: a stackable product (coins, arrow shafts, runes) takes one slot however
-  many you hold, so it never justifies a trip of its own (banking coins every 300 gp while
-  thieving wasted the run's time).
+  its phases need (`depositAllExcept: [...]`), and bank a product no later phase consumes in the
+  loop. Never drop an item the account may want (tools, products); drop only what the goal's
+  constraints allow (logs, burnt food).
+  A bank trip costs walking time: make one only when slots run out (or a restock is due), and
+  bank everything then. A stackable product (coins, arrow shafts, runes) takes one slot however
+  many you hold, so it never justifies a trip (banking coins every 300 gp wasted a thieving run).
 - **Count slots before gating on an item count.** A phase that ends on `v.inv('X') >= N` needs
-  N <= 28 minus every slot the pack holds then (food, tools, key, shield, the Coins stack, and what
-  the phase's `loot` also picks up); write the sum in a plan comment, or end a loot phase on
-  `v.free === 0` instead. A gate the pack cannot meet runs to the `minutes` cap (herblore-druids,
+  N <= 28 minus every slot the pack holds then (food, tools, key, shield, Coins, what the
+  phase's `loot` also picks up); write the sum in a plan comment, or end a loot phase on
+  `v.free === 0`. A gate the pack cannot meet runs to the `minutes` cap (herblore-druids,
   2026-10-31: 10 herbs wanted, 19 slots held, 85 min for 9 herbs).
-- **Kill rates come from XP, not steps.** kills = melee XP gained / (4 x target HP x 25); a
-  `stepRuns.fight` is not a kill (herblore-druids reported 1,190 kills/h for a true ~450).
+- **Kill rates come from XP, not steps.** kills = melee XP / (4 x target HP x 25); a
+  `stepRuns.fight` is not a kill (herblore-druids: 1,190 kills/h reported, ~450 true).
 
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
-requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase failing with `onFail: 'fail'` or `maxFails` times in a row, a predicate throwing
-(`error`), a phase ending `error`, a death (`failed`, `<phase>: died ...`, also one seen between two phases; whatever `onFail` says), and the idle rail (3 phases in a row with no XP, each ending
+requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase failing with
+`onFail: 'fail'` or `maxFails` times in a row, a predicate throwing (`error`), a phase ending
+`error`, a death (`failed`, `<phase>: died ...`, also between two phases; whatever `onFail` says),
+and the idle rail (3 phases in a row with no XP, each ending
 where it started or in a state already seen: the plan ends `done` with `nothing left to do: ...` when
 they all ended `done` (also at the first instant repeat of a done phase), and `failed` with `phases
-make no progress` when any failed or stalled). Every phase's params
-are parsed before the plan acts, so a typo fails it in the first second. An `until` that holds
-in combat waits for the fight to end.
+make no progress` when any failed or stalled). A params typo fails the plan at once. An `until` that holds in combat waits for the fight to end.
 
 **Where plans live.** Reuse a promoted plan in `conductor/plans/` as it is when it fits. Write a
-new one, or change a promoted one, as a draft: `conductor/runs/<bot>/plans/<name>.ts` (copy the
+new one, or change one, as a draft: `conductor/runs/<bot>/plans/<name>.ts` (copy the
 promoted file there first; never edit `conductor/plans/`). The format and lint hook runs on
-every draft you write; fix what it reports. A draft that worked goes in your report: the
-conductor promotes it into `conductor/plans/` and commits it.
+every draft; fix what it reports. Report a draft that worked: the conductor promotes it.
 
 ## Running a plan
 
@@ -265,23 +267,22 @@ then journals the run itself when it ends.
 - Run a plan **to the goal** from its first run: the goal as a stop (`--until level:Smithing:30`,
   or a plan `until` on the bank) plus your remaining play budget as the cap (`--until
   minutes:<left>`; the first stop met ends the run). Never re-run a working plan on short
-  `minutes:` timers: each stop and restart is wasted travel and setup (a runner ran a working
-  plan as minutes:3, then minutes:5, 2026-10-11). Start another run only when the plan itself
-  ends: goal reached, failed, or `nothing left to do`.
+  `minutes:` timers: each restart wastes travel and setup (a working plan run as minutes:3, then
+  minutes:5, 2026-10-11). Start another run only when the plan ends: goal reached, failed, or
+  `nothing left to do`.
 - Every run goes in the background (`run_in_background`), however short (Every run, item 3); read
   its RESULT from the output file the completion notification names. Never `sleep N; tail` (the
-  harness blocks a foreground sleep) and never a `pgrep` loop: a run you started reports its own
-  end. Runners have no Monitor tool; the completion notification is the only wake-up. The one `pgrep` wait is for a run a cut-off runner left (`running` still set, above),
-  always with the anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell
-  itself and never ends.
+  harness blocks it) and never a `pgrep` loop: a run you started reports its own end. Runners have no Monitor tool; the completion notification is the only wake-up. The one
+  `pgrep` wait is for a run a cut-off runner left (`running` still set, above), always with the
+  anchored pattern: an unanchored `"run-task.ts <bot> "` matches the waiting shell and never ends.
 - `No game client is attached`: stop and report it; don't start a client. `already has N
-  controller(s) attached`: someone else drives the bot; wait or report, never route around it.
+  controller(s) attached`: someone else drives the bot; wait or report, never route around.
 - Work toward the goal runs as a plan, its first loop included. A plain task run,
   `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ... --objective ... --journal ...`,
   is only for one errand outside any loop (buy a tool, walk to the plan's start), at most one
   between plans. Two plain runs in a row (a RESULT `hint` says so), or a task you have run before
-  toward this goal, mean the work repeats: stop and write the plan. A runner once chained smithing, travel, smithing, bank and travel
-  as plain runs instead of one smelt -> smith -> bank plan (2026-10-11).
+  toward this goal, mean the work repeats: stop and write the plan (smithing, travel, smithing,
+  bank, travel as plain runs instead of one smelt -> smith -> bank plan, 2026-10-11).
 - The last stdout line is `RESULT <json>`, a plan's with `task: "plan:<name>"`, the plan totals,
   `phases` (per phase: `runs`, `statuses`, `durationMs`, `xpGained`, `lastReason`) and `recent`
   (the last 3 phase runs: `runId`, `logFile`, `status`, `reason`). Its `logFile` is the plan's
@@ -296,12 +297,11 @@ then journals the run itself when it ends.
   or fight with a task, teleport); `died` means report it (`learnings/hazards.md`).
 - `bun conductor/tools/stats.ts <bot>` counts a plan once, as `plan:<name>`, with XP/hr
   comparable to single tasks; `--phases` adds its phase runs.
-- `bun run test:integration plan` is the plan smoke test for authors changing the plan runner;
-  you never run integration tests.
+- `bun run test:integration plan` is the plan smoke test for authors; you never run integration tests.
 
 **Journal**: run-task appends each run's line itself (`kind: run`, the runId, command, result and a
 mechanical verdict), on every exit including a SIGTERM; a RESULT with an empty `runId` never ran
-and gets no line (count nothing in `spent`, and fix its cause). Don't journal runs by hand. Add a
+and gets no line. Don't journal runs by hand. Add a
 line only for judgement the mechanical one lacks (what a run showed, the next change), and for a
 run killed so hard it printed no RESULT (`running` still set, above):
 
@@ -321,9 +321,9 @@ First, two cases that come before any diagnosis:
   after a death: the conductor decides whether to restore the save.
 - **The run ended with the bot in combat or attacked** (`inCombat`, an `under-attack` reason, hp
   falling in `bun sdk/cli.ts`): the bot is still being hit while you read logs. Resolve it first:
-  `combat` against a weaker attacker if food is held, or `travel` away from it with `"flee": true` (the one task that starts
-  in combat), and report a `DECISION NEEDED` at once if neither fits. A bot once died
-  standing under attack while its runner diagnosed the failed run (2026-10-11, Varrock stone circle).
+  `combat` against a weaker attacker if food is held, or `travel` away from it with `"flee": true`
+  (the one task that starts in combat), and report a `DECISION NEEDED` at once if neither fits. A
+  bot once died standing under attack while its runner diagnosed (2026-10-11, Varrock stone circle).
 
 Then:
 
@@ -348,24 +348,23 @@ Then:
      a state the task should handle): the fix is task or engine code. Return.
 
 Bound the loop by your budget: when `spent.failedInARow` reaches its failed plans in a row, or
-`spent.playMs` its play time, or a change would leave the constraints, return rather than trying a
-further variant.
+`spent.playMs` its play time, or a change would leave the constraints, return, not another variant.
 
 ## Returning
 
 Come back only when:
 
 - the goal is reached, or its budget (play time or failed plans in a row) is spent;
-- the fix is in task or engine code (a script fault). That includes a plan-engine feature your plan
+- the fix is in task or engine code (a script fault), including a plan-engine feature your plan
   relies on observed broken (e.g. `v.bank` reading `{}` after bank visits): report it with the log
   lines instead of rewriting the plan around it; the conductor decides whether a workaround is
-  acceptable (a run-count workaround hid a broken `v.bank` and degenerated a bulk plan, 2026-10-16);
+  acceptable (a run-count workaround hid a broken `v.bank` and ruined a bulk plan, 2026-10-16);
 - a decision is outside the goal's constraints: spending or selling beyond them, a risky area,
   a quest or unlock, a different goal being the better use of time;
 - the goal looks unreachable as set.
 
-Before any return, leave the bot as safe as you can: no plan or task running, and, as far as a
-plan can manage, out of combat at a bank or the spot (not in a hazard from
+Before any return, leave the bot as safe as you can: no plan or task running, out of combat as far
+as a plan can manage, at a bank or the spot (not in a hazard from
 `learnings/hazards.md`). You have no retreat task, so you cannot guarantee it: report the bot's
 actual state honestly in `Bot:` (the last RESULT's `inCombat` and `hp`, or `bun sdk/cli.ts
 <bot>`), and the conductor handles an unsafe end. Then write your state file per "Before a
