@@ -30,7 +30,8 @@ here is the conductor's, made under the "drive this" instruction; each is marked
   `conductor/test/plan-places.test.ts` turns into a test failure.
 - A place gives `stand` (`{ x, z, level }`), `at(opts?)` (the task `at` shape) and `area(radius)` (the task
   `area` shape). `level` is included only when it is not 0, as plans write it today.
-- Banks resolve through `lib/banks.ts`, so its curated stand fixes apply.
+- Banks resolve through `lib/bank-sites.ts` (the bank table and curated stand overrides, which `lib/banks.ts`
+  re-exports), so those stand fixes apply; it is kept apart from `banks.ts` so `places.ts` loads nothing beyond the index.
 - Kinds allowed: the service kinds a plan stands at (bank, furnace, anvil, range, altar, rc-altar, rc-ruins,
   spinning-wheel, pottery-oven, pottery-wheel, tanner, water-source, sand-pit, agility-course).
   **Assumption:** resource clusters (tree, rock, fishing-spot, pickpocket, flax) are not named places: a tree
