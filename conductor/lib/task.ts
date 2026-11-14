@@ -117,6 +117,12 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * JSON Schema drops `.refine`, so the catalog says them here.
      */
     rules?: string[];
+    /**
+     * Each code the task's steps can end the run with (`{ fail, code }` or `{ done, code }`, TaskResult.code),
+     * mapped to one sentence on when it happens. A code is lower-case kebab-case (OUTCOME_CODE). A step ending
+     * with a code not declared here ends the run `error`; a guard declares its own (TaskGuard.outcomes).
+     */
+    outcomes?: Record<string, string>;
     /** Verified spots, example params objects and where the task is used ("used by"), one string each. */
     spots?: string[];
     /** A fresh `ctx.memory` for each run; its return type types `ctx.memory`. Default `{}`, untyped. */
@@ -216,7 +222,25 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
 /** A generator step's tick budget: its `stepTimeoutMs` in ticks, rounded up, as the engine enforces it. */
 export const stepBudgetTicks = (stepTimeoutMs: number): number => Math.ceil(stepTimeoutMs / TICK_MS);
 
+/** What an outcome code looks like: lower-case kebab-case. */
+export const OUTCOME_CODE = /^[a-z][a-z0-9-]*$/;
+
+/**
+ * Throws naming `owner` on a declared code that is not OUTCOME_CODE or a sentence that is empty. defineTask
+ * checks a task's and its guards' declarations; the engine checks a run's again, for a def built without it.
+ */
+export function checkOutcomes(owner: string, outcomes: Record<string, string> | undefined): void {
+    for (const [code, sentence] of Object.entries(outcomes ?? {})) {
+        if (!OUTCOME_CODE.test(code))
+            throw new Error(`${owner}: outcome code "${code}" is not lower-case kebab-case (${OUTCOME_CODE})`);
+        if (typeof sentence !== 'string' || sentence.trim() === '')
+            throw new Error(`${owner}: outcome code "${code}" has no sentence on when it happens`);
+    }
+}
+
 export function defineTask<S extends z.ZodType, M extends object = UntypedMemory>(def: TaskDef<S, M>): TaskDef<S, M> {
+    checkOutcomes(`task "${def.name}"`, def.outcomes);
+    for (const g of def.guards ?? []) checkOutcomes(`guard "${g.name}" of task "${def.name}"`, g.outcomes);
     if (!def.silent) return def;
     return { ...def, stuckAfterMs: taskStuckWindowMs(def) };
 }
@@ -236,6 +260,8 @@ export interface TaskResult {
      * the run ended some other way (a stop, the watchdog, the step budget, a preflight refusal).
      */
     endedBy?: string;
+    /** The code the outcome that ended the run carried (TaskDef.outcomes); absent when it carried none or the run ended some other way. */
+    code?: string;
     params: unknown;
     durationMs: number;
     loops: number;

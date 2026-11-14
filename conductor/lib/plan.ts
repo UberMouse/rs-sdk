@@ -45,8 +45,11 @@ export interface PlanView {
     hp: { current: number; max: number };
     /** Finished runs of that phase in this plan; throws on a name the plan has no phase for. */
     runs(phase: string): number;
-    /** The previous phase run, or null before the first has ended. */
-    last: { phase: string; status: TaskStatus; reason: string } | null;
+    /**
+     * The previous phase run, or null before the first has ended. `code` and `endedBy` are its result's
+     * (TaskResult.code, TaskResult.endedBy), absent where the result has none: branch on `code`, not on `reason`.
+     */
+    last: { phase: string; status: TaskStatus; reason: string; code?: string; endedBy?: string } | null;
     /** The player's `worldX`; 0 in a state with no player. */
     x: number;
     /** The player's `worldZ`; 0 in a state with no player. */
@@ -1070,7 +1073,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             inFlight = null;
             screenshots.push(...result.screenshots);
             lastPhase = chosen.name;
-            if (!observes) last = { phase: chosen.name, status: result.status, reason: result.reason };
+            if (!observes)
+                last = {
+                    phase: chosen.name,
+                    status: result.status,
+                    reason: result.reason,
+                    ...(result.code !== undefined && { code: result.code }),
+                    ...(result.endedBy !== undefined && { endedBy: result.endedBy }),
+                };
             const phaseEnd = (onFail?: OnFailDecision) =>
                 emit({
                     type: 'phase-end',

@@ -3,6 +3,7 @@
 import { readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { z } from 'zod/v4';
+import { GUARDS } from './interrupts';
 import { isPatternParam, isPatternSchema, PATTERN_NOTE } from './spot';
 import type { TaskDef } from './task';
 
@@ -33,6 +34,8 @@ export interface CatalogEntry {
     name: string;
     description: string;
     rules?: string[];
+    /** Outcome code -> when it happens: the task's (TaskDef.outcomes), then those of the guards it installs. */
+    outcomes?: Record<string, string>;
     spots?: string[];
     /** The params as JSON Schema, input side: defaults are optional, a root pipe shows what it takes. */
     params: unknown;
@@ -40,11 +43,26 @@ export interface CatalogEntry {
 
 const paramsSchema = (def: TaskDef) => z.toJSONSchema(def.params, { io: 'input' });
 
+/**
+ * The codes a run of `def` can end with: its own, then each guard's it installs (the shared ones `allow` leaves on,
+ * those a param can turn off included, and its own). A code declared twice shows both sentences.
+ */
+function outcomesOf(def: TaskDef): Record<string, string> {
+    const out: Record<string, string> = {};
+    const guards = [...GUARDS.filter(g => !(def.allow ?? []).some(a => a === g.name)), ...(def.guards ?? [])];
+    for (const declared of [def.outcomes, ...guards.map(g => g.outcomes)])
+        for (const [code, sentence] of Object.entries(declared ?? {}))
+            out[code] = out[code] === undefined ? sentence : `${out[code]} ${sentence}`;
+    return out;
+}
+
 export function catalogEntry(def: TaskDef): CatalogEntry {
+    const outcomes = outcomesOf(def);
     return {
         name: def.name,
         description: def.description,
         ...(def.rules?.length ? { rules: def.rules } : {}),
+        ...(Object.keys(outcomes).length ? { outcomes } : {}),
         ...(def.spots?.length ? { spots: def.spots } : {}),
         params: paramsSchema(def),
     };

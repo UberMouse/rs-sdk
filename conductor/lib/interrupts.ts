@@ -91,6 +91,8 @@ export interface TaskGuard<E extends object = object, N extends string = string>
     when(state: BotWorldState, run: GuardRun): boolean;
     /** Given the state it fired on; returns the outcome directly when nothing needs doing in game. */
     run(state: BotWorldState, run: GuardRun, episode: E): GuardOutcome | Op<GuardOutcome>;
+    /** Each code `run` can end the run with, mapped to one sentence on when (TaskDef.outcomes). */
+    outcomes?: Record<string, string>;
 }
 
 /** The name a guard has in logs, step counts and failure reasons. */

@@ -445,7 +445,10 @@ describe('selection', () => {
             { primary: 'chosen' },
             { primary: 'skipped: failed last', burn: 'when false' },
         ]);
-        expect(selects.map(e => e.last)).toEqual([null, { phase: 'primary', status: 'failed', reason: 'try: busy' }]);
+        expect(selects.map(e => e.last)).toEqual([
+            null,
+            { phase: 'primary', status: 'failed', reason: 'try: busy', endedBy: 'try' },
+        ]);
     });
 });
 
@@ -1396,6 +1399,29 @@ const whereAndLevel = (v: PlanView) => [v.x, v.z, v.floor, v.combatLevel];
 const questsStarted = (v: PlanView) => [v.questStarted('imp'), v.questStarted('cook'), v.questStarted('doric')];
 
 describe('the view', () => {
+    test("v.last carries the previous run's code and endedBy", async () => {
+        const coded = {
+            ...scripted('primary', [{ fail: 'busy', code: 'busy' }]),
+            outcomes: { busy: 'The thing is busy.' },
+        };
+        const seen: PlanView['last'][] = [];
+        const r = await sim(
+            plan(
+                [
+                    phase(train, {}, { when: v => (seen.push(v.last), v.last?.code === 'busy') }),
+                    phase(coded, {}, { onFail: 'continue', when: v => v.last?.endedBy !== 'try' }),
+                ],
+                v => v.runs('train') >= 1,
+            ),
+        );
+        expect(selected(r)).toEqual(['primary', 'train']);
+        expect(seen).toEqual([
+            null,
+            { phase: 'primary', status: 'failed', reason: 'try: busy', code: 'busy', endedBy: 'try' },
+        ]);
+        expect(r.runs[0]!.result.code).toBe('busy');
+    });
+
     test('v.bank remembers the bank as last seen open in an earlier phase', async () => {
         // The bank is open at ticks 2 and 3, while the first phase runs.
         const timeline = BASE.series(8, (w, i) =>
@@ -1649,7 +1675,7 @@ describe('the view', () => {
         );
         expect(seen).toEqual([
             [0, null],
-            [1, { phase: 'train', status: 'done', reason: 'train: trained' }],
+            [1, { phase: 'train', status: 'done', reason: 'train: trained', endedBy: 'train' }],
         ]);
     });
 
@@ -2352,7 +2378,7 @@ describe('the journal memory and observes tasks', () => {
         expect(selected(r)).toEqual(['primary', 'glance', 'train']);
         const checks = r.events.filter(e => e.type === 'select').map(e => (e.checks as Record<string, string>).primary);
         expect(checks).toEqual(['chosen', 'skipped: failed last', 'skipped: failed last']);
-        expect(lasts).toEqual([[{ phase: 'primary', status: 'failed', reason: 'try: busy' }, true]]);
+        expect(lasts).toEqual([[{ phase: 'primary', status: 'failed', reason: 'try: busy', endedBy: 'try' }, true]]);
         // The result's lastStep is the last phase run of any task.
         expect(r.result.lastStep).toBe('train');
     });

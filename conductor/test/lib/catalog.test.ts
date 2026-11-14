@@ -71,6 +71,17 @@ describe('catalogEntry', () => {
             'params',
         ]);
     });
+
+    test("outcomes follow the rules: the task's codes, then its guards', a code declared twice showing both", () => {
+        const params = z.object({});
+        const guard = { ...underAttackGuard, outcomes: { attacked: 'A guard saw it.', fled: 'It ran.' } };
+        const entry = catalogEntry(
+            def(params, { rules: ['a rule'], outcomes: { attacked: 'The step saw it.' }, guards: [guard] }),
+        );
+        expect(Object.keys(entry)).toEqual(['name', 'description', 'rules', 'outcomes', 'params']);
+        expect(entry.outcomes).toEqual({ attacked: 'The step saw it. A guard saw it.', fled: 'It ran.' });
+        expect(Object.keys(catalogEntry(def(params, { outcomes: {} })))).not.toContain('outcomes');
+    });
 });
 
 // run-task.ts has no harness for --list: it prints what listCatalog returns (and exits 1 on its error).
