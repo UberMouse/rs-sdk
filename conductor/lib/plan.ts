@@ -92,7 +92,12 @@ export interface PlanView {
 
 /** Pure: no I/O, no clock, no state of its own, so every phase choice re-derives from the states. */
 export type Predicate = (v: PlanView) => boolean;
-export type OnFail = 'fail' | 'continue' | ((r: TaskResult) => 'fail' | 'continue');
+/**
+ * What a `failed` or `stuck` run means: 'fail' ends the plan; 'continue' skips the phase at the next selection, so
+ * another takes the turn; 'retry' leaves it eligible at once, and its failure stays out of the idle rail.
+ */
+export type OnFailDecision = 'fail' | 'continue' | 'retry';
+export type OnFail = OnFailDecision | ((r: TaskResult) => OnFailDecision);
 
 /** Any task, whatever its params and memory types: the runner only hands it to executeTask. */
 type AnyTaskDef = TaskDef<TaskDef['params'], object>;
@@ -107,9 +112,12 @@ export interface Phase {
     when?: Predicate;
     /** Ends the phase `done`, checked at every tick of it; a phase whose `until` holds is not started. */
     until?: Predicate;
-    /** What a `failed` or `stuck` run means for the plan; default 'fail'. */
+    /** What a `failed` or `stuck` run means for the plan; default the plan's `defaults`, else 'fail'. */
     onFail?: OnFail;
-    /** Consecutive failures of this phase that fail the plan even under 'continue'. Default DEFAULT_MAX_FAILS. */
+    /**
+     * Consecutive failures of this phase that fail the plan even under 'continue' or 'retry'. Default the plan's
+     * `defaults`, else DEFAULT_MAX_FAILS.
+     */
     maxFails?: number;
 }
 
@@ -196,6 +204,8 @@ export interface PlanDef {
      * `plan requires <key>`. A `when` on every phase would refuse the same, but as `no phase applies`.
      */
     requires?: Record<string, Predicate>;
+    /** `onFail` and `maxFails` for every phase that sets none of its own. */
+    defaults?: Pick<Phase, 'onFail' | 'maxFails'>;
     /**
      * Items the plan expects held when it starts and does not fetch itself (pack plus worn). Checked once, before any
      * phase: a short one ends the plan `failed` with `plan needs 1 Pot (held 0), 12 Nails (held 0)`. Not `requires`,
@@ -956,16 +966,38 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             inFlight = null;
             screenshots.push(...result.screenshots);
             last = { phase: chosen.name, status: result.status, reason: result.reason };
-            emit({
-                type: 'phase-end',
-                phase: chosen.name,
-                runId: run.runId,
-                status: result.status,
-                reason: result.reason,
-                // Per run, so a viewer can rate a phase while the plan runs; the result has only totals.
-                durationMs: result.durationMs,
-                xpGained: result.xpGained,
-            });
+            const phaseEnd = (onFail?: OnFailDecision) =>
+                emit({
+                    type: 'phase-end',
+                    phase: chosen.name,
+                    runId: run.runId,
+                    status: result.status,
+                    reason: result.reason,
+                    // Per run, so a viewer can rate a phase while the plan runs; the result has only totals.
+                    durationMs: result.durationMs,
+                    xpGained: result.xpGained,
+                    ...(onFail && { onFail }),
+                });
+            // onFail is consulted only for a failed or stuck run the plan can go on from (see the exits below).
+            const consult =
+                result.status !== 'done' &&
+                result.status !== 'error' &&
+                !ext.error &&
+                !ext.planEnd &&
+                result.endedBy !== DEATH_GUARD;
+            let decision: OnFailDecision | undefined;
+            if (consult) {
+                const onFail = chosen.onFail ?? def.defaults?.onFail ?? 'fail';
+                try {
+                    const d = typeof onFail === 'function' ? ask(chosen, 'onFail', () => onFail(result)) : onFail;
+                    decision = d === 'continue' || d === 'retry' ? d : 'fail';
+                } catch (e) {
+                    // A throwing onFail ends the plan in error; the run still ended, so its end is logged first.
+                    phaseEnd();
+                    throw e;
+                }
+            }
+            phaseEnd(decision);
 
             if (ext.error) return finish('error', ext.error);
             if (result.status === 'error') return finish('error', `${chosen.name}: ${result.reason}`);
@@ -984,18 +1016,22 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             } else {
                 const n = (fails.get(chosen.name) ?? 0) + 1;
                 fails.set(chosen.name, n);
-                const onFail = chosen.onFail ?? 'fail';
-                const decision = typeof onFail === 'function' ? ask(chosen, 'onFail', () => onFail(result)) : onFail;
-                if (decision !== 'continue') return finish(result.status, `${chosen.name}: ${result.reason}`);
-                if (n >= (chosen.maxFails ?? DEFAULT_MAX_FAILS))
+                if (decision === 'fail' || decision === undefined)
+                    return finish(result.status, `${chosen.name}: ${result.reason}`);
+                if (n >= (chosen.maxFails ?? def.defaults?.maxFails ?? DEFAULT_MAX_FAILS))
                     return finish('failed', `${chosen.name} failed ${n} times in a row: ${result.reason}`);
-                skip = chosen.name;
+                if (decision === 'continue') skip = chosen.name;
             }
 
             const after = stateOrNull();
             if (after && totalXp(after) > xpMark) {
                 xpMark = totalXp(after);
                 endsSinceXp.clear();
+            }
+            // A retried failure is bounded by maxFails, not the idle rail: retrying in an unchanged state is its point.
+            if (decision === 'retry') {
+                prevDone = null;
+                continue;
             }
             const end = after && idleSignature(after);
             const isIdle = end !== null && (end === signature || endsSinceXp.has(end));

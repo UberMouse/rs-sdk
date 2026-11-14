@@ -232,6 +232,15 @@ const chopBurn = (until?: Predicate) =>
 const failsUntil = (maxFails?: number) =>
     sim(plan([phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'continue', maxFails }), phase(train, {})]));
 
+/** A plan of `phases` whose defaults retry, at most 2 failures in a row. */
+const withDefaults = (phases: Phase[]) =>
+    definePlan({ name: 'test-plan', phases, defaults: { onFail: 'retry', maxFails: 2 } });
+/** A phase task that always fails. */
+const busy = () => scripted('primary', [{ fail: 'busy' }]);
+/** Each phase run's status and the onFail decision its phase-end logged ('-' for none). */
+const decisions = (r: PlanSimulation) =>
+    r.events.filter(e => e.type === 'phase-end').map(e => `${e.status} ${e.onFail ?? '-'}`);
+
 /** Burns any logs held, else chops. */
 const burnAny = (until: Predicate) => plan([phase(burn, {}, { when: v => v.inv('logs') > 0 }), phase(chop, {})], until);
 
@@ -748,6 +757,81 @@ describe('onFail', () => {
         expect(r.result.reason).toBe('primary failed 2 times in a row: try: busy');
     });
 
+    test("'retry' runs the failed phase again, with no other phase between, and the plan goes on", async () => {
+        const outcomes: Outcome[] = [{ fail: 'busy' }, { fail: 'busy' }, { done: 'did it' }];
+        const r = await sim(
+            plan(
+                [
+                    phase(scripted('primary', outcomes), {}, { onFail: 'retry', when: v => v.last?.status !== 'done' }),
+                    phase(train, {}),
+                ],
+                v => v.runs('train') >= 1,
+            ),
+        );
+        expect(selected(r)).toEqual(['primary', 'primary', 'primary', 'train']);
+        expect(r.result.status).toBe('done');
+    });
+
+    test("'retry' leaves the choice to selection: a phase above whose when holds still wins", async () => {
+        const r = await sim(
+            plan(
+                [
+                    phase(train, {}, { when: v => v.last?.status === 'failed' }),
+                    phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'retry' }),
+                ],
+                v => v.runs('train') >= 2,
+            ),
+        );
+        expect(selected(r)).toEqual(['primary', 'train', 'primary', 'train']);
+        expect(r.result.status).toBe('done');
+    });
+
+    test("'retry' fails the plan at maxFails in a row; a done run resets the count", async () => {
+        const always = await sim(
+            plan([phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: 'retry', maxFails: 2 })]),
+        );
+        expect(selected(always)).toEqual(['primary', 'primary']);
+        expect(always.result).toMatchObject({ status: 'failed', reason: 'primary failed 2 times in a row: try: busy' });
+        // Without the reset the third run (the second failure) would end the plan.
+        const outcomes: Outcome[] = [{ fail: 'busy' }, { done: 'did it' }, { fail: 'busy' }];
+        const reset = await sim(plan([phase(scripted('primary', outcomes), {}, { onFail: 'retry', maxFails: 2 })]));
+        expect(selected(reset)).toEqual(['primary', 'primary', 'primary', 'primary']);
+        expect(reset.result.reason).toBe('primary failed 2 times in a row: try: busy');
+    });
+
+    test('the function form may return retry; a death still ends the plan', async () => {
+        const r = await sim(
+            plan([phase(scripted('primary', [{ fail: 'busy' }]), {}, { onFail: () => 'retry', maxFails: 2 })]),
+        );
+        expect(selected(r)).toEqual(['primary', 'primary']);
+        expect(r.result.reason).toBe('primary failed 2 times in a row: try: busy');
+        const timeline = BASE.series(10, (w, i) => (i === 4 ? w.message('Oh dear, you are dead!') : w));
+        const died = await sim(plan([phase(watch, {}, { onFail: () => 'retry', maxFails: 9 })]), { timeline });
+        expect(died.result.reason).toStartWith('watch: died');
+        expect(selected(died)).toEqual(['watch']);
+    });
+
+    test("a plan's defaults apply to phases without their own onFail or maxFails; a phase's own wins", async () => {
+        const byDefault = await sim(withDefaults([phase(busy(), {})]));
+        expect(selected(byDefault)).toEqual(['primary', 'primary']);
+        expect(byDefault.result.reason).toBe('primary failed 2 times in a row: try: busy');
+        const ownOnFail = await sim(withDefaults([phase(busy(), {}, { onFail: 'fail' })]));
+        expect(ownOnFail.result).toMatchObject({ status: 'failed', reason: 'primary: try: busy' });
+        const ownMax = await sim(withDefaults([phase(busy(), {}, { maxFails: 4 })]));
+        expect(ownMax.result.reason).toBe('primary failed 4 times in a row: try: busy');
+    });
+
+    test('phase-end names the onFail decision of a failed run, and none for a done one', async () => {
+        const outcomes: Outcome[] = [{ fail: 'busy' }, { done: 'did it' }];
+        const retried = await sim(
+            plan([phase(scripted('primary', outcomes), {}, { onFail: 'retry' })], v => v.runs('primary') >= 2),
+        );
+        expect(decisions(retried)).toEqual(['failed retry', 'done -']);
+        expect(decisions(await failsUntil(2))).toEqual(['failed continue', 'done -', 'failed continue']);
+        const failed = await sim(plan([phase(scripted('broken', [{ fail: 'broke' }]), {})]));
+        expect(decisions(failed)).toEqual(['failed fail']);
+    });
+
     test('a death in a phase ends the plan failed, whatever its onFail and maxFails', async () => {
         const timeline = BASE.series(10, (w, i) => (i === 4 ? w.message('Oh dear, you are dead!') : w));
         const r = await sim(plan([phase(watch, {}, { onFail: 'continue', maxFails: 9 }), phase(train, {})]), {
@@ -832,6 +916,12 @@ describe('rails', () => {
             ]),
         );
         expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: a, b, a` });
+    });
+
+    test('retried failures that change nothing are left to maxFails, not the idle rail', async () => {
+        const r = await sim(plan([phase(failing('a'), {}, { onFail: 'retry', maxFails: 5 })]));
+        expect(selected(r)).toEqual(['a', 'a', 'a', 'a', 'a']);
+        expect(r.result).toMatchObject({ status: 'failed', reason: 'a failed 5 times in a row: try: cannot' });
     });
 
     test('a phase chosen again that ends done at once in the state it started in ends the plan done, without waiting', async () => {
