@@ -426,7 +426,7 @@ export default definePlan({
             {
                 area: { x: 2666, z: 3488, radius: 9 },
                 items: [{ item: 'Dwellberries', count: 1 }],
-                maxWaitSeconds: 120,
+                maxWaitTicks: 300,
             },
             {
                 name: 'berries',

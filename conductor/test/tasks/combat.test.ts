@@ -1953,9 +1953,9 @@ describe('combat: kills, loot and full-pack diagnostics', () => {
         expect(open.result.diagnostics?.fullPackTicks).toBe(0);
     });
 
-    test('endWhenPackFull ends done after the fight, naming the full pack', async () => {
+    test('onFull stop ends done after the fight, naming the full pack', async () => {
         const r = await simulate(combat, {
-            params: { ...PARAMS, loot: ['Feather'], endWhenPackFull: true },
+            params: { ...PARAMS, loot: ['Feather'], onFull: 'stop' },
             // The pack fills and the feathers drop on tick 4, mid-fight.
             timeline: fightThenGone(8, (w, i) => (i >= 4 ? fullPack(feathersDropped(w)) : w)),
         });
@@ -1967,7 +1967,7 @@ describe('combat: kills, loot and full-pack diagnostics', () => {
         expect(r.result.diagnostics?.kills).toBe(1);
     });
 
-    test('without endWhenPackFull the run goes on, and a full pack with nothing to loot does not end it', async () => {
+    test('without onFull stop the run goes on, and a full pack with nothing to loot does not end it', async () => {
         const off = await simulate(combat, {
             params: { ...PARAMS, loot: ['Feather'] },
             timeline: fightThenGone(8, (w, i) => (i >= 4 ? fullPack(feathersDropped(w)) : w)),
@@ -1975,7 +1975,7 @@ describe('combat: kills, loot and full-pack diagnostics', () => {
         expect(off.steps).not.toContain('pack-full');
         expect(off.result.reason).toBe('fight: no free reachable Chicken in the area');
         const nothing = await simulate(combat, {
-            params: { ...PARAMS, loot: ['Feather'], endWhenPackFull: true },
+            params: { ...PARAMS, loot: ['Feather'], onFull: 'stop' },
             timeline: fightThenGone(8, w => fullPack(w)),
         });
         expect(nothing.steps).not.toContain('pack-full');

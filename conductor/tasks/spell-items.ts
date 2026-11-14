@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 import { Spells } from '../../sdk/spells';
 import { CAST_ITEM_WAIT_TICKS, castOnItem } from '../actions/cast-item';
 import { log } from '../core/op';
-import { PATTERN_NOTE } from '../lib/spot';
+import { patternParam } from '../lib/spot';
 import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
@@ -40,18 +40,6 @@ const CAST_FAILS = failStreak({
     what: 'casts',
 });
 
-const regexSource = z.string().refine(
-    s => {
-        try {
-            RegExp(s, 'i');
-            return true;
-        } catch {
-            return false;
-        }
-    },
-    { message: 'not a valid regular expression' },
-);
-
 const SPELL_NAMES = [
     'superheat',
     'low-alchemy',
@@ -69,8 +57,8 @@ const Params = z.object({
         .describe(
             `The spell to cast, with the base Magic level it needs: ${SPELL_NAMES.map(n => `${n} (${SPELLS[n].name}) ${SPELLS[n].level}`).join(', ')}.`,
         ),
-    item: regexSource.describe(
-        `The inventory items to cast on, matched against their names, e.g. "^iron ore$". ${PATTERN_NOTE} Coins and runes are never a target, whatever it matches.`,
+    item: patternParam(
+        'The inventory items to cast on, matched against their names, e.g. "^iron ore$". Coins and runes are never a target, whatever it matches.',
     ),
     count: z
         .number()

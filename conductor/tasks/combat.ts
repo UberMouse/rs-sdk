@@ -308,15 +308,15 @@ const Params = z
                     "an earlier phase kept on, or already on at the start, is not this run's: a later combat phase never " +
                     'turns it off, only the `prayer` task does.',
             ),
-        endWhenPackFull: z
-            .boolean()
-            .default(false)
+        onFull: z
+            .enum(['continue', 'stop'])
+            .default('continue')
             .describe(
-                'End the run `done` when `loot` (or `buryBones`) is set, a wanted ground item lies in reach and the pack is ' +
+                '`stop` ends the run `done` when `loot` (or `buryBones`) is set, a wanted ground item lies in reach and the pack is ' +
                     'full so it cannot be picked up, after any fight in progress ends: a plan then goes on to a bank phase. ' +
                     'Wanted loot includes bones when `buryBones` is set. Meant for non-stackable loot (herbs, hides, bones): ' +
                     'a full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, ' +
-                    'feathers) that the game would still pick up. Off: combat goes on fighting with the loot left on the ground. ' +
+                    'feathers) that the game would still pick up. `continue`: combat goes on fighting with the loot left on the ground. ' +
                     '`fullPackTicks` in the diagnostics is approximate (ticks between looks that both saw the pack blocking loot).',
             ),
     })
@@ -1020,7 +1020,7 @@ export default defineTask({
         {
             name: 'pack-full',
             // Loot in reach but no slot to take it: end for the plan's bank phase, once the fight is over.
-            when: ctx => ctx.params.endWhenPackFull && nothingFighting(ctx) && packBlocksLoot(ctx),
+            when: ctx => ctx.params.onFull === 'stop' && nothingFighting(ctx) && packBlocksLoot(ctx),
             run(ctx) {
                 const left = lootItems(ctx).length;
                 settleKill(ctx);

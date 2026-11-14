@@ -336,7 +336,7 @@ export default definePlan({
         // butterfly's timer (at most 1000 ticks), after which the talisman re-spawns it somewhere else.
         phase(
             pickup,
-            { area: { x: 2640, z: 3640, radius: 3 }, items: [{ item: 'Wait token' }], maxWaitSeconds: 240 },
+            { area: { x: 2640, z: 3640, radius: 3 }, items: [{ item: 'Wait token' }], maxWaitTicks: 600 },
             {
                 name: 'draugen-wait-timer',
                 when: v =>

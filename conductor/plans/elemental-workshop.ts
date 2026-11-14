@@ -216,7 +216,7 @@ export default definePlan({
         }),
         phase(
             pickup,
-            { area: { x: 2703, z: 9905, radius: 14 }, items: [{ item: 'Elemental ore' }], maxWaitSeconds: 20 },
+            { area: { x: 2703, z: 9905, radius: 14 }, items: [{ item: 'Elemental ore' }], maxWaitTicks: 50 },
             {
                 name: 'take-ore',
                 when: v =>

@@ -12,7 +12,7 @@ import { failStreakTicks } from '../lib/watchdog';
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
 const WAIT_TICKS = 5;
-const MAX_WAIT_SECONDS = 300;
+const MAX_WAIT_TICKS = 750;
 /** Walking to a far area outlasts the default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
@@ -32,7 +32,7 @@ const STANDS = [
  * pickup count stays hand-written (its limit depends on the item); an attempt takes at most the pickup wait and grace.
  */
 const SILENT = [
-    Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS),
+    MAX_WAIT_TICKS,
     WALK_TO_AREA_SILENT_TICKS,
     failStreakTicks(Math.max(FAIL_LIMIT, STANDS.length), PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS),
 ];
@@ -55,13 +55,14 @@ const Params = z.object({
         )
         .min(1)
         .describe('The ground items to hold in the inventory; the run ends done once each count is held.'),
-    maxWaitSeconds: z
+    maxWaitTicks: z
         .number()
+        .int()
         .positive()
-        .max(MAX_WAIT_SECONDS)
-        .default(90)
+        .max(MAX_WAIT_TICKS)
+        .default(225)
         .describe(
-            'Give up when a wanted item has not appeared in the area for this long. Ground spawns respawn in about 40 s (100 ticks).',
+            'Give up when a wanted item has not appeared in the area for this many ticks. Ground spawns respawn in about 100 ticks.',
         ),
 });
 
@@ -104,10 +105,10 @@ function* standBeside(ctx: Ctx, item: GroundItem): Op<string | null> {
 
 /**
  * Nothing wanted on the ground in the area: fail when the inventory is full, walk in when the bot is just
- * outside it, otherwise wait for a respawn and fail after maxWaitSeconds without one.
+ * outside it, otherwise wait for a respawn and fail after maxWaitTicks without one.
  */
 function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
-    const { area, maxWaitSeconds } = ctx.params;
+    const { area, maxWaitTicks } = ctx.params;
     if (ctx.inventoryFull()) return { fail: 'inventory is full' };
     // Only the radius..radius+WORK_REACH strip: returnToAreaStep handles anything farther out.
     if (ctx.distanceTo(area.x, area.z) > area.radius) {
@@ -120,8 +121,9 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
         ctx.memory.noItemSinceTick = now;
         yield* log(`no ${want} in the area, waiting for a respawn`);
     }
-    if (now - ctx.memory.noItemSinceTick >= Math.ceil((maxWaitSeconds * 1000) / TICK_MS)) {
-        return { fail: `no ${want} appeared in the area within ${maxWaitSeconds}s` };
+    if (now - ctx.memory.noItemSinceTick >= maxWaitTicks) {
+        // The reason keeps its wording in seconds.
+        return { fail: `no ${want} appeared in the area within ${+((maxWaitTicks * TICK_MS) / 1000).toFixed(1)}s` };
     }
     const seen = (s: BotWorldState) => outsideSighting(s, area, s.groundItems, g => exactName(want).test(g.name));
     yield* trackIdle(ctx, ctx.memory.areaWatch, seen, ticks(WAIT_TICKS));
@@ -131,7 +133,7 @@ export default defineTask({
     name: 'pickup',
     description:
         'Picks up named ground items in an area. ' +
-        'It walks there and takes items until the inventory holds each count, waiting up to `maxWaitSeconds` for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
+        'It walks there and takes items until the inventory holds each count, waiting up to `maxWaitTicks` for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
         'an adjacent tile once nothing reachable is left; a take the server refuses ("I can\'t reach that") counts as a failed pickup. ' +
         'Fails if attacked, or if the inventory is full when nothing wanted is on the ground in the area. ' +
         'Refuses areas reaching the Wilderness.',

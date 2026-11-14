@@ -54,7 +54,7 @@ describe('pickup: picking up', () => {
 
     test('ignores items outside the area', async () => {
         const r = await simulate(pickup, {
-            params: { ...PARAMS, maxWaitSeconds: 10 },
+            params: { ...PARAMS, maxWaitTicks: 25 },
             timeline: inside.ground('Knife', 3224, 3207).series(1),
         });
         expect(r.sends).toEqual([]);
@@ -195,8 +195,8 @@ describe('pickup: failed pickups', () => {
 });
 
 describe('pickup: nothing to pick up', () => {
-    test('fails after maxWaitSeconds with no item, logging the wait once', async () => {
-        const r = await simulate(pickup, { params: { ...PARAMS, maxWaitSeconds: 10 }, timeline: inside.series(1) });
+    test('fails after maxWaitTicks with no item, logging the wait once', async () => {
+        const r = await simulate(pickup, { params: { ...PARAMS, maxWaitTicks: 25 }, timeline: inside.series(1) });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('pickup: no Knife appeared in the area within 10s');
         expect(logged(r)).toEqual(['no Knife in the area, waiting for a respawn']);
@@ -206,7 +206,7 @@ describe('pickup: nothing to pick up', () => {
 
     test('a respawn inside the wait is picked up', async () => {
         const r = await simulate(pickup, {
-            params: { ...PARAMS, maxWaitSeconds: 10 },
+            params: { ...PARAMS, maxWaitTicks: 25 },
             timeline: inside.series(30, (w, i) => (i >= 16 ? taken(inside.tick(i)) : i >= 12 ? spawn.tick(i) : w)),
         });
         expect(r.result.reason).toBe('finish: holding every requested item');
@@ -224,7 +224,7 @@ describe('pickup: nothing to pick up', () => {
     test('just outside the area, walks in rather than waiting', async () => {
         const outside = world().player({ at: { x: 3224, z: 3207 } });
         const r = await simulate(pickup, {
-            params: { ...PARAMS, maxWaitSeconds: 10 },
+            params: { ...PARAMS, maxWaitTicks: 25 },
             timeline: outside.series(1),
             react: walking(),
         });

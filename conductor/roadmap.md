@@ -564,7 +564,7 @@ on its own.
     - Prayer toggles change nothing the watchdog watches.
     - fishing can in theory pass its 800 silent ticks with about six cast timeouts interleaved with spot-moved casts onto adjacent spots with no walk.
     - `conductor/test/tools/plan-view/server.test.ts` has a timing-flaky RunsStore assertion under full-suite load (seen once, passes alone).
-  - Audit: one name for the full-inventory policy param (now visible in the catalog: `onFull`, `stopWhenFull`, `endWhenPackFull`, `pick`'s omitted `count` and `pickup`'s hardwired failure), and one rule for item or NPC names, a regex in some tasks and a whole name in others.
+  - Audit: one name for the full-inventory policy param (`onFull` now in gathering, thieving and combat; still open: `pick`'s omitted `count` and `pickup`'s hardwired failure), and one rule for item or NPC names, a regex in some tasks and a whole name in others.
   - Audit: outcome codes in place of failure-wording matches (`clock-tower`, `monks-friend`, `troll-stronghold`; about 91 reason strings).
   - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.
   - Migrate promoted plans to the view members and primitives (`retry`, `wait`, `defaults`, `v.said`, `v.held`) when next touched or re-run.

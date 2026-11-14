@@ -101,7 +101,7 @@ export default definePlan({
         // The key washed down the drain lies in the sewers for a few minutes: take it at once.
         phase(
             pickup,
-            { area: { x: 3225, z: 9897, radius: 3 }, items: [{ item: 'Key', count: 3 }], maxWaitSeconds: 20 },
+            { area: { x: 3225, z: 9897, radius: 3 }, items: [{ item: 'Key', count: 3 }], maxWaitTicks: 50 },
             {
                 name: 'sewer-key',
                 when: v => started(v) && has(v, KEY1) && has(v, KEY2) && !has(v, KEY3) && heard(v, /washed the key/i),

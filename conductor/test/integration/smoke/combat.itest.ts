@@ -85,7 +85,7 @@ test(
 );
 
 test(
-    'combat endWhenPackFull ends done on the first kill whose feathers do not fit, and reports its counts',
+    'combat onFull stop ends done on the first kill whose feathers do not fit, and reports its counts',
     async () => {
         await withFixtureBot(
             {
@@ -97,7 +97,7 @@ test(
                 const run = await runTask(
                     name,
                     'combat',
-                    { target: 'Chicken', skill: 'Attack', area: AREA, loot: ['Feather'], endWhenPackFull: true },
+                    { target: 'Chicken', skill: 'Attack', area: AREA, loot: ['Feather'], onFull: 'stop' },
                     ['minutes:3'],
                 );
                 const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;

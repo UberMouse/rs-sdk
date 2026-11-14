@@ -1,6 +1,6 @@
 {
     "name": "combat-coop-full-pack",
-    "purpose": "Lumbridge chicken coop (3231,3295), Att/Str/Def 10 HP 15, pack of 28 separate Logs (full). Tests combat endWhenPackFull and kills/lootPicked/fullPackTicks diagnostics.",
+    "purpose": "Lumbridge chicken coop (3231,3295), Att/Str/Def 10 HP 15, pack of 28 separate Logs (full). Tests combat `onFull: stop` and kills/lootPicked/fullPackTicks diagnostics.",
     "source": {
         "kind": "generated",
         "spec": {
