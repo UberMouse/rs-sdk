@@ -20,8 +20,13 @@ export function lowHpFraction(attackerCount = 0): number {
     return Math.min(LOW_HP_MAX_FRACTION, LOW_HP_FRACTION + extra);
 }
 
+/** HP is known and below `fraction` of max. */
+export function hpBelow(state: BotWorldState, fraction: number): boolean {
+    const p = state.player;
+    return !!p && p.maxHp > 0 && p.hp < p.maxHp * fraction;
+}
+
 /** HP is under the eat line for `attackerCount` NPCs on the bot (0 or 1: the plain half). */
 export function isLowHp(state: BotWorldState, attackerCount = 0): boolean {
-    const p = state.player;
-    return !!p && p.maxHp > 0 && p.hp < p.maxHp * lowHpFraction(attackerCount);
+    return hpBelow(state, lowHpFraction(attackerCount));
 }

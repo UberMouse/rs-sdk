@@ -4,7 +4,7 @@ import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { EAT_WAIT_TICKS } from '../../actions/eat';
 import { type EatStepOptions, eatStep, foodInInventory, wantsToEat } from '../../lib/eat-step';
 import { failStreak } from '../../lib/streak';
-import { defineTask, type TaskContext } from '../../lib/task';
+import { defineTask } from '../../lib/task';
 import { runDef } from '../engine/harness';
 import { consume } from '../react';
 import type { Simulation } from '../simulate';
@@ -53,20 +53,11 @@ describe('eatStep', () => {
         expect(r.steps).toEqual(['eat', 'end']);
     });
 
-    test('with no food it does not apply, and run alone sends nothing', () => {
-        const none = world().player({ hp: 5, maxHp: 10 }).build();
-        expect(wantsToEat(none, params)).toBe(false);
-        expect(wantsToEat(hurt.player({ hp: 6 }).build(), params)).toBe(false);
-        expect(wantsToEat(hurt.build(), params)).toBe(true);
-        const step = eatStep<typeof params>({
-            wants: () => true,
-            food: () => undefined,
-            streak: EAT_FAILS,
-            failText: () => 'never',
-        });
-        const ctx = { state: () => none, params } as unknown as TaskContext<typeof params, object>;
-        const g = step.run(ctx) as Generator;
-        expect(g.next()).toEqual({ done: true, value: undefined });
+    test('with no food the step does not apply and sends nothing', async () => {
+        const r = await run([], { food: () => undefined });
+        expect(r.result.status).toBe('done');
+        expect(r.sends).toEqual([]);
+        expect(r.steps).toEqual(['end']);
     });
 
     test('fails with the given text at the streak limit', async () => {
@@ -93,5 +84,23 @@ describe('eatStep', () => {
         expect(r.result.reason).toBe('eat: 3 eats in a row failed (last: Failed to eat Shrimps)');
         expect(r.sends).toHaveLength(4);
         expect(logged(r)).toEqual(Array(3).fill('eat Shrimps failed (timeout): Failed to eat Shrimps'));
+    });
+});
+
+describe('wantsToEat', () => {
+    test('is false with no food held', () => {
+        expect(wantsToEat(world().player({ hp: 5, maxHp: 10 }).build(), params)).toBe(false);
+    });
+
+    test('is false above the line', () => {
+        expect(wantsToEat(hurt.player({ hp: 7 }).build(), params)).toBe(false);
+    });
+
+    test('is false at exactly the line (6 of 10 at 0.6 is not below)', () => {
+        expect(wantsToEat(hurt.player({ hp: 6 }).build(), params)).toBe(false);
+    });
+
+    test('is true below the line with food held', () => {
+        expect(wantsToEat(hurt.build(), params)).toBe(true);
     });
 });

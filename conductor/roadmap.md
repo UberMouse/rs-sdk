@@ -737,6 +737,7 @@ Variants worth comparing with `bun conductor/tools/stats.ts`. Each line: hypothe
 Review findings `task-review` deferred because their fix needs work outside the reviewed change
 (most findings are fixed in the same pass).
 
+- agility: the eat-fail count is not cleared by a successful eat (`keepOnSuccess` keeps the old behaviour), so three failed eats that are not consecutive end a lap run with a text that says "in a row"; fix is to drop `keepOnSuccess`, a behaviour change that needs its own test
 - shop: ignores `at.level`, so a shop on plane 1 (Tree Gnome Stronghold grocers) needs a `travel` with `level: 1` phase first (herblore-energy 2026-11-01; contract)
 - combat: the smoke itest "stopOnDialog beats Sir Mordred" failed in its follow-on `talk` ("continue-dialog: no dialog is open to continue") during the 3ddba6293 review; not run against HEAD, so unknown whether it predates it (robustness, test)
 - walkTo: the Wizards' Tower stairs/ladder room (x 3103..3107, z 3159..3163) is entered by a diagonal elf door (3107,3162) that `sdk/collision-data.json` lacks, so `collisionPaths` finds no route in from outside and `walkTo` into the tower ends `no-path` (connectors work from inside the room); needs diagonal-door support in the SDK collision data or in `walkOnPlane` (game G3)

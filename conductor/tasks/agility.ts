@@ -16,8 +16,9 @@ import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
 import { walkToArea, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { findFood, foodCount } from '../lib/interrupts';
-import { eatStep, hpBelow } from '../lib/eat-step';
+import { eatStep } from '../lib/eat-step';
 import { failStreak } from '../lib/streak';
+import { hpBelow } from '../lib/threat';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
 import { failStreakTicks } from '../lib/watchdog';
@@ -54,7 +55,7 @@ const STEP_TIMEOUT_MS = 300_000;
 const EAT_BELOW_FRACTION = 0.75;
 /** Eats in a row that did nothing before the run fails. */
 const EAT_FAIL_LIMIT = 3;
-/** One failed eat: its wait (EAT_WAIT_TICKS). A successful eat does not reset the count. */
+/** One failed eat: its wait (EAT_WAIT_TICKS). Kept from before the shared eat step: a successful eat does not reset the count (`keepOnSuccess`). */
 const EAT_FAILS = failStreak({ name: 'eatFails', limit: EAT_FAIL_LIMIT, worstTicks: EAT_WAIT_TICKS });
 // The falls streak stays hand-written: falls reset on any obstacle that pays out. Its stretch is listed as ticks.
 const SILENT = [OBSTACLE_FAILS, WALK_TO_AREA_SILENT_TICKS, failStreakTicks(FALL_LIMIT, CROSS_TICKS), EAT_FAILS];
