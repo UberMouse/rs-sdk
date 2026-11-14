@@ -593,6 +593,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     let last: PlanView['last'] = null;
     /** The phase of the last phase run, of any task: the result's `lastStep`. */
     let lastPhase: string | null = null;
+    /** The last phase run ended holding its dialog (`TaskResult.holdsDialog`) and no run has started since. */
+    let holdsDialog = false;
     const parsed = parsePhases(def);
     const params = paramsOf(def, parsed);
     /**
@@ -752,6 +754,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             logFile,
             phases: runs.phases,
             recent: runs.recent,
+            // A plan that ends done on a phase run holding its dialog hands it on like that run would. Any other
+            // status has no later phase to answer the dialog, so the epilogue must be free to defend the bot.
+            ...(holdsDialog && status === 'done' && { holdsDialog: true as const }),
         };
     };
 
@@ -1012,6 +1017,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             const index = loops++;
             say(`phase ${index + 1}: ${chosen.name}`);
             running = chosen;
+            holdsDialog = false;
             // The bank as last seen open, for the phase's walks to plan a detour on (ExecuteOptions.bank).
             const bank = bankRecord() ?? undefined;
             const run = opts.newPhaseRun(chosen, index, bank && { bank });
@@ -1053,6 +1059,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     ...(bank && { bank }),
                 });
                 flight.result = result;
+                holdsDialog = result.holdsDialog === true;
             } finally {
                 await close();
             }

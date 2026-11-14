@@ -283,8 +283,14 @@ export interface TaskResult {
     /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
     warnings?: string[];
     /**
-     * What run-task did to keep the bot alive after a run that did not end `done` left it under attack
-     * (lib/epilogue.ts); absent when the bot was not under attack. The status, reason, `durationMs` and `xp` are the
+     * The run ended `done` holding a dialog open for the next phase (`TaskDef.holdsDialog`, as the engine judged it
+     * at the end): nothing after the run may act on the bot, the epilogue included. A plan carries it only when its
+     * own status is `done` and its last phase run held the dialog; any other plan status has no key. Absent otherwise.
+     */
+    holdsDialog?: true;
+    /**
+     * What run-task did to keep the bot alive after a run left it under attack (lib/epilogue.ts); absent when the
+     * bot was not under attack or the run holds a dialog (`holdsDialog`). The status, reason, `durationMs` and `xp` are the
      * run's own and exclude the epilogue; `hp`, `finalPos` and `inCombat` are re-read after it. The NDJSON `result`
      * event is written before the epilogue runs: the epilogue is in the RESULT line and in a separate `epilogue` event.
      */

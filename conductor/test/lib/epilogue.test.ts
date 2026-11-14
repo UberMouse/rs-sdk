@@ -80,6 +80,17 @@ describe('needsEpilogue', () => {
         expect(needsEpilogue({ status: 'stuck', reason: 'client stopped publishing ticks for 30s' })).toBe(false);
         expect(needsEpilogue({ status: 'error', reason: 'the SDK disconnected' })).toBe(false);
     });
+    test('a run that holds its dialog open gets none', () => {
+        expect(needsEpilogue({ status: 'done', reason: 'dialog-open: dialog opened: a | b', holdsDialog: true })).toBe(
+            false,
+        );
+    });
+    test('a done run ending in a fight without a held dialog still gets one, and it acts', async () => {
+        expect(needsEpilogue({ status: 'done', reason: 'reached 25 min' })).toBe(true);
+        const { epilogue, sends } = await run(fighting(8).series(30, w => w));
+        expect(epilogue).not.toBeNull();
+        expect(sends.length).toBeGreaterThan(0);
+    });
 });
 
 describe('epilogue: a done run', () => {
