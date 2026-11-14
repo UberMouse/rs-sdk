@@ -7,6 +7,7 @@ import cooking from '@conductor/tasks/cooking';
 import fishing from '@conductor/tasks/fishing';
 
 const cooked = /^(shrimps|anchovies)$/i;
+const draynorBank = place('bank:draynor-bank').area(3);
 const pot = { x: 3232, z: 3238, radius: 5 };
 
 export default definePlan({
@@ -18,7 +19,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: place('bank:draynor-bank').area(3),
+                area: draynorBank,
                 depositAllExcept: ['Small fishing net'],
                 withdraw: [{ item: 'Small fishing net', count: 1 }],
             },
@@ -26,7 +27,7 @@ export default definePlan({
         ),
         phase(
             bank,
-            { area: place('bank:draynor-bank').area(3), depositAllExcept: ['Small fishing net'] },
+            { area: draynorBank, depositAllExcept: ['Small fishing net'] },
             { name: 'bank-cooked', when: v => v.inv(cooked) > 0 && v.inv(/^raw /i) === 0 },
         ),
         phase(

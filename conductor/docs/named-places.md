@@ -25,6 +25,9 @@ here is the conductor's, made under the "drive this" instruction; each is marked
   the caller adds `{ near: { x, z } }` and gets the site whose stand is nearest; without `near` the error
   lists each candidate's stand. **Assumption:** `near` must be within 10 tiles of a stand, so a stale
   `near` fails rather than picking a far site.
+- **Trade-off:** a removed name, or a `near` more than 10 tiles from every stand, fails at plan load; a stand that
+  moves a tile or two after an index rebuild moves the plan's area with no error, which
+  `conductor/test/plan-places.test.ts` turns into a test failure.
 - A place gives `stand` (`{ x, z, level }`), `at(opts?)` (the task `at` shape) and `area(radius)` (the task
   `area` shape). `level` is included only when it is not 0, as plans write it today.
 - Banks resolve through `lib/banks.ts`, so its curated stand fixes apply.

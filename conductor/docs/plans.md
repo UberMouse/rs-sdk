@@ -431,6 +431,10 @@ plan load with the five nearest names of its kind. A name several sites share (a
 altar ruins, spinning wheels, water sources) needs `place(name, { near: { x, z } })` with `near` within 10 tiles
 of the stand; the tool prints that text for each site.
 
+Binding a plan to the index has a cost: a removed name, or a `near` more than 10 tiles from every stand, fails at plan
+load; a stand that moves a tile or two after an index rebuild moves the plan's area with no error, which
+`conductor/test/plan-places.test.ts` turns into a test failure.
+
 Find names with `bun conductor/tools/places.ts [kind] [text]`: one line per place with the name, the `near`
 hint when ambiguous, the stand `(x,z,level)` and the display name. Gathering and fighting areas (trees, hill
 giants, baby blues) are not places and stay literal coordinates: a resource cluster's stand says nothing about

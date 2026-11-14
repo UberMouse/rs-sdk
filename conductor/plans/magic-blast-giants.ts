@@ -1,8 +1,8 @@
 // Magic 66 via Wind Blast on the Edgeville Dungeon giants: Varrock East bank (coins, food), Aubury (death runes),
 // Zaff (Staff of air + Staff of fire), walk to Edgeville and down, cast with the worn Staff of air; restock at Edgeville.
 import { definePlan, phase } from '@conductor/lib/plan';
-import { place } from '@conductor/lib/places';
 import type { PlanView } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
 import interact from '@conductor/tasks/interact';
