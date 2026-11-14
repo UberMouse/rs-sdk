@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { z } from 'zod/v4';
 import { AreaSchema } from '../../lib/area';
@@ -168,7 +168,7 @@ describe('undescribedFields', () => {
     });
 });
 
-/** Tasks whose params and description are not yet documented to the catalog's rules; Tasks 2-5 empty it. */
+/** Tasks that do not yet keep the catalog's rules. A task is added only by being exempted here, and this list must reach empty: the guard fails a listed task that keeps the rules. */
 const NOT_YET = [
     'agility',
     'bank',
@@ -241,12 +241,29 @@ const stripDescriptions = (v: unknown): unknown =>
             )
           : v;
 
-// The build that documents the catalog moves words only: no params schema may change shape. The fixture is
-// each task's input JSON Schema with every description removed, taken before the build started.
+// Documenting a task moves words only: no params schema may change shape. The fixture is each task's input
+// JSON Schema with every description removed. Regenerate it only for a deliberate params change:
+// `UPDATE_CATALOG_SHAPES=1 bun test conductor/test/lib/catalog.test.ts` rewrites it (formatted with oxfmt) from
+// the current schemas. It cannot see refinements (`refine`/`superRefine`, including Pattern's regex check) or
+// transforms: JSON Schema carries neither, so changing one leaves it identical.
+const FIXTURE = resolve(import.meta.dir, '../fixtures/catalog-shapes.json');
+
+async function currentShapes(): Promise<Record<string, unknown>> {
+    const shapes: Record<string, unknown> = {};
+    for (const name of taskNames())
+        shapes[name] = stripDescriptions(z.toJSONSchema((await loadTask(name)).params, { io: 'input' }));
+    return shapes;
+}
+
+if (process.env.UPDATE_CATALOG_SHAPES) {
+    writeFileSync(FIXTURE, JSON.stringify(await currentShapes(), null, 4) + '\n');
+    // The committed file is oxfmt-formatted; format it the same way so a no-change run leaves it identical.
+    const fmt = Bun.spawnSync(['bunx', 'oxfmt', FIXTURE], { cwd: resolve(import.meta.dir, '../../..') });
+    if (fmt.exitCode !== 0) throw new Error(`oxfmt failed: ${String(fmt.stderr)}`);
+}
+
 describe('params shapes', () => {
-    const fixture = JSON.parse(
-        readFileSync(resolve(import.meta.dir, '../fixtures/catalog-shapes.json'), 'utf8'),
-    ) as Record<string, unknown>;
+    const fixture = JSON.parse(readFileSync(FIXTURE, 'utf8')) as Record<string, unknown>;
 
     test('the fixture covers every task', () => {
         expect(Object.keys(fixture).sort()).toEqual(taskNames());

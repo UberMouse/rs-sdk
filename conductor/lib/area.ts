@@ -28,17 +28,13 @@ export const AreaSchema = z
             .min(MIN_AREA_RADIUS)
             .default(DEFAULT_AREA_RADIUS)
             .describe('Tiles (straight-line) from the centre that count as inside.'),
-        /**
-         * The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may
-         * start on another, e.g. a bank walk from the first floor of a house.
-         */
         level: z
             .number()
             .int()
             .min(0)
             .optional()
             .describe(
-                "The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may start on another, e.g. a bank walk from the first floor of a house.",
+                "The floor the area is on. Omit to walk on the bot's own floor (floor 0 when the area is across the surface/underground divide); set it (0 for the surface) when the bot may start on another, e.g. a bank walk from the first floor of a house.",
             ),
     })
     .describe(
