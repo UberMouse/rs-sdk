@@ -23,10 +23,9 @@
 // phase is a task run with its own log and recording, as above.
 import { copyFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { z } from 'zod/v4';
 import type { BotSDK } from '../sdk/index';
 import { runScript } from '../sdk/runner';
-import { loadTask, taskNames } from './lib/catalog';
+import { listCatalog, loadTask, taskNames } from './lib/catalog';
 import { LiveDriver } from './core/drivers/live';
 import { executeTask, TICK_STALL_MS } from './lib/engine';
 import {
@@ -63,16 +62,12 @@ import { describeCommand } from './lib/journal';
 const argv = process.argv.slice(2);
 
 if (argv.includes('--list')) {
-    const catalog = [];
-    for (const name of taskNames()) {
-        const def = await loadTask(name);
-        catalog.push({
-            name: def.name,
-            description: def.description,
-            params: z.toJSONSchema(def.params, { io: 'input' }),
-        });
+    try {
+        console.log(await listCatalog(argv.filter(a => a !== '--list')));
+    } catch (e) {
+        console.error(errMessage(e));
+        process.exit(1);
     }
-    console.log(JSON.stringify(catalog, null, 2));
     process.exit(0);
 }
 

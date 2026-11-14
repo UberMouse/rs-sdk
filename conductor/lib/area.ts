@@ -19,16 +19,31 @@ const MAX_WALK_TOLERANCE = 3;
 /** Consecutive failed walks to the area before the task fails. */
 export const WALK_FAIL_LIMIT = 3;
 
-export const AreaSchema = z.object({
-    x: z.number(),
-    z: z.number(),
-    radius: z.number().min(MIN_AREA_RADIUS).default(DEFAULT_AREA_RADIUS),
-    /**
-     * The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may
-     * start on another, e.g. a bank walk from the first floor of a house.
-     */
-    level: z.number().int().min(0).optional(),
-});
+export const AreaSchema = z
+    .object({
+        x: z.number().describe('Tile x of the area centre.'),
+        z: z.number().describe('Tile z of the area centre.'),
+        radius: z
+            .number()
+            .min(MIN_AREA_RADIUS)
+            .default(DEFAULT_AREA_RADIUS)
+            .describe('Tiles (straight-line) from the centre that count as inside.'),
+        /**
+         * The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may
+         * start on another, e.g. a bank walk from the first floor of a house.
+         */
+        level: z
+            .number()
+            .int()
+            .min(0)
+            .optional()
+            .describe(
+                "The floor the area is on. Omit to walk on the bot's own floor; set it (0 for the surface) when the bot may start on another, e.g. a bank walk from the first floor of a house.",
+            ),
+    })
+    .describe(
+        'Stay near here: the bot walks to the area when away from it, and only targets within `radius` of the centre count as inside it.',
+    );
 export type Area = z.infer<typeof AreaSchema>;
 
 /** A target the task may work on: within the radius when there is an area, anywhere when there isn't. */

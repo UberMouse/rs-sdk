@@ -20,30 +20,63 @@ const isPattern = (source: string) => {
     }
 };
 /** A case-insensitive regex given as a string. */
-export const Pattern = z.string().refine(isPattern, 'not a valid regular expression');
+export const Pattern = z
+    .string()
+    .refine(isPattern, 'not a valid regular expression')
+    .describe('A case-insensitive regex given as a string.');
 export const matcher = (source: string) => new RegExp(source, 'i');
 
 /** Where to stand first: walked to (across floors, through doors) unless already within `tolerance`. */
-export const AtSchema = z.object({
-    x: z.number(),
-    z: z.number(),
-    level: z.number().int().optional(),
-    /** Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile). */
-    tolerance: z.number().int().min(0).default(DEFAULT_TOLERANCE),
-    /**
-     * Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts):
-     * `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through
-     * the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.
-     */
-    met: z.array(z.string()).optional(),
-});
+export const AtSchema = z
+    .object({
+        x: z.number().describe('Tile x of the spot.'),
+        z: z.number().describe('Tile z of the spot.'),
+        level: z
+            .number()
+            .int()
+            .optional()
+            .describe(
+                "The spot's floor (0 for the surface). Omit to walk on the bot's own floor and count any floor as there.",
+            ),
+        /** Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile). */
+        tolerance: z
+            .number()
+            .int()
+            .min(0)
+            .default(DEFAULT_TOLERANCE)
+            .describe(
+                'Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile).',
+            ),
+        /**
+         * Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts):
+         * `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through
+         * the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.
+         */
+        met: z
+            .array(z.string())
+            .optional()
+            .describe(
+                "Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts): `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.",
+            ),
+    })
+    .describe('Where to stand first: walked to (across floors, through doors) unless already within `tolerance`.');
 export type At = z.infer<typeof AtSchema>;
 
 /**
  * One exact tile: picks the loc (or NPC) standing on it instead of the nearest one of that name. `level`
  * applies to locs only: an NPC reports no level, so it is matched on x and z.
  */
-export const TileSchema = z.object({ x: z.number().int(), z: z.number().int(), level: z.number().int().optional() });
+export const TileSchema = z
+    .object({
+        x: z.number().int().describe('Tile x.'),
+        z: z.number().int().describe('Tile z.'),
+        level: z
+            .number()
+            .int()
+            .optional()
+            .describe('The floor; applies to locs only: an NPC reports no level, so it is matched on x and z.'),
+    })
+    .describe('One exact tile: picks the loc (or NPC) standing on it instead of the nearest one of that name.');
 export type Tile = z.infer<typeof TileSchema>;
 
 /** A thing at (x, z) stands on `tile`; the level counts only when the tile gives one and the thing knows its own. */
@@ -53,7 +86,11 @@ export const onTile = (thing: { x: number; z: number; level?: number }, tile: Ti
     (tile.level === undefined || (thing.level ?? tile.level) === tile.level);
 
 /** An inventory item to use: a name regex, or `{ id }` for one exact item (three buckets of water share a name). */
-export const ItemSpec = z.union([Pattern, z.object({ id: z.number().int() })]);
+export const ItemSpec = z
+    .union([Pattern, z.object({ id: z.number().int().describe('The item id.') })])
+    .describe(
+        'An inventory item to use: a name regex, or `{ id }` for one exact item (three buckets of water share a name).',
+    );
 export type ItemSpec = z.infer<typeof ItemSpec>;
 
 export const itemMatches = (spec: ItemSpec, item: InventoryItem): boolean =>

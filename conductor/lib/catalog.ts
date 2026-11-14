@@ -1,6 +1,9 @@
-// The task catalog: one `defineTask` default export per conductor/tasks/<name>.ts.
+// The task catalog: one `defineTask` default export per conductor/tasks/<name>.ts, and what
+// `run-task.ts --list` prints of it.
 import { readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
+import { z } from 'zod/v4';
+import { Pattern } from './spot';
 import type { TaskDef } from './task';
 
 export const TASKS_DIR = resolve(import.meta.dir, '../tasks');
@@ -23,4 +26,139 @@ export function taskNames(dir = TASKS_DIR): string[] {
         .filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts'))
         .map(f => f.slice(0, -3))
         .sort();
+}
+
+/** One task's full entry, as `--list <task>` prints it. */
+export interface CatalogEntry {
+    name: string;
+    description: string;
+    rules?: string[];
+    spots?: string[];
+    /** The params as JSON Schema, input side: defaults are optional, a root pipe shows what it takes. */
+    params: unknown;
+}
+
+const paramsSchema = (def: TaskDef) => z.toJSONSchema(def.params, { io: 'input' });
+
+export function catalogEntry(def: TaskDef): CatalogEntry {
+    return {
+        name: def.name,
+        description: def.description,
+        ...(def.rules?.length ? { rules: def.rules } : {}),
+        ...(def.spots?.length ? { spots: def.spots } : {}),
+        params: paramsSchema(def),
+    };
+}
+
+/** Up to the first full stop that ends a sentence ("e.g." and "i.e." do not), whitespace collapsed. */
+function firstSentence(text: string): string {
+    const flat = text.replace(/\s+/g, ' ').trim();
+    const end = /(?<!\be\.g|\bi\.e)[.!?](?= |$)/.exec(flat);
+    return end ? flat.slice(0, end.index + 1) : flat;
+}
+
+/** `<name>: <first sentence> (params: ...)`, the index line; required params first, each group in schema order. */
+export function summaryLine(def: TaskDef): string {
+    // The input-side JSON Schema of a root pipe is its input object's, so its fields are the ones listed.
+    const schema = paramsSchema(def) as { properties?: Record<string, unknown>; required?: string[] };
+    const names = Object.keys(schema.properties ?? {});
+    const required = new Set(schema.required ?? []);
+    const ordered = [...names.filter(n => required.has(n)), ...names.filter(n => !required.has(n))];
+    return `${def.name}: ${firstSentence(def.description)} (params: ${ordered.join(', ') || 'none'})`;
+}
+
+interface Def {
+    type: string;
+    innerType?: z.ZodType;
+    in?: z.ZodType;
+    shape?: Record<string, z.ZodType>;
+    element?: z.ZodType;
+    options?: z.ZodType[];
+    items?: z.ZodType[];
+    rest?: z.ZodType | null;
+}
+const defOf = (s: z.ZodType) => s.def as unknown as Def;
+/** Layers that wrap one schema; a pipe is read on its input side, as `--list` prints it. */
+const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonoptional', 'readonly', 'catch']);
+/** Schemas with no fields inside. */
+const LEAVES = new Set(['string', 'number', 'boolean', 'bigint', 'enum', 'literal', 'date', 'null', 'any', 'unknown']);
+
+/**
+ * The schema under its wrappers, and whether any layer, the inner one included, carries a description.
+ * `Pattern`'s own says only what kind of value it is, not what the param means, so it does not count.
+ */
+function unwrap(s: z.ZodType): { core: z.ZodType; described: boolean } {
+    let described = false;
+    for (let cur = s; ;) {
+        if (cur.description !== undefined && cur.description !== Pattern.description) described = true;
+        const d = defOf(cur);
+        if (WRAPPERS.has(d.type) && d.innerType) cur = d.innerType;
+        else if (d.type === 'pipe' && d.in) cur = d.in;
+        else return { core: cur, described };
+    }
+}
+
+function walkField(s: z.ZodType, path: string, out: Set<string>): void {
+    const { core, described } = unwrap(s);
+    if (!described) out.add(path);
+    walkInside(core, path, out);
+}
+
+/** The fields inside a schema that is not itself a field: an array's element, a union's arm, the root. */
+function walkPart(s: z.ZodType, path: string, out: Set<string>): void {
+    walkInside(unwrap(s).core, path, out);
+}
+
+function walkInside(core: z.ZodType, path: string, out: Set<string>): void {
+    const d = defOf(core);
+    if (d.type === 'object') {
+        for (const [key, field] of Object.entries(d.shape ?? {})) walkField(field, path ? `${path}.${key}` : key, out);
+    } else if (d.type === 'array' && d.element) walkPart(d.element, `${path}[]`, out);
+    else if (d.type === 'tuple') {
+        (d.items ?? []).forEach((item, i) => walkPart(item, `${path}[${i}]`, out));
+        if (d.rest) walkPart(d.rest, `${path}[]`, out);
+    } else if (d.type === 'union') for (const arm of d.options ?? []) walkPart(arm, path, out);
+    // A schema kind this walk does not know could hide fields from the guard: fail loudly instead.
+    else if (!LEAVES.has(d.type)) throw new Error(`undescribedFields: no walk for a ${d.type} schema at "${path}"`);
+}
+
+/**
+ * The path of every params field with no description (`area.radius`, `withdraw[].item`, `route[0].x`).
+ * A field is described when its schema or any wrapper of it (optional, default, a pipe's input) has one,
+ * so a field typed as a described shared sub-schema (`AreaSchema`) is described through it; the fields
+ * inside are still checked. A union is one field and needs its own description, whatever its arms carry;
+ * the fields of an object arm are checked at the union's path. A field typed `Pattern` must be described
+ * at its use: `Pattern`'s description does not say what the param means.
+ */
+export function undescribedFields(def: Pick<TaskDef, 'params'>): string[] {
+    const out = new Set<string>();
+    walkPart(def.params, '', out);
+    return [...out];
+}
+
+/**
+ * What `run-task.ts --list [<task>...] | --list --all` prints: no names, the index (one `summaryLine`
+ * per task and a closing line on getting a full entry); names or `--all`, a JSON array of their
+ * `catalogEntry`. A name not in the catalog throws.
+ */
+export async function listCatalog(args: string[], dir = TASKS_DIR): Promise<string> {
+    const all = taskNames(dir);
+    if (args.length === 0) {
+        const lines: string[] = [];
+        for (const name of all) lines.push(summaryLine(await loadTask(name, dir)));
+        lines.push(
+            "A task's full entry (description, rules, spots, params as JSON Schema): bun conductor/run-task.ts --list <task> [<task>...]; every task's: --list --all",
+        );
+        return lines.join('\n');
+    }
+    if (args.includes('--all') && args.length > 1) throw new Error('--list --all takes no task names');
+    const names = args.includes('--all') ? all : args;
+    const unknown = names.filter(n => !all.includes(n));
+    if (unknown.length > 0)
+        throw new Error(
+            `no task ${unknown.map(n => `"${n}"`).join(', ')} in the catalog (${relative(REPO, dir)}): ${all.join(', ')}`,
+        );
+    const entries: CatalogEntry[] = [];
+    for (const name of names) entries.push(catalogEntry(await loadTask(name, dir)));
+    return JSON.stringify(entries, null, 2);
 }

@@ -1,0 +1,1773 @@
+{
+    "agility": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "course": {
+                "default": "gnome",
+                "type": "string",
+                "enum": ["gnome", "barbarian", "wilderness"]
+            },
+            "laps": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "minFood": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+            }
+        }
+    },
+    "bank": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "deposit": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "count": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                        }
+                    },
+                    "required": ["item"]
+                }
+            },
+            "depositAllExcept": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "withdraw": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "count": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                        },
+                        "upTo": {
+                            "default": false,
+                            "type": "boolean"
+                        }
+                    },
+                    "required": ["item", "count"]
+                }
+            }
+        }
+    },
+    "combat": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "target": {
+                "type": "string",
+                "minLength": 1
+            },
+            "skill": {
+                "default": "Attack",
+                "type": "string",
+                "enum": ["Attack", "Strength", "Defence", "Ranged", "Magic"]
+            },
+            "allowMaxed": {
+                "type": "boolean"
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "targetRange": {
+                "default": "area",
+                "type": "string",
+                "enum": ["area", "visible"]
+            },
+            "weapon": {
+                "type": "string"
+            },
+            "shield": {
+                "type": "string"
+            },
+            "ammo": {
+                "type": "string"
+            },
+            "spell": {
+                "type": "string",
+                "enum": [
+                    "Wind Strike",
+                    "Water Strike",
+                    "Earth Strike",
+                    "Fire Strike",
+                    "Wind Bolt",
+                    "Water Bolt",
+                    "Earth Bolt",
+                    "Fire Bolt",
+                    "Wind Blast",
+                    "Water Blast",
+                    "Earth Blast",
+                    "Fire Blast"
+                ]
+            },
+            "food": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "eatBelow": {
+                "default": 0.6,
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 0.9
+            },
+            "buryBones": {
+                "default": false,
+                "type": "boolean"
+            },
+            "loot": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "maxLevelGap": {
+                "default": 5,
+                "type": "number",
+                "minimum": 0
+            },
+            "level": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "minLevel": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "maxLevel": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "stopOnDialog": {
+                "default": false,
+                "type": "boolean"
+            },
+            "respawnWaitTicks": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 600
+            },
+            "prayers": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "keepPrayersOn": {
+                "default": false,
+                "type": "boolean"
+            },
+            "endWhenPackFull": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["target", "area"]
+    },
+    "combolock": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "door": {
+                "default": "peer",
+                "type": "string",
+                "enum": ["peer", "tribal"]
+            },
+            "word": {
+                "type": "string"
+            },
+            "at": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "tolerance": {
+                        "default": 3,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    },
+                    "met": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "tile": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "z": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        }
+    },
+    "cooking": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "food": {
+                "type": "string"
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "dropBurnt": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["food"]
+    },
+    "crafting": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "product": {
+                "default": "pot",
+                "type": "string",
+                "enum": ["pot", "pie dish", "bowl"]
+            },
+            "fire": {
+                "default": true,
+                "type": "boolean"
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        }
+    },
+    "essence-mine": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": ["enter", "leave"]
+            }
+        },
+        "required": ["action"]
+    },
+    "fill": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "container": {
+                "default": "Bucket",
+                "type": "string",
+                "enum": ["Bucket", "Jug", "Bowl", "Vial"]
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        }
+    },
+    "firemaking": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "logs": {
+                "default": "Logs",
+                "type": "string"
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        },
+        "required": ["area"]
+    },
+    "fishing": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "method": {
+                "default": "net",
+                "type": "string",
+                "enum": ["net", "bait", "lure", "pike", "harpoon", "shark", "cage"]
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "onFull": {
+                "default": "drop",
+                "type": "string",
+                "enum": ["drop", "stop"]
+            },
+            "fallback": {
+                "type": "string",
+                "enum": ["net", "bait", "lure", "pike", "harpoon", "shark", "cage"]
+            }
+        }
+    },
+    "fletching": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "product": {
+                "type": "string",
+                "minLength": 1
+            },
+            "logs": {
+                "default": "Logs",
+                "type": "string"
+            },
+            "batch": {
+                "default": 10,
+                "anyOf": [
+                    {
+                        "type": "number",
+                        "const": 1
+                    },
+                    {
+                        "type": "number",
+                        "const": 5
+                    },
+                    {
+                        "type": "number",
+                        "const": 10
+                    }
+                ]
+            },
+            "attachFeathers": {
+                "default": false,
+                "type": "boolean"
+            },
+            "string": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["product"]
+    },
+    "herblore": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "mode": {
+                "default": "all",
+                "type": "string",
+                "enum": ["clean", "unfinished", "finish", "all"]
+            },
+            "herbs": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "pairs": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "unf": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "secondary": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "required": ["unf", "secondary"]
+                }
+            }
+        }
+    },
+    "herd": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            },
+            "from": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "z": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "op": {
+                "default": 1,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+            },
+            "route": {
+                "type": "array",
+                "prefixItems": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "x": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            },
+                            "z": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            }
+                        },
+                        "required": ["x", "z"]
+                    }
+                ],
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "x": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                        },
+                        "z": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                        }
+                    },
+                    "required": ["x", "z"]
+                }
+            },
+            "tolerance": {
+                "default": 0,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+            },
+            "stop": {
+                "type": "object",
+                "properties": {
+                    "minX": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "maxX": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "minZ": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "maxZ": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["minX", "maxX", "minZ", "maxZ"]
+            },
+            "goneIsDone": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["name", "route"]
+    },
+    "interact": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "target": {
+                "type": "string",
+                "enum": ["loc", "npc", "item"]
+            },
+            "name": {
+                "type": "string"
+            },
+            "option": {
+                "type": "string"
+            },
+            "at": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "tolerance": {
+                        "default": 3,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    },
+                    "met": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "expect": {
+                "type": "string"
+            },
+            "tile": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "z": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "npcId": {
+                "anyOf": [
+                    {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    },
+                    {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                        }
+                    }
+                ]
+            },
+            "opIndex": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+            },
+            "allowDestructiveOption": {
+                "default": false,
+                "type": "boolean"
+            },
+            "unreachable": {
+                "default": false,
+                "type": "boolean"
+            },
+            "use": {
+                "type": "object",
+                "properties": {
+                    "item": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": -9007199254740991,
+                                        "maximum": 9007199254740991
+                                    }
+                                },
+                                "required": ["id"]
+                            }
+                        ]
+                    }
+                },
+                "required": ["item"]
+            },
+            "choices": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "wilderness": {
+                "default": false,
+                "type": "boolean"
+            },
+            "minFood": {
+                "default": 3,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+            }
+        },
+        "required": ["target", "name"]
+    },
+    "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "combine": {
+                "type": "object",
+                "properties": {
+                    "use": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                    }
+                                },
+                                "required": ["name"]
+                            }
+                        ]
+                    },
+                    "on": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                    }
+                                },
+                                "required": ["name"]
+                            }
+                        ]
+                    },
+                    "product": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                    }
+                                },
+                                "required": ["name"]
+                            }
+                        ]
+                    },
+                    "choice": {
+                        "type": "string"
+                    }
+                },
+                "required": ["use", "on"]
+            },
+            "drop": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string"
+                        },
+                        "count": {
+                            "default": 1,
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 28
+                        }
+                    },
+                    "required": ["item"]
+                }
+            },
+            "unequip": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "equip": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991
+                                }
+                            },
+                            "required": ["name"]
+                        }
+                    ]
+                }
+            },
+            "at": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "tolerance": {
+                        "default": 3,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    },
+                    "met": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "choices": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "journal": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "quest": {
+                "type": "string"
+            },
+            "expect": {
+                "type": "string"
+            },
+            "withinTicks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+            }
+        },
+        "required": ["quest"]
+    },
+    "locate": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "item": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            }
+                        },
+                        "required": ["id"]
+                    }
+                ]
+            },
+            "option": {
+                "type": "string"
+            },
+            "hint": {
+                "default": "\\b(?:north-?east|north-?west|south-?east|south-?west|north|south|east|west)\\b",
+                "type": "string"
+            },
+            "stop": {
+                "type": "string"
+            },
+            "moved": {
+                "default": "moved elsewhere",
+                "type": "string"
+            },
+            "target": {
+                "type": "string"
+            },
+            "step": {
+                "default": 8,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 30
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "maxHops": {
+                "default": 60,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "maxRelocations": {
+                "default": 6,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+            }
+        },
+        "required": ["item", "option", "stop"]
+    },
+    "mining": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "rock": {
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "enum": [
+                            "clay",
+                            "copper",
+                            "tin",
+                            "iron",
+                            "silver",
+                            "coal",
+                            "gold",
+                            "mithril",
+                            "adamantite",
+                            "runite",
+                            "essence"
+                        ]
+                    },
+                    {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "clay",
+                                "copper",
+                                "tin",
+                                "iron",
+                                "silver",
+                                "coal",
+                                "gold",
+                                "mithril",
+                                "adamantite",
+                                "runite",
+                                "essence"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "onFull": {
+                "default": "drop",
+                "type": "string",
+                "enum": ["drop", "stop"]
+            }
+        },
+        "required": ["rock"]
+    },
+    "pick": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "loc": {
+                "type": "string",
+                "minLength": 1
+            },
+            "item": {
+                "type": "string",
+                "minLength": 1
+            },
+            "count": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 28
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        },
+        "required": ["loc", "item"]
+    },
+    "pickup": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "items": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "count": {
+                            "default": 1,
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                        }
+                    },
+                    "required": ["item"]
+                }
+            },
+            "maxWaitSeconds": {
+                "default": 90,
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 300
+            }
+        },
+        "required": ["area", "items"]
+    },
+    "prayer": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "on": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "off": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "runecraft": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "altar": {
+                "type": "string",
+                "enum": ["air", "mind", "water", "earth", "fire", "body"]
+            }
+        },
+        "required": ["altar"]
+    },
+    "shop": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "npc": {
+                "type": "string",
+                "minLength": 1
+            },
+            "at": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "sell": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "count": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                        },
+                        "minUnitPrice": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                        }
+                    },
+                    "required": ["item"]
+                }
+            },
+            "buy": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "item": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "count": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991
+                        },
+                        "maxUnitPrice": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                        }
+                    },
+                    "required": ["item", "count"]
+                }
+            }
+        },
+        "required": ["npc"]
+    },
+    "smithing": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "mode": {
+                "type": "string",
+                "enum": ["smelt", "smith"]
+            },
+            "bar": {
+                "default": "bronze",
+                "type": "string",
+                "enum": ["bronze", "iron", "steel", "mithril", "adamant", "runite"]
+            },
+            "product": {
+                "default": "dagger",
+                "type": "string"
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "onDone": {
+                "default": "keep",
+                "type": "string",
+                "enum": ["keep", "drop"]
+            }
+        },
+        "required": ["mode"]
+    },
+    "spell-items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "spell": {
+                "type": "string",
+                "enum": [
+                    "superheat",
+                    "low-alchemy",
+                    "high-alchemy",
+                    "enchant-1",
+                    "enchant-2",
+                    "enchant-3",
+                    "enchant-4",
+                    "enchant-5"
+                ]
+            },
+            "item": {
+                "type": "string"
+            },
+            "count": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+            }
+        },
+        "required": ["spell", "item"]
+    },
+    "spinning": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "material": {
+                "default": "flax",
+                "type": "string",
+                "enum": ["flax", "wool"]
+            },
+            "wheel": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "default": 0,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            }
+        }
+    },
+    "talk": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "npc": {
+                "type": "string"
+            },
+            "at": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    },
+                    "tolerance": {
+                        "default": 3,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    },
+                    "met": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "option": {
+                "default": "^talk-?to$",
+                "type": "string"
+            },
+            "choices": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "use": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "minItems": 1,
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "minimum": -9007199254740991,
+                                            "maximum": 9007199254740991
+                                        }
+                                    },
+                                    "required": ["id"]
+                                }
+                            ]
+                        }
+                    },
+                    "onLoc": {
+                        "type": "string"
+                    },
+                    "tile": {
+                        "type": "object",
+                        "properties": {
+                            "x": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            },
+                            "z": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            },
+                            "level": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                            }
+                        },
+                        "required": ["x", "z"]
+                    }
+                },
+                "required": ["items", "onLoc"]
+            },
+            "continue": {
+                "default": false,
+                "type": "boolean"
+            },
+            "travels": {
+                "default": false,
+                "type": "boolean"
+            },
+            "amount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000
+            },
+            "press": {
+                "type": "object",
+                "properties": {
+                    "component": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9_]+:com_\\d+$"
+                    },
+                    "ready": {
+                        "type": "string"
+                    },
+                    "until": {
+                        "type": "string"
+                    }
+                },
+                "required": ["component", "until"]
+            }
+        }
+    },
+    "teleport": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "spell": {
+                "type": "string",
+                "enum": ["varrock", "lumbridge", "falador", "camelot", "ardougne", "watchtower", "trollheim"]
+            }
+        },
+        "required": ["spell"]
+    },
+    "thieving": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "npc": {
+                "type": "string",
+                "minLength": 1
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "food": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "eatBelow": {
+                "default": 0.6,
+                "type": "number",
+                "minimum": 0.1,
+                "maximum": 0.9
+            },
+            "stopWhenFull": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["npc"]
+    },
+    "travel": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "to": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "met": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "tolerance": {
+                "default": 3,
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+            },
+            "waypoints": {
+                "default": [],
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "x": {
+                            "type": "number"
+                        },
+                        "z": {
+                            "type": "number"
+                        }
+                    },
+                    "required": ["x", "z"]
+                }
+            },
+            "flee": {
+                "default": false,
+                "type": "boolean"
+            },
+            "wilderness": {
+                "default": false,
+                "type": "boolean"
+            },
+            "minFood": {
+                "default": 3,
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+            }
+        },
+        "required": ["to"]
+    },
+    "wait": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "ticks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1500
+            },
+            "orFail": {
+                "default": false,
+                "type": "boolean"
+            }
+        },
+        "required": ["ticks"]
+    },
+    "woodcutting": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+            "tree": {
+                "default": "tree",
+                "type": "string",
+                "enum": ["tree", "oak", "willow"]
+            },
+            "area": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "radius": {
+                        "default": 15,
+                        "type": "number",
+                        "minimum": 2
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                    }
+                },
+                "required": ["x", "z"]
+            },
+            "onFull": {
+                "default": "drop",
+                "type": "string",
+                "enum": ["drop", "stop"]
+            }
+        }
+    }
+}
