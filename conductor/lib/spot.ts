@@ -5,7 +5,7 @@ import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log } from '../core/op';
 import type { Step, TaskContext } from './task';
-import { failStreakTicks } from './watchdog';
+import { assertWindowCovers, failStreakTicks } from './watchdog';
 
 const DEFAULT_TOLERANCE = 3;
 
@@ -117,16 +117,24 @@ export function atSpot(at: At | undefined, state: BotWorldState): boolean {
     );
 }
 
-/** What walkToSpotStep(failLimit)'s failed walks can hold a task silent for, for its `silent` list. */
+/** What walkToSpotStep(failLimit)'s failed walks can hold a task silent for: a task with `silent` using it lists it. */
 export const walkToSpotSilentTicks = (failLimit: number): number => failStreakTicks(failLimit, WALK_MAX_TICKS);
 
-/** The step that walks to `params.at` until the bot stands there; `failLimit` walks in a row failing ends the run. */
+/**
+ * The step that walks to `params.at` until the bot stands there; `failLimit` walks in a row failing ends the run.
+ * A task with `silent` lists walkToSpotSilentTicks(failLimit) in it, or the step throws.
+ */
 export function walkToSpotStep<P extends { at?: At }, M extends object>(failLimit: number): Step<P, M> {
     const here = (ctx: TaskContext<P, M>) => atSpot(ctx.params.at, ctx.state());
     return {
         name: 'walk',
         when: ctx => !!ctx.params.at && !!ctx.state().player && !ctx.state().dialog.isOpen && !here(ctx),
         *run(ctx) {
+            assertWindowCovers(
+                ctx,
+                `the spot walk (walkToSpotSilentTicks(${failLimit}))`,
+                walkToSpotSilentTicks(failLimit),
+            );
             const { at } = ctx.params;
             // Narrowing only: when() guarantees it.
             if (!at) return;

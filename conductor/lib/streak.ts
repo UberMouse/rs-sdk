@@ -4,7 +4,7 @@
 import type { TaskContext } from './task';
 import { failStreakTicks } from './watchdog';
 
-type StreakContext = Pick<TaskContext, 'streak' | 'task'>;
+type StreakContext = Pick<TaskContext, 'streak'> & { readonly task: Pick<TaskContext['task'], 'name' | 'silent'> };
 
 export interface FailStreak {
     /** The `ctx.streak` name it counts under. */
@@ -12,10 +12,16 @@ export interface FailStreak {
     readonly limit: number;
     /** What the streak can hold the task silent for: failStreakTicks(limit, worstTicks). */
     readonly silentTicks: number;
-    /** Counts one failure; at `limit`, the run's failure "<limit> <what> in a row failed (last: <last>)". */
+    /**
+     * Counts one failure; at `limit`, the run's failure "<limit> <what> in a row failed (last: <last>)". The result
+     * must be returned from the step: dropped, the streak counts but never fails the run.
+     */
     miss(ctx: StreakContext, last?: string): { fail: string } | undefined;
-    /** Counts one failure; at `limit`, the run fails with `reason` (or `reason(limit)`) as written. */
-    missWith(ctx: StreakContext, reason: string | ((limit: number) => string)): { fail: string } | undefined;
+    /**
+     * Counts one failure; at `limit`, the run fails with `reason` as written. The result must be returned from the
+     * step: dropped, the streak counts but never fails the run.
+     */
+    missWith(ctx: StreakContext, reason: string): { fail: string } | undefined;
     /** Resets the count (a success). */
     clear(ctx: StreakContext): void;
 }
@@ -33,8 +39,7 @@ export function failStreak(spec: { name: string; limit: number; worstTicks: numb
         silentTicks: failStreakTicks(limit, worstTicks),
         miss: (ctx, last) =>
             streak.missWith(ctx, `${limit} ${what} in a row failed${last === undefined ? '' : ` (last: ${last})`}`),
-        missWith: (ctx, reason) =>
-            count(ctx).add() >= limit ? { fail: typeof reason === 'string' ? reason : reason(limit) } : undefined,
+        missWith: (ctx, reason) => (count(ctx).add() >= limit ? { fail: reason } : undefined),
         clear: ctx => count(ctx).reset(),
     };
     return streak;

@@ -18,7 +18,7 @@ import type { Epilogue } from './epilogue';
 import type { AllowableGuard, TaskGuard } from './interrupts';
 import type { FailStreak } from './streak';
 import { TICK_MS } from './util';
-import { stuckWindowMs } from './watchdog';
+import { taskStuckWindowMs } from './watchdog';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -76,8 +76,15 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
      * waits long (walkTo) caps itself to it (ActionContext).
      */
     stepTicksLeft(): number | undefined;
-    /** The running task's name and `silent` list: a declared fail streak (lib/streak.ts) checks it is listed. */
-    readonly task: { readonly name: string; readonly silent?: readonly (FailStreak | number)[] };
+    /**
+     * The running task's name, `silent` list and watchdog window (taskStuckWindowMs): a declared fail streak
+     * (lib/streak.ts) checks it is listed, a shared walk step that the window covers it (assertWindowCovers).
+     */
+    readonly task: {
+        readonly name: string;
+        readonly silent?: readonly (FailStreak | number)[];
+        readonly stuckAfterMs: number;
+    };
 }
 
 export interface Step<P = unknown, M extends object = UntypedMemory> {
@@ -178,11 +185,11 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     isComplete?(ctx: TaskContext<z.infer<S>, M>): string | null;
     /**
      * Everything that can keep the task from changing XP, position, HP or inventory: its declared fail streaks
-     * (lib/streak.ts) and other silent stretches in ticks. defineTask sizes `stuckAfterMs` from it (stuckWindowMs),
-     * so a task gives one or the other; a fail streak not listed here throws when used.
+     * (lib/streak.ts) and other silent stretches in ticks. defineTask and the engine size `stuckAfterMs`
+     * from it (taskStuckWindowMs), so a task gives one or the other; a fail streak not listed here throws when used.
      */
     silent?: (FailStreak | number)[];
-    /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (engine.ts). */
+    /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (watchdog.ts). */
     stuckAfterMs?: number;
     /**
      * A single step.run() longer than this ends the run as `stuck`, enforced as a tick budget
@@ -211,9 +218,7 @@ export const stepBudgetTicks = (stepTimeoutMs: number): number => Math.ceil(step
 
 export function defineTask<S extends z.ZodType, M extends object = UntypedMemory>(def: TaskDef<S, M>): TaskDef<S, M> {
     if (!def.silent) return def;
-    if (def.stuckAfterMs !== undefined) throw new Error(`task "${def.name}": give silent or stuckAfterMs, not both`);
-    if (def.silent.length === 0) throw new Error(`task "${def.name}": silent is empty`);
-    return { ...def, stuckAfterMs: stuckWindowMs(...def.silent) };
+    return { ...def, stuckAfterMs: taskStuckWindowMs(def) };
 }
 
 export type TaskStatus = 'done' | 'failed' | 'stuck' | 'error';

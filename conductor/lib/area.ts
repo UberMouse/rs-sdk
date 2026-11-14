@@ -5,7 +5,7 @@ import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { distance } from './util';
-import { failStreakTicks } from './watchdog';
+import { assertWindowCovers, failStreakTicks } from './watchdog';
 import { squareReachesWilderness } from './wilderness';
 
 /** Radius floor: the walk tolerance is radius - 1, so a smaller area could never be reached. */
@@ -19,7 +19,7 @@ const WORK_REACH = 2;
 const MAX_WALK_TOLERANCE = 3;
 /** Consecutive failed walks to the area before the task fails. */
 export const WALK_FAIL_LIMIT = 3;
-/** What walkToArea's failed walks can hold a task silent for, for its `silent` list. */
+/** What walkToArea's failed walks can hold a task silent for: a task with `silent` that walks to its area lists it. */
 export const WALK_TO_AREA_SILENT_TICKS = failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS);
 
 export const AreaSchema = z
@@ -62,9 +62,10 @@ export function refuseArea(area: Area | undefined): string | null {
  * Every caller in a run shares one `area.walkFails` counter, so the limit is per run, not per caller. A
  * walk that ran out of its ticks nearer the area than it started (a far area) is neither a failure nor
  * an arrival: it leaves the count alone, and the next walk carries on from there. `onFail` is called on
- * each failure it counts.
+ * each failure it counts. A task with `silent` lists WALK_TO_AREA_SILENT_TICKS in it, or this throws.
  */
 export function* walkToArea(ctx: TaskContext<unknown, object>, area: Area, onFail?: () => void): Op<string | null> {
+    assertWindowCovers(ctx, 'the area walk (WALK_TO_AREA_SILENT_TICKS)', WALK_TO_AREA_SILENT_TICKS);
     const before = ctx.distanceTo(area.x, area.z);
     const r = yield* walkTo(ctx, area.x, area.z, Math.min(MAX_WALK_TOLERANCE, area.radius - 1), { level: area.level });
     const fails = ctx.counter('area.walkFails');

@@ -39,6 +39,7 @@ import {
 } from './task';
 import { isLowHp } from './threat';
 import { distance, errMessage, INVENTORY_SLOTS, mapCounter, xpGainedSince } from './util';
+import { DEFAULT_STUCK_AFTER_MS, taskStuckWindowMs } from './watchdog';
 
 /** The client must publish a new tick within this long, else the run is `stuck`. */
 export const TICK_STALL_MS = 30_000;
@@ -53,7 +54,7 @@ const MAX_IDLE_LOOPS = 20;
  * task's longest legitimate silence (minutes), while such a loop spins hundreds of times a tick.
  */
 export const MAX_NO_EFFECT_STEPS = 50;
-export const DEFAULT_STUCK_AFTER_MS = 90_000;
+export { DEFAULT_STUCK_AFTER_MS } from './watchdog';
 export const DEFAULT_STEP_TIMEOUT_MS = 120_000;
 const DEFAULT_PROGRESS_EVERY_MS = 30_000;
 /**
@@ -277,7 +278,14 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     }
     const invBefore = inventoryCounts(initial);
 
-    const stuckAfterMs = def.stuckAfterMs ?? DEFAULT_STUCK_AFTER_MS;
+    // A def built without defineTask is sized here too; a bad `silent` fails the run once it has started.
+    let stuckAfterMs = DEFAULT_STUCK_AFTER_MS;
+    let badWindow: string | null = null;
+    try {
+        stuckAfterMs = taskStuckWindowMs(def);
+    } catch (e) {
+        badWindow = errMessage(e);
+    }
     const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
     const stepBudgetTicks = budgetTicksOf(stepTimeoutMs);
     const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
@@ -310,7 +318,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             emit({ type: 'log', msg, data });
         },
         startTick: initial.tick,
-        task: { name: def.name, ...(def.silent && { silent: def.silent }) },
+        task: { name: def.name, ...(def.silent && { silent: def.silent }), stuckAfterMs },
         memory: def.memory?.() ?? {},
         previousPos: null,
         counter: name => mapCounter(counters, name),
@@ -514,6 +522,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             `invalid params: ${parsed.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
         );
     }
+    if (badWindow) return finish('error', badWindow);
     try {
         validateStops(stops, initial);
     } catch (e) {

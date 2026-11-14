@@ -4,7 +4,7 @@ import { ticks } from '../../core/op';
 import { failStreak, type FailStreak } from '../../lib/streak';
 import { type Counter, defineTask, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../../lib/watchdog';
+import { assertWindowCovers, failStreakTicks, stuckWindowMs, taskStuckWindowMs } from '../../lib/watchdog';
 import { runDef } from '../engine/harness';
 import { timeline } from '../world';
 
@@ -43,17 +43,12 @@ describe('failStreak', () => {
         expect(s.miss(ctxOf([s]))).toEqual({ fail: '1 looks in a row failed' });
     });
 
-    test('missWith fails with the caller text as given, or as a function of the limit', () => {
+    test('missWith fails with the caller text as given', () => {
         const s = fills();
         const ctx = ctxOf([s]);
-        s.missWith(ctx, 'unused');
-        s.missWith(ctx, 'unused');
+        expect(s.missWith(ctx, 'unused')).toBeUndefined();
+        expect(s.missWith(ctx, 'unused')).toBeUndefined();
         expect(s.missWith(ctx, 'out of buckets')).toEqual({ fail: 'out of buckets' });
-        const t = fills();
-        const ctx2 = ctxOf([t]);
-        t.miss(ctx2, 'x');
-        t.miss(ctx2, 'x');
-        expect(t.missWith(ctx2, limit => `gave up after ${limit}`)).toEqual({ fail: 'gave up after 3' });
     });
 
     test('clear resets the count, so the limit counts misses in a row', () => {
@@ -102,6 +97,68 @@ describe('TaskDef.silent', () => {
 
     test('an empty silent throws, naming the task', () => {
         expect(() => defineTask({ ...base, silent: [] })).toThrow('task "test": silent is empty');
+    });
+
+    test('two distinct fail streaks of one name throw, naming the task and the streak', () => {
+        expect(() => defineTask({ ...base, silent: [fills(), fills()] })).toThrow(
+            'task "test": two fail streaks named "fillFails" in its silent',
+        );
+        const s = fills();
+        expect(defineTask({ ...base, silent: [s, s] }).stuckAfterMs).toBe(stuckWindowMs(s));
+    });
+
+    test('a copy of a defined task keeps its window', () => {
+        const def = defineTask({ ...base, silent: [fills()] });
+        expect(taskStuckWindowMs({ ...def })).toBe(def.stuckAfterMs ?? 0);
+    });
+});
+
+describe('a def built without defineTask', () => {
+    const idle: Step = {
+        name: 'idle',
+        when: () => true,
+        *run() {
+            yield* ticks(1);
+        },
+    };
+    const literal = { name: 'literal', description: 'window test', params: z.object({}), steps: [idle] };
+
+    test('with silent, the engine sizes its window from it', async () => {
+        // [1]: one tick plus the margin, about 60 s where the default is 90 s.
+        const r = await runDef({ ...literal, silent: [1] }, timeline(1));
+        expect(r.result.status).toBe('stuck');
+        expect(r.result.reason).toBe(
+            `no XP, position, HP or inventory change for ${Math.round(stuckWindowMs(1) / 1000)}s (last step: idle)`,
+        );
+    });
+
+    test('a bad silent errors the run, naming the task', async () => {
+        const both = await runDef({ ...literal, silent: [1], stuckAfterMs: 1000 }, timeline(1));
+        expect([both.result.status, both.result.reason]).toEqual([
+            'error',
+            'task "literal": give silent or stuckAfterMs, not both',
+        ]);
+        const empty = await runDef({ ...literal, silent: [] }, timeline(1));
+        expect([empty.result.status, empty.result.reason]).toEqual(['error', 'task "literal": silent is empty']);
+        expect(both.sends).toEqual([]);
+    });
+});
+
+/** The context part assertWindowCovers reads, for a task named `t`. */
+const task = (silent: number[] | undefined, stuckAfterMs: number) => ({
+    task: { name: 't', ...(silent && { silent }), stuckAfterMs },
+});
+
+describe('assertWindowCovers', () => {
+    test('throws when a task with silent has a window shorter than the stretch', () => {
+        expect(() => assertWindowCovers(task([10], stuckWindowMs(10)), 'the walk', 11)).toThrow(
+            `task "t": its stuck window (${stuckWindowMs(10)} ms) does not cover the walk (11 ticks); list it in silent`,
+        );
+        expect(() => assertWindowCovers(task([11], stuckWindowMs(11)), 'the walk', 11)).not.toThrow();
+    });
+
+    test('does not check a task without silent', () => {
+        expect(() => assertWindowCovers(task(undefined, 1), 'the walk', 11)).not.toThrow();
     });
 });
 
