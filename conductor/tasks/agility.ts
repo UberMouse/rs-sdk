@@ -10,12 +10,13 @@ import {
     type Obstacle,
     WILDERNESS,
 } from '../actions/course';
-import { EAT_WAIT_TICKS, eat } from '../actions/eat';
+import { EAT_WAIT_TICKS } from '../actions/eat';
 import { OBSTACLE_SETTLE_TICKS, OBSTACLE_WAIT_TICKS } from '../actions/obstacle';
 import { timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
 import { walkToArea, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { findFood, foodCount } from '../lib/interrupts';
+import { eatStep, hpBelow } from '../lib/eat-step';
 import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
@@ -53,14 +54,10 @@ const STEP_TIMEOUT_MS = 300_000;
 const EAT_BELOW_FRACTION = 0.75;
 /** Eats in a row that did nothing before the run fails. */
 const EAT_FAIL_LIMIT = 3;
-// The falls streak and the eat step's eatFails stay hand-written: falls reset on any obstacle that pays out, and the eat
-// step's code is left as it is. Their stretches are listed as ticks.
-const SILENT = [
-    OBSTACLE_FAILS,
-    WALK_TO_AREA_SILENT_TICKS,
-    failStreakTicks(FALL_LIMIT, CROSS_TICKS),
-    failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
-];
+/** One failed eat: its wait (EAT_WAIT_TICKS). A successful eat does not reset the count. */
+const EAT_FAILS = failStreak({ name: 'eatFails', limit: EAT_FAIL_LIMIT, worstTicks: EAT_WAIT_TICKS });
+// The falls streak stays hand-written: falls reset on any obstacle that pays out. Its stretch is listed as ticks.
+const SILENT = [OBSTACLE_FAILS, WALK_TO_AREA_SILENT_TICKS, failStreakTicks(FALL_LIMIT, CROSS_TICKS), EAT_FAILS];
 /** Food a course's run needs to start with unless `minFood` says otherwise: the Wilderness course hurts and has no way out but its lap. */
 const DEFAULT_MIN_FOOD = { gnome: 0, barbarian: 0, wilderness: 3 } as const;
 /**
@@ -248,23 +245,15 @@ export default defineTask({
             when: ctx => ctx.params.laps !== undefined && ctx.memory.laps >= ctx.params.laps,
             run: ctx => ({ done: `${ctx.memory.laps} laps${leaveNote(ctx)}` }),
         },
-        {
-            // Between obstacles, where an eat works (mid-script it does not): keep HP out of the low-HP guard's reach.
-            name: 'eat',
-            when: ctx => {
-                const p = ctx.state().player;
-                return !!p && p.maxHp > 0 && p.hp < p.maxHp * EAT_BELOW_FRACTION && !!findFood(ctx.state());
-            },
-            *run(ctx) {
-                const food = findFood(ctx.state());
-                if (!food) return;
-                const r = yield* eat(ctx, food);
-                if (r.ok) return;
-                yield* log(`eat ${food.name} failed (${r.reason}): ${r.message}`);
-                if (ctx.streak('eatFails').add() >= EAT_FAIL_LIMIT)
-                    return { fail: `${EAT_FAIL_LIMIT} eats in a row failed (last: ${r.message})` };
-            },
-        },
+        // Between obstacles, where an eat works (mid-script it does not): keep HP out of the low-HP guard's reach.
+        eatStep<AgilityParams>({
+            wants: s => hpBelow(s, EAT_BELOW_FRACTION) && !!findFood(s),
+            food: findFood,
+            streak: EAT_FAILS,
+            failText: (_, r) => `${EAT_FAIL_LIMIT} eats in a row failed (last: ${r.message})`,
+            logFailure: (food, r) => `eat ${food.name} failed (${r.reason}): ${r.message}`,
+            keepOnSuccess: true,
+        }),
         {
             // Out of food on a course that needs it: stop where the course lets the bot stop (a lap's start, outside its danger).
             name: 'out-of-food',

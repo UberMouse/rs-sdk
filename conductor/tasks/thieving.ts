@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
-import { EAT_WAIT_TICKS, eat } from '../actions/eat';
+import { EAT_WAIT_TICKS } from '../actions/eat';
 import {
     PICKPOCKET_ACK_TICKS,
     PICKPOCKET_OPTION,
@@ -14,12 +14,12 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, ticks, wait } from '../core/op';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS, walkToArea } from '../lib/area';
+import { eatStep, foodInInventory, wantsToEat } from '../lib/eat-step';
 import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { LOW_HP_FRACTION } from '../lib/threat';
 import { exactName, findSkill } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
-import { failStreakTicks } from '../lib/watchdog';
 
 /**
  * Thieving level each pickpocketable NPC needs, by lower-case name, from
@@ -81,6 +81,8 @@ const PICK_FAILS = failStreak({
     worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
     what: 'pickpockets',
 });
+/** One failed eat: its wait (EAT_WAIT_TICKS). */
+const EAT_FAILS = failStreak({ name: 'eatFails', limit: EAT_FAIL_LIMIT, worstTicks: EAT_WAIT_TICKS });
 /** One refused attempt: the send and the op's waits, then the stun wait it sets. */
 const BLOCKED = failStreak({
     name: 'blocked',
@@ -99,7 +101,7 @@ const SILENT = [
     PICK_FAILS,
     BLOCKED,
     REGEN_CAP_TICKS + REGEN_SLICE_TICKS,
-    failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
+    EAT_FAILS,
 ];
 
 const Params = z.object({
@@ -139,13 +141,6 @@ interface ThievingMemory {
 type Ctx = TaskContext<ThievingParams, ThievingMemory>;
 
 const levelNeeded = (npc: string) => PICKPOCKET_LEVELS[npc.toLowerCase()];
-
-const foodInInventory = (s: BotWorldState, p: ThievingParams) =>
-    s.inventory.find(i => p.food.some(f => exactName(f).test(i.name)));
-
-/** The eat rule: HP below `eatBelow` of max and a configured food is held. */
-const wantsToEat = (s: BotWorldState, p: ThievingParams) =>
-    !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow && !!foodInInventory(s, p);
 
 /**
  * No food and too little HP to take one more caught attempt without dropping under the engine's
@@ -234,21 +229,12 @@ export default defineTask({
             },
         },
         returnToAreaStep<ThievingParams>(params => params.area),
-        {
-            name: 'eat',
-            when: ctx => wantsToEat(ctx.state(), ctx.params),
-            *run(ctx) {
-                const food = foodInInventory(ctx.state(), ctx.params);
-                if (!food) return;
-                const eatFails = ctx.streak('eatFails');
-                const r = yield* eat(ctx, food);
-                if (r.ok) {
-                    eatFails.reset();
-                    return;
-                }
-                if (eatFails.add() >= EAT_FAIL_LIMIT) return { fail: `could not eat ${food.name}: ${r.message}` };
-            },
-        },
+        eatStep<ThievingParams>({
+            wants: wantsToEat,
+            food: foodInInventory,
+            streak: EAT_FAILS,
+            failText: (food, r) => `could not eat ${food.name}: ${r.message}`,
+        }),
         {
             name: 'regen',
             when: ctx => needsRegen(ctx.state(), ctx.params),

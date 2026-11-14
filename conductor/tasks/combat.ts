@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 import { type BotWorldState, type NearbyNpc, PRAYER_LEVELS } from '../../sdk/types';
 import { ATTACK_OPTION, ATTACK_WAIT_TICKS, attack } from '../actions/attack';
 import { CAST_DELAY_TICKS, CAST_WAIT_TICKS, cast } from '../actions/cast';
-import { EAT_WAIT_TICKS, eat } from '../actions/eat';
+import { EAT_WAIT_TICKS } from '../actions/eat';
 import { EQUIP_WAIT_TICKS, equip } from '../actions/equip';
 import { PRAYER_WAIT_TICKS, prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
@@ -27,7 +27,7 @@ import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/ta
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 import { MAX_XP } from '../lib/xp';
 import { failStreak } from '../lib/streak';
-import { failStreakTicks } from '../lib/watchdog';
+import { eatStep, foodInInventory, wantsToEat } from '../lib/eat-step';
 
 const SKILLS = ['Attack', 'Strength', 'Defence', 'Ranged', 'Magic'] as const;
 
@@ -95,6 +95,8 @@ const ATTACK_FAILS = failStreak({
     worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
     what: 'attacks',
 });
+/** One failed eat: its wait (EAT_WAIT_TICKS). */
+const EAT_FAILS = failStreak({ name: 'eatFails', limit: EAT_FAIL_LIMIT, worstTicks: EAT_WAIT_TICKS });
 /** One failed cast: the cast's wait and the retry tick. */
 const CAST_FAILS = failStreak({
     name: 'castFails',
@@ -131,7 +133,7 @@ const SILENT = [
     MAX_RESPAWN_WAIT_TICKS + NO_TARGET_WAIT_TICKS,
     LOOT_GIVE_UP_TICKS,
     WALK_TO_AREA_SILENT_TICKS,
-    failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
+    EAT_FAILS,
     ATTACK_FAILS,
     CAST_FAILS,
     LEVEL_UP_FAILS,
@@ -409,19 +411,6 @@ const uncappedLimit = (s: BotWorldState, p: CombatParams) => (s.player?.combatLe
 /** True when the no-food cap, not combat level + `maxLevelGap`, is what holds the limit down. */
 const cappedWithoutFood = (s: BotWorldState, p: CombatParams) =>
     !foodInInventory(s, p) && uncappedLimit(s, p) > NO_FOOD_MAX_NPC_LEVEL;
-
-/** The first inventory item that is configured food. */
-const foodInInventory = (s: BotWorldState, p: CombatParams) =>
-    s.inventory.find(i => p.food.some(f => exactName(f).test(i.name)));
-
-/**
- * HP is under the configured eat threshold and there is configured food: the eat step's case. Below
- * half HP the low-HP guard (lib/interrupts.ts) fires first, at any wait and between steps, and eats
- * any Eat item; this step tops HP up from there to `eatBelow`, so with `eatBelow` at or under one half
- * it seldom runs.
- */
-const wantsToEat = (s: BotWorldState, p: CombatParams) =>
-    !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow && !!foodInInventory(s, p);
 
 const matches = (npc: NearbyNpc, p: CombatParams) => exactName(p.target).test(npc.name);
 
@@ -995,21 +984,12 @@ export default defineTask({
                 }
             },
         },
-        {
-            name: 'eat',
-            when: ctx => wantsToEat(ctx.state(), ctx.params),
-            *run(ctx) {
-                const food = foodInInventory(ctx.state(), ctx.params);
-                if (!food) return;
-                const eatFails = ctx.streak('eatFails');
-                const r = yield* eat(ctx, food);
-                if (r.ok) {
-                    eatFails.reset();
-                    return;
-                }
-                if (eatFails.add() >= EAT_FAIL_LIMIT) return { fail: `could not eat ${food.name}: ${r.message}` };
-            },
-        },
+        eatStep<CombatParams, CombatMemory>({
+            wants: wantsToEat,
+            food: foodInInventory,
+            streak: EAT_FAILS,
+            failText: (food, r) => `could not eat ${food.name}: ${r.message}`,
+        }),
         {
             name: 'bury-bones',
             when: ctx => ctx.params.buryBones && countBones(ctx.state()) > 0,
