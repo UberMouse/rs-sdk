@@ -10,6 +10,7 @@ import {
   FAILSAFE_PERCENT,
   FAILSAFE_WINDOW_MS,
   RUN_STATE_FILE,
+  pickRun,
   STALE_IDLE_MS,
   STALE_PERCENT,
   TICK_MS,
@@ -244,10 +245,22 @@ async function recordCheck($: EngineInterface, decision: AutocompactDecision, pe
   logLine($, `check${percent === undefined ? '' : ` at ${percent}%`}: ${decision.rule}: ${decision.reason}`)
 }
 
-/** Rule 1's view of this session's run. */
+/**
+ * Rule 1's view of this session's run. The run's state.json is under the directory the session
+ * works in, which for a session that entered a git worktree is not the project root: the root
+ * can hold another session's run. Both places are read and `pickRun` chooses between them.
+ */
 async function readConductor($: EngineInterface): Promise<{ run: { path: string; json: unknown } | null; status: ConductorStatus }> {
-  const run = await readRunState($, await $.session.root())
-  return { run, status: conductorStatus(run, await $.session.id()) }
+  const sessionId = await $.session.id()
+  const runs: { path: string; json: unknown }[] = []
+  for (const dir of new Set([await $.session.cwd(), await $.session.root()])) {
+    const run = await readRunState($, dir)
+    if (run !== null) {
+      runs.push(run)
+    }
+  }
+  const run = pickRun(runs, sessionId)
+  return { run, status: conductorStatus(run, sessionId) }
 }
 
 /** One check: rule 1 or 3, else rule 2's window. Runs from turn.complete (deferred) and the tick. */

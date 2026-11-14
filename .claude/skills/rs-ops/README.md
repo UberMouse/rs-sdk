@@ -16,7 +16,7 @@ A check runs 1 s after each main-loop turn ends and every 60 s, only while the m
 
 | Rule | Fires when | Compaction keeps |
 |---|---|---|
-| 1, conductor | `.durable-state/state.json` under the session root is a `conductor` or `sdd-loop` run, not `done`, whose `sessionId` is this session, and its `inFlight` holds anything but a `gate`, at **over 25%** context | the `inFlight` entries and `standingInstructions` verbatim, the current goal, task, agent and bot, and any open gate; the conductor re-reads state.json afterwards |
+| 1, conductor | `.durable-state/state.json` under the directory the session works in (its worktree, for a session that entered one; the project root is read too, and a run naming this session wins) is a `conductor` or `sdd-loop` run, not `done`, whose `sessionId` is this session, and its `inFlight` holds anything but a `gate`, at **over 25%** context | the `inFlight` entries and `standingInstructions` verbatim, the current goal, task, agent and bot, and any open gate; the conductor re-reads state.json afterwards |
 | 2, failsafe | any other idle session at **75%** or more: a toast, then the compaction **60 s** later unless the person types (a keystroke, a recalled prompt, an undo or a clear cancels it for that idle period) | the thread: the user's request, decisions, open questions, every instruction verbatim |
 | 3, idle-hours | opt-in per session (`/rs-autocompact stale on`): idle **6 h** at **20%** or more | as rule 2, plus background work still in flight |
 

@@ -39,6 +39,8 @@ interface World {
 
 interface Setup {
   state?: unknown;
+  /** A git worktree the session works in, with its own state.json; the project root stays ROOT. */
+  worktree?: { cwd: string; state: unknown };
   usagePercent?: number;
   /** The main loop idle since this time (ms), as a session left open for hours finds it. */
   idleSince?: number;
@@ -52,8 +54,11 @@ function world(on: On, setup: Setup = {}): World {
       : { 'rs-ops.idle': { running: false, idleSince: new Date(setup.idleSince).toISOString(), queued: 0, pendingSubmits: 0 } },
   )
   const clock = mock.clock(on, { now: NOON })
-  mockSession(on, { root: ROOT })
-  mockFs(on, setup.state === undefined ? {} : { [STATE_JSON]: JSON.stringify(setup.state) })
+  mockSession(on, { root: ROOT, cwd: setup.worktree?.cwd })
+  mockFs(on, {
+    ...(setup.state === undefined ? {} : { [STATE_JSON]: JSON.stringify(setup.state) }),
+    ...(setup.worktree === undefined ? {} : { [`${setup.worktree.cwd}/.durable-state/state.json`]: JSON.stringify(setup.worktree.state) }),
+  })
   const ui = mockUi(on)
   const w: World = {
     clock,
@@ -175,6 +180,39 @@ test('a bystander at 60% is not compacted when the run names another session', a
   await turn($, w, 't1', 60)
   await w.clock.advance(MINUTE)
   expect(w.compactions).toEqual([])
+})
+
+const WORKTREE = `${ROOT}/.claude/worktrees/build`
+
+test("a conductor working in a worktree compacts on its own run, not the project root's", async ($, on) => {
+  const w = world(on, {
+    state: { ...CONDUCTOR, sessionId: OTHER_SID },
+    worktree: { cwd: WORKTREE, state: { ...CONDUCTOR, skill: 'sdd-loop', phase: 'implement' } },
+  })
+  await startSession($, w.clock)
+  await turn($, w, 't1', 45)
+  expect(w.compactions).toHaveLength(1)
+  expect(w.compactions[0]).toContain(`${WORKTREE}/.durable-state/state.json`)
+})
+
+test("a session whose directory drifted to the project root still finds the run that names it there", async ($, on) => {
+  const w = world(on, { state: CONDUCTOR, worktree: { cwd: WORKTREE, state: { ...CONDUCTOR, sessionId: OTHER_SID } } })
+  await startSession($, w.clock)
+  await turn($, w, 't1', 45)
+  expect(w.compactions).toHaveLength(1)
+  expect(w.compactions[0]).toContain(STATE_JSON)
+})
+
+test("a bystander in a worktree is not compacted by another session's runs, and is told whose the nearest is", async ($, on) => {
+  const w = world(on, {
+    state: { ...CONDUCTOR, sessionId: OTHER_SID },
+    worktree: { cwd: WORKTREE, state: { ...CONDUCTOR, sessionId: OTHER_SID } },
+  })
+  await startSession($, w.clock)
+  await turn($, w, 't1', 60)
+  await w.clock.advance(MINUTE)
+  expect(w.compactions).toEqual([])
+  expect(w.logs.join('\n')).toContain(`${WORKTREE}/.durable-state/state.json (conductor, phase run) belongs to session ${OTHER_SID}`)
 })
 
 test('a bystander at 75% gets the failsafe as if there were no run', async ($, on) => {

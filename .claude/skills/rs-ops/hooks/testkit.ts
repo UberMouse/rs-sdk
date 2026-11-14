@@ -40,11 +40,12 @@ export function mockState(on: On, seed: Readonly<Record<string, unknown>> = {}):
   return values
 }
 
-/** The session nouns: start and end echoed, root, id, command registration. */
-export function mockSession(on: On, options: { root: string }): void {
+/** The session nouns: start and end echoed, root, cwd (the root unless given), id, command registration. */
+export function mockSession(on: On, options: { root: string; cwd?: string }): void {
   on('session.start', (_$, e) => ({ cwd: e.cwd }))
   on('session.end', (_$, e) => ({ sessionId: e.sessionId }))
   on('session.root', () => ({ value: options.root }))
+  on('session.cwd', () => ({ value: options.cwd ?? options.root }))
   on('session.id', () => ({ value: SID }))
   on('command.register', (_$, e) => ({ value: { command: e.name } }))
 }

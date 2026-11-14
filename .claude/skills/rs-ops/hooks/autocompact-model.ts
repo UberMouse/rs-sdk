@@ -47,8 +47,17 @@ export const STALE_PERCENT = 20
  */
 export const COMPACTION_MARK = 'Compacted by rs-ops autocompact'
 
-/** The run's state file under the session root (the durable-state skill). */
+/** The run's state file under the directory the session works in (the durable-state skill). */
 export const RUN_STATE_FILE = '.durable-state/state.json'
+
+/**
+ * The run rule 1 judges, from the state files found (the working directory's first, then the
+ * project root's): the one naming this session, else the first found, so the status line still
+ * says whose run sits there; null when none was found.
+ */
+export function pickRun<R extends { json: unknown }>(runs: readonly R[], sessionId: string): R | null {
+  return runs.find(run => asString(asRecord(run.json)?.sessionId) === sessionId) ?? runs[0] ?? null
+}
 
 /**
  * Standing instructions are kept verbatim in meaning, so the per-entry cap is generous: it only
