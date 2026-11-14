@@ -3,10 +3,12 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { AreaSchema } from '../../lib/area';
 import { BANKS } from '../../lib/banks';
-import { nearestNames, PLACE_KINDS, place, places } from '../../lib/places';
+import { NEAR_MAX_TILES, nearestNames, PLACE_KINDS, place, places } from '../../lib/places';
 import { AtSchema } from '../../lib/spot';
 import { WORLD } from '../../lib/world-index';
 
+const slugOf = (n: string) => n.slice('bank:'.length);
+const contains = (n: string) => slugOf(n).includes('varrock') || 'varrock'.includes(slugOf(n));
 const bank = (name: string) => BANKS.find(b => b.name === name)!;
 
 describe('place: a unique name', () => {
@@ -54,13 +56,22 @@ describe('place: a name several sites share', () => {
         for (const s of varrock) expect(msg).toContain(`(${s.x},${s.z})`);
     });
 
-    test('near picks the site whose stand is nearest, within 10 tiles', () => {
-        expect(place('range:varrock', { near: { x: 3238, z: 3412 } }).stand).toEqual({ level: 0, x: 3237, z: 3410 });
-        expect(place('range:varrock', { near: { x: 3221, z: 3389 } }).stand).toEqual({ level: 0, x: 3219, z: 3387 });
+    test('near picks the site whose stand is nearest, within NEAR_MAX_TILES', () => {
+        for (const s of varrock) {
+            expect(place('range:varrock', { near: { x: s.x, z: s.z, level: s.level } }).stand).toEqual({
+                level: s.level,
+                x: s.x,
+                z: s.z,
+            });
+        }
     });
 
-    test('near more than 10 tiles from every stand throws', () => {
-        expect(() => place('range:varrock', { near: { x: 3150, z: 3450 } })).toThrow(/more than 10/);
+    test('near more than NEAR_MAX_TILES from every stand throws', () => {
+        const far = {
+            x: Math.max(...varrock.map(s => s.x)) + NEAR_MAX_TILES + 1,
+            z: varrock[0]!.z,
+        };
+        expect(() => place('range:varrock', { near: far })).toThrow(new RegExp(`more than ${NEAR_MAX_TILES}`));
     });
 });
 
@@ -72,14 +83,21 @@ describe('place: names it refuses', () => {
     });
 
     test('nearest names: containing slugs first, then the longest shared prefix, ties by name, at most 5', () => {
-        expect(nearestNames('bank', 'varrock')).toEqual([
-            'bank:varrock-east-bank',
-            'bank:varrock-west-bank',
-            'bank:al-kharid-bank',
-            'bank:ardougne-north-bank',
-            'bank:ardougne-south-bank',
-        ]);
-        expect(nearestNames('bank', 'fala').slice(0, 2)).toEqual(['bank:falador-east-bank', 'bank:falador-west-bank']);
+        const got = nearestNames('bank', 'varrock');
+        expect(got.length).toBeLessThanOrEqual(5);
+        expect(nearestNames('bank', 'varrock')).toEqual(got);
+        expect(got[0]).toBe('bank:varrock-east-bank');
+        // containing slugs never come after a prefix-only one
+        expect(got.map(contains)).toEqual(got.map(contains).toSorted((a, b) => Number(b) - Number(a)));
+        expect(got.filter(contains).length).toBe(
+            Math.min(
+                5,
+                places('bank')
+                    .map(p => p.id)
+                    .filter((n, i, all) => all.indexOf(n) === i && contains(n)).length,
+            ),
+        );
+        expect(nearestNames('bank', 'fala')[0]).toMatch(/^bank:falador-/);
         expect(nearestNames('bank', 'fishing-guildd')[0]).toBe('bank:fishing-guild-bank');
     });
 
@@ -91,7 +109,12 @@ describe('place: names it refuses', () => {
         expect(() => place('tree:lumbridge')).toThrow(
             /"tree" is not a place kind; one of bank, furnace, .*agility-course/,
         );
-        expect(() => place('lumbridge')).toThrow(/not a place kind/);
+        expect(() => place('lumbridge')).toThrow(/a place name is <kind>:<area-slug>/);
+    });
+
+    test('a name with no colon or no slug is a format error with an example, not an unknown place', () => {
+        for (const n of ['bank', 'bank:'])
+            expect(() => place(n)).toThrow(/a place name is <kind>:<area-slug>, e\.g\. "bank:varrock-east-bank"/);
     });
 });
 

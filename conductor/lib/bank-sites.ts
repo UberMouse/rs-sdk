@@ -53,13 +53,14 @@ export function overridesById(
         overrides.map(([key]) => key),
         world,
     );
-    if (invalid.length) throw new Error(`banks.ts OVERRIDES names no one bank site: ${invalid.join('; ')}`);
+    if (invalid.length) throw new Error(`bank-sites.ts OVERRIDES names no one bank site: ${invalid.join('; ')}`);
     const byId = new Map<string, Override>();
     const keyOf = new Map<string, SiteKey>();
     for (const [key, o] of overrides) {
         const id = ids.get(key)!;
         const first = keyOf.get(id);
-        if (first) throw new Error(`banks.ts OVERRIDES: ${siteKeyName(first)} and ${siteKeyName(key)} both name ${id}`);
+        if (first)
+            throw new Error(`bank-sites.ts OVERRIDES: ${siteKeyName(first)} and ${siteKeyName(key)} both name ${id}`);
         keyOf.set(id, key);
         byId.set(id, o);
     }

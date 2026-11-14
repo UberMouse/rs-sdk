@@ -51,6 +51,7 @@ const isPlaceKind = (kind: string): kind is PlaceKind => (PLACE_KINDS as readonl
 const BANK_BY_ID = new Map(BANKS.map(b => [b.id, b]));
 
 const ENTRIES: readonly Entry[] = WORLD.sites.flatMap(s => {
+    // A place is somewhere to stand; the index has sites with no stand tile (one pottery-wheel).
     if (!isPlaceKind(s.kind) || !s.stand) return [];
     const id = s.id.replace(ORDINAL, '');
     const bank = s.kind === 'bank' ? BANK_BY_ID.get(s.id) : undefined;
@@ -124,8 +125,11 @@ const tile = (t: { x: number; z: number }) => `(${t.x},${t.z})`;
 export function place(name: string, opts: { near?: { x: number; z: number; level?: number } } = {}): Place {
     const colon = name.indexOf(':');
     const kind = colon < 0 ? name : name.slice(0, colon);
-    if (!isPlaceKind(kind)) throw refuseKind(`place "${name}"`, kind);
     const slug = name.slice(colon + 1);
+    if (colon >= 0 && !isPlaceKind(kind)) throw refuseKind(`place "${name}"`, kind);
+    if (colon < 0 || !slug)
+        throw new Error(`place "${name}": a place name is <kind>:<area-slug>, e.g. "bank:varrock-east-bank"`);
+    if (!isPlaceKind(kind)) throw refuseKind(`place "${name}"`, kind);
     if (ORDINAL.test(slug))
         throw new Error(
             `place "${name}": drop the ordinal, "${name.replace(ORDINAL, '')}"; it is renumbered when the world index is rebuilt`,

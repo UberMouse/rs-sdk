@@ -433,7 +433,8 @@ of the stand; the tool prints that text for each site.
 
 Find names with `bun conductor/tools/places.ts [kind] [text]`: one line per place with the name, the `near`
 hint when ambiguous, the stand `(x,z,level)` and the display name. Gathering and fighting areas (trees, hill
-giants, baby blues) stay literal coordinates: they have no record in the index.
+giants, baby blues) are not places and stay literal coordinates: a resource cluster's stand says nothing about
+where a plan gathers, and fighting areas have no index record.
 
 Replace a coordinate with a name only when the numbers are identical to the place's stand, or when the plan is
 re-run live afterwards: a stand is where the index puts the bot, which can differ by a tile or two from a
