@@ -1,13 +1,22 @@
 import { z } from 'zod/v4';
 import type { BotWorldState } from '../../sdk/types';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
-import { buy, closeShop, OPEN_SHOP_WAIT_TICKS, pickShopkeeper, sell, withShop } from '../actions/shop';
+import {
+    buy,
+    CLOSE_SHOP_WAIT_TICKS,
+    closeShop,
+    OPEN_SHOP_WAIT_TICKS,
+    pickShopkeeper,
+    SHOP_DEADLINE_TICKS,
+    sell,
+    withShop,
+} from '../actions/shop';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op } from '../core/op';
 import { isInWilderness } from '../lib/wilderness';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, TICK_MS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 const COINS = /^coins$/i;
 const WALK_TOLERANCE = 3;
@@ -30,15 +39,21 @@ const STEP_TIMEOUT_MS = 300_000;
  * wait and a second try), and for a can't-reach the walk to the keeper (walkToKeeper).
  */
 const OPEN_SILENT_TICKS = OPEN_SHOP_WAIT_TICKS + 2 * CLEANUP_CLOSE_WAIT_TICKS + 1 + WALK_MAX_TICKS;
-/**
- * The watchdog outlasts both fail streaks, so the task's own reason surfaces and not `stuck`: the walks
- * to the shop (FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the opens.
- */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-    failStreakTicks(FAIL_LIMIT, OPEN_SILENT_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+const OPEN_FAILS = failStreak({ name: 'openFails', limit: FAIL_LIMIT, worstTicks: OPEN_SILENT_TICKS });
+const STALE_CLOSE_FAILS = failStreak({
+    name: 'staleCloseFails',
+    limit: FAIL_LIMIT,
+    worstTicks: CLOSE_SHOP_WAIT_TICKS,
+});
+// A cut-off step run: the open, a trade that ran to its deadline, the close.
+const CUT_OFFS = failStreak({
+    name: 'cutOffs',
+    limit: FAIL_LIMIT,
+    worstTicks: OPEN_SHOP_WAIT_TICKS + SHOP_DEADLINE_TICKS + CLOSE_SHOP_WAIT_TICKS,
+});
+/** The watchdog outlasts every fail streak, so the task's own reason surfaces and not `stuck`. */
+const SILENT = [WALK_FAILS, OPEN_FAILS, STALE_CLOSE_FAILS, CUT_OFFS];
 /**
  * The trade step starts no further trade once it has run this long, half its tick budget, and runs
  * again for the rest (closing and reopening the shop; the resume state is in memory). One trade can
@@ -251,7 +266,7 @@ function* performTrade(ctx: Ctx, t: Trade): Op<Ending | null> {
     if (ending) return ending;
     ctx.memory.tradesMade++;
     ctx.memory.inFlight = null;
-    ctx.streak('cutOffs').reset();
+    CUT_OFFS.clear(ctx);
     return null;
 }
 
@@ -303,7 +318,7 @@ export default defineTask({
     params: Params,
     memory: (): ShopMemory => ({ tradesMade: 0, coinsReceived: 0, coinsSpent: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const { sell: sells, buy: buys, at } = ctx.params;
@@ -338,9 +353,11 @@ export default defineTask({
             when: ctx => ctx.state().shop.isOpen,
             *run(ctx) {
                 const r = yield* closeShop(ctx);
-                const fails = ctx.streak('staleCloseFails');
-                if (r.ok) return fails.reset();
-                if (fails.add() >= FAIL_LIMIT) return { fail: `cannot close a shop left open: ${r.message}` };
+                if (r.ok) {
+                    STALE_CLOSE_FAILS.clear(ctx);
+                    return;
+                }
+                return STALE_CLOSE_FAILS.missWith(ctx, `cannot close a shop left open: ${r.message}`);
             },
         },
         {
@@ -355,15 +372,17 @@ export default defineTask({
                 if (!at) return;
                 const before = ctx.distanceTo(at.x, at.z);
                 const r = yield* walkTo(ctx, at.x, at.z, WALK_TOLERANCE);
-                const fails = ctx.streak('walkFails');
-                if (r.ok) return fails.reset();
+                if (r.ok) {
+                    WALK_FAILS.clear(ctx);
+                    return;
+                }
                 // Out of ticks but nearer: the next run walks on, and it is no failure.
                 if (timedOutAdvancing(r, before, ctx.distanceTo(at.x, at.z))) {
                     yield* log(`walk to shop (${at.x},${at.z}) not there yet: ${r.message}`);
                     return;
                 }
                 yield* log(`walk to shop (${at.x},${at.z}) failed: ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT) return { fail: `cannot walk to shop (${at.x},${at.z}): ${r.message}` };
+                return WALK_FAILS.missWith(ctx, `cannot walk to shop (${at.x},${at.z}): ${r.message}`);
             },
         },
         {
@@ -377,24 +396,27 @@ export default defineTask({
             *run(ctx) {
                 const stepStart = ctx.state().tick;
                 const trip = yield* withShop(ctx, exactName(ctx.params.npc), performRemaining(ctx, stepStart));
-                const openFails = ctx.streak('openFails');
                 if (!trip.ok) {
                     yield* log(`open shop failed (${trip.reason}): ${trip.message}`);
                     if (!trip.closed.ok) yield* log(`a shop may be left open after it: ${trip.closed.message}`);
-                    if (openFails.add() >= FAIL_LIMIT)
-                        return { fail: `cannot open shop via "${ctx.params.npc}": ${trip.message}` };
+                    const failed = OPEN_FAILS.missWith(
+                        ctx,
+                        `cannot open shop via "${ctx.params.npc}": ${trip.message}`,
+                    );
+                    if (failed) return failed;
                     // Stopgap until the openShop op walks itself: a shopkeeper behind a door is out of the
                     // client's reach.
                     if (trip.reason === 'cant-reach') yield* walkToKeeper(ctx);
                     return;
                 }
-                openFails.reset();
+                OPEN_FAILS.clear(ctx);
                 const ending = trip.value;
                 if (!trip.closed.ok) yield* log(`could not close the shop: ${trip.closed.message}`);
                 if (ending?.kind === 'cut-off') {
-                    if (ctx.streak('cutOffs').add() >= FAIL_LIMIT)
-                        return { fail: `${ending.what} cut off ${FAIL_LIMIT} times in a row; last: ${ending.message}` };
-                    return;
+                    return CUT_OFFS.missWith(
+                        ctx,
+                        `${ending.what} cut off ${FAIL_LIMIT} times in a row; last: ${ending.message}`,
+                    );
                 }
                 if (ending) return { fail: ending.message };
                 // The shop modal hides the inventory, so a shop that stays open is a failure.

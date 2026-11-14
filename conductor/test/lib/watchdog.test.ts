@@ -7,12 +7,12 @@ import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
 import { TICK_MS } from '../../lib/util';
 import type { FailStreak } from '../../lib/streak';
 import { failStreakTicks, STUCK_MARGIN_MS, stuckWindowMs } from '../../lib/watchdog';
-import bank, { SILENT_STREAK_TICKS as bankStreaks } from '../../tasks/bank';
+import bank from '../../tasks/bank';
 import combat, { SILENT_STREAK_TICKS as combatStreaks } from '../../tasks/combat';
 import firemaking from '../../tasks/firemaking';
 import mining from '../../tasks/mining';
 import pickup from '../../tasks/pickup';
-import shop, { SILENT_STREAK_TICKS as shopStreaks } from '../../tasks/shop';
+import shop from '../../tasks/shop';
 import smithing from '../../tasks/smithing';
 import woodcutting from '../../tasks/woodcutting';
 
@@ -36,8 +36,8 @@ const WALK_STREAK = 4 * WALK_MAX_TICKS;
 describe('every walking task outlasts each fail streak it has', () => {
     // [task, its stuckAfterMs, its streak windows in ticks, ticks that must be among them (pinned)]
     const table = [
-        ['bank', bank.stuckAfterMs, bankStreaks, [WALK_STREAK]],
-        ['shop', shop.stuckAfterMs, shopStreaks, [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
+        ['bank', bank.stuckAfterMs, silentTicks(bank), [WALK_STREAK]],
+        ['shop', shop.stuckAfterMs, silentTicks(shop), [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
         ['combat', combat.stuckAfterMs, combatStreaks, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],
         ['firemaking', firemaking.stuckAfterMs, silentTicks(firemaking), [WALK_STREAK]],
         ['smithing', smithing.stuckAfterMs, silentTicks(smithing), []],

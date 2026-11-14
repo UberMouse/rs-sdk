@@ -1,15 +1,14 @@
 import { z } from 'zod/v4';
 import { deposit, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from '../actions/bank';
 import { CLEANUP_CLOSE_WAIT_TICKS } from '../actions/modal';
-import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op } from '../core/op';
-import { type Area, AreaSchema, refuseArea, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { type Area, AreaSchema, refuseArea, WALK_TO_AREA_SILENT_TICKS, walkToArea } from '../lib/area';
 import { accountOf } from '../lib/account';
 import { type BankSite, bankArea, nearestBank } from '../lib/banks';
 import { configName, objInfo } from '../lib/packs';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Consecutive failed opens before the task fails. */
 const OPEN_FAIL_LIMIT = 3;
@@ -17,15 +16,9 @@ const OPEN_FAIL_LIMIT = 3;
 const STEP_TIMEOUT_MS = 300_000;
 /** One failed open changes nothing the watchdog sees: the open's wait, then withBank's close (a late-open wait and a second try). */
 const OPEN_SILENT_TICKS = OPEN_BANK_WAIT_TICKS + 2 * CLEANUP_CLOSE_WAIT_TICKS + 1;
-/**
- * The watchdog outlasts both fail streaks, so the task's own reason surfaces and not `stuck`: the walks
- * to the area (WALK_FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the opens.
- */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    failStreakTicks(OPEN_FAIL_LIMIT, OPEN_SILENT_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const OPEN_FAILS = failStreak({ name: 'openFails', limit: OPEN_FAIL_LIMIT, worstTicks: OPEN_SILENT_TICKS });
+/** The walks to the area and the opens: the task's own reason must surface, not `stuck`. */
+const SILENT = [WALK_TO_AREA_SILENT_TICKS, OPEN_FAILS];
 
 const Params = z.object({
     area: AreaSchema.optional().describe(
@@ -286,7 +279,7 @@ export default defineTask({
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null, upToShort: [] }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const { deposit: deposits, depositAllExcept, withdraw: withdrawals, area } = ctx.params;
@@ -357,15 +350,12 @@ export default defineTask({
             when: ctx => !!nextOp(ctx),
             *run(ctx) {
                 const trip = yield* withBank(ctx, performRemaining(ctx));
-                const openFails = ctx.streak('openFails');
                 if (!trip.ok) {
                     yield* log(`open bank failed (${trip.reason}): ${trip.message}`);
                     if (!trip.closed.ok) yield* log(`a bank may be left open after it: ${trip.closed.message}`);
-                    if (openFails.add() >= OPEN_FAIL_LIMIT)
-                        return { fail: `cannot open bank (${trip.reason}): ${trip.message}` };
-                    return;
+                    return OPEN_FAILS.missWith(ctx, `cannot open bank (${trip.reason}): ${trip.message}`);
                 }
-                openFails.reset();
+                OPEN_FAILS.clear(ctx);
                 if (trip.value) return { fail: trip.value };
                 // The bank modal hides the inventory, so a bank that stays open is a failure.
                 if (!trip.closed.ok) return { fail: `operations done but cannot close bank: ${trip.closed.message}` };

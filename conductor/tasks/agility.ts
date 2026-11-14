@@ -10,27 +10,30 @@ import {
     type Obstacle,
     WILDERNESS,
 } from '../actions/course';
-import { eat } from '../actions/eat';
+import { EAT_WAIT_TICKS, eat } from '../actions/eat';
 import { OBSTACLE_SETTLE_TICKS, OBSTACLE_WAIT_TICKS } from '../actions/obstacle';
 import { timedOutAdvancing, walkTo, WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
-import { walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
+import { walkToArea, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { findFood, foodCount } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
+import { failStreakTicks } from '../lib/watchdog';
 
 /** Consecutive obstacles that did not pay out (refused, no effect, not found) before the task fails. */
 const OBSTACLE_FAIL_LIMIT = 6;
 /** Falls or displacements (moved without XP) in a row: a failable course is expected to drop the bot now and then. */
 const FALL_LIMIT = 10;
-/** The longest silence is a run of failed obstacles; a far walk back is the other (walkToArea, per attempt). */
-const STUCK_AFTER_MS = stuckWindowMs(
-    failStreakTicks(OBSTACLE_FAIL_LIMIT, OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-);
 /** Ticks to wait after a refusal before trying the obstacle again. */
 const REFUSED_RETRY_TICKS = 3;
+// A failed obstacle waits OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS (and a refusal REFUSED_RETRY_TICKS more); a failed
+// walk toward its stand or loc can stall for WALK_MAX_TICKS, the longer of the two.
+const OBSTACLE_FAILS = failStreak({
+    name: 'obstacleFails',
+    limit: OBSTACLE_FAIL_LIMIT,
+    worstTicks: Math.max(WALK_MAX_TICKS, OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS + REFUSED_RETRY_TICKS),
+});
 /**
  * Ticks the script of a failed obstacle still has to run after its message (the log's fall: delays, a swim, a
  * teleport) before the bot stands where the next obstacle is chosen from.
@@ -55,6 +58,14 @@ const DEFAULT_MIN_FOOD = { gnome: 0, barbarian: 0, wilderness: 3 } as const;
  * begun on the last bite can run dry in the cave.
  */
 const LAP_FOOD_RESERVE = 2;
+// The falls streak and the eat step's eatFails stay hand-written: falls reset on any obstacle that pays out, and the eat
+// step's code is left as it is. Their stretches are listed as ticks.
+const SILENT = [
+    OBSTACLE_FAILS,
+    WALK_TO_AREA_SILENT_TICKS,
+    failStreakTicks(FALL_LIMIT, CROSS_TICKS),
+    failStreakTicks(EAT_FAIL_LIMIT, EAT_WAIT_TICKS),
+];
 
 const Params = z.object({
     course: z
@@ -115,31 +126,23 @@ const LADDER_STAND_RADIUS = 1;
  * Walks to within `to.radius` of a tile before an obstacle. Returns 'arrived' when there, `{ fail }` past the failure
  * limit, else nothing (a walk that ended short, closing in or counted as failed: the step runs again).
  */
-function* walkToward(
-    ctx: Ctx,
-    o: Obstacle,
-    to: { x: number; z: number; radius: number },
-    fails: { add(): number },
-): Op<Outcome | 'arrived'> {
+function* walkToward(ctx: Ctx, o: Obstacle, to: { x: number; z: number; radius: number }): Op<Outcome | 'arrived'> {
     const before = awayFrom(ctx, to);
     const w = yield* walkTo(ctx, to.x, to.z, to.radius, { reserveTicks: CROSS_TICKS });
     if (!w.ok && !timedOutAdvancing(w, before, awayFrom(ctx, to))) {
         yield* log(`${o.label}: walk to (${to.x},${to.z}) failed: ${w.message}`);
-        if (fails.add() >= OBSTACLE_FAIL_LIMIT)
-            return { fail: `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${w.message})` };
-        return;
+        return OBSTACLE_FAILS.missWith(ctx, `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${w.message})`);
     }
     // The walk ended short of the tile (a far walk is carried on next loop): the obstacle waits for it.
     return awayFrom(ctx, to) > to.radius ? undefined : 'arrived';
 }
 
 function* crossNext(ctx: Ctx, o: Obstacle): Op<Outcome> {
-    const fails = ctx.streak('obstacleFails');
     // Some obstacles only work from one side: stand there first (the client would stop at the loc's nearest edge).
     // A ladder out of a pit is walked to likewise: a fall can land farther from it than the scan sees (the log's pit is 18 tiles off).
     const stand = o.stand ?? (o.ladder ? { ...o.ladder.stand, radius: LADDER_STAND_RADIUS } : undefined);
     if (stand && awayFrom(ctx, stand) > stand.radius) {
-        const walked = yield* walkToward(ctx, o, stand, fails);
+        const walked = yield* walkToward(ctx, o, stand);
         if (walked !== 'arrived') return walked;
     }
     const r = yield* crossObstacle(ctx, o);
@@ -147,15 +150,13 @@ function* crossNext(ctx: Ctx, o: Obstacle): Op<Outcome> {
         yield* log(r.message);
         // The loc is out of the scene's sight (a fall landed far from it): walk towards it, which is no failure while it closes in.
         if (awayFrom(ctx, o.near) > o.near.radius) {
-            const walked = yield* walkToward(ctx, o, o.near, fails);
+            const walked = yield* walkToward(ctx, o, o.near);
             return walked === 'arrived' ? undefined : walked; // there: the next loop finds the loc
         }
-        if (fails.add() >= OBSTACLE_FAIL_LIMIT)
-            return { fail: `${o.label} not found ${OBSTACLE_FAIL_LIMIT} times in a row` };
-        return;
+        return OBSTACLE_FAILS.missWith(ctx, `${o.label} not found ${OBSTACLE_FAIL_LIMIT} times in a row`);
     }
     if (r.ok) {
-        fails.reset();
+        OBSTACLE_FAILS.clear(ctx);
         ctx.streak('falls').reset();
         // A ladder out of a pit is the way back to the obstacle that fell, not the retry itself.
         if (!o.ladder) ctx.memory.retry = undefined;
@@ -176,8 +177,11 @@ function* crossNext(ctx: Ctx, o: Obstacle): Op<Outcome> {
             return { fail: `${FALL_LIMIT} falls or displacements in a row (last: ${r.message})` };
         return;
     }
-    if (fails.add() >= OBSTACLE_FAIL_LIMIT)
-        return { fail: `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${r.message})` };
+    const failed = OBSTACLE_FAILS.missWith(
+        ctx,
+        `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${r.message})`,
+    );
+    if (failed) return failed;
     // Refused at once: another player may be on the obstacle ("being used"); give them time to leave.
     if (r.reason === 'refused') yield* ticks(REFUSED_RETRY_TICKS);
 }
@@ -219,7 +223,7 @@ export default defineTask({
     // course and its wolves fall behind), and being hit does not cancel it. The low-HP guard eats, and fails the run
     // in a fight with no food left.
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const course = courseOf(ctx);

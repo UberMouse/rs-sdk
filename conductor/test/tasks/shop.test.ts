@@ -206,7 +206,11 @@ describe('shop: the trip', () => {
         const behindDoor = carrying.player({ at: from }).loc('Door', shut.x, shut.z, { options: ['Open'] });
         // The watchdog's 90 s is shorter than three walks standing still: out of the way.
         const r = await simulate(
-            { ...shop, stuckAfterMs: 10 * DEFAULT_STUCK_AFTER_MS },
+            {
+                ...shop,
+                silent: [...(shop.silent ?? []), (10 * DEFAULT_STUCK_AFTER_MS) / TICK_MS],
+                stuckAfterMs: undefined,
+            },
             {
                 params: { ...NPC, at: KEEPER, buy: [{ item: 'Hammer', count: 1 }] },
                 timeline: behindDoor.series(1),

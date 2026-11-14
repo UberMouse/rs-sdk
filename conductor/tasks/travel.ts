@@ -3,20 +3,22 @@ import { GATE_MAX_TICKS, GNOME_GATE, insideFence, passGate } from '../actions/ga
 import { collisionPaths } from '../actions/paths';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../actions/walk';
 import { log, ticks } from '../core/op';
+import { WALK_FAIL_LIMIT } from '../lib/area';
 import { chebyshev } from '../lib/connectors';
 import { foodCount } from '../lib/interrupts';
 import { FINAL_WALK_FAILURES } from '../lib/spot';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness, WILDERNESS_MIN_FOOD, wildernessFoodRefusal } from '../lib/wilderness';
 
-/** Failed walks in a row (not out of ticks while closing in) before the task fails. */
-const WALK_FAIL_LIMIT = 3;
 /** A far trip is many walks of WALK_MAX_TICKS; one step is one walk, so the step budget covers a walk and a gate. */
 const STEP_TIMEOUT_MS = 180_000;
-const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS), GATE_MAX_TICKS);
 /** Loops (a tick each) `flee` waits at the destination for the fight to end before it fails. */
 const FLEE_SETTLE_LOOPS = 15;
+const GATE_FAILS = failStreak({ name: 'gateFails', limit: WALK_FAIL_LIMIT, worstTicks: GATE_MAX_TICKS });
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: WALK_FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+// The fight-at-destination wait is a hand-written count of one-tick loops.
+const SILENT = [WALK_FAILS, GATE_FAILS, FLEE_SETTLE_LOOPS];
 /** How close a user waypoint must be passed. */
 const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
@@ -148,7 +150,7 @@ export default defineTask({
     params: Params,
     memory: (): TravelMemory => ({ nextWaypoint: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
     startInCombat: params => params.flee,
     allowWilderness: params => params.wilderness,
     // Walking away is the answer to low HP when fleeing: in combat with no food the low-hp guard must not end the run.
@@ -192,14 +194,13 @@ export default defineTask({
             when: ctx => waypointsLeft(ctx).length === 0 && needsGnomeGate(ctx) && atGnomeGate(ctx),
             *run(ctx) {
                 const r = yield* passGate(ctx, GNOME_GATE);
-                const fails = ctx.streak('gateFails');
                 if (r.ok) {
-                    fails.reset();
+                    GATE_FAILS.clear(ctx);
                     yield* log('passed the Gnome Stronghold gate');
                     return;
                 }
                 yield* log(`gate failed: ${r.message}`);
-                if (fails.add() >= WALK_FAIL_LIMIT) return { fail: `Gnome Stronghold gate: ${r.message}` };
+                return GATE_FAILS.missWith(ctx, `Gnome Stronghold gate: ${r.message}`);
             },
         },
         {
@@ -216,23 +217,22 @@ export default defineTask({
                     ...(wp ? {} : { level: to.level }),
                     met: ctx.params.met,
                 });
-                const fails = ctx.streak('walkFails');
                 if (r.ok) {
-                    fails.reset();
+                    WALK_FAILS.clear(ctx);
                     if (wp) ctx.memory.nextWaypoint++;
                     return;
                 }
                 if (timedOutAdvancing(r, before, tilesTo(ctx, goal.x, goal.z))) {
-                    fails.reset();
+                    WALK_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`walk to (${goal.x},${goal.z}) failed (${r.reason}): ${r.message}`);
                 if (FINAL_WALK_FAILURES.includes(r.reason))
                     return { fail: `can't travel to (${goal.x},${goal.z}): ${r.message}` };
-                if (fails.add() >= WALK_FAIL_LIMIT)
-                    return {
-                        fail: `${WALK_FAIL_LIMIT} walks in a row failed toward (${goal.x},${goal.z}); last: ${r.message}`,
-                    };
+                return WALK_FAILS.missWith(
+                    ctx,
+                    `${WALK_FAIL_LIMIT} walks in a row failed toward (${goal.x},${goal.z}); last: ${r.message}`,
+                );
             },
         },
     ],
