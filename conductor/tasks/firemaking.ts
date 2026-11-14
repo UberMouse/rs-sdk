@@ -45,12 +45,7 @@ const STEP_TIMEOUT_MS = 120_000;
 const SCAN_RADIUS = 15;
 
 const Params = z.object({
-    logs: z
-        .string()
-        .default('Logs')
-        .describe(
-            'The logs to burn, by exact item name (whole name, case-insensitive); the run ends when none of that type is left.',
-        ),
+    logs: z.string().default('Logs').describe('The logs to burn, by exact item name (whole name, case-insensitive).'),
     area: AreaSchema.describe(
         `Where to burn: the bot stays within \`radius\` of this centre and walks back when further, and lines are picked only on tiles inside it within ${SCAN_RADIUS} of the bot, as far as the client reports fires. Pick open ground: narrow paths between walls fit only a few fires.`,
     ),

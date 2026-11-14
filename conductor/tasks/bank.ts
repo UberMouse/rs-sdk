@@ -29,7 +29,7 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
     area: AreaSchema.optional().describe(
-        'Where to bank: the bot walks here first. Omit it to walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), or not at all with a bank booth or banker already in view. Draynor is never picked: pass it as an explicit area.',
+        'Where to bank: the bot walks here first. Omit it to walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), or not at all with a bank booth or banker already in view. Draynor is never picked (dark wizards): pass it as an explicit area.',
     ),
     deposit: z
         .array(
@@ -47,12 +47,12 @@ const Params = z.object({
             }),
         )
         .default([])
-        .describe('Inventory items to deposit, first of all.'),
+        .describe('Inventory items to deposit.'),
     depositAllExcept: z
         .array(z.string().min(1))
         .optional()
         .describe(
-            'Names to keep: after `deposit`, deposits every inventory item whose exact name (whole name, case-insensitive) is not listed, so tools stay. Worn gear is untouched.',
+            'Names to keep: deposits every inventory item whose exact name (whole name, case-insensitive) is not listed, so tools stay. Worn gear is untouched.',
         ),
     withdraw: z
         .array(
@@ -61,19 +61,21 @@ const Params = z.object({
                     .string()
                     .min(1)
                     .describe('The bank item to withdraw, by its exact name (whole name, case-insensitive).'),
-                count: z.number().int().positive().describe('How many to withdraw.'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .describe('How many to withdraw. Fails when the bank holds fewer, unless `upTo`.'),
                 upTo: z
                     .boolean()
                     .default(false)
                     .describe(
-                        'Take the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; a stackable item per the obj configs needs one free slot, or none if a stack is held), instead of failing when the bank holds fewer. An item none is held of or with no room is skipped, not a failure; a short or skipped entry is named in the done reason.',
+                        'Take the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; a stackable item per the obj configs needs one free slot, or none if a stack is held), An item the bank holds none of, or that has no room, is skipped, not a failure; a short or skipped entry is named in the done reason.',
                     ),
             }),
         )
         .default([])
-        .describe(
-            'Bank items to withdraw, after all deposits. Fails if the bank holds fewer than `count`, unless `upTo`.',
-        ),
+        .describe('Bank items to withdraw.'),
 });
 
 type BankParams = z.infer<typeof Params>;
@@ -277,7 +279,7 @@ export default defineTask({
     ],
     spots: [
         'Varrock West: `area` {x:3185,z:3436,radius:6}.',
-        'Draynor bank: `area` {x:3092,z:3243,radius:3}; never picked without an area (dark wizards).',
+        'Draynor bank: `area` {x:3092,z:3243,radius:3}.',
         'Without `area` from Lumbridge: Varrock West, ~120 run ticks, without coins; Al Kharid, ~56, with them.',
         'No bank in Lumbridge castle or anywhere in Lumbridge on this server: its map data has no booth or banker on any floor (learnings/banking.md).',
     ],

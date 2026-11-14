@@ -68,7 +68,7 @@ export default defineTask({
         'Runes stack: they take one inventory slot per type.',
     rules: [
         `The base Runecraft level must reach the altar's: ${ALTAR_NAMES.map(n => `${n} ${ALTARS[n].level}`).join(', ')}.`,
-        `Needs rune essence held (get it with the essence-mine task and the mining task, rock "essence") and the altar's talisman in the inventory (${ALTAR_NAMES.map(n => ALTARS[n].talisman).join(', ')}); started inside the altar's temple it needs neither.`,
+        `Needs rune essence held (get it with the essence-mine task and the mining task, rock "essence") and the altar's talisman in the inventory, which opens the ruins (${ALTAR_NAMES.map(n => ALTARS[n].talisman).join(', ')}); started inside the altar's temple it needs neither.`,
         'Refuses to start in the Rune Essence Mine (leave it first with the essence-mine task, action "leave") or at ruins in the Wilderness.',
     ],
     spots: [`Ruins: ${ALTAR_NAMES.map(n => `${n} (${ALTARS[n].ruins.x},${ALTARS[n].ruins.z})`).join(', ')}.`],

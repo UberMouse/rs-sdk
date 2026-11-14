@@ -96,7 +96,7 @@ export default defineTask({
         'Fails when runes run out or the server refuses ("You need...").',
     rules: [
         'Needs the Magic level for the spell and its runes in the inventory (a worn Staff of fire stands in for fire runes); refuses when no inventory item matches `item`.',
-        'Superheat Item on iron ore never fails and pays Smithing XP and Magic XP per cast; it needs Magic 43, 1 nature rune and 4 fire runes per cast.',
+        'Superheat Item on iron ore never fails and pays Smithing XP and Magic XP per cast; it needs 1 nature rune and 4 fire runes per cast.',
         'With 2+ coal held and Smithing 30+, superheating iron ore makes steel instead and uses up 2 coal per cast, so do not carry coal unless steel is wanted.',
     ],
     params: Params,

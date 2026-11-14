@@ -48,7 +48,7 @@ export const UNKNOWN_ATTACKER_HP_LOSS = 3;
 export const NO_PROGRESS_TICKS = 60;
 /** The under-attack guard's behaviour in plain words, for the descriptions of the tasks that install it. */
 export const UNDER_ATTACK_NOTE =
-    `When something attacks the bot, the task stops work and lets auto-retaliate finish the fight, then resumes. ` +
+    `When something attacks the bot, the task stops work and lets auto-retaliate finish the fight, then carries on, starting its current step again. ` +
     `It fails at once if auto-retaliate is off or the attacker's combat level is above the bot's. ` +
     `A named attacker fails it only after ${NO_PROGRESS_TICKS} ticks with no HP change on either side; ` +
     `an unknown attacker (a player, a ranged hit) after ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks, or sooner once ${UNKNOWN_ATTACKER_HP_LOSS} HP is lost.`;

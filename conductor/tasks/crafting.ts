@@ -131,12 +131,12 @@ function* workAtStation(ctx: Ctx, w: StationWork): Op<Outcome> {
 export default defineTask({
     name: 'crafting',
     description:
-        "Makes pottery from the inventory: soft clay is shaped on a potter's wheel into `product` one by one, any clay with a bucket, jug or bowl of water is first softened, " +
-        'and with `fire` the unfired products are fired in a pottery oven. ' +
+        "Shapes soft clay into `product` on a potter's wheel, one by one. " +
+        'Any clay with a bucket, jug or bowl of water is first softened, and with `fire` the unfired products are fired in a pottery oven. ' +
         'Stops when no soft clay, softenable clay or unfired product is left. ' +
         'Does not use the spinning wheel, leather or gems.',
     rules: [
-        'Needs the Crafting level for the product (to shape) and the wheel (and, to fire, the oven) within reach: with `area` it walks there when far away; without it the wheel and oven must already be reachable nearby, or it refuses.',
+        'Needs the Crafting level for the product and the wheel within reach, but only when something is left to shape (soft clay, or clay with water); to fire, it needs the oven within reach. With `area` it walks there when far away; without it the wheel and oven must already be reachable nearby, or it refuses.',
         'Each soften uses up one filled water container (bucket, jug or bowl of water), so bring one per clay.',
         'Refuses when there is nothing to craft: no soft clay, no clay with water and, with `fire`, no unfired product.',
     ],

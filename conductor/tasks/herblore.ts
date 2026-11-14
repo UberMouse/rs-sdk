@@ -119,7 +119,7 @@ const Params = z
             .array(z.string().trim().min(1))
             .optional()
             .describe(
-                'Limits the herbs worked, by name ("irit", "Guam leaf", "grimy guam", "Guam potion (unf)": the herb is found in the name, case-insensitively). Default every herb; in `all` with `pairs`, the pairs\' herbs.',
+                'Limits the herbs worked, by name. Case is ignored and the words grimy, clean, unfinished, potion, leaf, weed and "(unf)" and every character that is not a letter or space are dropped; what remains must be the herb\'s name ("dwarf" stands for dwarf weed, "marentill" for marrentill). "irit", "Irit leaf", "grimy irit" and "Guam potion (unf)" work; any other extra word ("super irit") makes the herb unknown. Default every herb; in `all` with `pairs`, the pairs\' herbs.',
             ),
         pairs: z
             .array(
@@ -128,7 +128,9 @@ const Params = z
                         .string()
                         .trim()
                         .min(1)
-                        .describe('The unfinished potion, "Guam potion (unf)" or just the herb ("guam").'),
+                        .describe(
+                            'The unfinished potion, named as `herbs` names a herb ("Guam potion (unf)", "guam").',
+                        ),
                     secondary: z
                         .string()
                         .trim()
@@ -263,7 +265,7 @@ export default defineTask({
         'One use per tick, no make menu. Ends `done` when no allowed action is left in the pack. Works anywhere.',
     rules: [
         '`pairs` belongs to `mode` "finish" or "all".',
-        'Refuses a herb, or a `pairs` unfinished potion and secondary that make no known recipe, that it does not know.',
+        'Refuses a herb it does not know, and a `pairs` entry whose unfinished potion and secondary make no known recipe.',
         'Refuses to start when the pack holds nothing to do for the `mode` at the Herblore level.',
     ],
     spots: [

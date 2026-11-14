@@ -55,7 +55,7 @@ const Params = z.object({
         .string()
         .default('Logs')
         .describe(
-            'The logs to cut, by exact item name (whole name, case-insensitive); the run cuts until none of that type is left, and other log types in the inventory are left alone.',
+            'The logs to cut, by exact item name (whole name, case-insensitive); other log types in the inventory are left alone.',
         ),
     batch: z
         .union([z.literal(1), z.literal(5), z.literal(10)])
@@ -71,7 +71,7 @@ const Params = z.object({
         .boolean()
         .default(false)
         .describe(
-            'After the logs are cut, use a Bow string on every unstrung bow of that kind in the inventory (one per use, no delay, same XP as the cut). With no logs left in the inventory it strings the unstrung bows already held, with no knife needed.',
+            'After the logs are cut, use a Bow string on every unstrung bow of that kind in the inventory (one per use, no delay, about the same XP as the cut, never more than 0.1 off). With no logs left in the inventory it strings the unstrung bows already held.',
         ),
 });
 
@@ -119,8 +119,8 @@ const wantsFeathers = (ctx: Ctx) => ctx.params.attachFeathers && /shaft/.test(no
 export default defineTask({
     name: 'fletching',
     description:
-        'Uses a knife on logs from the inventory to make `product`, until no `logs` are left, then optionally attaches feathers to the shafts or strings the bows. ' +
-        'Works anywhere; the run fails if something attacks the bot. Ends when logs and strings or bows run out.',
+        'Cuts `product` from inventory logs with a knife. ' +
+        'It cuts until no `logs` are left, then optionally attaches feathers to the shafts or strings the bows; the run ends when the logs, strings or bows run out. Works anywhere; the run fails if something attacks the bot.',
     rules: [
         `Needs a knife, the logs and the base Fletching level: ${Object.entries(BOW_LEVELS)
             .map(([logs, l]) => `${logs} short bow ${l.shortBow}, long bow ${l.longBow}`)

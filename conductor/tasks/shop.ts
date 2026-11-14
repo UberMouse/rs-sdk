@@ -54,10 +54,13 @@ const Params = z.object({
             'The shopkeeper to trade with, by exact name (whole name, case-insensitive, not a regex): "Shop keeper", "Bob".',
         ),
     at: z
-        .object({ x: z.number().describe('Tile x of the shop.'), z: z.number().describe('Tile z of the shop.') })
+        .object({
+            x: z.number().describe('World tile x (east-west) of the shop.'),
+            z: z.number().describe('World tile z (north-south) of the shop.'),
+        })
         .optional()
         .describe(
-            "Walk here first (the shop's coordinates, on the ground floor). Omit when already standing in the shop.",
+            "Walk here first (the shop's world tile coordinates, on the ground floor). Omit when already standing in the shop.",
         ),
     sell: z
         .array(
@@ -83,7 +86,7 @@ const Params = z.object({
             }),
         )
         .default([])
-        .describe('Inventory items to sell, before any buying.'),
+        .describe('Inventory items to sell.'),
     buy: z
         .array(
             z.object({
@@ -91,7 +94,13 @@ const Params = z.object({
                     .string()
                     .min(1)
                     .describe('The shop item to buy, by its exact name (whole name, case-insensitive).'),
-                count: z.number().int().positive().describe('How many to buy.'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .describe(
+                        'How many to buy. The task fails if the shop stocks fewer, the coins run short or the inventory fills; the reason says how many arrived.',
+                    ),
                 maxUnitPrice: z
                     .number()
                     .int()
@@ -103,7 +112,7 @@ const Params = z.object({
             }),
         )
         .default([])
-        .describe('Shop items to buy, after the sells.'),
+        .describe('Shop items to buy.'),
 });
 
 type ShopParams = z.infer<typeof Params>;
@@ -283,8 +292,8 @@ function* walkToKeeper(ctx: Ctx): Op<void> {
 export default defineTask({
     name: 'shop',
     description:
-        'Walks to a ground-floor shop, opens it via the shopkeeper `npc`, sells inventory items, then buys items and closes the shop; done when every trade is made. ' +
-        'Sells first so a run funds its own purchases. Only trades with a shop this run opened. ' +
+        'Sells inventory items to a shop, then buys from it. ' +
+        'It walks to `at` if given, opens the shop via the shopkeeper `npc` and closes it; done when every trade is made. Sells first so a run funds its own purchases. Only trades with a shop this run opened. ' +
         'Fails (no looping) if the shop has no stock, coins run out, or it will not buy an item; the reason reports coins received.',
     rules: [
         'Needs at least one sell or buy; with nothing to sell it needs coins in the inventory. A shop in the Wilderness (`at`) is refused.',

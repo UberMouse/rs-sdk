@@ -65,7 +65,7 @@ const Params = z.object({
     food: z
         .string()
         .describe(
-            'The raw food to cook, by its exact item name (whole name, case-insensitive, e.g. "Raw shrimps"); only this food is cooked, and the run ends when none of it is left.',
+            'The raw food to cook, by its exact item name (whole name, case-insensitive, e.g. "Raw shrimps"); only this food is cooked.',
         ),
     area: AreaSchema.optional().describe(
         'Cook at a source within `radius` of this centre, walking there when further. Omit to use one in sight of the bot; a source in sight further off is walked to.',

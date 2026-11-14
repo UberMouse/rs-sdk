@@ -114,9 +114,8 @@ function awayFromWheel(ctx: Ctx): boolean {
 export default defineTask({
     name: 'spinning',
     description:
-        'Spins flax into bow strings (or wool into balls of wool) at a spinning wheel: opens the wheel\'s menu, picks "Make X" and spins everything held in one go ' +
-        '(about 2 ticks per item). Ends done when none is left. ' +
-        'The `wheel` tile gives where to walk, up the stairs or ladder if needed. ' +
+        'Spins flax into bow strings, or wool into balls of wool, at a spinning wheel. ' +
+        'It opens the wheel\'s menu, picks "Make X" and spins everything held in one go (about 2 ticks per item). Ends done when none is left. ' +
         'Flax comes from the `pick` task; the strings go to a `bank` run.',
     rules: [
         'Needs the material in the inventory, the base Crafting level for it, and a wheel: `wheel` or one in view (otherwise refused). A `wheel` reaching the Wilderness is refused.',

@@ -50,7 +50,7 @@ const Params = z.object({
         .max(28)
         .optional()
         .describe(
-            'Stop done once the inventory holds this many of `item`, counting any held before the run. Omitted, it picks until the inventory is full.',
+            'Stop done once the inventory holds this many of `item`, counting any held before the run. It fails if the inventory fills first. Omitted, it picks until the inventory is full. One click gives one item, about 3 ticks with the step to the next plant.',
         ),
     area: AreaSchema.optional().describe(
         'Where to pick: only plants inside it are picked, and the bot walks back when further than `radius`. Without it the bot picks wherever it stands.',
@@ -109,13 +109,11 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
 export default defineTask({
     name: 'pick',
     description:
-        'Picks crops. ' +
-        'It picks locs (scenery objects with a "Pick" option, such as flax plants) until the inventory holds `count` of `item`, or is full when `count` is omitted; then it ends done ("picked N" / "inventory full: N"). ' +
-        'With `count` set it fails if the inventory fills first. ' +
-        `A plant may vanish for a few ticks after a pick; the task waits up to ${ticksToSeconds(NO_LOC_GIVE_UP_TICKS)} s for a respawn, then fails "area depleted: no reachable <loc> in radius N for Ns" with \`area\`, "no reachable <loc> nearby for Ns" without. ` +
-        `${UNDER_ATTACK_NOTE} ` +
-        'Refuses areas reaching the Wilderness.',
-    rules: ['Needs nothing carried.', 'One click gives one item (about 3 ticks with the step to the next plant).'],
+        'Picks items from scenery objects with a "Pick" option, such as flax plants. ' +
+        'It picks until the inventory holds `count` of `item`, or is full when `count` is omitted, then ends done ("picked N" / "inventory full: N"); needs nothing carried. ' +
+        `A plant may vanish briefly after a pick; the task waits up to ${ticksToSeconds(NO_LOC_GIVE_UP_TICKS)} s for a respawn, then fails "area depleted: no reachable <loc> in radius N for Ns" with \`area\`, "no reachable <loc> nearby for Ns" without. ` +
+        UNDER_ATTACK_NOTE,
+    rules: ['Refuses an `area` reaching the Wilderness.'],
     spots: [
         "Seers' Village flax field: `area` {x:2743,z:3445,radius:10} (the field spans x 2732-2755, z 3433-3456); verified.",
     ],

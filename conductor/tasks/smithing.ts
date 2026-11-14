@@ -253,7 +253,7 @@ export default defineTask({
         'Smelts ore into bars at a furnace (mode "smelt") or forges bars into products at an anvil (mode "smith"). ' +
         "Smelting goes one bar at a time through the furnace's Smelt menu, about 8 ticks a bar, until the ores run out; iron has a 50% failure chance. " +
         'Smithing forges `product` from `bar` until the bars run out. ' +
-        'A reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
+        `A reachable station within ${STATION_DIRECT_REACH} tiles is interacted with directly, and walked to first only after such an attempt failed.`,
     rules: [
         `Smelting needs these ores in the inventory and this base Smithing level: ${Object.values(SMELT)
             .map(
