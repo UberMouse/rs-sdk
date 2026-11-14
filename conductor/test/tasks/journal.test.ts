@@ -27,25 +27,35 @@ interface JournalWorld {
     debugInfo?: string[];
     /** Clicks on the entry before the journal opens; 0 never opens it. Default 1. */
     clicksToOpen?: number;
+    /** The lines each opening shows in turn, the last kept for any later one; in place of `lines`. */
+    reads?: string[][];
 }
 
 /**
  * The game as measured: a click on the cook entry opens the journal two ticks later, a close shuts it two ticks
- * later. One effect, kept from the first send on, shows the journal while it is open.
+ * later, and a click once it has closed opens it again. One effect, kept from the first send on, shows the journal
+ * while it is open.
  */
 function journalWorld(opts: JournalWorld = {}) {
-    const { title = COOK, lines = LINES, debugInfo, clicksToOpen = 1 } = opts;
+    const { title = COOK, debugInfo, clicksToOpen = 1 } = opts;
+    const reads = opts.reads ?? [opts.lines ?? LINES];
     let clicks = 0;
+    let opened = 0;
     let openAt: number | null = null;
     let closeAt: number | null = null;
     let started = false;
     const shown: Effect = s =>
         openAt !== null && s.tick >= openAt && (closeAt === null || s.tick < closeAt)
-            ? withJournal(s, title, lines, debugInfo)
+            ? withJournal(s, title, reads[Math.min(opened, reads.length) - 1]!, debugInfo)
             : { ...s };
     return (action: BotAction, state: BotWorldState): Effect | undefined => {
         if (action.type === 'clickComponent' && action.componentId === COOK_ENTRY) {
-            if (++clicks === clicksToOpen) openAt = state.tick + 2;
+            const shut = openAt === null || closeAt !== null;
+            if (++clicks >= clicksToOpen && clicksToOpen > 0 && shut) {
+                openAt = state.tick + 2;
+                closeAt = null;
+                opened++;
+            }
         } else if (action.type === 'closeModal') {
             if (openAt !== null && closeAt === null) closeAt = state.tick + 2;
         } else return undefined;
@@ -55,8 +65,14 @@ function journalWorld(opts: JournalWorld = {}) {
     };
 }
 
-const read = (opts: JournalWorld = {}, timeline = still.series(1)) =>
-    simulate(journal, { params: { quest: 'cook' }, timeline, react: journalWorld(opts) });
+const read = (
+    opts: JournalWorld = {},
+    timeline = still.series(1),
+    more: { expect?: string; withinTicks?: number } = {},
+) => simulate(journal, { params: { quest: 'cook', ...more }, timeline, react: journalWorld(opts) });
+
+const PAID = ['You have paid', 'the boys.'];
+const clicksOf = (sends: string[]) => sends.filter(x => x === 'click questlist:cook').length;
 
 describe('journal', () => {
     test('clicks the entry, sees the journal two ticks later, closes it and ends done with the last line', async () => {
@@ -144,6 +160,102 @@ describe('journal', () => {
             expect(r.sends, JSON.stringify(opts)).toEqual(['click questlist:cook', 'close journal']);
             expect(r.driver.state().interface.isOpen).toBe(false);
         }
+    });
+
+    describe('with expect', () => {
+        test('a journal that shows it at the first read is opened and closed once, with no wait', async () => {
+            // Case-insensitive, and across the line wrap: the lines joined by single spaces.
+            const r = await read({ lines: PAID }, undefined, { expect: 'PAID THE boys' });
+            expect(r.result).toMatchObject({ status: 'done', reason: 'journal: the boys.' });
+            expect(r.sends).toEqual(['click questlist:cook', 'close journal']);
+            expect(r.result.durationMs).toBe(4 * TICK_MS);
+        });
+
+        test('reads again 4 ticks after each close until it shows: done at the third read, with no suffix', async () => {
+            const r = await read({ reads: [LINES, LINES, PAID] }, undefined, { expect: 'paid the boys' });
+            expect(r.result).toMatchObject({ status: 'done', reason: 'journal: the boys.' });
+            expect(clicksOf(r.sends)).toBe(3);
+            expect(r.sends.at(-1)).toBe('close journal');
+            // Each read 2 ticks to open and 2 to close, with 4 between reads.
+            expect(r.result.durationMs).toBe((3 * 4 + 2 * 4) * TICK_MS);
+            expect(r.driver.state().interface.isOpen).toBe(false);
+        });
+
+        test('never showing it, ends done after withinTicks with the suffix', async () => {
+            const r = await read({}, undefined, { expect: 'paid' });
+            expect(r.result).toMatchObject({
+                status: 'done',
+                reason: `journal: ${LINES[1]} (no "paid" within 20 ticks)`,
+            });
+            // Reads seen at ticks 2, 10 and 18 of the run: a fourth click would come 24 ticks after the first read.
+            expect(clicksOf(r.sends)).toBe(3);
+            expect(r.driver.state().interface.isOpen).toBe(false);
+            const short = await read({}, undefined, { expect: 'paid', withinTicks: 8 });
+            expect(short.result.reason).toBe(`journal: ${LINES[1]} (no "paid" within 8 ticks)`);
+            expect(clicksOf(short.sends)).toBe(2);
+        });
+
+        test('a dialog opening between reads ends the run failed, with no further click', async () => {
+            const base = journalWorld();
+            let closes = 0;
+            const react = (action: BotAction, state: BotWorldState): Effect | undefined => {
+                const baseEffect = base(action, state);
+                if (action.type !== 'closeModal' || closes++ > 0) return baseEffect;
+                // A chat dialog appears 3 ticks after the first close, in the wait before the re-read, and stays.
+                return s =>
+                    s.tick >= state.tick + 3
+                        ? { ...s, dialog: { isOpen: true, options: [], isWaiting: false } }
+                        : { ...s };
+            };
+            const r = await simulate(journal, {
+                params: { quest: 'cook', expect: 'paid' },
+                timeline: still.series(1),
+                react,
+            });
+            expect(r.result).toMatchObject({ status: 'failed' });
+            expect(r.result.reason).toContain('journal not read: dialog open');
+            expect(clicksOf(r.sends)).toBe(1);
+        });
+
+        test('in a plan, v.journalSays reflects the last read of a run', async () => {
+            const said: (boolean | undefined)[] = [];
+            const look = defineTask({
+                name: 'look',
+                description: 'journal test acting task',
+                params: z.object({}),
+                steps: [{ name: 'look', when: () => true, run: () => ({ done: 'looked' }) }],
+            });
+            const def = definePlan({
+                name: 'journal-plan',
+                phases: [
+                    phase(
+                        journal,
+                        { quest: 'cook', expect: 'paid' },
+                        { name: 'journal', when: v => v.journalAge('cook') === undefined },
+                    ),
+                    phase(look, {}, { when: v => (said.push(v.journalSays('cook', /paid the boys/)), true) }),
+                ],
+                until: v => v.runs('look') >= 1,
+            });
+            const r = await simulatePlan(def, {
+                timeline: still.series(1),
+                react: journalWorld({ reads: [LINES, PAID] }),
+            });
+            expect(r.result.status).toBe('done');
+            expect(r.runs.map(x => x.phase)).toEqual(['journal', 'look']);
+            expect(said[0]).toBe(true);
+        });
+
+        test('params: withinTicks 1 to 100, expect a valid regex, both optional', () => {
+            for (const withinTicks of [0, 101, 2.5])
+                expect(journal.params.safeParse({ quest: 'cook', withinTicks }).success, `${withinTicks}`).toBe(false);
+            expect(journal.params.safeParse({ quest: 'cook', expect: '(' }).success).toBe(false);
+            expect(journal.params.parse({ quest: 'cook', expect: 'paid', withinTicks: 100 })).toEqual({
+                quest: 'cook',
+                expect: 'paid',
+                withinTicks: 100,
+            });
+        });
     });
 
     test('an unknown quest id is a params error naming lib/quests.ts', () => {

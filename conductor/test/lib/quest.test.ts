@@ -64,6 +64,8 @@ interface Story {
     xp: number;
     /** Sends of that deed the story refuses (no effect, no XP) before it answers. */
     refuse: Record<string, number>;
+    /** Set by an effect: the story changes again `ticks` after the deed's send (a stage the game moves late). */
+    soon?: { ticks: number; apply: (st: Story) => void };
 }
 
 /**
@@ -83,7 +85,10 @@ function storyWorld(init: Partial<Story>, effects: Record<string, (st: Story) =>
     };
     let openAt: number | null = null;
     let closeAt: number | null = null;
+    let later: { at: number; apply: (st: Story) => void }[] = [];
     const render: Effect = s => {
+        for (const due of later.filter(x => s.tick >= x.at)) due.apply(st);
+        later = later.filter(x => s.tick < x.at);
         let w = world(s)
             .quests(st.progress === 'none' ? {} : { [ID]: st.progress })
             .skill(SKILL, 1, st.xp)
@@ -108,6 +113,8 @@ function storyWorld(init: Partial<Story>, effects: Record<string, (st: Story) =>
             else if (effects[what]) {
                 effects[what](st);
                 if (!quiet) st.xp++;
+                if (st.soon) later.push({ at: state.tick + st.soon.ticks, apply: st.soon.apply });
+                st.soon = undefined;
             }
         }
         if (installed) return undefined;
@@ -126,6 +133,8 @@ const run = (def: PlanDef, w: ReturnType<typeof storyWorld>) =>
 /** The acting and reading phase runs, in order, each with its status when it did not end done. */
 const ran = (r: PlanSimulation) =>
     r.runs.map(x => (x.result.status === 'done' ? x.phase : `${x.phase} ${x.result.status}`));
+
+const byName = (def: PlanDef, name: string) => def.phases.find(p => p.name === name)!;
 
 const finish = step('finish', deed, { what: 'finish' });
 const FINISH = { finish: (st: Story) => void (st.progress = 'done') };
@@ -146,7 +155,7 @@ describe('defineQuest: a quest without journal marks', () => {
 
     test('runs its steps in story order from a fresh state, with no journal phase and no read', async () => {
         const def = quest(steps);
-        expect(def.phases.map(p => p.name)).toEqual(['pot', 'start', 'chat', 'finish']);
+        expect(def.phases.map(p => p.name)).toEqual(['pot', 'start', 'chat', 'finish', 'complete']);
         const r = await run(def, storyWorld({}, effects));
         expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
         expect(ran(r)).toEqual(['pot', 'start', 'chat', 'finish']);
@@ -265,10 +274,10 @@ describe('defineQuest: a quest with a journal mark', () => {
 
     test('reads the journal first once the tab shows started, and after a journal-mark step', async () => {
         const def = quest(steps);
-        expect(def.phases.map(p => p.name)).toEqual(['journal', 'start', 'pay', 'finish']);
+        expect(def.phases.map(p => p.name)).toEqual(['journal', 'journal:pay', 'start', 'pay', 'finish', 'complete']);
         const r = await run(def, storyWorld({}, effects()));
         expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
-        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal', 'finish']);
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'finish']);
     });
 
     test('a resumed quest reads first, and the journal sets the base', async () => {
@@ -284,7 +293,7 @@ describe('defineQuest: a quest with a journal mark', () => {
         );
         const r = await run(quest(steps), w);
         expect(r.result.status).toBe('done');
-        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal', 'pay', 'journal', 'finish']);
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'pay', 'journal:pay', 'finish']);
     });
 
     test('with a dialog open the read is not selected and the step is passed by run order', async () => {
@@ -320,13 +329,44 @@ describe('defineQuest: a quest with a journal mark', () => {
         );
         const r = await run(quest(walkOn), w);
         expect(r.result.status).toBe('done');
-        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'walk', 'journal', 'pay', 'journal', 'walk', 'finish']);
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'walk', 'journal', 'pay', 'journal:pay', 'walk', 'finish']);
     });
 
     test('after a failed run the read runs before the retry', async () => {
         const r = await run(quest(steps), storyWorld({ refuse: { pay: 1 } }, effects()));
         expect(r.result.status).toBe('done');
-        expect(ran(r)).toEqual(['start', 'journal', 'pay failed', 'journal', 'pay', 'journal', 'finish']);
+        expect(ran(r)).toEqual(['start', 'journal', 'pay failed', 'journal', 'pay', 'journal:pay', 'finish']);
+    });
+
+    test("after a journal-mark step ends done the read is journal:<step>, with the step's pattern and within", () => {
+        expect(byName(quest(steps), 'journal:pay').params).toEqual({
+            quest: ID,
+            expect: 'paid the boys',
+            withinTicks: 20,
+        });
+        const within = quest([
+            steps[0]!,
+            step('pay', deed, { what: 'pay' }, { reached: journal(/paid/, { within: 40 }) }),
+        ]);
+        expect(byName(within, 'journal:pay').params).toEqual({ quest: ID, expect: 'paid', withinTicks: 40 });
+        expect(byName(within, 'journal').params).toEqual({ quest: ID });
+    });
+
+    test('a stage that moves 10 ticks after the step is confirmed by its read, the step running once', async () => {
+        const late = effects(st => void (st.soon = { ticks: 10, apply: s => void (s.lines = PAID) }));
+        const r = await run(quest(steps), storyWorld({}, late));
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'finish']);
+        expect(r.runs.find(x => x.phase === 'journal:pay')!.result.reason).toBe(`journal: ${PAID[0]}`);
+        // A read that gives up before the stage moves leaves a fresh journal that does not match: the step runs again.
+        const short = [
+            steps[0]!,
+            step('pay', deed, { what: 'pay' }, { reached: journal(/paid the boys/i, { within: 5 }) }),
+            finish,
+        ];
+        const again = await run(quest(short), storyWorld({}, late));
+        expect(again.result.status).toBe('done');
+        expect(ran(again)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'pay', 'journal:pay', 'finish']);
     });
 
     test('a journal-mark step that keeps ending done unconfirmed is ended by the idle rail', async () => {
@@ -338,11 +378,32 @@ describe('defineQuest: a quest with a journal mark', () => {
                 effects(() => {}),
             ),
         );
-        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal', 'pay']);
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'pay']);
         expect(r.result).toMatchObject({
             status: 'done',
             reason: 'nothing left to do: pay done (deed: pay); plan until not met',
         });
+    });
+});
+
+describe('defineQuest: the wait for completion', () => {
+    const steps = [step('chat', deed, { what: 'chat' }), finish];
+
+    test('complete runs once every step is passed, and ends the plan done when the quest completes during it', async () => {
+        const late = {
+            chat: () => {},
+            finish: (st: Story) => void (st.soon = { ticks: 10, apply: s => void (s.progress = 'done') }),
+        };
+        const r = await run(quest(steps), storyWorld({ progress: 'started' }, late));
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(ran(r)).toEqual(['chat', 'finish', 'complete']);
+    });
+
+    test('a quest that never completes fails after maxFails waits', async () => {
+        const r = await run(quest(steps), storyWorld({ progress: 'started' }, { chat: () => {}, finish: () => {} }));
+        expect(ran(r)).toEqual(['chat', 'finish', 'complete failed', 'complete failed', 'complete failed']);
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toStartWith('complete failed 3 times in a row: ');
     });
 });
 
@@ -483,7 +544,7 @@ describe('defineQuest: the compiled plan', () => {
         ]);
     });
 
-    test('refuses an unknown quest id, no steps, a step named journal, a name used twice, a g or y pattern', () => {
+    test('refuses an unknown quest id, no steps, a reserved step name, a name used twice, a flag other than i', () => {
         const chat = step('chat', deed, { what: 'chat' });
         const cases: [Partial<QuestDef>, string][] = [
             [{ id: 'nope' }, 'quest "test-quest": unknown quest id "nope"; see QUESTS in lib/quests.ts'],
@@ -492,13 +553,23 @@ describe('defineQuest: the compiled plan', () => {
                 { steps: [step('journal', deed, { what: 'x' })] },
                 `quest "test-quest": step "journal": the name is the journal read's`,
             ],
+            [
+                { steps: [step('complete', deed, { what: 'x' })] },
+                `quest "test-quest": step "complete": the name is the wait for completion's`,
+            ],
+            [
+                { steps: [step('journal:pay', deed, { what: 'x' })] },
+                `quest "test-quest": step "journal:pay": a name starting "journal:" is a step read's`,
+            ],
             [{ steps: [chat, chat] }, 'quest "test-quest": step "chat": name used twice'],
-            ...(['g', 'y'] as const).map((flag): [Partial<QuestDef>, string] => [
-                { steps: [step('pay', deed, { what: 'pay' }, { reached: journal(new RegExp('paid', flag)) })] },
-                `quest "test-quest": step "pay": journal pattern /paid/${flag} has the g or y flag`,
+            ...(['g', 'y', 'm', 'si'] as const).map((flags): [Partial<QuestDef>, string] => [
+                { steps: [step('pay', deed, { what: 'pay' }, { reached: journal(new RegExp('paid', flags)) })] },
+                `quest "test-quest": step "pay": journal pattern /paid/${flags.includes('i') ? 'is' : flags} has a flag other than i`,
             ]),
         ];
         for (const [more, message] of cases)
             expect(() => defineQuest({ id: ID, name: 'test-quest', steps: [chat], ...more })).toThrow(message);
+        const i = step('pay', deed, { what: 'pay' }, { reached: journal(/paid/i) });
+        expect(() => defineQuest({ id: ID, name: 'test-quest', steps: [i] })).not.toThrow();
     });
 });

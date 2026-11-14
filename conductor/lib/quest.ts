@@ -2,7 +2,8 @@
 // whose phases are chosen by one cursor: the step the story is at, re-derived from the view at every selection, so
 // a quest resumes on any save and needs no record of its own on disk.
 import type { z } from 'zod/v4';
-import journalTask from '../tasks/journal';
+import journalTask, { JOURNAL_WITHIN_TICKS } from '../tasks/journal';
+import waitTask from '../tasks/wait';
 import {
     definePlan,
     type Phase,
@@ -19,10 +20,18 @@ import type { TaskDef } from './task';
 /** Evidence the story is past a step: the quest's journal, as last read, matches `pattern`. */
 export interface JournalMark {
     readonly journal: RegExp;
+    /**
+     * Ticks the read after the step's run keeps reading for the pattern, for a stage the game moves some ticks after
+     * the step's task has ended; default JOURNAL_WITHIN_TICKS (tasks/journal.ts).
+     */
+    readonly within?: number;
 }
 
 /** A `reached` that reads the quest's journal. */
-export const journal = (pattern: RegExp): JournalMark => ({ journal: pattern });
+export const journal = (pattern: RegExp, opts: { within?: number } = {}): JournalMark => ({
+    journal: pattern,
+    ...(opts.within !== undefined && { within: opts.within }),
+});
 
 const isMark = (r: Predicate | JournalMark): r is JournalMark => typeof r !== 'function';
 
@@ -81,6 +90,12 @@ export const QUEST_DEFAULTS = { onFail: 'retry', maxFails: 3 } as const satisfie
 
 /** The name of a quest's journal-read phase, which no step may take. */
 const JOURNAL_PHASE = 'journal';
+/** The prefix of the read after a journal-mark step, `journal:<step>`; no step's name may start with it. */
+const STEP_READ_PREFIX = 'journal:';
+/** The name of the wait for the quest tab once every step is passed, which no step may take. */
+const COMPLETE_PHASE = 'complete';
+/** Ticks of each `complete` wait. */
+export const COMPLETE_WAIT_TICKS = 20;
 
 /** A journal read now would destroy the open dialog or modal (tasks/journal.ts). */
 const blocked = (v: PlanView) => v.state.dialog.isOpen || v.state.modalOpen;
@@ -120,7 +135,8 @@ function walk(q: QuestDef, v: PlanView, toCursor: boolean): { at: number | null;
             base = i + 1;
             break;
         }
-    const j = lastStep(q, v);
+    // A `complete` run comes after every step: its retry is not preceded by the steps with no evidence again.
+    const j = v.last?.phase === COMPLETE_PHASE ? steps.length : lastStep(q, v);
     const ranPast = (i: number) => j !== undefined && (j > i || (j === i && v.last?.status === 'done'));
     const passed = (s: QuestStep, i: number): boolean | 'provisional' => {
         if (s.skip && call(s, 'skip', s.skip)) return true;
@@ -171,31 +187,74 @@ const fail = (q: QuestDef, msg: string): never => {
     throw new Error(`quest "${q.name}": ${msg}`);
 };
 
-/** Checks the quest and compiles it to a plan that ends done when the quest tab shows the quest complete. */
+/**
+ * Checks the quest and compiles it to a plan that ends done when the quest tab shows the quest complete. Its phases:
+ * `journal` (any read `needsRead` asks for but the next), `journal:<step>` for each journal-mark step (the read after
+ * that step ended done, reading again until its pattern shows or `within` ticks pass), the steps, and `complete` (a
+ * wait for the quest tab once every step is passed). One of them at most holds at a time.
+ */
 export function defineQuest(q: QuestDef): PlanDef {
     if (!QUESTS[q.id]) fail(q, `unknown quest id "${q.id}"; see QUESTS in lib/quests.ts`);
     if (!q.steps.length) fail(q, 'has no steps');
     const seen = new Set<string>();
     for (const s of q.steps) {
         if (s.name === JOURNAL_PHASE) fail(q, `step "${s.name}": the name is the journal read's`);
+        if (s.name === COMPLETE_PHASE) fail(q, `step "${s.name}": the name is the wait for completion's`);
+        if (s.name.startsWith(STEP_READ_PREFIX))
+            fail(q, `step "${s.name}": a name starting "${STEP_READ_PREFIX}" is a step read's`);
         if (seen.has(s.name)) fail(q, `step "${s.name}": name used twice`);
         seen.add(s.name);
-        if (s.reached !== undefined && isMark(s.reached) && (s.reached.journal.global || s.reached.journal.sticky))
-            fail(q, `step "${s.name}": journal pattern ${s.reached.journal} has the g or y flag`);
+        // The step read hands the task the pattern's source, matched case-insensitively there.
+        if (s.reached !== undefined && isMark(s.reached) && s.reached.journal.flags.replace('i', '') !== '')
+            fail(q, `step "${s.name}": journal pattern ${s.reached.journal} has a flag other than i`);
     }
-    const marked = q.steps.some(s => s.reached !== undefined && isMark(s.reached));
     const read = (v: PlanView) => needsRead(q, v);
-    const phases: Phase[] = q.steps.map((s, i) => ({
-        name: s.name,
-        task: s.task,
-        params: s.params,
-        when: v => !read(v) && cursor(q, v) === i,
-        ...(s.until && { until: s.until }),
-        ...(s.onFail !== undefined && { onFail: s.onFail }),
-        ...(s.maxFails !== undefined && { maxFails: s.maxFails }),
-        ...(s.settle !== undefined && { settle: s.settle }),
-    }));
-    if (marked) phases.unshift(phase(journalTask, { quest: q.id }, { name: JOURNAL_PHASE, when: read }));
+    // The journal-mark step the last acting run was, when it ended done: the read then waits for its pattern.
+    const markDone = (v: PlanView): number | undefined => {
+        const j = lastStep(q, v);
+        const r = j === undefined ? undefined : q.steps[j]!.reached;
+        return v.last?.status === 'done' && r !== undefined && isMark(r) ? j : undefined;
+    };
+    const phases: Phase[] = [];
+    if (q.steps.some(s => s.reached !== undefined && isMark(s.reached)))
+        phases.push(
+            phase(
+                journalTask,
+                { quest: q.id },
+                { name: JOURNAL_PHASE, when: v => read(v) && markDone(v) === undefined },
+            ),
+        );
+    q.steps.forEach((s, i) => {
+        const r = s.reached;
+        if (r === undefined || !isMark(r)) return;
+        const params = { quest: q.id, expect: r.journal.source, withinTicks: r.within ?? JOURNAL_WITHIN_TICKS };
+        phases.push(
+            phase(journalTask, params, {
+                name: `${STEP_READ_PREFIX}${s.name}`,
+                when: v => read(v) && markDone(v) === i,
+            }),
+        );
+    });
+    q.steps.forEach((s, i) =>
+        phases.push({
+            name: s.name,
+            task: s.task,
+            params: s.params,
+            when: v => !read(v) && cursor(q, v) === i,
+            ...(s.until && { until: s.until }),
+            ...(s.onFail !== undefined && { onFail: s.onFail }),
+            ...(s.maxFails !== undefined && { maxFails: s.maxFails }),
+            ...(s.settle !== undefined && { settle: s.settle }),
+        }),
+    );
+    // A stage the game moves some ticks after the last step (a reward script) would otherwise leave no phase to run.
+    phases.push(
+        phase(
+            waitTask,
+            { ticks: COMPLETE_WAIT_TICKS, orFail: true },
+            { name: COMPLETE_PHASE, when: v => !read(v) && cursor(q, v) === null, until: v => v.questDone(q.id) },
+        ),
+    );
     return definePlan({
         name: q.name,
         ...(q.description !== undefined && { description: q.description }),
