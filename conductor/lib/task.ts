@@ -283,8 +283,9 @@ export interface TaskResult {
     /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
     warnings?: string[];
     /**
-     * The run ended `done` holding a dialog open for the next phase (`TaskDef.holdsDialog`, as the engine judged it
-     * at the end): nothing after the run may act on the bot, the epilogue included. Absent otherwise.
+     * The run (for a plan, its last phase run) ended `done` holding a dialog open for the next phase
+     * (`TaskDef.holdsDialog`, as the engine judged it at the end): nothing after the run may act on the bot, the
+     * epilogue included. Absent otherwise.
      */
     holdsDialog?: true;
     /**
