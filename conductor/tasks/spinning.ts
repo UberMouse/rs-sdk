@@ -13,7 +13,7 @@ import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, ticks, wait } from '../core/op';
 import { chebyshev } from '../lib/connectors';
 import { WORLD } from '../lib/world-index';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill, INVENTORY_SLOTS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -116,7 +116,8 @@ export default defineTask({
     description:
         'Spins flax into bow strings, or wool into balls of wool, at a spinning wheel. ' +
         'It opens the wheel\'s menu, picks "Make X" and spins everything held in one go (about 2 ticks per item). Ends done when none is left. ' +
-        'Flax comes from the `pick` task; the strings go to a `bank` run.',
+        'Flax comes from the `pick` task; the strings go to a `bank` run. ' +
+        UNDER_ATTACK_NOTE,
     rules: [
         'Needs the material in the inventory, the base Crafting level for it, and a wheel: `wheel` or one in view (otherwise refused). A `wheel` reaching the Wilderness is refused.',
     ],

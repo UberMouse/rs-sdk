@@ -13,6 +13,7 @@ import {
     taskNames,
     undescribedFields,
 } from '../../lib/catalog';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../../lib/interrupts';
 import { Pattern, PATTERN_NOTE, patternParam } from '../../lib/spot';
 import type { TaskDef } from '../../lib/task';
 
@@ -221,6 +222,9 @@ function catalogProblems(task: TaskDef): string[] {
         problems.push(`param ${f} is a Pattern whose description lacks PATTERN_NOTE: describe it with patternParam`);
     if (task.description.length > MAX_DESCRIPTION)
         problems.push(`description is ${task.description.length} characters, over ${MAX_DESCRIPTION}`);
+    // The guard is installed as a function in `guards`, so the task def itself says whether it carries the note.
+    if (task.guards?.includes(underAttackGuard) && !task.description.includes(UNDER_ATTACK_NOTE))
+        problems.push('installs underAttackGuard but its description lacks UNDER_ATTACK_NOTE');
     for (const key of ['rules', 'spots'] as const)
         for (const entry of task[key] ?? [])
             if (typeof entry !== 'string' || entry.trim() === '') problems.push(`${key} has an empty entry`);

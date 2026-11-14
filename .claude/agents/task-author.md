@@ -78,7 +78,7 @@ you never commit, and you only touch the bot you were given.
 
 ## The pattern
 
-A task is `defineTask({ name, description, params (zod from 'zod/v4'), memory?, allow?, allowGuards?,
+A task is `defineTask({ name, description, params (zod from 'zod/v4'), rules?, spots?, memory?, allow?, allowGuards?,
 guards?, onEnd?, preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
 `when()` passes runs; a step returns nothing to keep going, `{ fail }` or `{ done }` to end the
 run. Every step is a generator over ops, or a plain function that only decides; an action no op

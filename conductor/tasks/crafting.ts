@@ -21,7 +21,7 @@ import {
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, type Outcome, wait } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -134,6 +134,7 @@ export default defineTask({
         "Shapes soft clay into `product` on a potter's wheel, one by one. " +
         'Any clay with a bucket, jug or bowl of water is first softened, and with `fire` the unfired products are fired in a pottery oven. ' +
         'Stops when no soft clay, softenable clay or unfired product is left. ' +
+        `${UNDER_ATTACK_NOTE} ` +
         'Does not use the spinning wheel, leather or gems.',
     rules: [
         'Needs the Crafting level for the product and the wheel within reach, but only when something is left to shape (soft clay, or clay with water); to fire, it needs the oven within reach. With `area` it walks there when far away; without it the wheel and oven must already be reachable nearby, or it refuses.',
