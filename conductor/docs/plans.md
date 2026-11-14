@@ -112,10 +112,10 @@ export default definePlan({
 
 - `phase(task, params, opts?)` takes the task's default export, so `params` is type-checked
   against `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails?,
-settle? }`; `name` defaults to the task's name and must be unique in the plan when a task appears
+  settle? }`; `name` defaults to the task's name and must be unique in the plan when a task appears
   twice (two bank phases).
 - `definePlan({ name, description?, phases, until?, requires?, defaults?, settle?, needs?,
-needsUnless?, method? })`. The plan's own `until(v)` ends the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
+  needsUnless?, method? })`. The plan's own `until(v)` ends the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
   (`'combat level 5+'` above: the walk between the spots passes Giant spiders that attack lower
   levels): each is checked before every phase choice, and one that does not hold ends the plan
   `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
@@ -145,27 +145,27 @@ needsUnless?, method? })`. The plan's own `until(v)` ends the whole plan `done`.
 Predicates get one read-only view and must be pure: no I/O, no clock, no state of their own. That
 keeps every phase choice re-derivable from a run's recorded states.
 
-| Member                                            | Meaning                                                                                                                                            |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v.state`                                         | the current `BotWorldState`, for anything below not covering it                                                                                    |
-| `v.inv(item)`                                     | inventory count; `item` is an exact name (case-insensitive) or a RegExp                                                                            |
-| `v.full` / `v.free`                               | every slot used / free slots                                                                                                                       |
-| `v.bank(item)`                                    | bank count as last seen open during this plan; `undefined` before that                                                                             |
-| `v.level(skill)`                                  | base level                                                                                                                                         |
-| `v.hp`                                            | `{ current, max }`                                                                                                                                 |
-| `v.quest(id)`                                     | `'none'`, `'started'` or `'done'` from the quest tab (see below)                                                                                   |
-| `v.questDone(id)`                                 | the quest tab shows the quest green                                                                                                                |
-| `v.runs(phase)`                                   | times that phase has run in this plan                                                                                                              |
-| `v.last`                                          | the previous phase's `{ phase, status, reason }`, or `null`                                                                                        |
-| `v.x` / `v.z`                                     | the player's tile; `v.floor` its level (0 the surface); 0 with no player                                                                           |
-| `v.within(spot)`                                  | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev; with neither `radius` nor `tolerance`, the exact tile     |
-| `v.held(item)`                                    | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only)                                                                   |
-| `v.npcs(name, within?)` / `v.locs(...)`           | nearby NPCs / locs of that name, at most `within` tiles away                                                                                       |
-| `v.ground(item, within?)`                         | ground piles of that name (piles, not the items stacked in them)                                                                                   |
-| `v.said(pattern, sinceTicks?)`                    | a recent dialog line or page, the open dialog or a game message matches; `sinceTicks` filters the recent pages and messages, never the open dialog |
-| `v.lastDone(...names)` / `v.lastFailed(...names)` | the previous run ended `done` / `failed` or `stuck`, as one of `names` when given; an unknown name throws                                          |
-| `v.combatLevel` / `v.coins`                       | the player's combat level; Coins in the pack                                                                                                       |
-| `v.questStarted(id)`                              | the quest tab shows the quest yellow                                                                                                               |
+| Member              | Meaning                                                                 |
+| ------------------- | ----------------------------------------------------------------------- |
+| `v.state`           | the current `BotWorldState`, for anything below not covering it         |
+| `v.inv(item)`       | inventory count; `item` is an exact name (case-insensitive) or a RegExp |
+| `v.full` / `v.free` | every slot used / free slots                                            |
+| `v.bank(item)`      | bank count as last seen open during this plan; `undefined` before that  |
+| `v.level(skill)`    | base level                                                              |
+| `v.hp`              | `{ current, max }`                                                      |
+| `v.quest(id)`       | `'none'`, `'started'` or `'done'` from the quest tab (see below)        |
+| `v.questDone(id)`   | the quest tab shows the quest green                                     |
+| `v.runs(phase)`     | times that phase has run in this plan                                   |
+| `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
+| `v.x` / `v.z`       | the player's tile; `v.floor` its level (0 the surface); 0 with no player |
+| `v.within(spot)`    | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev; with neither `radius` nor `tolerance`, the exact tile |
+| `v.held(item)`      | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only) |
+| `v.npcs(name, within?)` / `v.locs(...)` | nearby NPCs / locs of that name, at most `within` tiles away |
+| `v.ground(item, within?)` | ground piles of that name (piles, not the items stacked in them)  |
+| `v.said(pattern, sinceTicks?)` | a recent dialog line or page, the open dialog or a game message matches; `sinceTicks` filters the recent pages and messages, never the open dialog |
+| `v.lastDone(...names)` / `v.lastFailed(...names)` | the previous run ended `done` / `failed` or `stuck`, as one of `names` when given; an unknown name throws |
+| `v.combatLevel` / `v.coins` | the player's combat level; Coins in the pack                    |
+| `v.questStarted(id)` | the quest tab shows the quest yellow                                   |
 
 `v.quest` and `v.questDone` take the id of `conductor/lib/quests.ts` (the content's `questlist:` name:
 `imp`, `runemysteries`, `priest`, `fortress`, ...; an unknown id throws). Quest varps are not sent to the
