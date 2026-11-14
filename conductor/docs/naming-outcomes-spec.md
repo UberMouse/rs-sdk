@@ -76,7 +76,12 @@ under-attack and death guards), `conductor/lib/plan.ts` (the `DEATH_GUARD` check
   should not share the code.
 - `died`: the death guard's ending.
 - `unreachable`: talk's "no reachable … (N in view but unreachable from here)" failure, only when
-  the unreachable note applies (the case `monks-friend` matches today).
+  the unreachable note applies (the case `monks-friend` matches today). interact's failure with
+  the same note ("no reachable … in sight (N in view but unreachable from here)",
+  `conductor/tasks/interact.ts`) carries it too, so `monks-friend`'s `omad-door` phase still
+  re-runs after its own such failure. **Assumption:** the walk op's path error ("No path to …:
+  Destination … is unreachable"), which the plan's `/unreachable/` also matched, gets no code:
+  the door phase firing after any failed walk east of x 2603 was accidental.
 - `dialog`: combat's `stopOnDialog` ending ("dialog opened: …").
 - The three plans: `clock-tower.ts:82` tests `v.last.code === 'attacked'`; `monks-friend.ts:54`
   tests `code === 'unreachable'`; `troll-stronghold.ts:31` tests `code === 'dialog'` and keeps its
