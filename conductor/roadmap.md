@@ -554,6 +554,7 @@ on its own.
     - A plan the idle rail ends with an unmet `until` reports status done ("plan until not met"), which reads wrongly for a quest
       that did not finish.
     - The wiki page for Gertrude's Cat is misspelt `wiki/quests/gertudes-cat.md`.
+  - Named places: done in part 2026-11-15 (`place()` in `lib/places.ts`, `tools/places.ts`; design `conductor/docs/named-places.md`, how-to `conductor/docs/plans.md` Places by name). Follow-ups: plan parameters; level-band stages; a curated table of unindexed gathering and fighting areas; the coordinates 1 to 3 tiles off a stand (plan-migration); quest-plan coordinates.
   - Task catalog: done 2026-11-14 (every param described on its schema field, `rules` and `spots`, `--list` an index and `--list <task>` an entry, a guard test; design `conductor/docs/task-catalog.md`). Follow-ups:
     - `MAX_FAILURE_DAMAGE = 2` in `conductor/tasks/thieving.ts` understates the pickpocket damage of Knights, Watchmen and Paladins (3) and the Hero (4) in the pickpocket dbrow, so a no-food run on those targets can drop below the low-HP line after one caught attempt and end "no food" where it should have waited to regenerate. The `STUN_TICKS` comment in `conductor/actions/pickpocket.ts` says 8 for every target though the Hero's stun is 10, and the task's wait of 8 + 2 ticks leaves no slack for it.
     - `fletching` stringing XP is 0.1 below the cut for willow shortbows and maple longbows; the catalog says "about the same", a wording note.

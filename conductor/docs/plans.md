@@ -413,6 +413,32 @@ The quest's `requires` merges over `QUEST_TAB_REQUIRED`.
 gives the quest, the text and whether it changed). Pick a line that holds from the stage on and does
 not vanish: some journals are cumulative, others rewritten per stage.
 
+## Places by name
+
+A plan names a bank, furnace, anvil, range, altar or other service by its name in the world index where it
+would type coordinates (`conductor/lib/places.ts`; design `conductor/docs/named-places.md`):
+
+```ts
+import { place } from '@conductor/lib/places';
+
+phase(firemaking, { logs: 'Logs', area: place('bank:varrock-east-bank').area(6) });
+```
+
+`place(name)` returns the stand tile of the site: `.at({ tolerance?, level? })` is a walk target (`x`, `z`, and
+`level` above ground) and `.area(radius)` a task `area`; `.stand` is the tile itself and `.name` the display name. A name is
+`<kind>:<area-slug>`, with no ordinal. It resolves when the plan module is imported, so an unknown name fails at
+plan load with the five nearest names of its kind. A name several sites share (anvils, ranges, altars, rune
+altar ruins, spinning wheels, water sources) needs `place(name, { near: { x, z } })` with `near` within 10 tiles
+of the stand; the tool prints that text for each site.
+
+Find names with `bun conductor/tools/places.ts [kind] [text]`: one line per place with the name, the `near`
+hint when ambiguous, the stand `(x,z,level)` and the display name. Gathering and fighting areas (trees, hill
+giants, baby blues) stay literal coordinates: they have no record in the index.
+
+Replace a coordinate with a name only when the numbers are identical to the place's stand, or when the plan is
+re-run live afterwards: a stand is where the index puts the bot, which can differ by a tile or two from a
+hand-picked tile.
+
 ## Where plans live
 
 - **Drafts**: `conductor/runs/<bot>/plans/<name>.ts`, inside the gitignored run artifacts, next to

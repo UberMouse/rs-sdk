@@ -158,7 +158,7 @@ the inventory drains before it refills. Gate errand and training phases on what 
 **holds**, not on `runs()` counts: a training phase waits until everything it and its sibling
 phases need is held, so every errand in one town happens on one visit. Banks are one
 account-wide bank (`bank.inv`, `scope=perm`): bank at the booth nearest the route, never at a
-"bank holding" an item. Design: `conductor/docs/plans.md`. The reference is
+"bank holding" an item. Design: `conductor/docs/plans.md`; `place('bank:<name>')` names a service (`tools/places.ts` lists them). The reference is
 `conductor/plans/chop-burn.ts` (promoted, smoke-tested):
 
 ```ts

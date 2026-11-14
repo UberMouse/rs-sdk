@@ -97,6 +97,7 @@ out server-side. MCP `execute_code` keeps a bot's control lease between calls un
 | Game knowledge: spots, requirements, hazards, gear, SDK gotchas | `learnings/`, `wiki/skills/`, `wiki/quests/` (rules: `.claude/skills/knowledge`) |
 | Which method is best | `bun conductor/tools/stats.ts <bot>` over every run; `--methods` sets each curated method's plan runs beside its floor (`wiki/world/methods.ts`); explore/exploit in the conductor loop |
 | How far from max, how fast | `bun conductor/tools/progress.ts <bot>` |
+| Names a plan may pass to `place()` (banks, furnaces, anvils, ...) | `bun conductor/tools/places.ts [kind] [text]` |
 | Journal a dispatch with a real UTC stamp | `bun conductor/tools/journal.ts <kind> <objective> --verdict ... [--result ...]` (see `--help`) |
 | What to do next | `conductor/roadmap.md` (Now, Unlocks, Backlog, Experiments, Review follow-ups) |
 | Code quality | `.claude/skills/task-review` with lenses in `.claude/review-lenses/` |

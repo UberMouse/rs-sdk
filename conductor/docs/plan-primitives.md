@@ -103,4 +103,5 @@ Direction, to be designed after a spike:
   streak-then-fail helper (93 blocks), one `waitForRespawn`, one eat step.
 - Param naming and outcome codes: done 2026-11-15 (design `conductor/docs/naming-outcomes.md`).
 - Places by name from the world index (216 literal coordinate pairs in training plans; Seers bank
-  spelled three ways), plan parameters, and level-band stages.
+  spelled three ways): built in part (`place()`, `tools/places.ts`; design `conductor/docs/named-places.md`).
+  Plan parameters and level-band stages remain open.
