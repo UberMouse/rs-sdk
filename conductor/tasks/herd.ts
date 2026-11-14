@@ -2,8 +2,9 @@ import { z } from 'zod/v4';
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { interactNpc } from '../actions/interact';
 import { messageCursor, messageSince } from '../actions/messages';
-import { walkTo } from '../actions/walk';
+import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, send, wait } from '../core/op';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { patternParam, matcher } from '../lib/spot';
 
@@ -25,10 +26,32 @@ const MAX_AHEAD = 2;
 const NEAR_STAND_TILES = 2;
 /** Approaches in a row that do not reach the stand tile before the task fails. */
 const APPROACH_FAIL_LIMIT = 4;
+/** The longest approach is a walk to a far stand tile that never moves the bot; the short step takes APPROACH_WAIT_TICKS. */
+const APPROACH_FAILS = failStreak({
+    name: 'approachFails',
+    limit: APPROACH_FAIL_LIMIT,
+    worstTicks: WALK_MAX_TICKS,
+    what: 'approaches',
+});
 /** Prods in a row that do not move the NPC before the task fails. */
 const PROD_FAIL_LIMIT = 4;
+/**
+ * Only an observed NPC step clears it. Between two misses there can be MAX_AHEAD prods that animate with no step
+ * seen, each waiting PROD_WAIT_TICKS at most, then the catch-up wait that times out.
+ */
+const PROD_MISSES = failStreak({
+    name: 'prodMisses',
+    limit: PROD_FAIL_LIMIT,
+    worstTicks: (MAX_AHEAD + 1) * PROD_WAIT_TICKS,
+    what: 'prods',
+});
 /** Prods in a row without the route getting shorter than ever before; the NPC wanders back, so some are lost. */
 const NO_PROGRESS_LIMIT = 12;
+/**
+ * The no-progress count resets only on a new best, so it is not a fail streak. The NPC can step to and fro
+ * with the bot never moving; each prod waits PROD_WAIT_TICKS at most, and a catch-up wait as long can follow it.
+ */
+const NO_PROGRESS_SILENT_TICKS = NO_PROGRESS_LIMIT * 2 * PROD_WAIT_TICKS;
 /**
  * `goneIsDone` counts only within this many tiles (Chebyshev) of the goal: the state shows the NPC up to MAX_AHEAD
  * steps late and the Sheep Herder gate zone (the jump) is 3 tiles wide, beside the pen.
@@ -184,6 +207,7 @@ export default defineTask({
         'Sheep Herder: Diseased sheep 2 spawns near (2622,3367); route (2594,3367) then (2594,3363) with `goneIsDone` (the jumped sheep is re-added in the pen as a new NPC) and `stop` the pen x2595-2609 z3351-3364. Needs the suit and prod wielded.',
     ],
     params: Params,
+    silent: [APPROACH_FAILS, PROD_MISSES, NO_PROGRESS_SILENT_TICKS],
     memory: (): HerdMemory => ({
         npc: null,
         leg: 0,
@@ -241,14 +265,14 @@ export default defineTask({
                 if (ahead > 0 && (ahead >= MAX_AHEAD || landed)) {
                     // Far enough ahead of what the state shows, or it lands in the stop area: let the state catch up.
                     const caught = yield* wait('herd npc step', st => moved(st, m.npc!, seen), PROD_WAIT_TICKS);
-                    const misses = ctx.streak('prodMisses');
                     if (caught.kind === 'timeout') {
                         m.trail = [];
-                        if (misses.add() >= PROD_FAIL_LIMIT)
-                            return {
-                                fail: `${PROD_FAIL_LIMIT} prods in a row did not move the NPC at (${seen.x},${seen.z})`,
-                            };
-                    } else misses.reset();
+                        return PROD_MISSES.missWith(
+                            ctx,
+                            `${PROD_FAIL_LIMIT} prods in a row did not move the NPC at (${seen.x},${seen.z})`,
+                        );
+                    }
+                    PROD_MISSES.clear(ctx);
                     return;
                 }
                 // On the last waypoint of a one-waypoint route there is no leg to carry on: keep the last push.
@@ -275,10 +299,12 @@ export default defineTask({
                     if (cheb(here, stand) > NEAR_STAND_TILES) {
                         // Far from the NPC (the start, or after a detour): route round fences and through doors.
                         const walked = yield* walkTo(ctx, stand.x, stand.z, NEAR_STAND_TILES);
-                        const fails = ctx.streak('approachFails');
-                        if (walked.ok) fails.reset();
-                        else if (fails.add() >= APPROACH_FAIL_LIMIT)
-                            return { fail: `can't walk to the NPC at (${at.x},${at.z}): ${walked.message}` };
+                        if (!walked.ok)
+                            return APPROACH_FAILS.missWith(
+                                ctx,
+                                `can't walk to the NPC at (${at.x},${at.z}): ${walked.message}`,
+                            );
+                        APPROACH_FAILS.clear(ctx);
                         return;
                     }
                     yield* send({ type: 'walkTo', x: stand.x, z: stand.z, running: true, reason: 'herd stand tile' });
@@ -288,19 +314,17 @@ export default defineTask({
                             (st.player?.worldX === stand.x && st.player?.worldZ === stand.z) || moved(st, m.npc!, seen),
                         APPROACH_WAIT_TICKS,
                     );
-                    const fails = ctx.streak('approachFails');
                     if (arrived.kind === 'met') {
-                        fails.reset();
+                        APPROACH_FAILS.clear(ctx);
                         return;
                     }
-                    if (fails.add() >= APPROACH_FAIL_LIMIT)
-                        return {
-                            fail: `can't reach the stand tile (${stand.x},${stand.z}) for the NPC at (${at.x},${at.z})`,
-                        };
-                    return;
+                    return APPROACH_FAILS.missWith(
+                        ctx,
+                        `can't reach the stand tile (${stand.x},${stand.z}) for the NPC at (${at.x},${at.z})`,
+                    );
                 }
 
-                ctx.streak('approachFails').reset();
+                APPROACH_FAILS.clear(ctx);
                 const cursor = messageCursor(ctx.state());
                 const sentTick = ctx.state().tick;
                 const prod = yield* interactNpc(npc, params.op);
@@ -313,17 +337,17 @@ export default defineTask({
                         (st.tick > sentTick && st.player?.animId === PROD_ANIM),
                     PROD_WAIT_TICKS,
                 );
-                const misses = ctx.streak('prodMisses');
                 if (effect.kind === 'timeout') {
                     m.trail = [];
                     if (messageSince(effect.state, cursor, /can't reach/i))
                         return { fail: `the NPC at (${at.x},${at.z}) can't be reached from (${stand.x},${stand.z})` };
-                    if (misses.add() >= PROD_FAIL_LIMIT)
-                        return { fail: `${PROD_FAIL_LIMIT} prods in a row did not move the NPC at (${at.x},${at.z})` };
-                    return;
+                    return PROD_MISSES.missWith(
+                        ctx,
+                        `${PROD_FAIL_LIMIT} prods in a row did not move the NPC at (${at.x},${at.z})`,
+                    );
                 }
                 // Only an observed NPC step clears the misses; the prod's animation alone does not (a fenced NPC stays put).
-                if (ahead === 0 && moved(effect.state, m.npc, seen)) misses.reset();
+                if (ahead === 0 && moved(effect.state, m.npc, seen)) PROD_MISSES.clear(ctx);
                 m.trail = [...trail, { x: at.x + push.dir.x, z: at.z + push.dir.z }];
                 if (noProgress.add() >= NO_PROGRESS_LIMIT)
                     return { fail: `no progress in ${NO_PROGRESS_LIMIT} prods (${m.best} tiles left at best)` };
