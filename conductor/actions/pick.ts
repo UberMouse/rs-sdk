@@ -8,7 +8,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 
 /** Ticks to wait for the item or the loc vanishing (10 s: the walk up to the loc plus the pick). */
@@ -16,9 +16,7 @@ export const PICK_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
 /** The option that picks a loc ("Pick"). */
 export const PICK_OPTION = /^pick/i;
 
-export type PickResult =
-    | { ok: true }
-    | { ok: false; reason: 'gone' | 'timeout' | 'send-failed' | 'no-option'; message: string };
+export type PickResult = { ok: true } | Failure<'gone' | 'timeout' | 'send-failed' | 'no-option'>;
 
 /**
  * Picks `loc` and waits until one more `item` is held or the loc is gone. Success needs the item gained:

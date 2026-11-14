@@ -9,7 +9,7 @@
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** A fresh send: the walk to the shore, the cast and the first rolls, 45 s in ticks. */
@@ -17,13 +17,7 @@ export const FISH_WAIT_TICKS = Math.ceil(45_000 / TICK_MS);
 /** Waiting for the next catch of a fishing already under way (24 s), before the caller casts again. */
 export const FISH_RESUME_WAIT_TICKS = Math.ceil(24_000 / TICK_MS);
 
-export type FishResult =
-    | { ok: true }
-    | {
-          ok: false;
-          reason: 'spot-moved' | 'cant-reach' | 'timeout' | 'send-failed' | 'no-option';
-          message: string;
-      };
+export type FishResult = { ok: true } | Failure<'spot-moved' | 'cant-reach' | 'timeout' | 'send-failed' | 'no-option'>;
 
 /** How many items matching any of `patterns` the inventory holds. */
 export const countAny = (state: BotWorldState, patterns: readonly RegExp[]): number =>

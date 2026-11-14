@@ -4,7 +4,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, ticks, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
@@ -19,11 +19,7 @@ export const OBSTACLE_FELL = /\b(slip|slipped|fall|fell|tumble)\b/i;
 
 export type ObstacleResult =
     | { ok: true; xp: number }
-    | {
-          ok: false;
-          reason: 'no-option' | 'send-failed' | 'refused' | 'fell' | 'no-xp' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-option' | 'send-failed' | 'refused' | 'fell' | 'no-xp' | 'timeout'>;
 
 const agilityXp = (s: BotWorldState) => findSkill(s, 'Agility')?.experience ?? 0;
 const spot = (s: BotWorldState) => (s.player ? `${s.player.level}:${s.player.worldX},${s.player.worldZ}` : '');

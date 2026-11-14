@@ -10,7 +10,7 @@ import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, scan, send, wait } from '../core/op';
 import { type Connector, OPENS, planeOf } from '../lib/connectors';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
@@ -31,11 +31,7 @@ const LOC_SLACK = 2;
 
 export type ClimbResult =
     | { ok: true }
-    | {
-          ok: false;
-          reason: 'wrong-plane' | 'no-loc' | 'cant-reach' | 'no-dialog' | 'send-failed' | 'timeout' | 'not-opened';
-          message: string;
-      };
+    | Failure<'wrong-plane' | 'no-loc' | 'cant-reach' | 'no-dialog' | 'send-failed' | 'timeout' | 'not-opened'>;
 
 const OPTIONS = {
     up: { direct: /^(climb[- ]|walk-)up$/i, choice: /^climb up\.?$/i },

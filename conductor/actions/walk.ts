@@ -42,7 +42,7 @@ import { type Detour, type Hop, type Move, planWay, type WalkWorld, worldGraph }
 import { isInWilderness } from '../lib/wilderness';
 import { BANK_TRANSFER_WAIT_TICKS, CLOSE_BANK_WAIT_TICKS, OPEN_BANK_WAIT_TICKS, withBank, withdraw } from './bank';
 import { CLIMB_MAX_TICKS, climb } from './climb';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { courseSectionOf, leaveCourse } from './course';
 import { cross, crossAttemptTicks, retryFits } from './cross';
 import { GATE_ATTEMPT_TICKS, GATE_MAX_TICKS, GATE_STAND_TOLERANCE, GNOME_GATE, insideFence, passGate } from './gate';
@@ -123,26 +123,24 @@ const DOOR_REFUSAL = /locked|need a key|can't reach|cannot reach/i;
 
 export type WalkResult =
     | { ok: true; message: string }
-    | {
-          ok: false;
-          reason:
-              | 'bad-coordinates'
-              | 'no-player'
-              | 'no-path'
-              | 'no-blade'
-              | 'no-connector'
-              | 'climb-failed'
-              | 'cross-failed'
-              | 'dead-end'
-              | 'stuck'
-              | 'gave-up'
-              | 'no-progress'
-              | 'timeout'
-              | 'no-time';
-          message: string;
+    | (Failure<
+          | 'bad-coordinates'
+          | 'no-player'
+          | 'no-path'
+          | 'no-blade'
+          | 'no-connector'
+          | 'climb-failed'
+          | 'cross-failed'
+          | 'dead-end'
+          | 'stuck'
+          | 'gave-up'
+          | 'no-progress'
+          | 'timeout'
+          | 'no-time'
+      > & {
           /** A `timeout` of a walk across planes that was still on its way (see timedOutAdvancing). */
           advancing?: boolean;
-      };
+      });
 
 /** Matches the `no-path` message of a walk refused by `WalkOptions.maxRouteTiles`. */
 export const ROUTE_TOO_LONG = /tiles, over the \d+ allowed$/;

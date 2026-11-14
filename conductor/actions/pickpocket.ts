@@ -8,7 +8,7 @@
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { findSkill } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** The option that picks an NPC's pocket. */
@@ -33,11 +33,7 @@ const IN_COMBAT = /can't pickpocket during combat/i;
 export type PickpocketResult =
     | { ok: true; outcome: 'success'; xpGained: number }
     | { ok: true; outcome: 'caught' }
-    | {
-          ok: false;
-          reason: 'no-option' | 'send-failed' | 'cant-reach' | 'in-combat' | 'target-gone' | 'not-started' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-option' | 'send-failed' | 'cant-reach' | 'in-combat' | 'target-gone' | 'not-started' | 'timeout'>;
 
 const thievingXp = (s: BotWorldState) => findSkill(s, 'Thieving')?.experience ?? 0;
 

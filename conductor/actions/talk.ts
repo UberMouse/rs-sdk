@@ -14,7 +14,7 @@
 import type { BotWorldState, DialogState, NearbyNpc } from '../../sdk/types';
 import { log, type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** The option that starts a conversation. */
@@ -41,15 +41,11 @@ export const CONVERSE_MAX_TICKS = MAX_CLICKS * CLICK_TICKS;
 
 export type StartTalkResult =
     | { ok: true }
-    | { ok: false; reason: 'no-option' | 'send-failed' | 'cant-reach' | 'target-gone' | 'timeout'; message: string };
+    | Failure<'no-option' | 'send-failed' | 'cant-reach' | 'target-gone' | 'timeout'>;
 
 export type ConverseResult =
     | { ok: true; answered: number }
-    | {
-          ok: false;
-          reason: 'missing-option' | 'unexpected-choice' | 'closed-early' | 'send-failed' | 'stuck';
-          message: string;
-      };
+    | Failure<'missing-option' | 'unexpected-choice' | 'closed-early' | 'send-failed' | 'stuck'>;
 
 /** How far a conversation has got, kept by the caller so a cut-off step resumes the same dialog. */
 export interface TalkProgress {

@@ -6,7 +6,7 @@
 import { PRAYER_LEVELS, PRAYER_NAMES } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /** bot.activatePrayer's 5s wait for the flag, in ticks. */
 export const PRAYER_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
@@ -32,7 +32,7 @@ export const prayerIndex = (name: string): number | undefined => {
 
 export type PrayerResult =
     | { ok: true; changed: boolean }
-    | { ok: false; reason: 'unknown' | 'level' | 'no-points' | 'send-failed' | 'timeout'; message: string };
+    | Failure<'unknown' | 'level' | 'no-points' | 'send-failed' | 'timeout'>;
 
 /** Whether prayer `index` is on in this state. */
 export const prayerActive = (s: { prayers: { activePrayers: boolean[] } }, index: number): boolean =>

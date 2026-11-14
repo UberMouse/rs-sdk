@@ -16,7 +16,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { configId } from '../lib/packs';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { messageCursor, messageSince } from './messages';
 import { interfaceTexts } from './press';
 import { closeModalUntil, type ModalOps, withModal } from './modal';
@@ -99,11 +99,7 @@ export interface LockProgress {
 
 export type CombolockResult =
     | { ok: true; message: string }
-    | {
-          ok: false;
-          reason: 'not-open' | 'bad-word' | 'unreadable' | 'send-failed' | 'no-effect' | 'closed' | 'wrong';
-          message: string;
-      };
+    | Failure<'not-open' | 'bad-word' | 'unreadable' | 'send-failed' | 'no-effect' | 'closed' | 'wrong'>;
 
 /** The verdict message after `cursor`, if any: solved (true) or wrong (false). */
 function verdictSince(s: BotWorldState, cursor: number): { solved: boolean; text: string } | null {
@@ -144,7 +140,7 @@ export function* solveCombolock(ctx: ActionContext, word: string, progress: Lock
 }
 
 /** The lock as withModal's modal: opened by the door interaction already, so its open only checks. */
-function lockModal(ctx: ActionContext): ModalOps<{ ok: false; reason: 'not-open'; message: string }> {
+function lockModal(ctx: ActionContext): ModalOps<Failure<'not-open'>> {
     return {
         name: 'combination lock',
         *open() {

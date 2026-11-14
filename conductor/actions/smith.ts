@@ -13,7 +13,7 @@ import type { ActionResult, BotWorldState, InventoryItem, NearbyLoc } from '../.
 import { CLEANUP_TICKS } from '../core/interpret';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { isSkillMenu, SMITHING_INTERFACE } from './dismiss';
 import { interactLoc } from './interact';
 import { CANT_REACH, dialogSince, messageCursor, messageSince } from './messages';
@@ -127,8 +127,6 @@ export const smithingButton = (product: string): SmithingButton | undefined => B
 
 /** The op's own name for `product` ("Square-shield" is "sq shield"), or undefined for one it does not offer. */
 export const smithingProduct = (product: string): SmithingProduct | undefined => smithingButton(product)?.name;
-
-type Failure<R extends string> = { ok: false; reason: R; message: string };
 
 /** `message` also says when the interface or menu the op opened could not be closed after it. */
 type Made = { ok: true; xpGained: number; product: string; message: string };

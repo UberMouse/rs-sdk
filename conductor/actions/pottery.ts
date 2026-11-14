@@ -12,7 +12,7 @@ import { resolveSkillDialogProduct, skillDialogProductLabels } from '../../sdk/a
 import type { ActionResult, BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { isSkillMenu } from './dismiss';
 import { CANT_REACH, dialogSince, messageCursor, messageSince } from './messages';
 
@@ -52,9 +52,7 @@ const NOTHING = /nothing interesting happens/i;
 const xpOf = (s: BotWorldState) => findSkill(s, 'Crafting')?.experience ?? 0;
 const label = (text: string) => text.replaceAll('\\n', '').trim();
 
-export type SoftenResult =
-    | { ok: true }
-    | { ok: false; reason: 'no-clay' | 'no-water' | 'send-failed' | 'timeout'; message: string };
+export type SoftenResult = { ok: true } | Failure<'no-clay' | 'no-water' | 'send-failed' | 'timeout'>;
 
 /** Uses a clay on a jug, bowl or bucket of water: one soft clay (the water container comes back empty). */
 export function* soften(ctx: ActionContext): Op<SoftenResult> {
@@ -85,19 +83,16 @@ export function* soften(ctx: ActionContext): Op<SoftenResult> {
 
 export type ShapeResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason:
-              | 'no-clay'
-              | 'cant-reach'
-              | 'not-allowed'
-              | 'no-menu'
-              | 'no-product'
-              | 'level-too-low'
-              | 'send-failed'
-              | 'timeout';
-          message: string;
-      };
+    | Failure<
+          | 'no-clay'
+          | 'cant-reach'
+          | 'not-allowed'
+          | 'no-menu'
+          | 'no-product'
+          | 'level-too-low'
+          | 'send-failed'
+          | 'timeout'
+      >;
 
 /** Closes the open modal and waits (bounded) for the make menu to go; the caller checks whether it did. */
 function* closeMenu(): Op<ActionResult> {
@@ -189,11 +184,7 @@ export function* shape(ctx: ActionContext, wheel: NearbyLoc, product: PotteryPro
 
 export type FireResult =
     | { ok: true; cracked: boolean; xpGained: number }
-    | {
-          ok: false;
-          reason: 'no-unfired' | 'cant-reach' | 'not-allowed' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-unfired' | 'cant-reach' | 'not-allowed' | 'send-failed' | 'timeout'>;
 
 /**
  * Uses the first inventory item matching `unfired` on the pottery oven `oven`. `ok` with `cracked` false

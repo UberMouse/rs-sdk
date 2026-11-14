@@ -12,7 +12,7 @@ import { resolveSkillDialogProduct, skillDialogProductLabels } from '../../sdk/a
 import type { ActionResult, BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { isSkillMenu } from './dismiss';
 import { interactLoc } from './interact';
 import { CANT_REACH, dialogSince, messageCursor, messageSince } from './messages';
@@ -44,20 +44,17 @@ const MAKE_X = /^make\s+x$/i;
 
 export type SpinResult =
     | { ok: true; spun: number; xpGained: number }
-    | {
-          ok: false;
-          reason:
-              | 'no-material'
-              | 'cant-reach'
-              | 'not-allowed'
-              | 'members'
-              | 'no-menu'
-              | 'no-product'
-              | 'level-too-low'
-              | 'send-failed'
-              | 'timeout';
-          message: string;
-      };
+    | Failure<
+          | 'no-material'
+          | 'cant-reach'
+          | 'not-allowed'
+          | 'members'
+          | 'no-menu'
+          | 'no-product'
+          | 'level-too-low'
+          | 'send-failed'
+          | 'timeout'
+      >;
 
 const xpOf = (s: BotWorldState) => findSkill(s, 'Crafting')?.experience ?? 0;
 const label = (text: string) => text.replaceAll('\\n', '').trim();

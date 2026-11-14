@@ -5,7 +5,7 @@
 import type { InventoryItem, NearbyLoc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** useItemOnLoc's 10s wait, in ticks. */
@@ -13,9 +13,7 @@ export const FILL_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
 
 const NOTHING = /nothing interesting happens/i;
 
-export type FillResult =
-    | { ok: true }
-    | { ok: false; reason: 'cant-reach' | 'nothing-happened' | 'send-failed' | 'timeout'; message: string };
+export type FillResult = { ok: true } | Failure<'cant-reach' | 'nothing-happened' | 'send-failed' | 'timeout'>;
 
 /** Uses the empty container `item` on the water source `source` and waits until one fewer of its kind is held. */
 export function* fillContainer(ctx: ActionContext, item: InventoryItem, source: NearbyLoc): Op<FillResult> {

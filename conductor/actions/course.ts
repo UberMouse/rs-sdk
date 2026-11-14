@@ -6,7 +6,7 @@ import { log, type Op, scan } from '../core/op';
 import { type Connector, UNDERGROUND_Z } from '../lib/connectors';
 import { distance } from '../lib/util';
 import { climb, type ClimbResult } from './climb';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { obstacle, OBSTACLE_SETTLE_TICKS, OBSTACLE_WAIT_TICKS, type ObstacleResult } from './obstacle';
 
 /** The log balance's tile: the lap starts one tile north of it, and the map data places the loc here. */
@@ -445,7 +445,7 @@ export function knownLoc(o: Obstacle, s: BotWorldState): NearbyLoc | undefined {
 }
 
 /** The crossing, or an obstacle whose loc the scene does not show. */
-export type CrossResult = ObstacleResult | { ok: false; reason: 'not-found'; message: string };
+export type CrossResult = ObstacleResult | Failure<'not-found'>;
 
 /** A ladder's result as an obstacle's: it pays no XP. */
 function ladderResult(r: ClimbResult): CrossResult {
@@ -487,9 +487,7 @@ export const LEAVE_COURSE_ATTEMPTS = 5;
 /** The worst case of one obstacle attempt, in ticks (its send, wait and settle). */
 export const LEAVE_ATTEMPT_TICKS = OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS + 1;
 
-export type LeaveCourseResult =
-    | { ok: true; crossed: number }
-    | { ok: false; reason: 'no-time' | 'failed'; message: string };
+export type LeaveCourseResult = { ok: true; crossed: number } | Failure<'no-time' | 'failed'>;
 
 /**
  * When the bot stands on a course's raised section, crosses its obstacles forward until it is back on the

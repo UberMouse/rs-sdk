@@ -18,6 +18,7 @@ import {
     unfiredOf,
     WATER_SOURCE,
 } from '../actions/pottery';
+import type { Failure } from '../actions/context';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, type Outcome, wait } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
@@ -107,20 +108,20 @@ function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
     return w.ok ? null : w.message;
 }
 
-interface StationWork {
+interface StationWork<R extends string> {
     /** The verb the log line uses ("shape failed"). */
     verb: string;
     fails: PhraseStreak;
     station: RegExp;
     /** What the station is called in a failure ("potter's wheel"); the last word ("wheel") names it in short. */
     noun: string;
-    op: (station: NearbyLoc) => Op<{ ok: true } | { ok: false; reason: string; message: string }>;
+    op: (station: NearbyLoc) => Op<{ ok: true } | Failure<R>>;
     /** Reasons not worth retrying: the run fails with the op's message. */
-    fatal: readonly string[];
+    fatal: readonly NoInfer<R>[];
 }
 
 /** One attempt at a station step: find the station, walk up to it, run its op; FAIL_LIMIT failures in a row end the run. */
-function* workAtStation(ctx: Ctx, w: StationWork): Op<Outcome> {
+function* workAtStation<R extends string>(ctx: Ctx, w: StationWork<R>): Op<Outcome> {
     const short = w.noun.split(' ').at(-1) ?? w.noun;
     const seen = yield* wait('station in view', st => findStation(st, w.station) !== null, STATION_WAIT_TICKS);
     const station = findStation(seen.state, w.station);

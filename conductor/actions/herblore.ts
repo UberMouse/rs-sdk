@@ -11,7 +11,7 @@
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItemId, findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { dialogSince, messageCursor, messageSince } from './messages';
 
 /** The most one use takes to show: the server answers in the tick it handles the click, so this is only a ceiling (5 s). */
@@ -28,19 +28,11 @@ const NOT_SURE = /not sure what|shouldn't mix/i;
 
 export type CleanResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'no-option' | 'level-too-low' | 'members' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-option' | 'level-too-low' | 'members' | 'send-failed' | 'timeout'>;
 
 export type BrewResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'level-too-low' | 'members' | 'nothing-happened' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'level-too-low' | 'members' | 'nothing-happened' | 'send-failed' | 'timeout'>;
 
 const xpOf = (s: BotWorldState) => findSkill(s, 'Herblore')?.experience ?? 0;
 

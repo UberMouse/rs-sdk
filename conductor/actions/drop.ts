@@ -6,19 +6,14 @@ import { validateActionQuantity } from '../../sdk/action-quantity';
 import type { InventoryItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { INVENTORY_SLOTS, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /** bot.dropItem's 5s wait for each drop to leave the inventory, in ticks. */
 export const DROP_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 
 export type DropResult =
     | { ok: true; slotsDropped: number; dialogOpened?: true }
-    | {
-          ok: false;
-          reason: 'invalid-amount' | 'no-item' | 'send-failed' | 'timeout' | 'too-few';
-          slotsDropped: number;
-          message: string;
-      };
+    | (Failure<'invalid-amount' | 'no-item' | 'send-failed' | 'timeout' | 'too-few'> & { slotsDropped: number });
 
 /**
  * Drops `amount` inventory slots (a stack is one slot) of the first item matching `item`, one at a

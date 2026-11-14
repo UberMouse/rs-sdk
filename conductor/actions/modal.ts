@@ -5,7 +5,7 @@
 import type { BotAction, BotWorldState } from '../../sdk/types';
 import { CLEANUP_TICKS } from '../core/interpret';
 import { type Op, type Pred, send, ticks, wait } from '../core/op';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /**
  * Each wait of withModal's close when it is cancelled (see closeAfterAbort): a late open's, then the
@@ -14,7 +14,6 @@ import type { ActionContext } from './context';
  */
 export const CLEANUP_CLOSE_WAIT_TICKS = Math.floor((CLEANUP_TICKS - 1) / 2);
 
-type Failure<R extends string> = { ok: false; reason: R; message: string };
 export type CloseModalResult = { ok: true; message: string } | Failure<'send-failed' | 'timeout'>;
 /**
  * Closes what `isClosed` is false for with a closeModal, and a second one if the first shows no effect
@@ -40,7 +39,17 @@ export function* closeModalUntil(
 }
 
 /** An open op's failure: only `timeout` means an open was sent that can still land. */
-type OpenFailure = Failure<string>;
+type OpenFailure = Failure<
+    | 'no-bank-found'
+    | 'npc-not-found'
+    | 'no-trade-option'
+    | 'no-option'
+    | 'level-too-low'
+    | 'not-open'
+    | 'cant-reach'
+    | 'send-failed'
+    | 'timeout'
+>;
 
 /** The ops and state one modal (the bank, a shop) is opened and closed with. */
 export interface ModalOps<F extends OpenFailure> {

@@ -16,7 +16,7 @@ import { resolveSkillDialogProduct, skillDialogProductLabels } from '../../sdk/a
 import type { ActionResult, BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { isSkillMenu } from './dismiss';
 import { dialogSince, messageCursor, messageSince } from './messages';
 
@@ -47,19 +47,9 @@ const MEMBERS = /members'? (world|server)/i;
 
 export type FletchResult =
     | { ok: true; xpGained: number; product: string }
-    | {
-          ok: false;
-          reason:
-              | 'no-knife'
-              | 'no-logs'
-              | 'members'
-              | 'no-menu'
-              | 'no-product'
-              | 'level-too-low'
-              | 'send-failed'
-              | 'timeout';
-          message: string;
-      };
+    | Failure<
+          'no-knife' | 'no-logs' | 'members' | 'no-menu' | 'no-product' | 'level-too-low' | 'send-failed' | 'timeout'
+      >;
 
 const levelOf = (s: BotWorldState) => findSkill(s, 'Fletching')?.baseLevel ?? 0;
 const xpOf = (s: BotWorldState) => findSkill(s, 'Fletching')?.experience ?? 0;

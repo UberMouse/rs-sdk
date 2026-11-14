@@ -31,7 +31,7 @@ import type { BotWorldState, InventoryItem, NearbyNpc, ShopItem } from '../../sd
 import type { Op } from '../core/op';
 import { send, ticks, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 import { type CloseModalResult, type ModalOps, type WithModalResult, withModal } from './modal';
 
@@ -48,8 +48,6 @@ export const SHOP_DEADLINE_TICKS = Math.ceil(SHOP_ACTION_DEADLINE_MS / TICK_MS);
 
 const CANT_SELL = /can't sell this item/i;
 const INVENTORY_SLOTS = 28;
-
-type Failure<R extends string> = { ok: false; reason: R; message: string };
 
 export type OpenShopResult =
     | { ok: true; message: string }

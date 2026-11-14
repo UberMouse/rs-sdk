@@ -12,7 +12,7 @@ import { type Op, send, wait } from '../core/op';
 import { JOURNAL_INTERFACE } from '../lib/journal-memory';
 import { TICK_MS } from '../lib/util';
 import { COMBOLOCK_INTERFACES } from './combolock';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /**
  * Modals never closed here: closing declines a two-party screen or strands the player (it must be
@@ -169,9 +169,7 @@ export const DISMISS_MAX_ACTIONS = 10;
 /** bot.dismissBlockingUI's 2s wait after each click or close, in ticks. */
 export const DISMISS_WAIT_TICKS = Math.ceil(2000 / TICK_MS);
 
-export type DismissResult =
-    | { ok: true; actions: number }
-    | { ok: false; reason: 'choice' | 'stuck' | 'send-failed'; message: string };
+export type DismissResult = { ok: true; actions: number } | Failure<'choice' | 'stuck' | 'send-failed'>;
 
 /** What a dialog shows, to tell that a click moved it to another page. */
 export const pageOf = (d: DialogState): string =>

@@ -7,7 +7,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { messageCursor, messageSince } from './messages';
 
 /** bot.burnLogs's 30s wait for the fire, in ticks: a light retries until it catches. */
@@ -20,11 +20,7 @@ const TOO_LOW = /need a firemaking level/i;
 
 export type BurnResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'no-tinderbox' | 'no-logs' | 'cant-light-here' | 'level-too-low' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-tinderbox' | 'no-logs' | 'cant-light-here' | 'level-too-low' | 'send-failed' | 'timeout'>;
 
 const xpOf = (s: BotWorldState) => findSkill(s, 'Firemaking')?.experience ?? 0;
 

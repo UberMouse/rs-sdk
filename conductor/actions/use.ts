@@ -7,7 +7,7 @@
 import type { BotAction, BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { movementWatch } from './movement';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
@@ -19,9 +19,7 @@ export const USE_WAIT_TICKS = Math.ceil(10_000 / TICK_MS);
 
 const NOTHING = /nothing interesting happens/i;
 
-export type UseResult =
-    | { ok: true }
-    | { ok: false; reason: 'cant-reach' | 'nothing-happened' | 'send-failed' | 'timeout'; message: string };
+export type UseResult = { ok: true } | Failure<'cant-reach' | 'nothing-happened' | 'send-failed' | 'timeout'>;
 
 const inventorySignature = (s: BotWorldState) => s.inventory.map(i => `${i.slot}:${i.id}:${i.count}`).join(',');
 

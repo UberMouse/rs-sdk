@@ -12,7 +12,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { configId } from '../lib/packs';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /** Ticks the `ready` text gets to show (the dice game's rolls take 6 ticks before the button is revealed). */
 export const PRESS_READY_TICKS = 15;
@@ -43,11 +43,7 @@ export interface PressProgress {
 
 export type PressResult =
     | { ok: true; text: string }
-    | {
-          ok: false;
-          reason: 'no-component' | 'not-open' | 'not-ready' | 'send-failed' | 'no-effect' | 'closed';
-          message: string;
-      };
+    | Failure<'no-component' | 'not-open' | 'not-ready' | 'send-failed' | 'no-effect' | 'closed'>;
 
 /** One line of the component dump: `#<id> type=<n> btn=<n> text="..."`. */
 const DUMP_LINE = /^\s*#(\d+) type=-?\d+ btn=-?\d+ text=("(?:[^"\\]|\\.)*")/;

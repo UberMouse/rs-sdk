@@ -10,7 +10,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { dialogSince, messageCursor, messageSince } from './messages';
 
 /** Ticks to wait for the jump after the click: the cast animation, p_delay(1) and p_delay(0) take about 3. */
@@ -150,11 +150,7 @@ const REFUSED_DIALOG =
 
 export type TeleportResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'level' | 'no-runes' | 'wilderness' | 'refused' | 'send-failed' | 'no-teleport';
-          message: string;
-      };
+    | Failure<'level' | 'no-runes' | 'wilderness' | 'refused' | 'send-failed' | 'no-teleport'>;
 
 const magicXp = (s: BotWorldState) => findSkill(s, 'Magic')?.experience ?? 0;
 

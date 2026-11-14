@@ -5,7 +5,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, dialogSince, messageCursor, messageSince } from './messages';
 
 /** Wait for one cook: a walk up to the source (the client's own pathing), the arrival delay and the cook's delay. */
@@ -21,19 +21,16 @@ const NOT_ALLOWED = /who said you could use that|only members of the fremennik/i
 
 export type CookResult =
     | { ok: true; burnt: boolean; xpGained: number }
-    | {
-          ok: false;
-          reason:
-              | 'no-raw'
-              | 'level-too-low'
-              | 'members'
-              | 'cant-cook'
-              | 'not-allowed'
-              | 'cant-reach'
-              | 'send-failed'
-              | 'timeout';
-          message: string;
-      };
+    | Failure<
+          | 'no-raw'
+          | 'level-too-low'
+          | 'members'
+          | 'cant-cook'
+          | 'not-allowed'
+          | 'cant-reach'
+          | 'send-failed'
+          | 'timeout'
+      >;
 
 const xpOf = (s: BotWorldState) => findSkill(s, 'Cooking')?.experience ?? 0;
 

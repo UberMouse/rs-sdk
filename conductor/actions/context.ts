@@ -4,6 +4,11 @@ import type { BotWorldState } from '../../sdk/types';
 import type { WalkWorld } from '../lib/walk-graph';
 import type { Pathfinder } from './paths';
 
+/** An op's failure: `reason` is one of the values the op names in its result type, `message` says what happened. */
+export type Failure<R extends string> = { ok: false; reason: R; message: string };
+/** The reasons an op's result type `T` can fail with. */
+export type ReasonOf<T> = Extract<T, Failure<string>>['reason'];
+
 export interface ActionContext {
     /** The latest state. Ops read the game through it, never through the SDK. */
     state(): BotWorldState;
