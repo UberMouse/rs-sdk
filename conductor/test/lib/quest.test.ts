@@ -268,6 +268,30 @@ describe('defineQuest: a quest with a journal mark', () => {
         expect(afterPay.checks.journal).toBe('when false');
     });
 
+    const walkOn = [steps[0]!, steps[1]!, step('walk', deed, { what: 'walk' }), finish];
+    const walkEffects = (pay: (st: Story) => void) => ({ ...effects(pay), walk: () => {} });
+
+    test('a step passed with a dialog open is confirmed by the read once the next step closed it', async () => {
+        const w = storyWorld(
+            {},
+            walkEffects(st => void ((st.dialog = true), (st.lines = PAID))),
+        );
+        const r = await run(quest(walkOn), w);
+        expect(r.result.status).toBe('done');
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'walk', 'journal', 'finish']);
+    });
+
+    test('a step passed with a dialog open runs again when the read after the next step does not confirm it', async () => {
+        let pays = 0;
+        const w = storyWorld(
+            {},
+            walkEffects(st => void (pays++ === 0 ? (st.dialog = true) : (st.lines = PAID))),
+        );
+        const r = await run(quest(walkOn), w);
+        expect(r.result.status).toBe('done');
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'walk', 'journal', 'pay', 'journal', 'walk', 'finish']);
+    });
+
     test('after a failed run the read runs before the retry', async () => {
         const r = await run(quest(steps), storyWorld({ refuse: { pay: 1 } }, effects()));
         expect(r.result.status).toBe('done');
@@ -342,9 +366,14 @@ describe('cursor and needsRead', () => {
         expect(c({})).toBe(0);
         expect(c({ progress: 'started' })).toBe(1);
         expect(c({ progress: 'started', held: 1 })).toBe(2);
-        // A journal mark passes by run order only while the journal cannot be read.
-        expect(c({ progress: 'started', held: 1, last: last('pay'), journal: 'go', age: 0 })).toBe(2);
-        expect(c({ progress: 'started', held: 1, last: last('pay'), journal: 'go', age: 0, dialog: true })).toBe(3);
+        // A journal mark passes by run order until a fresh journal (age 0), readable, can confirm it.
+        const ranPay = { progress: 'started', held: 1, last: last('pay') } as const;
+        expect(c({ ...ranPay, journal: 'go', age: 0 })).toBe(2);
+        expect(c({ ...ranPay, journal: 'go', age: 0, dialog: true })).toBe(3);
+        expect(c(ranPay)).toBe(3);
+        expect(c({ ...ranPay, journal: 'go', age: 1 })).toBe(3);
+        expect(c({ ...ranPay, last: last('chat'), journal: 'go', age: 2 })).toBe(4);
+        expect(c({ ...ranPay, last: last('chat'), journal: 'go', age: 0 })).toBe(2);
         expect(c({ progress: 'started', held: 1, last: last('pay', 'failed'), dialog: true })).toBe(2);
         expect(c({ progress: 'started', journal: 'paid' })).toBe(3);
         expect(c({ progress: 'started', journal: 'paid', last: last('chat') })).toBe(4);
@@ -359,7 +388,13 @@ describe('cursor and needsRead', () => {
         expect(n({ progress: 'started', dialog: true })).toBe(false);
         expect(n({ progress: 'started', age: 0, last: last('pay') })).toBe(false);
         expect(n({ progress: 'started', age: 1, last: last('pay') })).toBe(true);
-        expect(n({ progress: 'started', age: 1, last: last('chat') })).toBe(false);
+        expect(n({ progress: 'started', age: 1, journal: 'paid', last: last('chat') })).toBe(false);
+        // A journal-mark step passed only by run order (pay, behind chat) asks for the confirming read.
+        expect(n({ progress: 'started', age: 1, last: last('chat') })).toBe(true);
+        expect(n({ progress: 'started', age: 2, last: last('chat'), journal: 'go' })).toBe(true);
+        expect(n({ progress: 'started', age: 2, last: last('chat'), journal: 'go', dialog: true })).toBe(false);
+        expect(n({ progress: 'started', age: 0, last: last('chat'), journal: 'go' })).toBe(false);
+        expect(n({ progress: 'started', age: 1, last: last('item') })).toBe(false);
         expect(n({ progress: 'started', age: 1, last: last('chat', 'failed') })).toBe(true);
         expect(n({ progress: 'done' })).toBe(false);
         expect(needsRead({ ...q, steps: [q.steps[0]!, q.steps[3]!] }, fakeView({ progress: 'started' }))).toBe(false);

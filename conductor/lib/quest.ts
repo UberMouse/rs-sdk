@@ -93,25 +93,11 @@ const lastStep = (q: QuestDef, v: PlanView): number | undefined => {
 };
 
 /**
- * Whether the plan reads the journal before any step: the quest has a journal mark, the tab shows it started, the
- * read would close nothing, and the journal is unread, or stale after a journal-mark step or a failed run.
+ * The cursor (the first step from the base not passed, or null), and whether any journal-mark step from the base,
+ * with no `done`, is passed only provisionally: by run order, with a journal not read since. With `toCursor` it
+ * stops at the cursor, so `provisional` covers only the steps before it.
  */
-export function needsRead(q: QuestDef, v: PlanView): boolean {
-    if (!q.steps.some(s => s.reached !== undefined && isMark(s.reached))) return false;
-    if (!v.questStarted(q.id) || blocked(v)) return false;
-    const age = v.journalAge(q.id);
-    if (age === undefined) return true;
-    if (age === 0) return false;
-    const j = lastStep(q, v);
-    const reached = j === undefined ? undefined : q.steps[j]!.reached;
-    return (reached !== undefined && isMark(reached)) || v.lastFailed();
-}
-
-/**
- * The index of the step the story is at, or null when every step is passed. The base is one past the last step whose
- * `reached` holds; from it, the first step not passed (by `skip`, by `done`, or by having run: see quest-layer.md).
- */
-export function cursor(q: QuestDef, v: PlanView): number | null {
+function walk(q: QuestDef, v: PlanView, toCursor: boolean): { at: number | null; provisional: boolean } {
     const { steps, id } = q;
     const holds = (r: Predicate | JournalMark | undefined) =>
         r !== undefined && (isMark(r) ? v.journalSays(id, r.journal) === true : r(v));
@@ -123,24 +109,48 @@ export function cursor(q: QuestDef, v: PlanView): number | null {
         }
     const j = lastStep(q, v);
     const ranPast = (i: number) => j !== undefined && (j > i || (j === i && v.last?.status === 'done'));
+    const passed = (s: QuestStep, i: number): boolean | 'provisional' => {
+        if (s.skip?.(v)) return true;
+        if (s.done) return s.done(v);
+        if (s.reached === undefined) return ranPast(i);
+        // A predicate `reached` is passed only by the base; a journal mark also by run order until a fresh journal
+        // (read since the last acting run) can confirm it.
+        return isMark(s.reached) && ranPast(i) && (blocked(v) || v.journalAge(id) !== 0) && 'provisional';
+    };
+    let at: number | null = null;
+    let provisional = false;
     for (let i = base; i < steps.length; i++) {
-        const s = steps[i]!;
-        if (s.skip?.(v)) continue;
-        if (s.done) {
-            if (s.done(v)) continue;
-            return i;
+        const p = passed(steps[i]!, i);
+        if (p === 'provisional') provisional = true;
+        else if (!p) {
+            at ??= i;
+            if (toCursor) break;
         }
-        if (s.reached === undefined) {
-            if (ranPast(i)) continue;
-            return i;
-        }
-        // A predicate `reached` is passed only by the base; a journal mark also by run order while the journal
-        // cannot be read to confirm it.
-        if (isMark(s.reached) && ranPast(i) && blocked(v)) continue;
-        return i;
     }
-    return null;
+    return { at, provisional };
 }
+
+/**
+ * Whether the plan reads the journal before any step: the quest has a journal mark, the tab shows it started, the
+ * read would close nothing, and the journal is unread, or stale after a journal-mark step, a failed run, or while a
+ * journal-mark step is passed only provisionally.
+ */
+export function needsRead(q: QuestDef, v: PlanView): boolean {
+    if (!q.steps.some(s => s.reached !== undefined && isMark(s.reached))) return false;
+    if (!v.questStarted(q.id) || blocked(v)) return false;
+    const age = v.journalAge(q.id);
+    if (age === undefined) return true;
+    if (age === 0) return false;
+    const j = lastStep(q, v);
+    const reached = j === undefined ? undefined : q.steps[j]!.reached;
+    return (reached !== undefined && isMark(reached)) || v.lastFailed() || walk(q, v, false).provisional;
+}
+
+/**
+ * The index of the step the story is at, or null when every step is passed. The base is one past the last step whose
+ * `reached` holds; from it, the first step not passed (by `skip`, by `done`, or by having run: see quest-layer.md).
+ */
+export const cursor = (q: QuestDef, v: PlanView): number | null => walk(q, v, true).at;
 
 const fail = (q: QuestDef, msg: string): never => {
     throw new Error(`quest "${q.name}": ${msg}`);
