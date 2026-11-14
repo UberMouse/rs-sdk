@@ -1,19 +1,31 @@
 // The top-level keys a task's params schema takes, so a run can refuse the keys a plain `z.object` drops.
 import type { z } from 'zod/v4';
 
-interface Def {
+/** The fields of a zod schema's `def` that the schema walks here and in `catalog.ts` read. */
+export interface SchemaDef {
     type: string;
     innerType?: z.ZodType;
     in?: z.ZodType;
     shape?: Record<string, z.ZodType>;
     catchall?: z.ZodType;
+    element?: z.ZodType;
     options?: z.ZodType[];
+    items?: z.ZodType[];
+    rest?: z.ZodType | null;
     left?: z.ZodType;
     right?: z.ZodType;
 }
-const defOf = (s: z.ZodType) => s.def as unknown as Def;
+export const defOf = (s: z.ZodType) => s.def as unknown as SchemaDef;
 /** Layers that wrap one schema; a pipe (a `.transform`) is read on its input side, where the raw params go. */
 const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonoptional', 'readonly', 'catch']);
+
+/** The schema one layer under `s` (a wrapper's inner schema, a pipe's input); undefined when `s` wraps nothing. */
+export function peelLayer(s: z.ZodType): z.ZodType | undefined {
+    const d = defOf(s);
+    if (WRAPPERS.has(d.type) && d.innerType) return d.innerType;
+    if (d.type === 'pipe' && d.in) return d.in;
+    return undefined;
+}
 
 /**
  * The top-level keys `schema` takes, in schema order; null when they cannot be listed (an object with a
@@ -21,12 +33,17 @@ const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonopt
  * of any of its parts.
  */
 export function paramKeys(schema: z.ZodType): string[] | null {
+    const inner = peelLayer(schema);
+    if (inner) return paramKeys(inner);
     const d = defOf(schema);
-    if (WRAPPERS.has(d.type) && d.innerType) return paramKeys(d.innerType);
-    if (d.type === 'pipe' && d.in) return paramKeys(d.in);
     if (d.type === 'object')
         return d.catchall && defOf(d.catchall).type !== 'never' ? null : Object.keys(d.shape ?? {});
-    const parts = d.type === 'union' ? (d.options ?? []) : d.type === 'intersection' ? [d.left!, d.right!] : null;
+    const parts =
+        d.type === 'union'
+            ? (d.options ?? [])
+            : d.type === 'intersection' && d.left && d.right
+              ? [d.left, d.right]
+              : null;
     if (!parts) return null;
     const keys: string[] = [];
     for (const part of parts) {

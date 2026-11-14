@@ -4,6 +4,7 @@ import { readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { z } from 'zod/v4';
 import { GUARDS } from './interrupts';
+import { defOf, peelLayer } from './param-keys';
 import { isPatternParam, isPatternSchema, PATTERN_NOTE } from './spot';
 import type { TaskDef } from './task';
 
@@ -85,19 +86,6 @@ export function summaryLine(def: TaskDef): string {
     return `${def.name}: ${firstSentence(def.description)} (params: ${ordered.join(', ') || 'none'})`;
 }
 
-interface Def {
-    type: string;
-    innerType?: z.ZodType;
-    in?: z.ZodType;
-    shape?: Record<string, z.ZodType>;
-    element?: z.ZodType;
-    options?: z.ZodType[];
-    items?: z.ZodType[];
-    rest?: z.ZodType | null;
-}
-const defOf = (s: z.ZodType) => s.def as unknown as Def;
-/** Layers that wrap one schema; a pipe is read on its input side, as `--list` prints it. */
-const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonoptional', 'readonly', 'catch']);
 /** Schemas with no fields inside. */
 const LEAVES = new Set(['string', 'number', 'boolean', 'bigint', 'enum', 'literal', 'date', 'null', 'any', 'unknown']);
 
@@ -114,10 +102,9 @@ function unwrap(s: z.ZodType): { core: z.ZodType; described: boolean; shown: str
             shown ??= cur.description;
             if (!isPatternSchema(cur) || isPatternParam(cur)) described = true;
         }
-        const d = defOf(cur);
-        if (WRAPPERS.has(d.type) && d.innerType) cur = d.innerType;
-        else if (d.type === 'pipe' && d.in) cur = d.in;
-        else return { core: cur, described, shown };
+        const inner = peelLayer(cur);
+        if (!inner) return { core: cur, described, shown };
+        cur = inner;
     }
 }
 
