@@ -38,11 +38,19 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 const STEP_TIMEOUT_MS = 300_000;
 
 const Params = z.object({
-    tree: z.enum(['tree', 'oak', 'willow']).default('tree'),
-    /** Stay near here; walk back when further than `radius`. Omit to chop wherever the bot is. */
-    area: AreaSchema.optional(),
-    /** What to do when the inventory is full: drop the logs and keep chopping, or end the run holding them. */
-    onFull: z.enum(['drop', 'stop']).default('drop'),
+    tree: z
+        .enum(['tree', 'oak', 'willow'])
+        .default('tree')
+        .describe('The kind of tree to chop; only that kind is chopped, and only its logs are dropped by `onFull`.'),
+    area: AreaSchema.optional().describe(
+        'Where to chop: only trees inside it are chopped, and the bot walks back when further than `radius`. Without it the bot chops wherever it stands.',
+    ),
+    onFull: z
+        .enum(['drop', 'stop'])
+        .default('drop')
+        .describe(
+            'What to do when the inventory is full. "drop" drops the logs and keeps chopping. "stop" ends the run done ("inventory full: N logs") holding them, e.g. to feed fletching or firemaking.',
+        ),
 });
 
 type WoodcuttingParams = z.infer<typeof Params>;
@@ -105,13 +113,21 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
 export default defineTask({
     name: 'woodcutting',
     description:
-        'Chop trees of one type; when the inventory is full, `onFull` "drop" (default) drops the logs and keeps chopping, ' +
-        '"stop" ends the run done ("inventory full: N logs") holding them, e.g. to feed fletching/firemaking. Needs an axe and the level for the tree. ' +
-        'When every tree in reach is a stump it waits up to 2 min for respawns, then fails "area depleted". ' +
-        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown. ' +
-        'With `area` it stays within `radius` of that centre; without it, it chops wherever the bot stands. ' +
-        'Verified spot: Lumbridge trees (3195,3220, radius 12). Unverified: Varrock oaks (3190,3458); ' +
-        'Draynor willows (3087,3235, dark wizards nearby). Refuses areas reaching the Wilderness.',
+        'Chops the nearest tree of one kind, repeating until stopped. ' +
+        `When every tree in reach is a stump it waits up to ${(NO_TREE_GIVE_UP_TICKS * TICK_MS) / 60_000} min for respawns, then fails ` +
+        '"area depleted: no reachable <tree> in radius N for Ns" with `area`, "no reachable <tree> nearby for Ns" without. ' +
+        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. ' +
+        'It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown (sooner if it takes 3 HP). ' +
+        'Refuses areas reaching the Wilderness.',
+    rules: [
+        `Needs an axe in the inventory or worn, and the base Woodcutting level for the tree: ${Object.entries(TREES)
+            .map(([tree, t]) => `${tree} ${t.level}`)
+            .join(', ')}.`,
+    ],
+    spots: [
+        'Verified: Lumbridge trees, `area` {x:3195,z:3220,radius:12}.',
+        'Unverified: Varrock oaks at (3190,3458); Draynor willows at (3087,3235), with dark wizards nearby.',
+    ],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): WoodcuttingMemory => ({ noTreeSinceTick: null, areaWatch: newAreaWatch() }),

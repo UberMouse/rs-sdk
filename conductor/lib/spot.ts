@@ -26,7 +26,9 @@ export const Pattern = z.string().refine(isPattern, 'not a valid regular express
 export const matcher = (source: string) => new RegExp(source, 'i');
 
 const describedAtUse = new WeakSet<z.ZodType>();
-/** `Pattern` described at its use: `sentence` (what the param means), then PATTERN_NOTE. Same shape and checks. */
+/** `Pattern` described at its use: `sentence` (what the param means), then PATTERN_NOTE. Same shape and checks.
+ * Chaining a cloning method (`.min()`, `.refine()`, another `.describe()`) on the result loses the marker, and the
+ * catalog guard then reports the field; wrap it only with `.optional()`, `.default()` or `z.array(...)`. */
 export function patternParam(sentence: string): typeof Pattern {
     const schema = Pattern.describe(`${sentence} ${PATTERN_NOTE}`);
     describedAtUse.add(schema);

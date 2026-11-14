@@ -120,20 +120,38 @@ const STEP_TIMEOUT_MS = 300_000;
 /** The no-spot wait runs inside one step, so its step budget must cover it (plus the walk and a cast). */
 const NO_SPOT_STEP_TIMEOUT_MS = Math.max(STEP_TIMEOUT_MS, (NO_SPOT_GIVE_UP_TICKS + 200) * TICK_MS);
 
+const bare = (re: RegExp) => re.source.replace(/^\^|\$$/g, '');
+const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+/** One line per method for the `method` param: what it needs, what it catches and which spot it works. */
+const METHODS_TEXT = METHOD_NAMES.map(name => {
+    const m: Method = METHODS[name];
+    const needs = m.bait ? `${m.toolName} + ${m.bait.name}` : m.toolName;
+    return `${name}: ${needs}, catches ${m.fish.map(bare).join(' and ')}, Fishing ${m.level}; option ${capital(bare(m.option))} at a spot that also offers ${capital(bare(m.otherOption))}`;
+}).join('; ');
+
 const Params = z
     .object({
-        method: z.enum(METHOD_NAMES).default('net'),
-        /** Stay near here; walk back when further than `radius`. Omit to fish wherever the bot is. */
-        area: AreaSchema.optional(),
-        /** What to do when the inventory is full: drop the fish and keep fishing, or end the run holding them. */
-        onFull: z.enum(['drop', 'stop']).default('drop'),
-        /**
-         * A second method to fish while no spot of `method` is fishable in the area (e.g. method harpoon, fallback shark
-         * at Catherby, where the Cage/Harpoon spot is often away while the Net/Harpoon ones are not). A spot of `method`
-         * coming back is taken as soon as the current catch lands. Its tool, bait and level are checked up front too. It only
-         * helps where the two methods use different spot types in the area; must differ from `method`.
-         */
-        fallback: z.enum(METHOD_NAMES).optional(),
+        method: z
+            .enum(METHOD_NAMES)
+            .default('net')
+            .describe(
+                `What to fish with, which sets the tool, bait, fish and spot. Big net is not supported. ${METHODS_TEXT}.`,
+            ),
+        area: AreaSchema.optional().describe(
+            'Where to fish: only spots inside it are fished, and the bot walks back when further than `radius`. Without it the bot fishes wherever it stands.',
+        ),
+        onFull: z
+            .enum(['drop', 'stop'])
+            .default('drop')
+            .describe(
+                'What to do when the inventory is full. "drop" drops the fish and keeps fishing. "stop" ends the run done ("inventory full: N fish") holding them, e.g. to feed a cooking task.',
+            ),
+        fallback: z
+            .enum(METHOD_NAMES)
+            .optional()
+            .describe(
+                'A second method to fish while no spot of `method` is fishable in the area. A spot of `method` coming back is taken as soon as the current catch lands. It only helps where the two methods use different spot types in the area.',
+            ),
     })
     .refine(p => p.fallback === undefined || p.fallback !== p.method, {
         message: 'fallback must differ from method',
@@ -247,22 +265,24 @@ function* waitForSpot(ctx: Ctx): Op<Outcome> {
 export default defineTask({
     name: 'fishing',
     description:
-        'Fish at fishing spots with one `method`: net (small fishing net, shrimps/anchovies, level 1), bait (fishing rod + bait, ' +
-        'sardine/herring, 5), lure (fly fishing rod + feathers, trout/salmon, 20), pike (rod + bait at a Lure/Bait spot, 25), ' +
-        'harpoon (tuna/swordfish at a Cage/Harpoon spot, 35), shark (harpoon at a Net/Harpoon spot, raw shark, 76; members), ' +
-        'cage (lobster pot, lobster, 40). `fallback` (e.g. method harpoon, fallback shark) names a second method fished while no ' +
-        'spot of `method` is fishable in the area (needs its tool and level too); a `method` spot coming back is taken once the ' +
-        'current catch lands. Big net is not supported. The tool and any bait must be in the inventory. ' +
-        'When the inventory is full, `onFull` "drop" (default) drops the fish and keeps fishing, "stop" ends the run done ' +
-        '("inventory full: N fish") holding them, e.g. to feed a cooking task. Spots hop between tiles every 112-212 s; it follows them. ' +
+        'Fishes at fishing spots with one `method`, repeating until stopped. ' +
+        'Spots hop between tiles every 112-212 s and it follows them. ' +
         'With a small `area` the spot can be away from it for up to ~3.5 minutes per hop, and the task waits for it, failing ' +
-        '("area depleted", naming a spot visible outside the area) only after 280 s with none. ' +
-        'Fails on missing tool/bait (also when the bait runs out) or too low a level. ' +
-        'In combat it pauses fishing and fails after 40 ticks of combat, or at once if auto-retaliate is off. ' +
-        'With `area` it stays within `radius` of that centre; without it, it fishes wherever the bot stands. ' +
-        'Live-tested at the Fishing Guild (Fishing 68; Net/Harpoon spot near (2605,3418)); Catherby seen only in a run log. ' +
-        'Draynor Village Net/Bait spots: use area {x:3086,z:3227,radius:2} (dark wizards attack at the northern tiles). ' +
+        `("area depleted", naming a spot visible outside the area) only after ${(NO_SPOT_GIVE_UP_TICKS * TICK_MS) / 1000} s with none. ` +
+        'Fails when the tool or bait is missing (also when the bait runs out). ' +
+        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. ' +
+        'It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown (sooner if it takes 3 HP). ' +
         'Refuses areas reaching the Wilderness.',
+    rules: [
+        '`fallback` must differ from `method`.',
+        'The tool and any bait of `method` and of `fallback` must be in the inventory (worn does not count); bait is used up one per catch.',
+        'The base Fishing level must reach that of `method` and of `fallback`.',
+    ],
+    spots: [
+        'Fishing Guild (live-tested at Fishing 68): Net/Harpoon spot near (2605,3418).',
+        'Catherby (seen only in a run log): method harpoon, fallback shark, since the Cage/Harpoon spot is often away while the Net/Harpoon ones are not.',
+        'Draynor Village Net/Bait spots: `area` {x:3086,z:3227,radius:2} (dark wizards attack at the northern tiles).',
+    ],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): FishingMemory => ({ noSpotSinceTick: null, areaWatch: newAreaWatch(), fishing: null, active: null }),

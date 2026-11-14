@@ -215,21 +215,13 @@ const NOT_YET = [
     'bank',
     'cooking',
     'crafting',
-    'essence-mine',
-    'fill',
     'firemaking',
-    'fishing',
     'fletching',
     'herblore',
-    'mining',
-    'pick',
-    'pickup',
-    'runecraft',
     'shop',
     'smithing',
     'spell-items',
     'spinning',
-    'woodcutting',
 ];
 const MAX_DESCRIPTION = 900;
 

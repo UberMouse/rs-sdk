@@ -95,7 +95,7 @@ const Params = z
         unequip: z
             .array(
                 patternParam(
-                    `\`all\`, a slot name (${Object.keys(WORN_SLOTS).join(', ')}), or failing those a worn item's name.`,
+                    `\`all\` or a slot name (${Object.keys(WORN_SLOTS).join(', ')}), each compared whole and not as a regex; failing those, a worn item's name.`,
                 ),
             )
             .min(1)
