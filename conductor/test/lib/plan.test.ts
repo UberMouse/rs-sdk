@@ -1107,6 +1107,14 @@ describe('rails', () => {
         expect(r.driver.commands).toEqual([]);
     });
 
+    test('a phase with a param its task does not take fails the plan at load, naming the phase and the key', async () => {
+        const r = await sim(plan([phase(chop, {}), phase(chop, { tre: 'oak' } as never, { name: 'second' })]));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toBe('phase "second" has unknown param "tre" (chop takes: tree)');
+        expect(r.runs).toEqual([]);
+        expect(r.driver.commands).toEqual([]);
+    });
+
     test('a throwing when ends the plan error, naming the phase and the predicate', async () => {
         const r = await sim(plan([phase(chop, {}, { when: v => v.level('Woodcuting') > 1 })]));
         expect(r.result.status).toBe('error');

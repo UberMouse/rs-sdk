@@ -905,6 +905,43 @@ describe('decision-only steps', () => {
     });
 });
 
+describe('a param the task does not take', () => {
+    const order: string[] = [];
+    const def = defineTask({
+        name: 'keys',
+        description: 'engine test',
+        params: z.object({ n: z.number().default(1), area: z.object({ x: z.number() }).optional() }),
+        preflight: () => {
+            order.push('preflight');
+            return null;
+        },
+        steps: [step('finish', () => ({ done: 'finished' }))],
+    });
+
+    test('ends the run failed before the preflight runs, naming the key and the keys the task takes', async () => {
+        order.length = 0;
+        const r = await runDef(def, timeline(5), { params: { n: 2, m: 3 } });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('preflight: unknown param "m" (keys takes: n, area)');
+        expect(order).toEqual([]);
+        expect(r.sends).toEqual([]);
+    });
+
+    test('names every unknown key', async () => {
+        const r = await runDef(def, timeline(5), { params: { m: 3, n: 2, aera: { x: 1 } } });
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe('preflight: unknown params "m", "aera" (keys takes: n, area)');
+    });
+
+    test('a run with only keys the task takes, a nested object holding any it likes, is unchanged', async () => {
+        order.length = 0;
+        const r = await runDef(def, timeline(5), { params: { n: 2, area: { x: 1, y: 2 } } });
+        expect(r.result.status).toBe('done');
+        expect(r.result.reason).toBe('finish: finished');
+        expect(order).toEqual(['preflight']);
+    });
+});
+
 describe('as the run ends', () => {
     test('below the low-HP line with food at hand, the bot eats once before the result', async () => {
         // HP drops on the tick the stop is reached, so the stop ends the run before the low-HP guard acts.

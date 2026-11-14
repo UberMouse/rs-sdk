@@ -12,6 +12,7 @@ import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
 import { bankMemory, watchBank } from './bank-memory';
 import { journalMemory } from './journal-memory';
+import { unknownParamsReason } from './param-keys';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { guardLabel } from './interrupts';
 import { type QuestProgress, QUESTS, questProgress } from './quests';
@@ -308,15 +309,19 @@ function parsePhases(def: PlanDef): ParsedPhase[] {
     return def.phases.map(p => ({ phase: p, result: p.task.params.safeParse(p.params ?? {}) }));
 }
 
-/** Why each phase whose params do not parse against its task's schema is refused, in plan order. */
+/**
+ * Why each phase whose params do not parse against its task's schema, or hold a top-level key it does not
+ * take, is refused, in plan order.
+ */
 export function invalidParams(def: PlanDef, parsed: ParsedPhase[] = parsePhases(def)): string[] {
-    return parsed.flatMap(({ phase: p, result: r }) =>
-        r.success
-            ? []
-            : [
-                  `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
-              ],
-    );
+    return parsed.flatMap(({ phase: p, result: r }) => {
+        if (!r.success)
+            return [
+                `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
+            ];
+        const unknown = unknownParamsReason(p.task, p.params ?? {});
+        return unknown ? [`phase "${p.name}" has ${unknown}`] : [];
+    });
 }
 
 /** A plan result's params from its parsed phases. */

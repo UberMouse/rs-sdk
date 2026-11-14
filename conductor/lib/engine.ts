@@ -26,6 +26,7 @@ import {
     underFire,
     wildernessGuard,
 } from './interrupts';
+import { unknownParamsReason } from './param-keys';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import {
     checkOutcomes,
@@ -570,6 +571,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const names = [...GUARDS, ...(def.guards ?? [])].map(g => g.name);
     const clashes = names.filter((n, i) => names.indexOf(n) !== i);
     if (clashes.length) return finish('error', `task guard name(s) taken: ${[...new Set(clashes)].join(', ')}`);
+    // A plain `z.object` drops a key it does not have, so a misspelt or stale param would run on its default.
+    const unknown = unknownParamsReason(def, opts.rawParams ?? {});
+    if (unknown) return finish('failed', `preflight: ${unknown}`);
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;
