@@ -354,6 +354,13 @@ proves it.
 - [ ] `bun test conductor` and `bun run verify:conductor` pass; `smoke/journal` still passes.
 - [ ] Out of scope: other plans; docs (Task 5).
 
+**Amendment (2026-11-14, from the code review of Tasks 4 and 4b):** a journal mark is always
+case-insensitive (`journal()` adds the `i` flag, so the cursor and the step read agree). A step
+whose own `onFail` is the string `'continue'` is run past once its run has ended, failed or done
+("try this, carry on if it fails"); a `done` still judges such a step alone, and a function
+`onFail` does not move the story on. The `journal` task sizes its watchdog for its longest run and
+closes only the journal.
+
 ## Task 5 — Docs and agent prompts
 
 **Files:** `conductor/docs/plans.md` (a section on quests: `defineQuest`, `step`, the two kinds of
