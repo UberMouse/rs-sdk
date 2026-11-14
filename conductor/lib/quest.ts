@@ -36,6 +36,7 @@ export interface QuestStep {
     done?: Predicate;
     /** This step does not apply now; it is passed. */
     skip?: Predicate;
+    /** Ends the step's run done; a step whose `until` holds on the view is passed, as by a `done` that holds. */
     until?: Phase['until'];
     onFail?: Phase['onFail'];
     maxFails?: Phase['maxFails'];
@@ -99,19 +100,32 @@ const lastStep = (q: QuestDef, v: PlanView): number | undefined => {
  */
 function walk(q: QuestDef, v: PlanView, toCursor: boolean): { at: number | null; provisional: boolean } {
     const { steps, id } = q;
-    const holds = (r: Predicate | JournalMark | undefined) =>
-        r !== undefined && (isMark(r) ? v.journalSays(id, r.journal) === true : r(v));
+    // A throw names its step and predicate: the plan runner would blame whichever phase's `when` ran the walk.
+    const call = (s: QuestStep, which: string, p: Predicate): boolean => {
+        try {
+            return p(v);
+        } catch (e) {
+            throw new Error(`step "${s.name}" ${which} threw: ${e instanceof Error ? e.message : String(e)}`, {
+                cause: e,
+            });
+        }
+    };
+    const holds = (s: QuestStep) => {
+        const r = s.reached;
+        return r !== undefined && (isMark(r) ? v.journalSays(id, r.journal) === true : call(s, 'reached', r));
+    };
     let base = 0;
     for (let i = steps.length - 1; i >= 0; i--)
-        if (holds(steps[i]!.reached)) {
+        if (holds(steps[i]!)) {
             base = i + 1;
             break;
         }
     const j = lastStep(q, v);
     const ranPast = (i: number) => j !== undefined && (j > i || (j === i && v.last?.status === 'done'));
     const passed = (s: QuestStep, i: number): boolean | 'provisional' => {
-        if (s.skip?.(v)) return true;
-        if (s.done) return s.done(v);
+        if (s.skip && call(s, 'skip', s.skip)) return true;
+        if (s.until && call(s, 'until', s.until)) return true;
+        if (s.done) return call(s, 'done', s.done);
         if (s.reached === undefined) return ranPast(i);
         // A predicate `reached` is passed only by the base; a journal mark also by run order until a fresh journal
         // (read since the last acting run) can confirm it.
@@ -148,7 +162,8 @@ export function needsRead(q: QuestDef, v: PlanView): boolean {
 
 /**
  * The index of the step the story is at, or null when every step is passed. The base is one past the last step whose
- * `reached` holds; from it, the first step not passed (by `skip`, by `done`, or by having run: see quest-layer.md).
+ * `reached` holds; from it, the first step not passed (by `skip`, by `done`, by its `until` holding, or by having run:
+ * see quest-layer.md).
  */
 export const cursor = (q: QuestDef, v: PlanView): number | null => walk(q, v, true).at;
 

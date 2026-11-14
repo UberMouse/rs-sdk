@@ -152,6 +152,37 @@ describe('defineQuest: a quest without journal marks', () => {
         expect(ran(r)).toEqual(['pot', 'start', 'chat', 'finish']);
     });
 
+    test('a throw from a step predicate names the step and the predicate, and ends the plan in error', async () => {
+        const boom = quest([
+            steps[0]!,
+            steps[1]!,
+            step(
+                'chat',
+                deed,
+                { what: 'chat' },
+                {
+                    done: () => {
+                        throw new Error('bad');
+                    },
+                },
+            ),
+            finish,
+        ]);
+        const r = await run(boom, storyWorld({}, effects));
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain('step "chat" done threw: bad');
+    });
+
+    test('a step whose until holds is passed: from the start, and once its run made it true', async () => {
+        const untilStep = step('pot', deed, { what: 'pot' }, { until: potHeld });
+        const fresh = await run(quest([untilStep, finish]), storyWorld({ items: { Pot: 1 } }, effects));
+        expect(fresh.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(ran(fresh)).toEqual(['finish']);
+        const during = await run(quest([untilStep, finish]), storyWorld({}, effects));
+        expect(during.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(ran(during)).toEqual(['pot', 'finish']);
+    });
+
     test('starts after the last step whose reached holds', async () => {
         const r = await run(quest(steps), storyWorld({ progress: 'started' }, effects));
         expect(r.result.status).toBe('done');
@@ -345,6 +376,12 @@ function fakeView(o: {
     });
 }
 
+const potHeld = (v: PlanView) => v.held('Pot') > 0;
+
+const thrower = (): never => {
+    throw new Error('nope');
+};
+
 const last = (phase: string, status: 'done' | 'failed' = 'done') => ({ phase, status, reason: '' });
 
 describe('cursor and needsRead', () => {
@@ -398,6 +435,18 @@ describe('cursor and needsRead', () => {
         expect(n({ progress: 'started', age: 1, last: last('chat', 'failed') })).toBe(true);
         expect(n({ progress: 'done' })).toBe(false);
         expect(needsRead({ ...q, steps: [q.steps[0]!, q.steps[3]!] }, fakeView({ progress: 'started' }))).toBe(false);
+    });
+
+    test('a step whose until holds is passed, and a throw names the step and predicate', () => {
+        const u = (held: number) =>
+            cursor(
+                { ...q, steps: [step('a', deed, { what: 'a' }, { until: v => v.held('x') > 0 }), q.steps[3]!] },
+                fakeView({ held }),
+            );
+        expect(u(0)).toBe(0);
+        expect(u(1)).toBe(1);
+        const bad = { ...q, steps: [step('a', deed, { what: 'a' }, { until: thrower })] };
+        expect(() => cursor(bad, fakeView({}))).toThrow('step "a" until threw: nope');
     });
 
     test('are pure: the same view gives the same answer, whatever was asked between', () => {
