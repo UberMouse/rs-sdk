@@ -14,7 +14,7 @@ const catAt = { x: 3306, z: 3512, level: 1, tolerance: 4 };
 const up = (v: PlanView) => v.state.player?.level === 1;
 const down = (v: PlanView) => v.state.player?.level === 0;
 const hasSeasoned = (v: PlanView) => v.inv(/^Seasoned sardine$/i) > 0;
-const hasKitten = (v: PlanView) => v.inv(/kitten/i) > 0;
+const hasKitten = (v: PlanView) => v.inv("Fluffs' kitten") > 0;
 // The walker does not open her door, so Gertrude reads as unreachable until it is open.
 const gertrudeReachable = (v: PlanView) => v.state.nearbyNpcs.some(n => n.name === 'Gertrude' && n.reachable === true);
 const crates: [number, number][] = [
@@ -121,7 +121,7 @@ export default defineQuest({
             { target: 'npc', name: cat, use: { item: "Fluffs' kitten" }, at: catAt, expect: 'run off home' },
             {
                 reached: journal(/I gave Fluffs her kitten back/),
-                until: v => up(v) && !hasKitten(v) && v.npcs(cat) === 0,
+                until: v => up(v) && !hasKitten(v) && v.npcs('Gertrudes cat') === 0,
             },
         ),
         step('climb-down-2', interact, ladderDown, { until: down }),
