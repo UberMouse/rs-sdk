@@ -705,7 +705,7 @@ export default defineTask({
             `when there is no food, so without food the task refuses NPCs above combat level ${NO_FOOD_MAX_NPC_LEVEL}.`,
         '`skill` already at level 99 is refused unless `allowMaxed: true` (Magic is never refused for it).',
         '`level` cannot be combined with `minLevel` / `maxLevel`, and `minLevel` must not be above `maxLevel`.',
-        'Each of `prayers` needs its Prayer level, and the bot prayer points left.',
+        'Each of `prayers` needs its Prayer level, and the bot needs prayer points left.',
     ],
     spots: [
         'Lumbridge chickens: `area` {x:3231,z:3295,radius:8}; fenced coop with a gate; verified.',
