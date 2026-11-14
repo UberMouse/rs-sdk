@@ -19,8 +19,8 @@ const hasTree = (s: BotWorldState) => s.nearbyLocs.some(l => l.name === 'Tree');
  * A task that ends done at `endAt`, gathers (clearing "none since", as the tasks do) while a tree is in view, and
  * otherwise waits for one with `opts` over the defaults.
  */
-function run(states: BotWorldState[], opts: Partial<RespawnWait> = {}, endAt = Infinity) {
-    const mem = { since: null as number | null };
+function run(states: BotWorldState[], opts: Partial<RespawnWait> = {}, endAt = Infinity, since0: number | null = null) {
+    const mem = { since: since0 };
     const waitStarts: number[] = [];
     const steps: Step[] = [
         { name: 'end', when: ctx => ctx.state().tick >= endAt, run: () => ({ done: 'end' }) },
@@ -106,5 +106,38 @@ describe('waitForRespawn', () => {
         expect(r.mem.since).toBe(10);
         expect(r.driver.state().tick).toBe(10 + GIVE_UP);
         expect(r.result.reason).toBe(`wait: no reachable tree nearby for ${ticksToSeconds(GIVE_UP)}s`);
+    });
+
+    test('a chunk larger than what remains still fails at the give-up', async () => {
+        const r = await run(base.series(1), { chunkTicks: 50 });
+        expect(r.waitStarts).toEqual([0]);
+        expect(r.driver.state().tick).toBe(GIVE_UP);
+        expect(r.result.reason).toBe(`wait: no reachable tree nearby for ${ticksToSeconds(GIVE_UP)}s`);
+    });
+
+    test('a chunk dividing the give-up fails on the chunk ending at it, with no extra wait', async () => {
+        const r = await run(base.series(1), { chunkTicks: 10 });
+        expect(r.waitStarts).toEqual([0, 10]);
+        expect(r.driver.state().tick).toBe(GIVE_UP);
+        expect(r.result.status).toBe('failed');
+    });
+
+    test('the give-up is measured from "since" across re-entered calls, unchunked too', async () => {
+        const r = await run(base.series(1), {}, Infinity, -5);
+        expect(r.waitStarts).toEqual([0]);
+        expect(logged(r)).toEqual([]);
+        expect(r.driver.state().tick).toBe(GIVE_UP - 5);
+        expect(r.result.reason).toBe(`wait: no reachable tree nearby for ${ticksToSeconds(GIVE_UP)}s`);
+    });
+
+    test('areaSuffix receives the state the wait ended on, not the first', async () => {
+        const rock = base.loc('Rock', 3223, 3219, { options: ['Mine'] });
+        const r = await run(
+            base.series(30, (w, i) => (i >= 3 ? rock.tick(i) : w)),
+            { area: AREA, areaSuffix: s => `; ${s.nearbyLocs.map(l => l.name).join(',')}` },
+        );
+        expect(r.result.reason).toBe(
+            `wait: area depleted: no reachable tree in radius 5 for ${ticksToSeconds(GIVE_UP)}s; Rock`,
+        );
     });
 });

@@ -13,7 +13,7 @@ export interface RespawnWait {
     since: { get(): number | null; set(tick: number): void };
     /** Ticks with no target before the run fails; the task lists them in `silent`. */
     giveUpTicks: number;
-    /** The wait's label and the state that ends it. */
+    /** The wait's name in the engine and the log, nothing more; and the state that ends it. */
     label: string;
     until: (state: BotWorldState) => boolean;
     /** Logged when the wait begins, not on a repeated call. */
@@ -21,7 +21,11 @@ export interface RespawnWait {
     watch: AreaWatch;
     /** A target in view outside the area, for `trackIdle`. */
     seen: (state: BotWorldState) => Sighting | undefined;
-    /** Waits at most this many ticks per call, returning to the caller between chunks until the give-up. */
+    /**
+     * Waits at most this many ticks per call, returning to the caller between chunks until the give-up. Giving up is
+     * decided by ticks elapsed since `since`, not by which call the wait ended in: a wait that was not met returns
+     * undefined while that is short of `giveUpTicks`, and fails otherwise.
+     */
     chunkTicks?: number;
     /** What the failure names: "no reachable <target> ...". */
     target: string;
@@ -44,7 +48,7 @@ export function* waitForRespawn(ctx: { state(): BotWorldState }, opts: RespawnWa
     const r = yield* trackIdle(ctx, opts.watch, opts.seen, wait(opts.label, opts.until, ticks));
     if (r.kind === 'met') return;
     const elapsed = r.state.tick - since;
-    if (opts.chunkTicks !== undefined && elapsed < opts.giveUpTicks) return;
+    if (elapsed < opts.giveUpTicks) return;
     const seconds = ticksToSeconds(elapsed);
     const { area, target } = opts;
     return {
