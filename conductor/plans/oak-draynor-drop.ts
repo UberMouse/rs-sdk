@@ -18,7 +18,7 @@ export default definePlan({
             { npc: 'Bob', at: { x: 3232, z: 3203 }, buy: [{ item: 'Steel axe', count: 1, maxUnitPrice: 250 }] },
             {
                 name: 'buy-axe',
-                when: v => v.inv(/axe$/i) === 0 || (v.inv('Steel axe') === 0 && v.runs('buy-axe') === 0),
+                when: v => v.inv(/ axe$/i) === 0 || (v.inv('Steel axe') === 0 && v.runs('buy-axe') === 0),
             },
         ),
         phase(

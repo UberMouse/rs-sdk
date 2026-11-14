@@ -293,6 +293,17 @@ function parsePhases(def: PlanDef): ParsedPhase[] {
     return def.phases.map(p => ({ phase: p, result: p.task.params.safeParse(p.params ?? {}) }));
 }
 
+/** Why each phase whose params do not parse against its task's schema is refused, in plan order. */
+export function invalidParams(def: PlanDef, parsed: ParsedPhase[] = parsePhases(def)): string[] {
+    return parsed.flatMap(({ phase: p, result: r }) =>
+        r.success
+            ? []
+            : [
+                  `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
+              ],
+    );
+}
+
 /** A plan result's params from its parsed phases. */
 function paramsOf(def: PlanDef, parsed: ParsedPhase[]): PlanParams {
     return {
@@ -806,13 +817,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     );
 
     // Rails before acting: a typo fails the plan now, not after an hour of its first phase.
-    for (const { phase: p, result: r } of parsed) {
-        if (!r.success)
-            return finish(
-                'error',
-                `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
-            );
-    }
+    const invalid = invalidParams(def, parsed);
+    if (invalid.length) return finish('error', invalid[0]!);
     try {
         validateStops(stops, first);
     } catch (e) {

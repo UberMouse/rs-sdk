@@ -14,7 +14,7 @@ const near = (v: V, x: number, z: number, r: number) => {
 const nearLumb = (v: V) => near(v, 3215, 3230, 45);
 const nearDraynor = (v: V) => near(v, 3090, 3240, 30);
 const nearFal = (v: V) => near(v, 2955, 3375, 25);
-const hasAxe = (v: { inv(i: RegExp): number }) => v.inv(/axe$/i) > 0;
+const hasAxe = (v: { inv(i: RegExp): number }) => v.inv(/ axe$/i) > 0;
 const kit = (v: { inv(i: RegExp): number }) => hasAxe(v) && v.inv(/^tinderbox$/i) > 0;
 
 export default definePlan({
