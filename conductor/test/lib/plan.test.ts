@@ -969,6 +969,19 @@ describe('rails', () => {
         });
     });
 
+    test('two wait phases whose untils alternate hit the cap together', async () => {
+        const waits = [
+            phase(waitTask, { ticks: 50 }, { name: 'a', when: v => v.last?.phase !== 'a', until: guardBeside }),
+            phase(waitTask, { ticks: 50 }, { name: 'b', until: guardBeside }),
+        ];
+        const r = await sim(plan(waits), { timeline: guardEvery10, maxWaits: 4 });
+        expect(selected(r)).toEqual(['a', 'b', 'a', 'b']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'waited 4 times in a row across a, b with their untils met each time',
+        });
+    });
+
     test('a run of another phase between until-ended waits resets the wait count', async () => {
         const other = scripted('other', [{ done: 'did it' }]);
         const def = plan(

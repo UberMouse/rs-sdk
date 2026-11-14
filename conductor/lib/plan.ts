@@ -129,7 +129,7 @@ export type PhaseOptions = Partial<Pick<Phase, 'name' | 'when' | 'until' | 'onFa
 export const DEFAULT_MAX_FAILS = 3;
 export const DEFAULT_MAX_IDLE_PHASES = 3;
 /**
- * Consecutive runs of one `waits` phase, each ended by its `until`, that fail the plan. Such a wait is outside the idle
+ * Consecutive runs of `waits` phases, of any phase, each ended by its `until`, that fail the plan. Such a wait is outside the idle
  * rail, so this is its only bound: without it an `until` that flips back before every selection (an NPC pacing in and
  * out of range) would repeat forever in a plan with no `--until`. Deliberately generous: a real wait ends within a few.
  */
@@ -374,7 +374,7 @@ export interface RunPlanOptions {
     newPhaseRun(phase: Phase, index: number, inputs?: { bank?: Record<string, number> }): PhaseRun;
     /** Phases in a row that change nothing before the plan fails. Default DEFAULT_MAX_IDLE_PHASES. */
     maxIdlePhases?: number;
-    /** Consecutive `until`-ended runs of one wait phase that fail the plan; default DEFAULT_MAX_WAITS. */
+    /** Consecutive `until`-ended wait runs, of any phase, that fail the plan; default DEFAULT_MAX_WAITS. */
     maxWaits?: number;
     /**
      * Called once, before the plan acts, with a function that adds up the plan so far as a result
@@ -840,8 +840,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
     /** Consecutive failures per phase, cleared when it ends `done`. */
     const fails = new Map<string, number>();
-    /** The wait phase whose runs the `until` has ended in a row, and how many. */
-    let waitRun = null as { phase: string; n: number } | null;
+    /** The phase of each consecutive `until`-ended wait run, of any phase; cleared by any other run. */
+    let waitRun: string[] = [];
     /** The phase that just failed with 'continue', skipped by the next selection. */
     let skip: string | null = null;
     /** The phases of the current run of idle phases, in order. */
@@ -1096,13 +1096,18 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             // A wait its phase's `until` ended (TaskDef.waits) is left out too: what it waited on (an NPC moving) can be
             // outside the idle signature. The idle run built up so far is kept as it is: neither extends nor resets it.
             const waited = chosen.task.waits === true && ext.phaseUntil && result.status === 'done';
-            // Bounded by maxWaits instead: consecutive such runs of one phase, reset by any other run.
-            waitRun = waited ? { phase: chosen.name, n: waitRun?.phase === chosen.name ? waitRun.n + 1 : 1 } : null;
-            if (waitRun && waitRun.n >= maxWaits)
+            // Bounded by maxWaits instead: consecutive such runs of any phase (alternating wait phases would
+            // otherwise never reach it), reset by any run that is not one.
+            waitRun = waited ? [...waitRun, chosen.name] : [];
+            if (waitRun.length >= maxWaits) {
+                const names = [...new Set(waitRun)];
                 return finish(
                     'failed',
-                    `${chosen.name} waited ${waitRun.n} times in a row with its until met each time`,
+                    names.length === 1
+                        ? `${names[0]} waited ${waitRun.length} times in a row with its until met each time`
+                        : `waited ${waitRun.length} times in a row across ${names.join(', ')} with their untils met each time`,
                 );
+            }
             if (decision === 'retry' || waited) {
                 prevDone = null;
                 continue;

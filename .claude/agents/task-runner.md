@@ -197,8 +197,8 @@ export default definePlan({
   (default 3) consecutive failures fail the plan anyway. `defaults: { onFail?, maxFails? }` covers
   phases that set none; `settle: false` skips the between-phase settle.
 - A timed wait is the `wait` task (`ticks`) with an `until`; `orFail` ends the run failed when the
-  ticks run out, so that phase needs an `until`. A phase whose `until` ends its wait 50 times in a
-  row (`DEFAULT_MAX_WAITS`) fails the plan.
+  ticks run out, so that phase needs an `until`. 50 consecutive `until`-ended waits, of any phase
+  (`DEFAULT_MAX_WAITS`), fail the plan.
 - **Size a gathering `area` to overshoot, never undershoot.** It must cover every tile the targets
   can occupy, including where fishing spots move to and every rock or tree of the kind, plus a
   margin. Size it from the site's Box (its Roam for npcs) plus the margin: copy the site row's

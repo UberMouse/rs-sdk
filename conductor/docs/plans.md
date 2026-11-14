@@ -213,9 +213,10 @@ many game ticks and sends nothing; the shared guards still act at every tick. It
 ticks run out (`failed` with `orFail`), or earlier through its phase's `until`: an NPC arriving, a
 respawn. Use it in place of a pickup of a never-held item as a timer. Its task sets `TaskDef.waits`,
 so a run its phase's `until` ended stays out of the idle rail (what it waited on may not be in the
-idle signature); `DEFAULT_MAX_WAITS` (50, `RunPlanOptions.maxWaits`) consecutive such runs of one
-phase, reset by any other run, fail the plan: `<phase> waited N times in a row with its until met
-each time`.
+idle signature); `DEFAULT_MAX_WAITS` (50, `RunPlanOptions.maxWaits`) consecutive `until`-ended
+waits, of any phase, reset by any run that is not one, fail the plan: `<phase> waited N times in a
+row with its until met each time` when every counted run was one phase, else `waited N times in a
+row across <a, b> with their untils met each time`.
 
 ## The runner's safety rails
 
@@ -233,7 +234,7 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   nowhere.
   Two kinds of run do not count toward it: a failure that `onFail: 'retry'` retried, and a run of a
   `waits` task (the `wait` task) that its phase's `until` ended. They are bounded instead by
-  `maxFails` and by `DEFAULT_MAX_WAITS` consecutive waits of one phase.
+  `maxFails` and by `DEFAULT_MAX_WAITS` consecutive `until`-ended waits, of any phase.
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
   acts, so a typo fails the plan in the first second, not after an hour of the first phase.
 - **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]
