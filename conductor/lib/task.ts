@@ -171,7 +171,7 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     stepTimeoutMs?: number;
     /**
      * A run of this task that changes nothing is a wait, not a stall (the `wait` task): a plan leaves a run of it
-     * that its phase's `until` ended out of the idle rail (runPlan). A run that ends any other way counts as usual.
+     * that its phase's `until` ended out of the idle rail (runPlan), bounded by DEFAULT_MAX_WAITS in a row. A run that ends any other way counts as usual.
      */
     waits?: true;
 }

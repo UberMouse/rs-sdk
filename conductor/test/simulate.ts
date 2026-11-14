@@ -99,6 +99,7 @@ export interface SimulatePlanOptions {
     /** The plan's `--until`. */
     stops?: StopCondition[];
     maxIdlePhases?: number;
+    maxWaits?: number;
     /** The plan's clock (RunPlanOptions.now); default the runner's own. */
     now?: () => number;
     /** Changes each phase run before the runner gets it (a close of its own, sinks that fail). */
@@ -155,6 +156,7 @@ export async function simulatePlan(plan: PlanDef, opts: SimulatePlanOptions): Pr
             return opts.phaseRun ? opts.phaseRun(run) : run;
         },
         ...(opts.maxIdlePhases !== undefined && { maxIdlePhases: opts.maxIdlePhases }),
+        ...(opts.maxWaits !== undefined && { maxWaits: opts.maxWaits }),
         ...(opts.now && { now: opts.now }),
         ...(opts.onKillable && { onKillable: opts.onKillable }),
     });

@@ -959,6 +959,30 @@ describe('rails', () => {
         expect(stall.result.reason).toBe(`${NOTHING}: wait done (until met)`);
     });
 
+    test('a wait phase whose until ends it maxWaits times in a row fails the plan', async () => {
+        const def = plan([phase(waitTask, { ticks: 50 }, { until: guardBeside })]);
+        const r = await sim(def, { timeline: guardEvery10, maxWaits: 3 });
+        expect(selected(r)).toEqual(['wait', 'wait', 'wait']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'wait waited 3 times in a row with its until met each time',
+        });
+    });
+
+    test('a run of another phase between until-ended waits resets the wait count', async () => {
+        const other = scripted('other', [{ done: 'did it' }]);
+        const def = plan(
+            [
+                phase(other, {}, { name: 'b', when: v => v.last?.phase === 'wait' && v.runs('wait') % 2 === 0 }),
+                phase(waitTask, { ticks: 50 }, { until: guardBeside }),
+            ],
+            v => v.runs('wait') >= 6,
+        );
+        const r = await sim(def, { timeline: guardEvery10, maxWaits: 3, maxIdlePhases: 9 });
+        expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        expect(selected(r)).toEqual(['wait', 'wait', 'b', 'wait', 'wait', 'b', 'wait', 'wait']);
+    });
+
     test('waits that run their ticks out with nothing changed end the plan as the rail does', async () => {
         const waits = [
             phase(waitTask, { ticks: 2 }, { name: 'a', when: v => v.last?.phase !== 'a' }),

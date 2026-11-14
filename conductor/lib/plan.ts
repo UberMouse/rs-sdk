@@ -128,6 +128,12 @@ export type PhaseOptions = Partial<Pick<Phase, 'name' | 'when' | 'until' | 'onFa
 
 export const DEFAULT_MAX_FAILS = 3;
 export const DEFAULT_MAX_IDLE_PHASES = 3;
+/**
+ * Consecutive runs of one `waits` phase, each ended by its `until`, that fail the plan. Such a wait is outside the idle
+ * rail, so this is its only bound: without it an `until` that flips back before every selection (an NPC pacing in and
+ * out of range) would repeat forever in a plan with no `--until`. Deliberately generous: a real wait ends within a few.
+ */
+export const DEFAULT_MAX_WAITS = 50;
 /** Phase runs `PlanResult.recent` keeps. */
 const RECENT_RUNS = 3;
 const PLAN_NAME = /^[a-z0-9-]+$/;
@@ -357,6 +363,8 @@ export interface RunPlanOptions {
     newPhaseRun(phase: Phase, index: number, inputs?: { bank?: Record<string, number> }): PhaseRun;
     /** Phases in a row that change nothing before the plan fails. Default DEFAULT_MAX_IDLE_PHASES. */
     maxIdlePhases?: number;
+    /** Consecutive `until`-ended runs of one wait phase that fail the plan; default DEFAULT_MAX_WAITS. */
+    maxWaits?: number;
     /**
      * Called once, before the plan acts, with a function that adds up the plan so far as a result
      * ending `error` with `reason`, the phase run in progress counted as one that ended so: for a
@@ -490,6 +498,7 @@ const totalXp = (s: BotWorldState) => s.skills.reduce((n, k) => n + k.experience
 export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanResult> {
     const { botName, runId, logFile, sinks, stops } = opts;
     const maxIdlePhases = opts.maxIdlePhases ?? DEFAULT_MAX_IDLE_PHASES;
+    const maxWaits = opts.maxWaits ?? DEFAULT_MAX_WAITS;
     const emit = (event: Record<string, unknown>) => sinks.event(event);
     const say = (msg: string) => sinks.print(`[plan:${def.name}] ${msg}`);
 
@@ -825,6 +834,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
     /** Consecutive failures per phase, cleared when it ends `done`. */
     const fails = new Map<string, number>();
+    /** The wait phase whose runs the `until` has ended in a row, and how many. */
+    let waitRun = null as { phase: string; n: number } | null;
     /** The phase that just failed with 'continue', skipped by the next selection. */
     let skip: string | null = null;
     /** The phases of the current run of idle phases, in order. */
@@ -910,7 +921,11 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
             // Set by the external stop, which must not throw: a throw would end the phase as the
             // engine's generic error rather than the plan's, which names the predicate.
-            const ext: { planEnd: End | null; error: string | null } = { planEnd: null, error: null };
+            const ext: { planEnd: End | null; error: string | null; phaseUntil: boolean } = {
+                planEnd: null,
+                error: null,
+                phaseUntil: false,
+            };
             /**
              * The phase's latest clock read. The engine reads the clock at the top of each check and
              * then calls externalStop, which uses that read rather than one of its own. The CLI's clock
@@ -932,7 +947,10 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     const planHolds = !!planUntil && ask(null, 'until', () => planUntil(pv));
                     const phaseHolds = !planHolds && !!phaseUntil && ask(chosen, 'until', () => phaseUntil(pv));
                     if (!planHolds && !phaseHolds) return null;
-                    if (!planHolds) return PHASE_UNTIL;
+                    if (!planHolds) {
+                        ext.phaseUntil = true;
+                        return PHASE_UNTIL;
+                    }
                     ext.planEnd = { status: 'done', reason: PLAN_UNTIL };
                     return PLAN_UNTIL;
                 } catch (e) {
@@ -1071,8 +1089,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             // A retried failure is bounded by maxFails, not the idle rail: retrying in an unchanged state is its point.
             // A wait its phase's `until` ended (TaskDef.waits) is left out too: what it waited on (an NPC moving) can be
             // outside the idle signature. The idle run built up so far is kept as it is: neither extends nor resets it.
-            // A plan stop or the plan's `until` returned above, so a PHASE_UNTIL reason here is the phase's own.
-            const waited = chosen.task.waits === true && result.reason === PHASE_UNTIL;
+            const waited = chosen.task.waits === true && ext.phaseUntil && result.status === 'done';
+            // Bounded by maxWaits instead: consecutive such runs of one phase, reset by any other run.
+            waitRun = waited ? { phase: chosen.name, n: waitRun?.phase === chosen.name ? waitRun.n + 1 : 1 } : null;
+            if (waitRun && waitRun.n >= maxWaits)
+                return finish(
+                    'failed',
+                    `${chosen.name} waited ${waitRun.n} times in a row with its until met each time`,
+                );
             if (decision === 'retry' || waited) {
                 prevDone = null;
                 continue;
