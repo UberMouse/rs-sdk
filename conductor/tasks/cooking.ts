@@ -47,7 +47,7 @@ const COOK_FAIL_LIMIT = 4;
 const STEP_TIMEOUT_MS = 120_000;
 /** The longest walk to a source: walkTo caps itself to the step's budget less the cook that follows it. */
 const SOURCE_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - COOK_WAIT_TICKS);
-/** The longest attempt the watchdog sees nothing change in: a walk that never moves the bot, then a cook that does nothing. */
+/** A cook streak's worstTicks: the longest attempt the watchdog sees nothing change in, a walk that never moves the bot, then a cook that does nothing. */
 const ATTEMPT_SILENT_TICKS = SOURCE_WALK_TICKS + COOK_WAIT_TICKS;
 const COOK_FAILS = failStreak({
     name: 'cookFails',

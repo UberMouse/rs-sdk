@@ -16,8 +16,8 @@ export interface FailStreak {
     clear(ctx: StreakContext): void;
 }
 
-/** A streak declared with a `what`: its failure is the standard sentence. */
-export interface PhraseStreak extends FailStreak {
+/** A streak declared with a `what`: `miss` gives the standard sentence, `missWith` still takes the caller's own text. */
+export interface PhraseStreak extends ReasonStreak {
     /**
      * Counts one failure; at `limit`, the run's failure "<limit> <what> in a row failed (last: <last>)". The result
      * must be returned from the step: dropped, the streak counts but never fails the run.
@@ -41,7 +41,7 @@ interface StreakSpec {
 }
 
 export function failStreak(spec: StreakSpec & { what: string }): PhraseStreak;
-export function failStreak(spec: StreakSpec): ReasonStreak;
+export function failStreak(spec: StreakSpec & { what?: undefined }): ReasonStreak;
 export function failStreak(spec: StreakSpec & { what?: string }): PhraseStreak | ReasonStreak {
     const { name, limit, worstTicks, what } = spec;
     const count = (ctx: StreakContext) => {
@@ -61,6 +61,7 @@ export function failStreak(spec: StreakSpec & { what?: string }): PhraseStreak |
             ? { ...base, missWith: fails }
             : {
                   ...base,
+                  missWith: fails,
                   miss: (ctx, last) =>
                       fails(ctx, `${limit} ${what} in a row failed${last === undefined ? '' : ` (last: ${last})`}`),
               };

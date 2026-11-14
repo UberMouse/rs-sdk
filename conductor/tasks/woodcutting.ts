@@ -23,6 +23,7 @@ const AXE = /(^|\s)axe$/i;
 const NO_TREE_GIVE_UP_TICKS = 300;
 /** Consecutive failed chops before the task fails. */
 const CHOP_FAIL_LIMIT = 8;
+// Nothing changes while a chop times out: CHOP_WAIT_TICKS each.
 const CHOP_FAILS = failStreak({
     name: 'chopFails',
     limit: CHOP_FAIL_LIMIT,
@@ -30,9 +31,8 @@ const CHOP_FAILS = failStreak({
     what: 'chops',
 });
 /**
- * Nothing changes while a chop times out, so the watchdog must outlast CHOP_FAIL_LIMIT timeouts in a row
- * for the task to report them; one more chop wait covers the sends between them and slow ticks. That is
- * also above the no-tree give-up and the engine default (90s), so a full respawn wait is not a stall.
+ * The watchdog outlasts the chop streak (one more chop wait covers the sends between them and slow ticks), the
+ * no-tree give-up and the engine default (90s), so a full respawn wait is not a stall.
  */
 const SILENT = [CHOP_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_TREE_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */

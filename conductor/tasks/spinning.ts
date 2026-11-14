@@ -35,9 +35,13 @@ export const SPIN_MAX_TICKS =
 export const WHEEL_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - SPIN_MAX_TICKS);
 /** The longest attempt that changes nothing the watchdog sees: a walk that never moves the bot, then the op. */
 export const ATTEMPT_SILENT_TICKS = WHEEL_WALK_TICKS + SPIN_MAX_TICKS;
-const streakOf = (name: string) => failStreak({ name, limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
-const WALK_FAILS = streakOf('walkFails');
-const SPIN_FAILS = streakOf('spinFails');
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
+const SPIN_FAILS = failStreak({
+    name: 'spinFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'spins',
+});
 const SILENT = [WALK_FAILS, SPIN_FAILS];
 
 const Params = z.object({
@@ -199,7 +203,7 @@ export default defineTask({
                 // The level, the members world, the wheel's owner and the menu's products will not change by retrying.
                 if (['level-too-low', 'members', 'not-allowed', 'no-product', 'no-material'].includes(r.reason))
                     return { fail: r.message };
-                return SPIN_FAILS.missWith(ctx, `${FAIL_LIMIT} spins in a row failed (last: ${r.message})`);
+                return SPIN_FAILS.miss(ctx, r.message);
             },
         },
     ],

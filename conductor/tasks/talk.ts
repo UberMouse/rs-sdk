@@ -44,7 +44,7 @@ const NO_DIALOG = missingTargetStreak('noDialog');
 const NO_LOC = missingTargetStreak('noLoc');
 const NO_NPC = missingTargetStreak('noNpc');
 // A use or a talk that never lands waits up to USE_WAIT_TICKS / TALK_OPEN_TICKS each time.
-const USE_FAILS = failStreak({ name: 'useFails', limit: FAIL_LIMIT, worstTicks: USE_WAIT_TICKS });
+const USE_FAILS = failStreak({ name: 'useFails', limit: FAIL_LIMIT, worstTicks: USE_WAIT_TICKS, what: 'uses' });
 const TALK_FAILS = failStreak({ name: 'talkFails', limit: FAIL_LIMIT, worstTicks: TALK_OPEN_TICKS });
 /**
  * Ticks a conversation that `travels` gets to carry the player away after its dialog closes: the sail proc's
@@ -391,7 +391,7 @@ export default defineTask({
                     return;
                 }
                 yield* log(`using ${item.name} on ${loc.name} failed: ${used.message}`);
-                return USE_FAILS.missWith(ctx, `${FAIL_LIMIT} uses in a row failed (last: ${used.message})`);
+                return USE_FAILS.miss(ctx, used.message);
             },
         },
         {

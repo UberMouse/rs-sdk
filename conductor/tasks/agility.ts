@@ -33,6 +33,7 @@ const OBSTACLE_FAILS = failStreak({
     name: 'obstacleFails',
     limit: OBSTACLE_FAIL_LIMIT,
     worstTicks: Math.max(WALK_MAX_TICKS, OBSTACLE_WAIT_TICKS + OBSTACLE_SETTLE_TICKS + REFUSED_RETRY_TICKS),
+    what: 'obstacles',
 });
 /**
  * Ticks the script of a failed obstacle still has to run after its message (the log's fall: delays, a swim, a
@@ -131,7 +132,7 @@ function* walkToward(ctx: Ctx, o: Obstacle, to: { x: number; z: number; radius: 
     const w = yield* walkTo(ctx, to.x, to.z, to.radius, { reserveTicks: CROSS_TICKS });
     if (!w.ok && !timedOutAdvancing(w, before, awayFrom(ctx, to))) {
         yield* log(`${o.label}: walk to (${to.x},${to.z}) failed: ${w.message}`);
-        return OBSTACLE_FAILS.missWith(ctx, `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${w.message})`);
+        return OBSTACLE_FAILS.miss(ctx, w.message);
     }
     // The walk ended short of the tile (a far walk is carried on next loop): the obstacle waits for it.
     return awayFrom(ctx, to) > to.radius ? undefined : 'arrived';
@@ -177,10 +178,7 @@ function* crossNext(ctx: Ctx, o: Obstacle): Op<Outcome> {
             return { fail: `${FALL_LIMIT} falls or displacements in a row (last: ${r.message})` };
         return;
     }
-    const failed = OBSTACLE_FAILS.missWith(
-        ctx,
-        `${OBSTACLE_FAIL_LIMIT} obstacles in a row failed (last: ${r.message})`,
-    );
+    const failed = OBSTACLE_FAILS.miss(ctx, r.message);
     if (failed) return failed;
     // Refused at once: another player may be on the obstacle ("being used"); give them time to leave.
     if (r.reason === 'refused') yield* ticks(REFUSED_RETRY_TICKS);

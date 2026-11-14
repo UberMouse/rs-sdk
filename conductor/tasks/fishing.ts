@@ -9,7 +9,6 @@ import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
-import { failStreakTicks } from '../lib/watchdog';
 
 interface Method {
     /** The spot option that starts this method. */
@@ -105,6 +104,7 @@ const NO_SPOT_GIVE_UP_TICKS = 700;
 const FISH_FAIL_LIMIT = 6;
 /** Consecutive casts that ended with the spot gone and no fish caught. */
 const SPOT_MOVE_LIMIT = 10;
+// Each failed attempt is a cast that waited out FISH_WAIT_TICKS with nothing changing the watchdog sees.
 const FISH_FAILS = failStreak({
     name: 'fishFails',
     limit: FISH_FAIL_LIMIT,
@@ -112,16 +112,10 @@ const FISH_FAILS = failStreak({
     what: 'fish attempts',
 });
 /**
- * A timeout is silent, so the watchdog must outlast FISH_FAIL_LIMIT of them in a row (one more covers the
- * sends between them), and the no-spot wait, for the task to report them. The spot-move count stays
- * hand-written; each cast it counts can wait out FISH_WAIT_TICKS.
+ * The no-spot wait, and one cast for the hand-written spot-move count: a hop ends the cast's wait early and the
+ * next cast walks the bot to the new spot, which the watchdog sees; a cast that waits it out is a FISH_FAILS miss.
  */
-const SILENT = [
-    FISH_FAILS,
-    WALK_TO_AREA_SILENT_TICKS,
-    NO_SPOT_GIVE_UP_TICKS,
-    failStreakTicks(SPOT_MOVE_LIMIT, FISH_WAIT_TICKS),
-];
+const SILENT = [FISH_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_SPOT_GIVE_UP_TICKS, FISH_WAIT_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 /** The no-spot wait runs inside one step, so its step budget must cover it (plus the walk and a cast). */

@@ -31,7 +31,7 @@ const COMBINE_NO_EFFECT = failStreak({
     limit: FAIL_LIMIT,
     worstTicks: USE_WAIT_TICKS + COMBINE_SETTLE_TICKS,
 });
-const DROP_FAILS = failStreak({ name: 'dropFails', limit: FAIL_LIMIT, worstTicks: DROP_WAIT_TICKS });
+const DROP_FAILS = failStreak({ name: 'dropFails', limit: FAIL_LIMIT, worstTicks: DROP_WAIT_TICKS, what: 'drops' });
 const UNEQUIP_FAILS = failStreak({
     name: 'unequipFails',
     limit: FAIL_LIMIT,
@@ -454,7 +454,7 @@ export default defineTask({
                 yield* log(`drop of ${entry.item} failed: ${dropped.message}`);
                 if (dropped.reason === 'no-item' || dropped.reason === 'too-few' || dropped.reason === 'invalid-amount')
                     return { fail: dropped.message };
-                return DROP_FAILS.missWith(ctx, `${FAIL_LIMIT} drops in a row failed (last: ${dropped.message})`);
+                return DROP_FAILS.miss(ctx, dropped.message);
             },
         },
         {

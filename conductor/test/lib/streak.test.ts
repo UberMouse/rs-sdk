@@ -52,11 +52,22 @@ describe('failStreak', () => {
         expect(s.missWith(ctx, 'out of buckets')).toEqual({ fail: 'out of buckets' });
     });
 
-    test('a streak declared without a what has no miss, and one with a what has no missWith', () => {
+    test('a streak declared without a what has no miss, and one with a what also takes missWith', () => {
         // @ts-expect-error miss needs the what that builds its sentence
         expect(reasons().miss).toBeUndefined();
-        // @ts-expect-error a streak with a what fails with its sentence, not caller text
-        expect(fills().missWith).toBeUndefined();
+        const s = fills();
+        expect(s.missWith(ctxOf([s]), 'own text')).toBeUndefined();
+    });
+
+    test('a spec typed wider than its what does not pick the no-what overload', () => {
+        const spec: { name: string; limit: number; worstTicks: number; what?: string } = {
+            name: 'wide',
+            limit: 1,
+            worstTicks: 1,
+            what: 'looks',
+        };
+        // @ts-expect-error the runtime builds a phrase streak, so the type must not claim a reason streak
+        failStreak(spec);
     });
 
     test('clear resets the count, so the limit counts misses in a row', () => {

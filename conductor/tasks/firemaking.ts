@@ -24,6 +24,7 @@ const LOG_LEVELS: Record<string, number | undefined> = {
 
 const TINDERBOX = /^tinderbox$/i;
 const BURN_FAIL_LIMIT = 5;
+// A timed-out light changes nothing the watchdog sees for BURN_WAIT_TICKS.
 const BURN_FAILS = failStreak({
     name: 'burnFails',
     limit: BURN_FAIL_LIMIT,
@@ -32,16 +33,13 @@ const BURN_FAILS = failStreak({
 });
 /** Consecutive walks to a line's start that fail before the task gives up. */
 const LINE_WALK_FAIL_LIMIT = 3;
+// A failed walk to a line's start can stall for WALK_MAX_TICKS without moving the bot.
 const LINE_WALK_FAILS = failStreak({
     name: 'lineWalkFails',
     limit: LINE_WALK_FAIL_LIMIT,
     worstTicks: WALK_MAX_TICKS,
 });
-/**
- * The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`: the walks
- * back to the area (each up to WALK_MAX_TICKS without moving the bot), the walks to a line's start, and the
- * lights (BURN_FAIL_LIMIT timed-out ones, each BURN_WAIT_TICKS of nothing).
- */
+/** The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`. */
 const SILENT = [WALK_TO_AREA_SILENT_TICKS, LINE_WALK_FAILS, BURN_FAILS];
 /** Ticks to let the bot step west off a fire it just lit before deciding from where it stands. */
 const STEP_OFF_WAIT_TICKS = 3;

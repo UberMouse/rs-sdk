@@ -15,21 +15,20 @@ const NO_LOC_GIVE_UP_TICKS = 100;
 const PICK_FAIL_LIMIT = 8;
 /** Consecutive picks that ended with the plant gone and nothing gained (another picker, a click that never ran). */
 const GONE_FAIL_LIMIT = 20;
+// Nothing changes while a pick times out: PICK_WAIT_TICKS each.
 const PICK_FAILS = failStreak({
     name: 'pickFails',
     limit: PICK_FAIL_LIMIT,
     worstTicks: PICK_WAIT_TICKS,
     what: 'picks',
 });
+// A pick that ends with the plant gone waited at most PICK_WAIT_TICKS.
 const GONE_FAILS = failStreak({
     name: 'goneFails',
     limit: GONE_FAIL_LIMIT,
     worstTicks: PICK_WAIT_TICKS,
 });
-/**
- * Nothing changes while a pick times out, so the watchdog must outlast PICK_FAIL_LIMIT timeouts in a row
- * for the task to report them; the no-loc wait and the walks back to the area are the other silences.
- */
+/** The watchdog outlasts the fail streaks, the no-loc wait and the walks back to the area. */
 const SILENT = [PICK_FAILS, GONE_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_LOC_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;

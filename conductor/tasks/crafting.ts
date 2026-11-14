@@ -22,7 +22,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, type Outcome, wait } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
-import { failStreak, type ReasonStreak } from '../lib/streak';
+import { failStreak, type PhraseStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill } from '../lib/util';
 
@@ -43,9 +43,18 @@ export const OP_MAX_TICKS = Math.max(SHAPE_MAX_TICKS, FIRE_WAIT_TICKS, SOFTEN_WA
 export const STATION_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - OP_MAX_TICKS);
 /** The longest attempt that changes nothing the watchdog sees: a walk that never moves the bot, then the op. */
 export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_MAX_TICKS;
-const streakOf = (name: string) => failStreak({ name, limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
-const SHAPE_FAILS = streakOf('shapeFails');
-const FIRE_FAILS = streakOf('fireFails');
+const SHAPE_FAILS = failStreak({
+    name: 'shapeFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'shapes',
+});
+const FIRE_FAILS = failStreak({
+    name: 'fireFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'firings',
+});
 const SOFTEN_FAILS = failStreak({
     name: 'softenFails',
     limit: FAIL_LIMIT,
@@ -101,9 +110,7 @@ function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
 interface StationWork {
     /** The verb the log line uses ("shape failed"). */
     verb: string;
-    fails: ReasonStreak;
-    /** "shapes" or "firings", for the failure after FAIL_LIMIT in a row. */
-    plural: string;
+    fails: PhraseStreak;
     station: RegExp;
     /** What the station is called in a failure ("potter's wheel"); the last word ("wheel") names it in short. */
     noun: string;
@@ -132,7 +139,7 @@ function* workAtStation(ctx: Ctx, w: StationWork): Op<Outcome> {
     }
     yield* log(`${w.verb} failed: ${r.message}`, { reason: r.reason });
     if (w.fatal.includes(r.reason)) return { fail: r.message };
-    return w.fails.missWith(ctx, `${FAIL_LIMIT} ${w.plural} in a row failed (last: ${r.message})`);
+    return w.fails.miss(ctx, r.message);
 }
 
 export default defineTask({
@@ -212,7 +219,6 @@ export default defineTask({
                 workAtStation(ctx, {
                     verb: 'shape',
                     fails: SHAPE_FAILS,
-                    plural: 'shapes',
                     station: WHEEL,
                     noun: "potter's wheel",
                     op: wheel => shape(ctx, wheel, ctx.params.product),
@@ -227,7 +233,6 @@ export default defineTask({
                 workAtStation(ctx, {
                     verb: 'fire',
                     fails: FIRE_FAILS,
-                    plural: 'firings',
                     station: OVEN,
                     noun: 'pottery oven',
                     op: oven => fire(ctx, unfiredOf(ctx.params.product), oven),

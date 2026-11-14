@@ -13,7 +13,6 @@ import firemaking from '../../tasks/firemaking';
 import mining from '../../tasks/mining';
 import pickup from '../../tasks/pickup';
 import shop from '../../tasks/shop';
-import smithing from '../../tasks/smithing';
 import woodcutting from '../../tasks/woodcutting';
 
 describe('the watchdog helpers', () => {
@@ -33,31 +32,43 @@ const silentTicks = (task: { silent?: readonly (FailStreak | number)[] }) =>
 /** A walk that never moves the bot, WALK_FAIL_LIMIT (3) times, and one more: 4 * 200 ticks. */
 const WALK_STREAK = 4 * WALK_MAX_TICKS;
 
-describe('every walking task outlasts each fail streak it has', () => {
-    // [task, its stuckAfterMs, its streak windows in ticks, ticks that must be among them (pinned)]
-    const table = [
-        ['bank', bank.stuckAfterMs, silentTicks(bank), [WALK_STREAK]],
-        ['shop', shop.stuckAfterMs, silentTicks(shop), [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
-        ['combat', combat.stuckAfterMs, combatStreaks, [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]],
-        ['firemaking', firemaking.stuckAfterMs, silentTicks(firemaking), [WALK_STREAK]],
-        ['smithing', smithing.stuckAfterMs, silentTicks(smithing), []],
-        ['woodcutting', woodcutting.stuckAfterMs, silentTicks(woodcutting), [WALK_STREAK]],
-        ['mining', mining.stuckAfterMs, silentTicks(mining), [WALK_STREAK]],
-        ['pickup', pickup.stuckAfterMs, silentTicks(pickup), [WALK_STREAK, 750]],
+describe('a migrated task lists the silent stretches it must outlast', () => {
+    // [task, ticks its silent must contain]; the window is computed from the list, and the stuck windows
+    // describe below holds every task to its floor.
+    const pinned = [
+        ['bank', bank, [WALK_STREAK]],
+        ['shop', shop, [WALK_STREAK, 4 * (25 + 2 * 4 + 1 + WALK_MAX_TICKS)]],
+        ['firemaking', firemaking, [WALK_STREAK]],
+        ['woodcutting', woodcutting, [WALK_STREAK]],
+        ['mining', mining, [WALK_STREAK]],
+        ['pickup', pickup, [WALK_STREAK, 750]],
     ] as const;
 
-    test.each(table)('%s', (_name, stuckAfterMs, streaks, pinned) => {
+    test.each(pinned)('%s', (_name, task, ticks) => {
+        for (const pin of ticks) expect(silentTicks(task)).toContain(pin);
+    });
+});
+
+describe('every walking task outlasts each fail streak it has', () => {
+    // combat has not migrated: it exports its own list of streak windows in ticks.
+    test('combat', () => {
+        const stuckAfterMs = combat.stuckAfterMs;
         expect(stuckAfterMs).toBeDefined();
-        for (const ticks of streaks)
+        for (const ticks of combatStreaks)
             expect(stuckAfterMs ?? 0).toBeGreaterThanOrEqual(ticks * TICK_MS + STUCK_MARGIN_MS);
-        for (const ticks of pinned) expect(streaks).toContain(ticks);
-        expect(stuckAfterMs).toBe(stuckWindowMs(...streaks));
+        for (const ticks of [WALK_STREAK, 7 * (WALK_MAX_TICKS + 15)]) expect(combatStreaks).toContain(ticks);
+        expect(stuckAfterMs).toBe(stuckWindowMs(...combatStreaks));
     });
 
     test('the walking tasks outlast a full run of failed walks, as the engine default does not', () => {
-        for (const [name, stuckAfterMs] of table.slice(0, 4)) {
-            expect(stuckAfterMs ?? 0, name).toBeGreaterThan(WALK_STREAK * TICK_MS);
-            expect(stuckAfterMs ?? 0, name).toBeGreaterThan(DEFAULT_STUCK_AFTER_MS);
+        for (const [name, task] of [
+            ['bank', bank],
+            ['shop', shop],
+            ['combat', combat],
+            ['firemaking', firemaking],
+        ] as const) {
+            expect(task.stuckAfterMs ?? 0, name).toBeGreaterThan(WALK_STREAK * TICK_MS);
+            expect(task.stuckAfterMs ?? 0, name).toBeGreaterThan(DEFAULT_STUCK_AFTER_MS);
         }
     });
 });

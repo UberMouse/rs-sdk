@@ -139,10 +139,19 @@ const OP_SILENT_TICKS =
  * bot, then the op.
  */
 export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_SILENT_TICKS;
-const streakOf = (name: string) => ({ name, limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
-const DROP_FAILS = failStreak({ ...streakOf('dropFails'), what: 'drops of the products' });
-const SMELT_FAILS = failStreak(streakOf('smeltFails'));
-const SMITH_FAILS = failStreak(streakOf('smithFails'));
+const DROP_FAILS = failStreak({
+    name: 'dropFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'drops of the products',
+});
+const SMELT_FAILS = failStreak({ name: 'smeltFails', limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
+const SMITH_FAILS = failStreak({
+    name: 'smithFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'smiths',
+});
 /** FAIL_LIMIT failed attempts in a row, and one more, so the task's own failure reason surfaces before the watchdog's. */
 const SILENT = [DROP_FAILS, SMELT_FAILS, SMITH_FAILS, WALK_TO_AREA_SILENT_TICKS];
 
@@ -394,7 +403,7 @@ export default defineTask({
                     if (direct && from) ctx.memory.directFrom = { x: from.worldX, z: from.worldZ };
                     yield* log(`smith failed: ${r.message}`, { reason: r.reason });
                     if (r.reason === 'no-hammer') return { fail: 'no hammer in inventory' };
-                    return SMITH_FAILS.missWith(ctx, `${FAIL_LIMIT} smiths in a row failed (last: ${r.message})`);
+                    return SMITH_FAILS.miss(ctx, r.message);
                 }
                 ctx.memory.directFrom = null;
                 SMITH_FAILS.clear(ctx);
