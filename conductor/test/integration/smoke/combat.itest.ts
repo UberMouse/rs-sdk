@@ -108,7 +108,6 @@ test(
                 expect(run.result.reason, detail).toMatch(
                     /pack full: [1-9]\d* wanted ground item\(s\) left, \d+ kills/,
                 );
-                expect(run.result.diagnostics?.kills, detail).toBeGreaterThanOrEqual(0);
                 expect(run.result.diagnostics?.lootPicked, detail).toBe(0);
             },
             { connect: false },

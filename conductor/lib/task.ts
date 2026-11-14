@@ -283,9 +283,9 @@ export interface TaskResult {
     /** What a runner should act on though the run ended well (a matching target idled past outside the area); absent when none. */
     warnings?: string[];
     /**
-     * The run (for a plan, its last phase run) ended `done` holding a dialog open for the next phase
-     * (`TaskDef.holdsDialog`, as the engine judged it at the end): nothing after the run may act on the bot, the
-     * epilogue included. Absent otherwise.
+     * The run ended `done` holding a dialog open for the next phase (`TaskDef.holdsDialog`, as the engine judged it
+     * at the end): nothing after the run may act on the bot, the epilogue included. A plan carries it only when its
+     * own status is `done` and its last phase run held the dialog; any other plan status has no key. Absent otherwise.
      */
     holdsDialog?: true;
     /**

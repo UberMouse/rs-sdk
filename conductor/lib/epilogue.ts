@@ -119,7 +119,8 @@ export const endangered = (s: BotWorldState): boolean => isAttacked(s) || ownFig
  * Whether a result is one the epilogue follows: any run, `done` included, unless the client is gone. The epilogue
  * itself does nothing when the bot is not under attack, so a done run out of combat is untouched. Nor a run that holds
  * its dialog (`holdsDialog`), even under attack: every eat, walk or click would close or answer the dialog the task
- * chose to stop on, and the next phase is the one that answers it.
+ * chose to stop on, and the next phase is the one that answers it. The cost: a bot still under attack gets no eat or
+ * flee after the hold; the engine holds only above its HP floor, checked once at the run's end.
  */
 export const needsEpilogue = (r: Pick<TaskResult, 'status' | 'reason' | 'holdsDialog'>): boolean =>
     !r.holdsDialog && !CLIENT_GONE.test(r.reason);

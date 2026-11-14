@@ -261,9 +261,11 @@ function withEpilogue(
 ): Promise<TaskResult> {
     const runStartTick = startTick;
     if (killSignalled && !signalPath) return Promise.resolve(result);
-    if (result.holdsDialog) say('epilogue: skipped: the run holds its dialog open for the next phase');
-    if (!needsEpilogue(result) || sdk.getConnectionState() !== 'connected' || resultLine.printed)
+    if (!needsEpilogue(result) || sdk.getConnectionState() !== 'connected' || resultLine.printed) {
+        if (result.holdsDialog && sdk.getConnectionState() === 'connected' && !resultLine.printed)
+            say('epilogue: skipped: the run holds its dialog open for the next phase');
         return Promise.resolve(result);
+    }
     // Its own driver, unrecorded: a recording replays the run's decisions, which end where the run did.
     const driver = new LiveDriver(
         sdk,

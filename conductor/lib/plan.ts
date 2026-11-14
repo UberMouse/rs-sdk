@@ -754,8 +754,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             logFile,
             phases: runs.phases,
             recent: runs.recent,
-            // A plan that ends on a phase run holding its dialog hands it on like that run would.
-            ...(holdsDialog && { holdsDialog: true as const }),
+            // A plan that ends done on a phase run holding its dialog hands it on like that run would. Any other
+            // status has no later phase to answer the dialog, so the epilogue must be free to defend the bot.
+            ...(holdsDialog && status === 'done' && { holdsDialog: true as const }),
         };
     };
 

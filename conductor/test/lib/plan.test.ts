@@ -2485,4 +2485,28 @@ describe('runPlan: a phase run that holds its dialog', () => {
         expect(r.driver.commands.filter(c => c.type === 'send')).toEqual([]);
         expect('holdsDialog' in r.result).toBe(false);
     });
+
+    test('a plan ending non-done after a holding run has no holdsDialog key, so the epilogue runs', async () => {
+        const r = await sim(plan([phase(holder, {}, { when: v => v.last === null }), phase(failing('bad'), {})]), {
+            timeline: choiceOpen,
+        });
+        expect(r.runs[0]!.result.holdsDialog).toBe(true);
+        expect(r.result.status).not.toBe('done');
+        expect('holdsDialog' in r.result).toBe(false);
+    });
+
+    test('a kill after a holding run has no holdsDialog key', async () => {
+        let killed: PlanResult | null = null;
+        await sim(
+            plan([phase(holder, {})], v => v.last?.phase === 'holder'),
+            {
+                timeline: choiceOpen,
+                onKillable: kill => {
+                    killed = kill('killed by SIGINT');
+                },
+            },
+        );
+        expect(killed).not.toBeNull();
+        expect('holdsDialog' in killed!).toBe(false);
+    });
 });
