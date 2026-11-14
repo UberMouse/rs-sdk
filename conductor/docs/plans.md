@@ -112,10 +112,10 @@ export default definePlan({
 
 - `phase(task, params, opts?)` takes the task's default export, so `params` is type-checked
   against `z.input<typeof task.params>`. `opts`: `{ name?, when?, until?, onFail?, maxFails?,
-  settle? }`; `name` defaults to the task's name and must be unique in the plan when a task appears
+settle? }`; `name` defaults to the task's name and must be unique in the plan when a task appears
   twice (two bank phases).
 - `definePlan({ name, description?, phases, until?, requires?, defaults?, settle?, needs?,
-  needsUnless?, method? })`. The plan's own `until(v)` ends the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
+needsUnless?, method? })`. The plan's own `until(v)` ends the whole plan `done`. `requires` maps what the plan needs throughout to a predicate
   (`'combat level 5+'` above: the walk between the spots passes Giant spiders that attack lower
   levels): each is checked before every phase choice, and one that does not hold ends the plan
   `failed` with `plan requires <key>`. A `when` on every phase would refuse the same, but only as
@@ -145,27 +145,27 @@ export default definePlan({
 Predicates get one read-only view and must be pure: no I/O, no clock, no state of their own. That
 keeps every phase choice re-derivable from a run's recorded states.
 
-| Member              | Meaning                                                                 |
-| ------------------- | ----------------------------------------------------------------------- |
-| `v.state`           | the current `BotWorldState`, for anything below not covering it         |
-| `v.inv(item)`       | inventory count; `item` is an exact name (case-insensitive) or a RegExp |
-| `v.full` / `v.free` | every slot used / free slots                                            |
-| `v.bank(item)`      | bank count as last seen open during this plan; `undefined` before that  |
-| `v.level(skill)`    | base level                                                              |
-| `v.hp`              | `{ current, max }`                                                      |
-| `v.quest(id)`       | `'none'`, `'started'` or `'done'` from the quest tab (see below)        |
-| `v.questDone(id)`   | the quest tab shows the quest green                                     |
-| `v.runs(phase)`     | times that phase has run in this plan                                   |
-| `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
-| `v.x` / `v.z`       | the player's tile; `v.floor` its level (0 the surface); 0 with no player |
-| `v.within(spot)`    | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev; with neither `radius` nor `tolerance`, the exact tile |
-| `v.held(item)`      | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only) |
-| `v.npcs(name, within?)` / `v.locs(...)` | nearby NPCs / locs of that name, at most `within` tiles away |
-| `v.ground(item, within?)` | ground piles of that name (piles, not the items stacked in them)  |
-| `v.said(pattern, sinceTicks?)` | a recent dialog line or page, the open dialog or a game message matches; `sinceTicks` filters the recent pages and messages, never the open dialog |
-| `v.lastDone(...names)` / `v.lastFailed(...names)` | the previous run ended `done` / `failed` or `stuck`, as one of `names` when given; an unknown name throws |
-| `v.combatLevel` / `v.coins` | the player's combat level; Coins in the pack                    |
-| `v.questStarted(id)` | the quest tab shows the quest yellow                                   |
+| Member                                            | Meaning                                                                                                                                            |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v.state`                                         | the current `BotWorldState`, for anything below not covering it                                                                                    |
+| `v.inv(item)`                                     | inventory count; `item` is an exact name (case-insensitive) or a RegExp                                                                            |
+| `v.full` / `v.free`                               | every slot used / free slots                                                                                                                       |
+| `v.bank(item)`                                    | bank count as last seen open during this plan; `undefined` before that                                                                             |
+| `v.level(skill)`                                  | base level                                                                                                                                         |
+| `v.hp`                                            | `{ current, max }`                                                                                                                                 |
+| `v.quest(id)`                                     | `'none'`, `'started'` or `'done'` from the quest tab (see below)                                                                                   |
+| `v.questDone(id)`                                 | the quest tab shows the quest green                                                                                                                |
+| `v.runs(phase)`                                   | times that phase has run in this plan                                                                                                              |
+| `v.last`                                          | the previous phase's `{ phase, status, reason }`, or `null`                                                                                        |
+| `v.x` / `v.z`                                     | the player's tile; `v.floor` its level (0 the surface); 0 with no player                                                                           |
+| `v.within(spot)`                                  | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev; with neither `radius` nor `tolerance`, the exact tile     |
+| `v.held(item)`                                    | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only)                                                                   |
+| `v.npcs(name, within?)` / `v.locs(...)`           | nearby NPCs / locs of that name, at most `within` tiles away                                                                                       |
+| `v.ground(item, within?)`                         | ground piles of that name (piles, not the items stacked in them)                                                                                   |
+| `v.said(pattern, sinceTicks?)`                    | a recent dialog line or page, the open dialog or a game message matches; `sinceTicks` filters the recent pages and messages, never the open dialog |
+| `v.lastDone(...names)` / `v.lastFailed(...names)` | the previous run ended `done` / `failed` or `stuck`, as one of `names` when given; an unknown name throws                                          |
+| `v.combatLevel` / `v.coins`                       | the player's combat level; Coins in the pack                                                                                                       |
+| `v.questStarted(id)`                              | the quest tab shows the quest yellow                                                                                                               |
 
 `v.quest` and `v.questDone` take the id of `conductor/lib/quests.ts` (the content's `questlist:` name:
 `imp`, `runemysteries`, `priest`, `fortress`, ...; an unknown id throws). Quest varps are not sent to the
@@ -307,6 +307,108 @@ lastReason }`, `recent`, the last 3 phase runs `{ phase, runId, logFile, status,
   its XP and runs although its phase runs (`partOf`) count only with `--phases`. A hard kill
   (SIGKILL, a crash) leaves the plan log without a result: stats then counts none of the plan, and
   its finished phase runs only with `--phases`.
+
+## Quests
+
+A quest is a story in a fixed order, and a plan has no notion of a stage: the quest tab shows only
+none, started or done. `defineQuest` (`conductor/lib/quest.ts`, design in
+[`quest-layer.md`](quest-layer.md)) lets a quest plan list its steps in story order and works out
+which step the story is at from the world, at every selection. It returns a plan, so
+`run-task.ts --plan`, the logs, the viewer and replay work as for any plan. The worked example is
+`conductor/plans/gertrudes-cat.ts`; a few of its steps:
+
+```ts
+export default defineQuest({
+    id: 'fluffs', // a key of QUESTS in lib/quests.ts
+    name: 'gertrudes-cat',
+    steps: [
+        step('season', items, { combine: { ... } }, { done: hasSeasoned }),
+        step('start', talk, { npc: '^Gertrude$', ... }, { reached: v => v.quest('fluffs') !== 'none' }),
+        step('pay', talk, { npc: '^(Shilop|Wilough)$', ... }, { reached: journal(/I spoke to Shilop/) }),
+        step('crate-0', interact, { ... }, { skip: hasKitten, onFail: 'continue', maxFails: 8 }),
+        // ...
+        step('finish', talk, { npc: '^Gertrude$', at: gertrude }),
+    ],
+});
+```
+
+`defineQuest({ id, name, description?, steps, requires?, needs?, needsUnless?, defaults?, settle? })`
+takes a `QUESTS` id; `step(name, task, params, options)` type-checks `params` against the task as
+`phase` does. A step's options are a phase's (`until`, `onFail`, `maxFails`, `settle`; not `when`,
+since the cursor chooses) plus three kinds of evidence:
+
+- **`reached`: the story is past this step.** A predicate, or `journal(/pattern/)`, which holds when
+  the quest's journal, as last read, matches. The last step whose `reached` holds sets the base:
+  every step up to it is behind. Put it on a step whose effect shows once and stays (the quest
+  started, a stage line in the journal).
+- **`done`: this step needs no run now** (its item is held, the bot is already upstairs).
+- **`skip`: this step does not apply now.** For alternatives: the crates are searched in turn until
+  the kitten is held, so each is `skip`ped by holding it. Use `skip`, not `done`, for these.
+
+**The cursor** is the step to run: from the base, the first step not passed. A step is passed when
+its `skip` holds, when its `until` holds, or, if it has a `done`, when that holds (judged by the
+`done` alone: a step that has run but whose `done` does not hold runs again). Without a `done`, a
+step with no `reached` is passed once it has run: the last acting run was a later step, or this step
+and it ended `done`; a step with `onFail: 'continue'` is passed once its run ended either way
+("try this, carry on if it fails"). A step with a predicate `reached` and no `done` is passed only by
+the base. When every step is passed the plan runs `complete`, a wait of 20 ticks a run that ends
+when the quest tab shows the quest done, and the plan ends `done` then.
+
+**A step with no evidence** (no `reached`, `done`, `skip` or `until`) is passed by run order, which
+lives in the plan run only. After a process restart it runs again, so it must be harmless to repeat
+(a door already open, a talk that ends the same), or be given evidence. Nothing is written to disk
+for the quest: a record keyed by bot would be wrong after `load.ts` puts another save under the same
+name.
+
+**Journal marks.** `journal(pattern, { within? })` matches case-insensitively against the journal's
+non-empty lines joined by single spaces, so a phrase the journal wraps still matches; the pattern
+may carry no flag but `i` (`defineQuest` refuses others). After a journal-mark step ends `done`, the
+plan runs a phase `journal:<step>` that reads the journal and reads again, every 4 ticks, until the
+pattern shows or `within` ticks (default 20, at most 100) have passed from the first read. That
+covers a step whose task ends before the game moves the stage (a reward script that runs a few
+ticks after the dialog). If the line never shows, the step is not confirmed and runs again; the idle
+rail bounds that. Where the journal cannot be read (a dialog or modal is open), the step is passed
+provisionally by run order until a read can confirm it.
+
+**When the journal is read.** Only for a quest with a journal mark, only while the quest tab shows
+it started (`v.questStarted`), and only with no dialog and no modal open: a click on the tab entry
+destroys an open chat dialog or shop, with no rejection and no way back. It is read (phase
+`journal`) at the plan's first selection, after a failed run, after a journal-mark step ended, and
+while a journal-mark step is passed only provisionally and the journal has not been read since. A
+read costs about four ticks.
+
+**The `journal` task** (`tasks/journal.ts`; params `quest`, `expect?`, `withinTicks?`) clicks the
+quest's tab entry (`questlist:<id>`), sees interface 8134 open, closes it and ends `done` with the
+journal's last line (up to 120 characters); the plan run keeps the text. It refuses in preflight
+while a dialog or a modal is open (reason `preflight: journal not read: dialog open`, or `modal
+open`), and checks again before every click, failing `journal not read: ...` if one has turned up
+since. Other failures: the click failed, the journal opened is another quest's, it did not open
+within 10 ticks, it has no text, or it could not be closed. A journal's title is its script's name,
+which is not always the tab entry's name (`journalTitle` in `lib/quests.ts`). The journal interface
+is exempt from the in-run modal guard, as the task opens and closes it. **It needs the lite
+client.** The browser client publishes no interface text, so there the read fails (`journal has no
+text: ...` or `did not open`) and a quest plan with journal marks cannot run; one without marks can.
+
+**`observes` and the look cap.** A task marked `observes: true` only looks. Its runs do not become
+`v.last`, leave `skip` and `prevDone` as they were, stay out of the idle rail and the `maxWaits`
+count (one during which a journal text changed clears the idle run) and do not age the journal. So
+looks have a cap of their own: `maxIdlePhases` (3) in a row with no acting run between fail the
+plan, `<phase> looked 3 times in a row with no acting run between`.
+
+**In predicates.** `v.journalSays(id, pattern)` is true when the journal, as last seen open by the
+plan run, matches, and `undefined` before it was seen; `v.journalAge(id)` is the number of acting
+runs that ended since it was seen (0 right after a read), `undefined` before. Both throw on an
+unknown quest id.
+
+**Failure policy and names.** A quest's phases default to `onFail: 'retry'`, `maxFails: 3`
+(`QUEST_DEFAULTS`; a step's own option or the quest's `defaults` overrides it), so a slip-prone talk
+needs no retry copies. No step is named `journal` or `complete`, starts `journal:`, or shares a name
+with another. The quest's `requires` merges over `QUEST_TAB_REQUIRED`.
+
+**Writing one.** Take each stage's wording from the quest's `*_journal.rs2` under
+`server/content/scripts/quests/`, then confirm it against the `journal` events of a plan log (each
+gives the quest, the text and whether it changed). Pick a line that holds from the stage on and does
+not vanish: some journals are cumulative, others rewritten per stage.
 
 ## Where plans live
 

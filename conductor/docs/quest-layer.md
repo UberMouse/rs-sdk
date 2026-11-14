@@ -52,7 +52,7 @@ pattern)` reads the memory and is `undefined` before the first read; `v.journalA
     - `done`: this step needs no run now (the item is held, the bot is upstairs). Checked for the
       steps after the base.
     - A step with neither is passed once it has run: when the previous acting run was a later step,
-      or this step ending done. After a restart such a step runs again, so it must be harmless to
+      or this step ending done (or ended at all, with `onFail: 'continue'`). After a restart such a step runs again, so it must be harmless to
       repeat. That is the trade made instead of a persisted record.
 - **No persisted per-bot record.** `load.ts` puts a different save under the same account name, so a
   record on disk keyed by bot would be wrong exactly when a quest is being tested. The journal gives
