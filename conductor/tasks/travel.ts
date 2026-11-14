@@ -22,7 +22,10 @@ const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
 const GATE_STAND_TOLERANCE = 2;
 
-const Point = z.object({ x: z.number().describe('Tile x.'), z: z.number().describe('Tile z.') });
+const Point = z.object({
+    x: z.number().describe('World tile x coordinate.'),
+    z: z.number().describe('World tile z coordinate (north).'),
+});
 const Params = z.object({
     to: Point.extend({
         level: z
@@ -66,7 +69,9 @@ const Params = z.object({
         .int()
         .min(0)
         .default(WILDERNESS_MIN_FOOD)
-        .describe('Food items (anything with an Eat option) a `wilderness` run must carry to start.'),
+        .describe(
+            'Food items (anything with an Eat option) a `wilderness` run must carry to start; at least 1 whatever this is set to.',
+        ),
 });
 
 type TravelParams = z.infer<typeof Params>;
@@ -122,23 +127,23 @@ const waypointsLeft = (ctx: Ctx) => ctx.params.waypoints.slice(ctx.memory.nextWa
 export default defineTask({
     name: 'travel',
     description:
-        'Walks to `to`, through `waypoints` first. Uses the walkTo op, so it opens the doors and gates on its route and ' +
-        'climbs the stairs, ladders and trapdoors of lib/connectors.ts. ' +
+        'Walks to `to`, through `waypoints` first. Uses walkTo, so it opens the doors and gates on its route and ' +
+        'climbs the stairs, ladders and trapdoors in the connectors table of known shortcuts, quest dungeons included. ' +
         `A destination inside the Gnome Stronghold goes via its entrance gate at ${GNOME_GATE.loc.x},${GNOME_GATE.loc.z}, opened here ` +
-        "(declining Femi's boxes dialog once). Far trips take several walks. Walking is not stopped by attacks, so " +
-        'monsters en route cost HP, not the run; it eats held food at low HP, and with none the low-HP guard fails the ' +
-        'run when low in a fight or still losing HP (except with `flee`); death still ends it. Done within `tolerance` of `to` (with ' +
+        "(declining Femi's boxes dialog once). Far trips take several walks. Attacks do not stop the walk, so " +
+        "monsters en route cost HP, not the run; it eats held food at low HP, and with none the engine's low-HP guard, which ends the " +
+        'run when HP is low, fails it when low in a fight or still losing HP (except with `flee`); death still ends it. Done within `tolerance` of `to` (with ' +
         `\`flee\`, once out of combat there, failing if still in combat after ${FLEE_SETTLE_LOOPS} ticks). Fails where ` +
         `the route breaks: no path, a locked gate, or ${WALK_FAIL_LIMIT} failed walks in a row. Never enters the ` +
         'Wilderness unless `wilderness: true`.',
     rules: [
         'Without `wilderness: true`, `to` and every waypoint must lie outside the Wilderness.',
-        'A `wilderness: true` run needs `minFood` food items to start, and at least 1 whatever `minFood` is set to.',
+        "The connectors cover the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar, Glarial's tomb (its ladder out only: a pebble move enters it).",
+        'Carry food (a dozen or more) on long trips: monsters en route cost HP.',
     ],
     spots: [
-        "The connectors include the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar, Glarial's tomb (its ladder out only: a pebble move enters it).",
-        'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold (about 700 tiles) ' +
-            "crosses White Wolf Mountain, where wolves attack and cost HP. The Stronghold's agility course start is {x:2474,z:3436}.",
+        "The Gnome Stronghold's agility course start is {x:2474,z:3436}; the route from Lumbridge (about 700 tiles) " +
+            'crosses White Wolf Mountain, where wolves attack and cost HP.',
         'Wilderness agility course door {x:2998,z:3915} from Edgeville, with `wilderness: true`; skeletons and wolves en ' +
             'route cost HP. Carry only food and no valuables: a PvP or skeleton death loses the inventory.',
     ],

@@ -96,7 +96,14 @@ const Params = z.object({
         .array(z.string().trim())
         .default([])
         .describe('Food to eat when HP drops below `eatBelow`, by exact item name.'),
-    eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW).describe('The fraction of max HP to eat below.'),
+    eatBelow: z
+        .number()
+        .min(0.1)
+        .max(0.9)
+        .default(DEFAULT_EAT_BELOW)
+        .describe(
+            'The fraction of max HP to eat `food` below; needs `food` held, and with none the bot waits for HP to regenerate instead.',
+        ),
     stopWhenFull: z
         .boolean()
         .default(false)
@@ -168,9 +175,11 @@ function* walkAndPick(ctx: Ctx, npc: NearbyNpc): Op<PickpocketResult> {
 export default defineTask({
     name: 'thieving',
     description:
-        'Pickpockets one kind of NPC, repeating until stopped: picks the nearest free, reachable one and waits out ' +
-        `the ${STUN_TICKS}-tick stun after a caught attempt, which deals damage (1 for Man, Woman, Farmer and ` +
-        'Gnome, up to 4 for a Hero); the NPC does not fight back. Eats `food` when low; with no food held it waits ' +
+        'Pickpockets one kind of NPC, repeating until stopped. ' +
+        'It picks the nearest free, reachable one and waits out the stun after a caught attempt, ' +
+        `${STUN_TICKS} ticks for every NPC but the Hero's 10; a catch deals damage (1 for Man, Woman, Farmer and Gnome, ` +
+        '2 for warriors, rogues and guards, 3 for Knights, Watchmen and Paladins, 4 for a Hero); the NPC does not fight back. ' +
+        'Eats `food` when low; with no food held it waits ' +
         'for HP to regenerate, and fails if it does not. When no free NPC is in the area it waits, and fails after ' +
         `${NO_TARGET_LIMIT} looks (${NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS} ticks). Loot (coins) accumulates. ` +
         'Refuses an NPC with no pickpocket config, one above the Thieving level, and an area reaching the Wilderness.',

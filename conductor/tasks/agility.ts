@@ -188,8 +188,8 @@ export default defineTask({
         'Runs laps of an agility course for Agility XP. Each obstacle is picked from where the bot stands, so it ' +
         "resumes mid-lap and re-routes after a fall; it only walks on the ground and the course's own obstacles are the " +
         "plane changes. This task does not travel. Done after `laps` laps, or at a lap's edge once short of food " +
-        '(failed instead when `laps` is not reached). On the Wilderness course a run can still fail at the low-HP ' +
-        'guard if the food runs out mid-lap (the lap has no way out). The Wilderness guard is off for that course, and a `done` run there (laps reached, or ' +
+        "(failed instead when `laps` is not reached). On the Wilderness course a run can still fail at the engine's " +
+        "low-HP guard, which ends the run when HP is low, if the food runs out mid-lap (the lap has no way out). The engine's Wilderness guard, which refuses to walk into the Wilderness, is off for that course, and a `done` run there (laps reached, or " +
         `out of food) leaves the bot in the Wilderness at the door (${WILDERNESS.start.x},~${WILDERNESS.start.z}), so ` +
         'the caller must travel out immediately (a plan puts a leave-the-Wilderness travel step after every ' +
         'wilderness agility run).',
@@ -197,9 +197,9 @@ export default defineTask({
         `The bot's base Agility level must reach the course's: ${Object.entries(COURSES)
             .map(([c, k]) => `${c} ${k.agilityLevel}`)
             .join(', ')}.`,
-        `The bot must start at the course: on it, within the course's reach of its start (${Object.entries(COURSES)
+        `The bot must start at the course: on it, within these many tiles of its start (${Object.entries(COURSES)
             .map(([c, k]) => `${c} ${k.reach}`)
-            .join(', ')} tiles). Run \`travel\` there first.`,
+            .join(', ')}). Run \`travel\` there first.`,
     ],
     spots: [
         `"gnome": Tree Gnome Stronghold, no failure, about 86.5 XP per lap before the server's 25x; course start ` +

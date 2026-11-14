@@ -21,7 +21,7 @@ import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } fro
 import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
 import { squareReachesWilderness } from '../lib/wilderness';
 import { HOLD_HP_FLOOR_FRACTION, HOLD_HP_FLOOR_MIN } from '../lib/engine';
-import { LOW_HP_FRACTION } from '../lib/threat';
+import { LOW_HP_MAX_FRACTION, lowHpFraction } from '../lib/threat';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -136,7 +136,10 @@ const Params = z
             .enum(SKILLS)
             .default('Attack')
             .describe('The skill to train. Attack, Strength and Defence pick the melee style that trains it.'),
-        allowMaxed: z.boolean().optional().describe('Train `skill` even at level 99.'),
+        allowMaxed: z
+            .boolean()
+            .optional()
+            .describe('Train `skill` even at level 99 (otherwise refused; Magic is never refused).'),
         area: AreaSchema.describe(
             'Where to fight: the bot never wanders beyond `radius` of this centre, and walks back to it when away.',
         ),
@@ -154,7 +157,13 @@ const Params = z
             .trim()
             .optional()
             .describe('An item to wield if not already worn, by exact name (e.g. "Bronze sword"); a bow for Ranged.'),
-        shield: z.string().trim().optional().describe('A shield to wield if not already worn, by exact name.'),
+        shield: z
+            .string()
+            .trim()
+            .optional()
+            .describe(
+                'A shield to wield if not already worn, by exact name (carried or worn at the start, else refused).',
+            ),
         ammo: z
             .string()
             .trim()
@@ -166,26 +175,23 @@ const Params = z
             .enum(COMBAT_SPELL_NAMES)
             .optional()
             .describe(
-                `Magic: the free-to-play combat spell cast on each target (e.g. "Wind Strike", ${Object.entries(
-                    COMBAT_SPELLS['Wind Strike'].runes,
-                )
-                    .map(([rune, n]) => `${n} ${rune}`)
-                    .join(
-                        ' + ',
-                    )} per cast), its runes from the inventory; a worn Staff of air/water/earth/fire covers only its own rune.`,
+                'Magic: the combat spell cast on each target, e.g. "Wind Strike"; its runes come from the inventory, and a ' +
+                    'worn Staff of air, water, earth or fire covers only its own rune.',
             ),
         food: z
             .array(z.string().trim())
             .default([])
             .describe(
-                `Food to eat when HP falls below \`eatBelow\`, by exact item name. The engine also eats any food below ${LOW_HP_FRACTION * 100}%.`,
+                `Food to eat when HP falls below \`eatBelow\`, by exact item name. The engine's low-HP guard, which eats or ends the run when HP is low, also eats any food carried below ${Math.round(lowHpFraction(1) * 100)}% of max HP, ${Math.round(lowHpFraction(2) * 100)}% with two attackers on the bot and ${Math.round(LOW_HP_MAX_FRACTION * 100)}% with three or more.`,
             ),
         eatBelow: z
             .number()
             .min(0.1)
             .max(0.9)
             .default(DEFAULT_EAT_BELOW)
-            .describe('The fraction of max HP to eat `food` below.'),
+            .describe(
+                'The fraction of max HP to eat `food` below; needs `food` held, and with none the bot does not eat here.',
+            ),
         buryBones: z
             .boolean()
             .default(false)
@@ -218,11 +224,10 @@ const Params = z
             .default(false)
             .describe(
                 'End the run `done` the moment a quest dialog opens, leaving it open for a following `talk` (Sir ' +
-                    "Mordred's death opens Morgan Le Faye's choice, which the shared dialog guard would answer \"No. He " +
-                    'deserves to die."). The dialog guard is off for the run, so the task clicks level-up dialogs away ' +
-                    'itself. Prayers it turned on stay on whatever `keepPrayersOn` says (a prayer click would close the dialog), named in the reason. The low-HP eat and the end-of-run settle ' +
-                    `and eat leave the open dialog alone while HP is above the larger of ${HOLD_HP_FLOOR_MIN} and ` +
-                    `${HOLD_HP_FLOOR_FRACTION * 100}% of max HP. A dialog open before any fight fails the run.`,
+                    "Mordred's death opens Morgan Le Faye's choice, which the engine's dialog guard would answer \"No. He " +
+                    'deserves to die."). The guard is off for the run, so the task clicks level-up dialogs away itself. ' +
+                    `While the dialog is open the engine eats only below the larger of ${HOLD_HP_FLOOR_MIN} HP and ` +
+                    `${Math.round(HOLD_HP_FLOOR_FRACTION * 100)}% of max HP; a dialog open before any fight fails the run.`,
             ),
         respawnWaitTicks: z
             .number()
@@ -232,8 +237,8 @@ const Params = z
             .default(0)
             .describe(
                 'How long to keep waiting for a target to appear (a single imp or boss respawns in 50-100 ticks) before ' +
-                    `failing "no free reachable ...". 0: the usual ${NO_TARGET_LIMIT} looks, about ` +
-                    `${NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS} ticks.`,
+                    `failing "no free reachable ...". The default wait is ${NO_TARGET_LIMIT} looks, about ` +
+                    `${NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS} ticks; a value under that changes nothing.`,
             ),
         prayers: z
             .array(
@@ -249,17 +254,18 @@ const Params = z
             })
             .default([])
             .describe(
-                'Prayers to hold on for the fight, by name (e.g. ["Protect from Melee"]); prayers that switch each other ' +
-                    'off cannot be named together. Turned on once a target is picked (before the attack); those this run ' +
-                    'turned on go off when it ends, unless `keepPrayersOn` or `stopOnDialog` keeps them on. The run fails ' +
-                    'when the prayer points run out.',
+                'Prayers to hold on for the fight, by whole name, case-insensitive, not a regex (e.g. ["Protect from ' +
+                    'Melee"]); prayers that switch each other off cannot be named together. Turned on once a target is ' +
+                    'picked (before the attack); those this run turned on go off when it ends. The run fails when the ' +
+                    'prayer points run out.',
             ),
         keepPrayersOn: z
             .boolean()
             .default(false)
             .describe(
                 "Leave the prayers this run turned on when it ends, for a plan's following non-combat phases (walk, pick " +
-                    'up, climb) in a hostile area; they drain the points until the `prayer` task turns them off. A prayer ' +
+                    'up, climb) in a hostile area; they drain the points until the `prayer` task turns them off. They also ' +
+                    "stay on when `stopOnDialog`'s kept dialog is still open at the end (a prayer click would close it). A prayer " +
                     "an earlier phase kept on, or already on at the start, is not this run's: a later combat phase never " +
                     'turns it off, only the `prayer` task does.',
             ),
@@ -690,22 +696,24 @@ const returnToArea: Step<CombatParams, CombatMemory> = {
 export default defineTask({
     name: 'combat',
     description:
-        'Trains a combat skill on one kind of NPC: wields the given weapon and shield, sets the attack style for ' +
-        '`skill`, attacks the nearest reachable matching NPC that is not fighting someone else, waits for the kill, ' +
-        'and repeats; an NPC already attacking the bot is fought first. Starts even while under attack when an ' +
-        'attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run. ' +
+        'Trains a combat skill by fighting one kind of NPC. It wields the given weapon and shield, sets the attack ' +
+        'style for `skill`, attacks the nearest reachable matching NPC that is not fighting someone else, waits ' +
+        'for the kill, and repeats; an NPC already attacking the bot is fought first. Starts even while under ' +
+        'attack when an attacker is a target or all attackers are weaker than the bot. ' +
         `Targets and loot within ${WILDERNESS_MARGIN} tiles of the Wilderness are never taken (an attacker is still ` +
         'fought). Ranged fails "out of <ammo>" when none are left; Magic fails when runes run out or the Magic level ' +
         "is too low. The RESULT's diagnostics carry `kills` (targets seen dead or gone after a fight; an NPC that left " +
         'view counts too, a heuristic), `lootPicked` and `fullPackTicks`. Refuses an area reaching the Wilderness.',
     rules: [
         'Ranged needs `weapon` (a bow) and `ammo`; Magic needs `spell`, the Magic level for it and its runes.',
+        `A cast of Wind Strike takes ${Object.entries(COMBAT_SPELLS['Wind Strike'].runes)
+            .map(([rune, n]) => `${n} ${rune}`)
+            .join(' and ')}.`,
         '`weapon`, `shield` and `ammo` must be worn or in the inventory, and the bot must meet their wield requirement.',
         "NPCs more than `maxLevelGap` levels above the bot's combat level are refused. The engine waits out low HP " +
             `when there is no food, so without food the task refuses NPCs above combat level ${NO_FOOD_MAX_NPC_LEVEL}.`,
-        '`skill` already at level 99 is refused unless `allowMaxed: true` (Magic is never refused for it).',
         '`level` cannot be combined with `minLevel` / `maxLevel`, and `minLevel` must not be above `maxLevel`.',
-        'Each of `prayers` needs its Prayer level, and the bot needs prayer points left.',
+        'Each of `prayers` needs its Prayer level, and the bot needs prayer points left to start.',
     ],
     spots: [
         'Lumbridge chickens: `area` {x:3231,z:3295,radius:8}; fenced coop with a gate; verified.',
