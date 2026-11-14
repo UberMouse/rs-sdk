@@ -147,6 +147,7 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe(
             'interrupt:under-attack: attacked by Goblin (level 2) with auto-retaliate off at (3222,3218)',
         );
+        expect(r.result.code).toBe('attacked');
         expect(r.sends).toEqual([CHOP]);
     });
 
@@ -184,6 +185,7 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe(
             "interrupt:under-attack: attacked by Goblin (level 5), above the bot's combat level 3, at (3222,3218)",
         );
+        expect(r.result.code).toBe('attacked');
     });
 
     test('only facing a target is not an attack', async () => {
@@ -202,6 +204,7 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe(
             'interrupt:under-attack: under attack by an unknown attacker for 40 ticks at (3222,3218)',
         );
+        expect(r.result.code).toBe('attacked');
         expect(r.driver.state().tick).toBe(43);
     });
 
@@ -243,6 +246,7 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe(
             'interrupt:under-attack: attacked by an unknown attacker at (3222,3218): hp 7/10, down from 10',
         );
+        expect(r.result.code).toBe('attacked');
     });
 
     test('a fight where neither side loses hp for 60 ticks fails, naming the attacker', async () => {
@@ -254,6 +258,7 @@ describe('woodcutting: under attack', () => {
         expect(r.result.reason).toBe(
             'interrupt:under-attack: fight with Goblin (level 2) not finished: no hp change for 60 ticks at (3222,3218)',
         );
+        expect(r.result.code).toBe('attacked');
         expect(r.driver.state().tick).toBe(63);
     });
 

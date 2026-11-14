@@ -13,9 +13,15 @@ import {
     taskNames,
     undescribedFields,
 } from '../../lib/catalog';
-import { UNDER_ATTACK_NOTE, underAttackGuard } from '../../lib/interrupts';
+import { deathGuard, UNDER_ATTACK_NOTE, underAttackGuard } from '../../lib/interrupts';
 import { Pattern, PATTERN_NOTE, patternParam } from '../../lib/spot';
 import type { TaskDef } from '../../lib/task';
+
+/** The death guard's code, which every task lists: no task can turn that guard off. */
+const DIED = deathGuard.outcomes?.died ?? '';
+
+/** The outcome codes `--list <name>` shows, sorted. */
+const codes = async (name: string) => Object.keys(catalogEntry(await loadTask(name)).outcomes ?? {}).sort();
 
 /** A def with only what the catalog reads. */
 const def = (params: z.ZodType, extra: Partial<TaskDef> = {}): TaskDef =>
@@ -62,12 +68,14 @@ describe('catalogEntry', () => {
             name: 't',
             description: 'Does a thing. Then more.',
             rules: ['a rule'],
+            outcomes: { died: DIED },
             spots: ['a spot'],
             params: z.toJSONSchema(params, { io: 'input' }),
         });
         expect(Object.keys(catalogEntry(def(params, { rules: [], spots: [] })))).toEqual([
             'name',
             'description',
+            'outcomes',
             'params',
         ]);
     });
@@ -79,8 +87,15 @@ describe('catalogEntry', () => {
             def(params, { rules: ['a rule'], outcomes: { attacked: 'The step saw it.' }, guards: [guard] }),
         );
         expect(Object.keys(entry)).toEqual(['name', 'description', 'rules', 'outcomes', 'params']);
-        expect(entry.outcomes).toEqual({ attacked: 'The step saw it. A guard saw it.', fled: 'It ran.' });
-        expect(Object.keys(catalogEntry(def(params, { outcomes: {} })))).not.toContain('outcomes');
+        expect(entry.outcomes).toEqual({ attacked: 'The step saw it. A guard saw it.', died: DIED, fled: 'It ran.' });
+        expect(catalogEntry(def(params, { outcomes: {} })).outcomes).toEqual({ died: DIED });
+    });
+
+    test('pickup, talk and combat list the codes their plans branch on', async () => {
+        expect(await codes('pickup')).toEqual(['attacked', 'died']);
+        expect(await codes('talk')).toEqual(['died', 'unreachable']);
+        expect(await codes('combat')).toEqual(['dialog', 'died']);
+        expect(await codes('woodcutting')).toEqual(['attacked', 'died']);
     });
 });
 

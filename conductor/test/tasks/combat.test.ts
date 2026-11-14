@@ -480,6 +480,7 @@ describe('combat: guards mid-fight', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toMatch(/^interrupt:death: died near \(3231,3295\), respawned at/);
+        expect(r.result.code).toBe('died');
     });
 });
 
@@ -1419,6 +1420,7 @@ describe('combat: stopOnDialog', () => {
         });
         expect(r.result.status).toBe('done');
         expect(r.result.reason).toBe('dialog-open: dialog opened: No. He deserves to die. | Ok then.');
+        expect(r.result.code).toBe('dialog');
         expect(r.sends).toEqual([ATTACK, 'continue level-up dialog', 'continue level-up dialog']);
     });
 
@@ -1460,6 +1462,7 @@ describe('combat: stopOnDialog', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('dialog-open: dialog open before any fight: Yes | No');
+        expect(r.result.code).toBeUndefined();
         expect(r.sends).toEqual([]);
     });
 

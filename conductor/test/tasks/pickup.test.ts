@@ -270,6 +270,7 @@ describe('pickup: guards', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('attacked: attacked while picking up at (3224,3202)');
+        expect(r.result.code).toBe('attacked');
     });
 
     test('low HP mid-pickup aborts it and eats, then picking up resumes', async () => {

@@ -136,6 +136,7 @@ export default defineTask({
         'Fails if attacked, or if the inventory is full when nothing wanted is on the ground in the area. ' +
         'Refuses areas reaching the Wilderness.',
     rules: ['The inventory needs a free slot for each entry of `items`.'],
+    outcomes: { attacked: 'The bot was in combat while picking up.' },
     spots: [
         'Panning tray on a Table: `area` {x:3369,z:3379,radius:4}.',
         'Pot (kitchen): `area` {x:3210,z:3212,radius:3}.',
@@ -166,7 +167,7 @@ export default defineTask({
             when: ctx => !!ctx.state().player?.combat.inCombat,
             run(ctx) {
                 const p = ctx.state().player;
-                return { fail: `attacked while picking up at (${p?.worldX},${p?.worldZ})` };
+                return { fail: `attacked while picking up at (${p?.worldX},${p?.worldZ})`, code: 'attacked' };
             },
         },
         returnToAreaStep<PickupParams>(params => params.area),

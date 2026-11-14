@@ -112,6 +112,7 @@ export const deathGuard: TaskGuard<object, GuardName> = {
     name: 'death',
     policy: 'abort',
     critical: true,
+    outcomes: { died: 'The bot died during the run and has respawned.' },
     episode: noEpisode,
     when: (s, run) => diedSince(s, run.startTick),
     run: (s, run) => {
@@ -121,7 +122,10 @@ export const deathGuard: TaskGuard<object, GuardName> = {
             .slice(-DEATH_REASON_MESSAGES)
             .map(m => m.text);
         const from = run.previousPos ? `died near (${run.previousPos.x},${run.previousPos.z}), ` : 'died, ';
-        return { fail: `${from}respawned at (${p?.worldX},${p?.worldZ}); last messages: ${recent.join(' | ')}` };
+        return {
+            fail: `${from}respawned at (${p?.worldX},${p?.worldZ}); last messages: ${recent.join(' | ')}`,
+            code: 'died',
+        };
     },
 };
 
@@ -408,6 +412,12 @@ interface UnderAttackEpisode {
 export const underAttackGuard: TaskGuard<UnderAttackEpisode> = {
     name: 'under-attack',
     policy: 'abort',
+    outcomes: {
+        attacked:
+            "The under-attack guard ended the run: an attacker it does not wait out (auto-retaliate off, or above the bot's " +
+            `combat level), a fight with no hp change for ${NO_PROGRESS_TICKS} ticks, or an attacker it cannot see that ` +
+            `took ${UNKNOWN_ATTACKER_HP_LOSS} hp or lasted ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks.`,
+    },
     episode: () => ({ startHp: null, unknownSince: null, last: null }),
     when: isAttacked,
     *run(_fired, _run, episode) {
@@ -418,9 +428,13 @@ export const underAttackGuard: TaskGuard<UnderAttackEpisode> = {
         const foe = strongest(attackers(s));
         const who = foe ? `${foe.name} (level ${foe.combatLevel})` : 'an unknown attacker';
         const at = `(${p.worldX},${p.worldZ})`;
-        if (s.autoRetaliateEnabled === false) return { fail: `attacked by ${who} with auto-retaliate off at ${at}` };
+        if (s.autoRetaliateEnabled === false)
+            return { fail: `attacked by ${who} with auto-retaliate off at ${at}`, code: 'attacked' };
         if (foe && foe.combatLevel > p.combatLevel)
-            return { fail: `attacked by ${who}, above the bot's combat level ${p.combatLevel}, at ${at}` };
+            return {
+                fail: `attacked by ${who}, above the bot's combat level ${p.combatLevel}, at ${at}`,
+                code: 'attacked',
+            };
         const damageTick = p.combat.lastDamageTick;
         const prev = episode.last;
         const changed =
@@ -436,12 +450,21 @@ export const underAttackGuard: TaskGuard<UnderAttackEpisode> = {
         episode.unknownSince = foe ? null : (episode.unknownSince ?? s.tick);
         if (foe) {
             if (stalled >= NO_PROGRESS_TICKS)
-                return { fail: `fight with ${who} not finished: no hp change for ${NO_PROGRESS_TICKS} ticks at ${at}` };
+                return {
+                    fail: `fight with ${who} not finished: no hp change for ${NO_PROGRESS_TICKS} ticks at ${at}`,
+                    code: 'attacked',
+                };
         } else {
             if (episode.startHp - p.hp >= UNKNOWN_ATTACKER_HP_LOSS)
-                return { fail: `attacked by ${who} at ${at}: hp ${p.hp}/${p.maxHp}, down from ${episode.startHp}` };
+                return {
+                    fail: `attacked by ${who} at ${at}: hp ${p.hp}/${p.maxHp}, down from ${episode.startHp}`,
+                    code: 'attacked',
+                };
             if (s.tick - (episode.unknownSince ?? s.tick) >= UNKNOWN_ATTACKER_TICK_LIMIT)
-                return { fail: `under attack by ${who} for ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks at ${at}` };
+                return {
+                    fail: `under attack by ${who} for ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks at ${at}`,
+                    code: 'attacked',
+                };
         }
         yield* ticks(1);
     },

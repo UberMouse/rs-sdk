@@ -741,6 +741,9 @@ export default defineTask({
         '`level` cannot be combined with `minLevel` / `maxLevel`, and `minLevel` must not be above `maxLevel`.',
         'Each of `prayers` needs its Prayer level, and the bot needs prayer points left to start.',
     ],
+    outcomes: {
+        dialog: 'With `stopOnDialog`, a dialog opened after a fight and is left open for the next phase (done).',
+    },
     spots: [
         'Lumbridge chickens: `area` {x:3231,z:3295,radius:8}; fenced coop with a gate; verified.',
         'Lumbridge cows: `area` {x:3253,z:3290,radius:12}; south gate at 3253,3266; unverified.',
@@ -850,6 +853,7 @@ export default defineTask({
                     const left = ctx.memory.prayersTurnedOn.filter(n => prayerActive(s, prayerIndex(n) ?? -1));
                     return {
                         done: `dialog opened: ${dialogText(s)}${left.length ? `; prayers still on: ${left.join(', ')}` : ''}`,
+                        code: 'dialog',
                     };
                 }
                 // One page at a time, not `dismiss`: the last hit's level-up can sit in front of the quest
