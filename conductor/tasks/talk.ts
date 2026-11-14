@@ -63,58 +63,70 @@ const STUCK_AFTER_MS = stuckWindowMs(
 
 const Params = z
     .object({
-        /** Name (case-insensitive regex) of the NPC to talk to; omit for a run that only uses items. */
-        npc: Pattern.optional(),
-        /** Where to stand first. */
+        npc: Pattern.optional().describe('The NPC to talk to, by name; omit for a run that only uses items.'),
         at: AtSchema.optional(),
-        /** The NPC option that starts the conversation (regex on its text); default "Talk-to". */
-        option: Pattern.default(TALK_OPTION.source),
-        /**
-         * The choices of the conversation, in order: a regex on the text of the option to click at each
-         * multi-option page. "Click here to continue" pages need no entry.
-         */
-        choices: z.array(Pattern).default([]),
-        /**
-         * Inventory items to use, one each in order, on a loc (name regex) before the conversation: raw
-         * meats on the Cauldron of Thunder. An item is a name regex, or `{ id }` for one exact item (the
-         * murky, blessed and plain buckets of water share a name). `tile` picks the loc standing on that
-         * tile instead of the nearest of that name (one of several monuments).
-         */
-        use: z.object({ items: z.array(ItemSpec).min(1), onLoc: Pattern, tile: TileSchema.optional() }).optional(),
-        /**
-         * Continue a dialog that is already open (a previous step opened it: a crate's "Hide-in", a drop that
-         * left an NPC talking): answer `choices` and click through, never look for anyone. Alone: no `npc`,
-         * `at` or `use`. Fails after a short wait when no dialog is open.
-         */
-        continue: z.boolean().default(false),
-        /**
-         * The conversation ends in a journey (a sailor, the Monk of Entrana): once its dialog has closed, wait for
-         * the game to carry the player away (at least TRAVEL_MIN_JUMP tiles or to another plane) and be done on
-         * arrival, so the next task starts at the destination. Fails when no journey follows (fare unaffordable,
-         * armour or weapons refused on the way to Entrana).
-         */
-        travels: z.boolean().default(false),
-        /**
-         * The conversation ends in an "Enter amount" prompt (Harold's bet): once its dialog has closed after the
-         * last choice, answer the prompt with this number (1 to 1000, the game's maximum bet). Without `press` the
-         * amount is verified only by the send succeeding and the pages after it being clicked through: it is meant
-         * for the gamble prompt, nothing reads that the bet was taken.
-         */
-        amount: z.number().int().min(1).max(1000).optional(),
-        /**
-         * After the conversation (and its `amount`), click one component of the interface it opens, and close the
-         * interface: Harold's dice table, where `death_dice:com_28` rolls. `component` is named as in interface.pack;
-         * `ready` is a text the interface shows when the button is live (a hidden button drops the click) and `until`
-         * the text it shows once the click took effect. The pages the game shows after the interface closes (the
-         * winnings box, an IOU) are clicked through. Done with the matched text in the reason.
-         */
+        option: Pattern.default(TALK_OPTION.source).describe(
+            'The NPC option that starts the conversation, a regex on its text.',
+        ),
+        choices: z
+            .array(Pattern)
+            .default([])
+            .describe(
+                'The choices of the conversation, in order: a regex on the text of the option to click at each multi-option page. "Click here to continue" pages pass by themselves and need no entry.',
+            ),
+        use: z
+            .object({
+                items: z
+                    .array(ItemSpec)
+                    .min(1)
+                    .describe(
+                        'The inventory items to use, one each in order: a name regex, or `{ id }` for one exact item (the murky, blessed and plain buckets of water share a name).',
+                    ),
+                onLoc: Pattern.describe('The loc to use them on, by name.'),
+                tile: TileSchema.optional().describe(
+                    'Picks the loc standing on this tile instead of the nearest of that name (one of several monuments).',
+                ),
+            })
+            .optional()
+            .describe(
+                'Items to use on a nearby loc before the conversation (raw meats on the Cauldron of Thunder); with no `npc` the run ends after the uses. A message box a use opens is clicked through (continue pages only); a menu it offers is answered only by `choices`, otherwise closed.',
+            ),
+        continue: z
+            .boolean()
+            .default(false)
+            .describe(
+                'Continue a dialog that is already open (a previous step opened it: a crate\'s "Hide-in", a drop that left an NPC talking): answer `choices` and click through, never look for anyone; fails after a short wait when no dialog is open. It also starts while the bot is under attack, since the open dialog is the way out of the fight, and the low-HP eat then waits until the dialog is answered, above the HP floor.',
+            ),
+        travels: z
+            .boolean()
+            .default(false)
+            .describe(
+                `The conversation ends in a journey (a sailor's ship, the Monk of Entrana): once its dialog has closed, wait for the game to carry the player away (at least ${TRAVEL_MIN_JUMP} tiles or to another plane) and be done on arrival, so the next task (interact Cross on the gangplank) starts at the destination. Fails when no journey follows (fare unaffordable, armour or weapons refused on the way to Entrana).`,
+            ),
+        amount: z
+            .number()
+            .int()
+            .min(1)
+            .max(1000)
+            .optional()
+            .describe(
+                'Answers the "Enter amount" prompt the conversation ends in with this number (1000 is the game\'s maximum bet), once its dialog has closed after the last choice. Without `press` the amount is verified only by the send succeeding and the pages after it being clicked through: it is meant for the gamble prompt, nothing reads that the bet was taken.',
+            ),
         press: z
             .object({
-                component: z.string().regex(COMPONENT_NAME),
-                ready: Pattern.optional(),
-                until: Pattern,
+                component: z
+                    .string()
+                    .regex(COMPONENT_NAME)
+                    .describe('The component to click, named as in interface.pack (`death_dice:com_28`).'),
+                ready: Pattern.optional().describe(
+                    'A text the interface shows when the button is live; the click waits for it (a hidden button drops the click).',
+                ),
+                until: Pattern.describe('The text the interface shows once the click took effect.'),
             })
-            .optional(),
+            .optional()
+            .describe(
+                'After the conversation (and its `amount`), click one component of the interface it opens, wait for the `until` text and close the interface; the pages the game shows after it closes (the winnings box, an IOU) are clicked through. Done with the matched text in the reason.',
+            ),
     })
     .refine(p => p.continue || p.npc !== undefined || p.use !== undefined, 'give an npc to talk to, a use, or both')
     .refine(
@@ -273,14 +285,24 @@ function findLoc(ctx: Ctx): NearbyLoc | undefined {
 export default defineTask({
     name: 'talk',
     description:
-        'Talk to an NPC (or, with `continue: true` alone, continue the dialog a previous step left open: answers `choices`, fails after a short wait if none is open; also starts while the bot is under attack, since the open dialog is the way out of the fight, and then the low-HP eat waits until the dialog is answered, above the HP floor) and answer its dialog from a list of choices, e.g. to do a quest step. Params: `npc` (name regex), `at` {x,z,level?,tolerance?,met?} ' +
-        '(walked to first, across floors and through doors; `met` [tokens] are the requirements the walk may plan through, as `travel`), `option` (default "Talk-to"), `choices` (regexes on the option text, one per multi-option page, in order; ' +
-        '"click here to continue" pages pass by themselves), optional `use` {items, onLoc} (uses each inventory item (a name regex or `{id}`) on a nearby loc first, the one at `tile` {x,z,level?} if given; with no `npc` the run ends after the uses; a message box a use opens is clicked through, ' +
-        'continue pages only, and a menu it offers is answered only by `choices`, otherwise closed). ' +
-        "Done once the dialog has closed after the last choice. Fails with the dialog's options when an expected option is missing or an unexpected choice appears, " +
-        'and when the dialog closes with choices left. `travels: true` for a conversation that ends in a ship journey: waits for the arrival (the game moves the player), ' +
-        'so the next task (interact Cross on the gangplank) starts there; fails when no journey follows. `amount` answers the "Enter amount" prompt the conversation ends in, and `press` {component, ready?, until} then clicks one component of the interface it opens (named as in interface.pack, once its `ready` text shows), waits for the `until` text, closes the interface and clicks through the pages after: the Death Plateau dice game with Harold (stage 50+, gamble open; Harold wins ties, 15 of 36 rolls win, his gold is 100 plus the net losses of the player, the IOU comes with a win over a bet larger than that, max bet 1000 (`amount` is capped at 1000), ~47 ticks a game; the reason ends with "You win!" or "You lose!", the plan reads the coins and IOU; a failure after the bet says it was placed and the stake may be forfeited; `amount` without `press` is verified only by the send, for the gamble prompt): {"npc":"Harold","choices":["gamble"],"amount":1000,"press":{"component":"death_dice:com_28","ready":"Your roll","until":"You (win|lose)"}}; the door of his bedroom (upstairs in the Burthorpe inn) knocks with a dialog, so enter the room first. E.g. {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}. ' +
+        'Talks to an NPC and answers its dialog from a list of choices, e.g. to do a quest step; or continues a dialog ' +
+        'a previous step left open, or only uses items on a loc. Done once the dialog has closed after the last choice ' +
+        "(and its `travels`, `amount` or `press` follow-up). Fails with the dialog's options when an expected option is " +
+        'missing or an unexpected choice appears, and when the dialog closes with choices left; a failure after an ' +
+        '`amount` bet says it was placed and the stake may be forfeited. Refuses an `at` in the Wilderness.',
+    rules: [
+        'Give an `npc` to talk to, a `use`, or both (or `continue`).',
+        '`continue` takes the open dialog as it is: give no `npc`, `use` or `at` with it.',
+        '`travels` needs an `npc` to talk to and not `continue`: a teleport inside an open dialog (the Merlin crate) is done when the dialog closes.',
+        '`press` follows a conversation with an `npc` and cannot be combined with `travels`.',
+        '`amount` answers a prompt the conversation with an `npc` ends in; not with `travels`.',
+        '`press.component` must be a component in interface.pack.',
+    ],
+    spots: [
+        'Death Plateau dice game with Harold (stage 50+, gamble open): {"npc":"Harold","choices":["gamble"],"amount":1000,"press":{"component":"death_dice:com_28","ready":"Your roll","until":"You (win|lose)"}}. Harold wins ties, 15 of 36 rolls win, his gold is 100 plus the net losses of the player, the IOU comes with a win over a bet larger than that, max bet 1000, ~47 ticks a game; the reason ends with "You win!" or "You lose!", and the plan reads the coins and IOU. The door of his bedroom (upstairs in the Burthorpe inn) knocks with a dialog, so enter the room first.',
+        'Duke Horacio: {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}.',
         'Recipes and hazards: wiki/quests/rune-mysteries.md, learnings/hazards.md (Varrock stone circle dark wizards).',
+    ],
     params: Params,
     memory: (): TalkMemory => ({
         used: 0,

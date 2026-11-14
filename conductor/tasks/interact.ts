@@ -3,6 +3,8 @@ import type { InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import {
     INTERACT_WAIT_TICKS,
     interact,
+    SETTLE_MAX_TICKS,
+    SETTLE_STABLE_TICKS,
     type InteractTarget,
     optionsOf,
     targetName,
@@ -53,69 +55,76 @@ const ATTACK_OPTION = 'Attack';
 
 const Params = z
     .object({
-        /** What is interacted with: an NPC or a loc standing near, or an item in the inventory. */
-        target: z.enum(['loc', 'npc', 'item']),
-        /** Its name (case-insensitive regex). */
-        name: Pattern,
-        /** The option to send (regex on the option text): "Open", "Search", "Wear", "Talk-to"... Not with `use`. */
-        option: Pattern.optional(),
-        /** Where to stand first. */
+        target: z
+            .enum(['loc', 'npc', 'item'])
+            .describe('What is interacted with: an NPC or a loc standing near, or an item in the inventory.'),
+        name: Pattern.describe("The target's name."),
+        option: Pattern.optional().describe(
+            'The option to send, a regex on the option text: "Open", "Search", "Wear", "Talk-to"...',
+        ),
         at: AtSchema.optional(),
-        /**
-         * A regex the outcome must match: a game message or dialog page after the send. Without it any state
-         * change (a dialog or interface opening, the inventory or worn items changing, the player moved by the
-         * game, the loc changing, ...) is the effect, and a bare message only after a moment with nothing else shown.
-         */
-        expect: Pattern.optional(),
-        /**
-         * The exact tile of the loc or NPC, instead of the nearest one of that name: one of six pillars, a crate
-         * beside plain crates, one of three "Ledge" locs. A loc's tile is its south-west corner.
-         */
-        tile: TileSchema.optional(),
-        /**
-         * Only NPCs of this type id (NearbyNpc.id, the config id in server/content/pack/npc.pack), one or several, among
-         * those `name` matches: the woolly Sheep (43) beside a sheared one (42), both named "Sheep". NPC targets only.
-         */
-        npcId: z.union([z.number().int().min(0), z.array(z.number().int().min(0)).min(1)]).optional(),
-        /**
-         * Item targets only: send the inventory op at this index (1-5, the `opIndex` of the item's published options)
-         * instead of the first option matching `option`. `option` still names the label the plan expects at that
-         * index, and the run refuses (naming the real label) when the published op there does not match it. For items
-         * whose server script differs from the label the client publishes: the Bloated toad's op 1 is published as
-         * "Drop" but places the bait (`opIndex: 1, option: "^Drop$", allowDestructiveOption: true`).
-         */
-        opIndex: z.number().int().min(1).max(5).optional(),
-        /**
-         * Opt in to an `opIndex` whose published label destroys or releases the item (Drop, Destroy, Release,
-         * Release All, Empty). Without it such an op is refused.
-         */
-        allowDestructiveOption: z.boolean().default(false),
-        /**
-         * Also take a target the client cannot route to (an islet in a river, a rock across water) and send the
-         * op from the stand tile `at`, leaving the reach check to the server. Needs `at`.
-         */
-        unreachable: z.boolean().default(false),
-        /**
-         * Use an inventory item on the loc or NPC instead of sending an option: `item` is a name regex, or `{ id }` for
-         * one exact item (when several share a name). Judged by the effects below; a use the server discarded
-         * (no feedback at all) is sent again, up to FAIL_LIMIT tries, but one that got a message or no effect is not.
-         */
-        use: z.object({ item: ItemSpec }).optional(),
-        /**
-         * Answers the dialog the interaction itself opens (a door whose opening starts a beggar's question), as
-         * `talk`'s `choices`: a regex on the option text per multi-option page, in order; "click here to continue"
-         * pages pass by themselves. The task is then done once that dialog has closed after the last choice. Without
-         * it the dialog guard clicks continue pages away and declines a choice nobody answers. With it the interaction
-         * must open a dialog (else the run fails saying it opened none) and the dialog guard is off for the run.
-         */
-        choices: z.array(Pattern).default([]),
-        /**
-         * Opt in to a target (and `at`) in the Wilderness; the Wilderness guard then stands down (death still
-         * ends the run) and the run needs `minFood` food to start, as `travel` does.
-         */
-        wilderness: z.boolean().default(false),
-        /** Food items a `wilderness` run must carry to start (at least 1 whatever is set). */
-        minFood: z.number().int().min(0).default(WILDERNESS_MIN_FOOD),
+        expect: Pattern.optional().describe(
+            'The outcome to wait for: only a game message or dialog page matching it after the send is the effect, so it ' +
+                'is the way to wait for a specific later message. Without it the effect is any state change: a dialog or ' +
+                'interface opened, a message box (the Chaos altar Check), the inventory or worn items changed (so any ' +
+                'inventory change ends a `use`), an animation, the loc changed, or the player moved by the game (a ' +
+                'teleport, swim, door pass-through, gangplank or whistle); a bare game message only when nothing else ' +
+                'shows. Pass it (e.g. "you milk the cow") when the exact outcome matters.',
+        ),
+        tile: TileSchema.optional().describe(
+            'The exact tile of the loc or NPC, instead of the nearest one of that name: one of six pillars, a crate beside plain crates, one of three "Ledge" locs. A loc\'s tile is its south-west corner.',
+        ),
+        npcId: z
+            .union([z.number().int().min(0), z.array(z.number().int().min(0)).min(1)])
+            .optional()
+            .describe(
+                'Only NPCs of this type id, or of one of these (NearbyNpc.id, the config id in server/content/pack/npc.pack), among those `name` matches: the woolly Sheep (43) beside a sheared one (42), both named "Sheep".',
+            ),
+        opIndex: z
+            .number()
+            .int()
+            .min(1)
+            .max(5)
+            .optional()
+            .describe(
+                "Send the inventory op at this index (the `opIndex` of the item's published options) instead of the first option matching `option`, which still names the label expected there: the run fails naming the real label when the published op does not match it. For items whose server script differs from the label the client publishes.",
+            ),
+        allowDestructiveOption: z
+            .boolean()
+            .default(false)
+            .describe(
+                `Send an \`opIndex\` op whose published label destroys or releases the item (${DESTRUCTIVE_ITEM_OPTIONS.join(', ')}, or a label starting with one, as Release All); without it such an op is refused.`,
+            ),
+        unreachable: z
+            .boolean()
+            .default(false)
+            .describe(
+                'Also take a target the client cannot route to (an islet in a river, a rock across water: a swim, a rope thrown across) and send the op from the stand tile `at`, leaving the reach check to the server.',
+            ),
+        use: z
+            .object({ item: ItemSpec })
+            .optional()
+            .describe(
+                `Use this inventory item on the loc or NPC instead of sending an option: a key on a door, a rope on a rock, a rune on a pillar, an empty bucket on a cow. A use the server discarded is sent again (to another match, for an NPC; "This sheep has already been shorn." also moves on to another), up to ${FAIL_LIMIT} tries in a row; one that got a message or no effect is not.`,
+            ),
+        choices: z
+            .array(Pattern)
+            .default([])
+            .describe(
+                "Answers the dialog the interaction itself opens, as `talk`'s `choices`: a regex on the option text per multi-option page, in order; continue pages pass by themselves. The task is done once that dialog has closed after the last choice; the interaction must open one (else the run fails saying it opened none), and the dialog guard is off for the run. Without it no dialog is answered: the guard clicks continue pages away and declines a choice (use `talk` to converse).",
+            ),
+        wilderness: z
+            .boolean()
+            .default(false)
+            .describe(
+                'Opt in to a target (and `at`) in the Wilderness: the Wilderness guard stands down, the bot eats at low HP and death still ends the run, as `travel` does. Carry only food and no valuables: the bot is left in the Wilderness, so whatever runs next (a plan phase, a `travel` out) must opt in too.',
+            ),
+        minFood: z
+            .number()
+            .int()
+            .min(0)
+            .default(WILDERNESS_MIN_FOOD)
+            .describe('Food items a `wilderness` run must carry to start (at least 1 whatever is set).'),
     })
     .refine(p => (p.option === undefined) !== (p.use === undefined), 'give an option, or a use (not both)')
     .refine(p => p.use === undefined || p.target === 'loc' || p.target === 'npc', 'a use works on a loc or an NPC')
@@ -233,19 +242,32 @@ function* answerDialog(ctx: Ctx, said = 'the interaction was sent earlier') {
 export default defineTask({
     name: 'interact',
     description:
-        'One interaction with an NPC, a loc or an inventory item by option, or one item used on a loc, done when its effect is seen. Params: `target` ("loc" | "npc" | "item"), ' +
-        '`name` (regex), `option` (regex on the option text, e.g. "Open", "Search", "Wear", "Talk-to"), optional `at` {x,z,level?,tolerance? (0 = that exact tile, for a loc used from one side only)} ' +
-        '(walked to first, across floors and through doors). Picks the nearest reachable match that offers the option; `npcId` (a number or list: the NPC type id, NearbyNpc.id) narrows an NPC match to those types (the woolly Sheep 43, not a sheared 42); "This sheep has already been shorn." on a `use` moves on to another NPC; `tile` {x,z,level?} picks the loc or NPC standing exactly there ' +
-        "(one pillar of six, a crate beside plain crates; a loc's tile is its south-west corner); `unreachable: true` (needs `at`) also takes a loc or NPC the client cannot route to " +
-        'and sends the op from the stand tile, the server owning the reach check (swim to a rock, throw a rope across water); ' +
-        '`use` {item: name regex, or {id}} instead of `option` (loc or NPC targets) uses that inventory item on the loc or NPC ' +
-        '(a key on a door, a rope on a rock, a rune on a pillar, an empty bucket on a cow); a use is re-sent only after a discarded op (on another match for an NPC), never after a message or no effect; without `expect` any inventory change ends the use as done, so pass `expect` (e.g. "you milk the cow") when the exact outcome matters. Done once the game shows an effect ' +
-        '(a dialog or interface opened, the inventory or worn items changed, an animation, the loc changed, the player moved by the game: a teleport, swim, door pass-through, gangplank or whistle; a bare game message only when nothing else shows); after a use, an unreachable op or a move the game made it waits for the world to settle (position, floor and animation unchanged for 3 ticks) before it ends, so a rope throw ends once the bot has landed; it waits up to 16 ticks for the bot to stop moving, and a run that hits that cap says so in the effect; optional `expect` ' +
-        '(regex) makes only a matching game message or dialog page count, and is the way to wait for a specific later message. Without `choices` it answers no dialog it opens (the guard clicks continue pages and declines a choice; use `talk` to converse); `choices` (regexes on the option text, one per multi-option page, in order, as `talk`) answers the dialog the interaction itself opens (the interaction must open one, else it fails saying so; the dialog guard is off for the run), e.g. the Port Sarim beggar question when opening the jeweller Door ("Yes certainly"), and the task is done when that dialog has closed. A message box the op opens (the Chaos altar Check) counts as the effect. Refuses the destructive options ' +
-        '(Drop, Destroy, Release, Empty) on an item (`opIndex` 1-5, item targets only, sends the inventory op at that index when the published label there matches `option`, else fails naming the real label; a destructive label then needs `allowDestructiveOption: true`; the Bloated toad (Big Chompy Bird Hunting) is placed by {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"} inside the bait zone x2631-2639, z2962-2971: the client publishes its op 1 as Drop but the server places the bait; the toad leaves the inventory and a Bloated toad NPC stands there), Attack on an NPC (use `combat`), and a target or `at` in the Wilderness unless `wilderness: true` ' +
-        '(then it needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and death still ends the run; carry only food and no valuables; the bot is left in the Wilderness, so whatever runs next, a plan phase or a `travel` out, must opt in to the Wilderness too). Fails with the options on offer when the target has none matching, ' +
-        'and at once on "I can\'t reach that!", a refusal message ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a discarded op is retried. ' +
-        'E.g. {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"} (Ardougne sheep field); {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}; {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}. Uses: wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
+        'One interaction with an NPC, a loc or an inventory item by option, or one item used on a loc or NPC, done when its effect is seen (see `expect`). ' +
+        'It picks the nearest reachable match that offers the option. After a use, an `unreachable` op or a move the ' +
+        `game made it waits for the world to settle (position, floor and animation unchanged for ${SETTLE_STABLE_TICKS} ` +
+        `ticks, at most ${SETTLE_MAX_TICKS}; the effect says when the cap ended it), so a rope throw ends once the bot ` +
+        'has landed. Fails with the options on offer when the target has none matching, and at once on "I can\'t reach ' +
+        'that!", a refusal ("Nothing interesting happens.", "You need ...") or no effect; only a failed send or a ' +
+        'discarded op is retried. Refuses a destructive option on an item, Attack on an NPC (use `combat`), and a ' +
+        'target or `at` in the Wilderness unless `wilderness`.',
+    rules: [
+        'Give `option` or `use`, not both.',
+        '`use` works on a loc or an NPC, and needs the item held at the start.',
+        '`tile` picks a loc or an NPC, not an inventory item.',
+        '`npcId` needs `target: "npc"`.',
+        '`opIndex` needs `target: "item"` and `option`: the label expected at that index.',
+        '`allowDestructiveOption` applies only to an `opIndex` op.',
+        '`unreachable` needs `at` and a loc or NPC target.',
+        '`wilderness` needs `minFood` food items held to start.',
+    ],
+    spots: [
+        'Bloated toad (Big Chompy Bird Hunting), placed inside the bait zone x2631-2639, z2962-2971: {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"}. The client publishes its op 1 as Drop but the server places the bait: the toad leaves the inventory and a Bloated toad NPC stands there.',
+        'Ardougne sheep field, shearing: {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"}.',
+        'Coffin: {"target":"loc","name":"^Coffin$","option":"^Open$","at":{"x":3247,"z":3193}}.',
+        'Rope on a rock across water: {"target":"loc","name":"^Rock$","use":{"item":"^Rope$"},"tile":{"x":2512,"z":3468},"unreachable":true,"at":{"x":2512,"z":3478,"tolerance":1}}.',
+        'Port Sarim jeweller Door: opening it starts the beggar\'s question, answered with `choices: ["Yes certainly"]`.',
+        'Used by wiki/quests/restless-ghost.md, wiki/quests/waterfall-quest.md.',
+    ],
     params: Params,
     memory: (): Memory => ({
         refusedNpcs: [],

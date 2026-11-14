@@ -35,36 +35,46 @@ const NO_PROGRESS_LIMIT = 12;
  */
 const GONE_NEAR_TILES = MAX_AHEAD + 4;
 
-const TileParam = z.object({ x: z.number().int(), z: z.number().int() });
+const TileParam = z.object({ x: z.number().int().describe('Tile x.'), z: z.number().int().describe('Tile z.') });
 const RectParam = z.object({
-    minX: z.number().int(),
-    maxX: z.number().int(),
-    minZ: z.number().int(),
-    maxZ: z.number().int(),
+    minX: z.number().int().describe('The lowest tile x inside.'),
+    maxX: z.number().int().describe('The highest tile x inside.'),
+    minZ: z.number().int().describe('The lowest tile z inside.'),
+    maxZ: z.number().int().describe('The highest tile z inside.'),
 });
 
 const Params = z.object({
-    /** The NPC's name (case-insensitive regex), e.g. "^Diseased sheep 2$". */
-    name: Pattern,
-    /** Which copy to herd: the one nearest this tile when the run starts. Omit for the nearest to the bot. */
-    from: TileParam.optional(),
-    /** The option index to send: 1 is the NPC's first option ("Prod"). */
-    op: z.number().int().min(1).max(5).default(1),
-    /**
-     * The tiles the NPC should pass, in order. Each leg is pushed along its larger axis (x on a tie); give a
-     * corner as a waypoint wherever a fence or wall forbids the diagonal. After the last one the NPC is pushed on
-     * in the last leg's direction until `stop` holds.
-     */
-    route: z.tuple([TileParam], TileParam),
-    /** A waypoint counts as passed within this many tiles (Chebyshev). */
-    tolerance: z.number().int().min(0).default(0),
-    /** Done when the NPC stands in this rectangle. Omit: done when it reaches the last waypoint. */
-    stop: RectParam.optional(),
-    /**
-     * Done, not failed, when the NPC leaves the view after the first prod (a prod teleported it away), but only if it
-     * was last seen within a few tiles of the goal (`stop`, else the last waypoint); farther off it is lost.
-     */
-    goneIsDone: z.boolean().default(false),
+    name: Pattern.describe('The NPC to herd, by name: "^Diseased sheep 2$".'),
+    from: TileParam.optional().describe(
+        'Which copy to herd: the one nearest this tile when the run starts. Omit for the nearest to the bot.',
+    ),
+    op: z
+        .number()
+        .int()
+        .min(1)
+        .max(5)
+        .default(1)
+        .describe('The option index to send: 1 is the NPC\'s first option ("Prod").'),
+    route: z
+        .tuple([TileParam], TileParam)
+        .describe(
+            "The tiles the NPC should pass, in order. Each leg is pushed along its larger axis (x on a tie); give a corner as a waypoint wherever a fence or wall forbids the diagonal. After the last one the NPC is pushed on in the last leg's direction until `stop` holds.",
+        ),
+    tolerance: z
+        .number()
+        .int()
+        .min(0)
+        .default(0)
+        .describe('A waypoint counts as passed within this many tiles (Chebyshev).'),
+    stop: RectParam.optional().describe(
+        'Done when the NPC stands in this rectangle. Omit: done when it reaches the last waypoint.',
+    ),
+    goneIsDone: z
+        .boolean()
+        .default(false)
+        .describe(
+            `Done, not failed, when the NPC leaves the view after the first prod (a prod teleported it away), but only if it was last seen within ${GONE_NEAR_TILES} tiles of the goal (\`stop\`, else the last waypoint); farther off it is lost.`,
+        ),
 });
 type HerdParams = z.infer<typeof Params>;
 type Tile = z.infer<typeof TileParam>;
@@ -163,12 +173,16 @@ function pick(ctx: Ctx): NearbyNpc | undefined {
 export default defineTask({
     name: 'herd',
     description:
-        'Herd one NPC along a route by repeated prods (option `op`, default 1): each cycle walks to the tile directly opposite the NPC ' +
-        'from where it should go and sends the op, re-reading the NPC every tick, locked onto one instance among copies (`from` picks the copy nearest a tile). ' +
-        'The NPC moves one tile per prod, along the larger axis, so give the route as waypoints (corners where fences forbid a diagonal); it ends done ' +
-        'when the NPC stands in `stop` (default: reaches the last waypoint) or, with `goneIsDone`, leaves view after a prod (teleported) having been last seen within 6 tiles of the goal (farther off it is lost). ' +
-        'Fails if the NPC is lost, the stand tile cannot be reached, prods do not move it, or the route gets no shorter for 12 prods. ' +
-        'For Sheep Herder: Diseased sheep 2 spawns near (2622,3367); route (2594,3367) then (2594,3363) with `goneIsDone` (the jumped sheep is re-added in the pen as a new NPC) and `stop` the pen x2595-2609 z3351-3364 (needs the suit and prod wielded). A copy fenced off from the bot is walked round to; a prod answered with the can-not-reach message fails.',
+        'Herds one NPC along a route of waypoints by repeated prods. Each cycle walks to the tile directly opposite the NPC from ' +
+        'where it should go and sends the op, re-reading the NPC every tick, locked onto one instance among copies. ' +
+        'The NPC moves one tile per prod, along the larger axis. Done when the NPC stands in `stop` (or reaches the ' +
+        'last waypoint), or with `goneIsDone` when it leaves view after a prod. A copy fenced off from the bot is ' +
+        'walked round to. Fails if the NPC is lost, the stand tile cannot be reached, prods do not move it, a prod is ' +
+        `answered with the can-not-reach message, or the route gets no shorter for ${NO_PROGRESS_LIMIT} prods.`,
+    rules: ['An NPC matching `name` must be in view at the start.'],
+    spots: [
+        'Sheep Herder: Diseased sheep 2 spawns near (2622,3367); route (2594,3367) then (2594,3363) with `goneIsDone` (the jumped sheep is re-added in the pen as a new NPC) and `stop` the pen x2595-2609 z3351-3364. Needs the suit and prod wielded.',
+    ],
     params: Params,
     memory: (): HerdMemory => ({
         npc: null,

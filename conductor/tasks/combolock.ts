@@ -70,23 +70,25 @@ const PEER_OUTSIDE = { x: 2631, z: 3669 } as const;
 
 const Params = z
     .object({
-        /** Which combination door: Peer the Seer's riddle door (The Fremennik Trials) or the Tribal Totem door. */
-        door: z.enum(['peer', 'tribal']).default('peer'),
-        /**
-         * The four-letter word to set, instead of the door's own: a tribal door takes KURT; Peer's depends on the riddle
-         * the server picked, which the task reads from the door's riddle pages when this is omitted.
-         */
+        door: z
+            .enum(['peer', 'tribal'])
+            .default('peer')
+            .describe(
+                `Which combination door: "peer" is Peer the Seer's riddle door in Rellekka (${DOORS.peer.tile.x},${DOORS.peer.tile.z}) in The Fremennik Trials; "tribal" the Tribal Totem door inside Handelmort Mansion (${DOORS.tribal.tile.x},${DOORS.tribal.tile.z}), password ${DOORS.tribal.word}.`,
+            ),
         word: z
             .string()
             .refine(w => wordValues(w) !== undefined, 'a word of four letters')
-            .optional(),
-        /**
-         * Where to stand first. Omit to work the door from where the bot is (the interaction walks the last tiles); Peer's
-         * door defaults to the tile outside it (2631,3669), as opening it from inside leaves the trial.
-         */
-        at: AtSchema.optional(),
-        /** The exact tile of the door loc, when other doors are near; default the chosen `door`'s own. */
-        tile: TileSchema.optional(),
+            .optional()
+            .describe(
+                `The four-letter word to set, instead of the door's own. Without it Peer's door chooses "Read the riddle", reads the riddle from the pages and sets its answer (${PEER_RIDDLES.map(r => r.word).join(', ')}: picked at random by the server per account); with it, "Solve the riddle" and sets this word.`,
+            ),
+        at: AtSchema.optional().describe(
+            `Where to stand first. Omit to work the door from where the bot is (the interaction walks the last tiles); Peer's door defaults to the tile outside it (${PEER_OUTSIDE.x},${PEER_OUTSIDE.z}), never inside, as opening it from inside leaves the trial.`,
+        ),
+        tile: TileSchema.optional().describe(
+            "The exact tile of the door loc, when other doors are near; default the chosen `door`'s own.",
+        ),
     })
     .transform(p => ({
         ...p,
@@ -166,15 +168,16 @@ const DOOR_OPENED = /^(the loc changed|the loc is gone|the player moved to )/;
 export default defineTask({
     name: 'combolock',
     description:
-        'Solves a four-wheel combination lock door: opens the door, sets the letters and confirms, done when the game says the combination is right. ' +
-        '`door` "peer" (default): Peer the Seer\'s riddle door in Rellekka (2631,3667) in The Fremennik Trials, needs Peer\'s trial started ' +
-        '(the door says "a combination lock ... a riddle"); `at` defaults to the tile outside it (2631,3669), never inside, as opening it from inside leaves the trial. Without `word` it chooses "Read the riddle", reads the riddle ' +
-        'from the pages and sets its answer (MIND, TREE, LIFE, FIRE, TIME or WIND, picked at random by the server per account); with `word` it chooses "Solve the riddle" and sets that. ' +
-        'Done sets the trial to riddle solved; the next step of the trial (empty inventory, through the door) is another task. ' +
-        '`door` "tribal": the Tribal Totem door inside Handelmort Mansion (2634,3323), password KURT; done once the lock is solved (bit 0 of the door varp), after which the door opens like any door; a door that just opens with no lock (already solved, e.g. a restart) is done too. ' +
-        'Each wheel is read from the interface and set by the fewest arrow clicks (A..Z wraps), so a cut-off or lost click recovers; a lock that closes under it is reopened (the wheels restart at A) up to 3 times. ' +
-        "Fails with the game's refusal when the lock rejects the word, and when the riddle is not one of the six. `at` {x,z} is walked to first (Peer's default above), `tile` picks the door loc, `word` overrides the door's word. " +
-        "Verified live: Peer's door (riddles MIND and WIND) and the tribal door (KURT).",
+        'Solves a four-wheel combination lock door: opens the door, sets the letters and confirms, done when the game ' +
+        'says the combination is right. Each wheel is read from the interface and set by the fewest arrow clicks (A..Z ' +
+        'wraps), so a cut-off or lost click recovers; a lock that closes under it is reopened (the wheels restart at A) ' +
+        `up to ${RELOCK_LIMIT} times. Fails with the game's refusal when the lock rejects the word, and when the riddle ` +
+        "is not one of the six. Done at Peer's door sets the trial to riddle solved; the next step of the trial (empty " +
+        'inventory, through the door) is another task. The tribal door is done once the lock is solved (bit 0 of the ' +
+        'door varp), after which the door opens like any door; a door that just opens with no lock (already solved, ' +
+        'e.g. a restart) is done too.',
+    rules: ['`door: "peer"` needs Peer\'s trial started (the door says "a combination lock ... a riddle").'],
+    spots: ["Verified live: Peer's door (riddles MIND and WIND) and the tribal door (KURT)."],
     params: Params,
     memory: (): Memory => ({
         tried: false,
