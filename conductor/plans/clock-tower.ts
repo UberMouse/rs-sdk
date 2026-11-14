@@ -78,8 +78,7 @@ export default definePlan({
             {
                 name: 'fight',
                 when: v =>
-                    !!v.state.player?.combat.inCombat ||
-                    (v.last?.status === 'failed' && /attacked/.test(v.last.reason ?? '')),
+                    !!v.state.player?.combat.inCombat || (v.last?.status === 'failed' && v.last.code === 'attacked'),
                 until: v =>
                     !v.state.player?.combat.inCombat && v.last?.phase !== 'get-red' && v.last?.phase !== 'get-black',
                 onFail: 'continue',

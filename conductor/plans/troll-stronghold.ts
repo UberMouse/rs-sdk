@@ -28,7 +28,8 @@ const freedGodric = (v: PlanView) => heard(v, /Thank you, my friend|You unlock t
 const inDungeon = (v: PlanView) => px(v) >= 2800 && px(v) <= 2900 && pz(v) >= 10000;
 const generalOnMe = (v: PlanView) =>
     v.state.nearbyNpcs.some(n => /^Troll General$/.test(n.name) && n.inCombat && n.distance <= 8);
-const dadWon = (v: PlanView) => v.last?.phase === 'dad' && /Not hurt Dad|You win/i.test(v.last.reason ?? '');
+const dadWon = (v: PlanView) =>
+    v.last?.phase === 'dad' && v.last.code === 'dialog' && /Not hurt Dad|You win/i.test(v.last.reason);
 const started = (v: PlanView) => v.quest(ID) === 'started';
 
 // The Death Plateau secret path from the stile (2817,3562) to the foot of the rocks at (2856,3612).
