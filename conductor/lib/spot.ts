@@ -2,7 +2,8 @@
 // `at` param, the regex param type, and the step that walks to the spot.
 import { z } from 'zod/v4';
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
-import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
+import type { ReasonOf } from '../actions/context';
+import { timedOutAdvancing, WALK_MAX_TICKS, walkTo, type WalkResult } from '../actions/walk';
 import { log } from '../core/op';
 import type { Step, TaskContext } from './task';
 import { assertWindowCovers, failStreakTicks } from './watchdog';
@@ -10,7 +11,12 @@ import { assertWindowCovers, failStreakTicks } from './watchdog';
 const DEFAULT_TOLERANCE = 3;
 
 /** The walk's failure reasons that retrying cannot fix. */
-export const FINAL_WALK_FAILURES: readonly string[] = ['no-path', 'no-connector', 'no-blade', 'bad-coordinates'];
+export const FINAL_WALK_FAILURES: readonly ReasonOf<WalkResult>[] = [
+    'no-path',
+    'no-connector',
+    'no-blade',
+    'bad-coordinates',
+];
 
 const isPattern = (source: string) => {
     try {

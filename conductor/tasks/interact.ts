@@ -253,6 +253,10 @@ export default defineTask({
         '`unreachable` needs `at` and a loc or NPC target.',
         '`wilderness` needs `minFood` food items held to start.',
     ],
+    outcomes: {
+        unreachable:
+            'No target the bot can reach was found, and one or more stand in view that the bot has no route to from here.',
+    },
     spots: [
         'Bloated toad (Big Chompy Bird Hunting), placed inside the bait zone x2631-2639, z2962-2971: {"target":"item","name":"^Bloated toad$","opIndex":1,"option":"^Drop$","allowDestructiveOption":true,"expect":"carefully place the bloated toad"}. The client publishes its op 1 as Drop but the server places the bait: the toad leaves the inventory and a Bloated toad NPC stands there.',
         'Ardougne sheep field, shearing: {"target":"npc","name":"^Sheep$","npcId":43,"use":{"item":"^Shears$"},"expect":"you get some wool"}.',
@@ -335,7 +339,7 @@ export default defineTask({
                         `no ${takeUnreachable ? '' : 'reachable '}${target} /${name}/${tile ? ` at (${tile.x},${tile.z})` : ''} in sight` +
                             (unreachable > 0 ? ` (${unreachable} in view but unreachable from here)` : ''),
                     );
-                    if (failed) return failed;
+                    if (failed) return unreachable > 0 ? { ...failed, code: 'unreachable' } : failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }

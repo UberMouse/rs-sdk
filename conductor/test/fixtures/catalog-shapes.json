@@ -231,9 +231,10 @@
                 "default": false,
                 "type": "boolean"
             },
-            "endWhenPackFull": {
-                "default": false,
-                "type": "boolean"
+            "onFull": {
+                "default": "continue",
+                "type": "string",
+                "enum": ["continue", "stop"]
             }
         },
         "required": ["target", "area"]
@@ -1243,11 +1244,11 @@
                     "required": ["item"]
                 }
             },
-            "maxWaitSeconds": {
-                "default": 90,
-                "type": "number",
+            "maxWaitTicks": {
+                "default": 225,
+                "type": "integer",
                 "exclusiveMinimum": 0,
-                "maximum": 300
+                "maximum": 750
             }
         },
         "required": ["area", "items"]
@@ -1642,9 +1643,10 @@
                 "minimum": 0.1,
                 "maximum": 0.9
             },
-            "stopWhenFull": {
-                "default": false,
-                "type": "boolean"
+            "onFull": {
+                "default": "continue",
+                "type": "string",
+                "enum": ["continue", "stop"]
             }
         },
         "required": ["npc"]

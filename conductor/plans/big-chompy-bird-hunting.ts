@@ -185,7 +185,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2646, z: 2959, radius: 14 }, items: [{ item: 'Equa leaves', count: 1 }], maxWaitSeconds: 40 },
+            { area: { x: 2646, z: 2959, radius: 14 }, items: [{ item: 'Equa leaves', count: 1 }], maxWaitTicks: 100 },
             {
                 name: 'veg-equa',
                 when: v => raw(v) > 0 && toldCook(v) && needVeg(v, wantBugs(v)) && wantBugs(v) === 'Equa leaves',
@@ -194,7 +194,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2584, z: 2966, radius: 6 }, items: [{ item: 'Tomato', count: 1 }], maxWaitSeconds: 40 },
+            { area: { x: 2584, z: 2966, radius: 6 }, items: [{ item: 'Tomato', count: 1 }], maxWaitTicks: 100 },
             {
                 name: 'veg-tomato',
                 when: v => raw(v) > 0 && toldCook(v) && needVeg(v, wantFycie(v)) && wantFycie(v) === 'Tomato',
@@ -203,7 +203,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2562, z: 2972, radius: 6 }, items: [{ item: 'Doogle leaves', count: 1 }], maxWaitSeconds: 40 },
+            { area: { x: 2562, z: 2972, radius: 6 }, items: [{ item: 'Doogle leaves', count: 1 }], maxWaitTicks: 100 },
             {
                 name: 'veg-doogle',
                 when: v => raw(v) > 0 && toldCook(v) && needVeg(v, wantFycie(v)) && wantFycie(v) === 'Doogle leaves',
@@ -242,7 +242,7 @@ export default definePlan({
         // plucking leaves the Raw chompy on the ground
         phase(
             pickup,
-            { area: { x: 2630, z: 2964, radius: 16 }, items: [{ item: 'Raw chompy', count: 1 }], maxWaitSeconds: 20 },
+            { area: { x: 2630, z: 2964, radius: 16 }, items: [{ item: 'Raw chompy', count: 1 }], maxWaitTicks: 50 },
             {
                 name: 'take-chompy',
                 when: v => started(v) && raw(v) === 0 && v.state.groundItems.some(g => /^raw chompy$/i.test(g.name)),
@@ -263,7 +263,7 @@ export default definePlan({
         // the view lags a few seconds behind the kill: let the corpse show before leaving
         phase(
             pickup,
-            { area: { x: 2630, z: 2966, radius: 8 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitSeconds: 5 },
+            { area: { x: 2630, z: 2966, radius: 8 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitTicks: 13 },
             {
                 name: 'settle-shoot',
                 when: v => v.last?.phase === 'shoot' && aliveChompy(v).length === 0 && deadChompy(v).length === 0,
@@ -326,7 +326,7 @@ export default definePlan({
         // before the bow: the placed bait needs time for a chompy, and for Rantz to miss it
         phase(
             pickup,
-            { area: { x: 2635, z: 2966, radius: 6 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitSeconds: 40 },
+            { area: { x: 2635, z: 2966, radius: 6 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitTicks: 100 },
             {
                 name: 'wait-bait',
                 when: v => hunting(v) && bow(v) === 0 && !missed(v) && (bait(v).length > 0 || placedNow(v)),
@@ -395,7 +395,7 @@ export default definePlan({
         // the opened chest lists Search a few seconds late
         phase(
             pickup,
-            { area: { x: 2637, z: 9396, radius: 3 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitSeconds: 8 },
+            { area: { x: 2637, z: 9396, radius: 3 }, items: [{ item: 'Cannonball', count: 1 }], maxWaitTicks: 20 },
             {
                 name: 'wait-chest',
                 when: v =>

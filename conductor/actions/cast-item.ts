@@ -6,7 +6,7 @@
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { type Op, send, ticks, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { messageCursor, messageSince } from './messages';
 
 const CAST_ITEM_WAIT_MS = 5000;
@@ -27,11 +27,7 @@ const REFUSED =
 
 export type CastItemResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'no-runes' | 'level' | 'refused' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-runes' | 'level' | 'refused' | 'send-failed' | 'timeout'>;
 
 const magicXp = (s: BotWorldState) => findSkill(s, 'Magic')?.experience ?? 0;
 

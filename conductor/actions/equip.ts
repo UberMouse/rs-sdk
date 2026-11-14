@@ -4,16 +4,14 @@
 import type { InventoryItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /** bot.equipItem's 5s wait for the item to leave its slot or show as worn, in ticks. */
 export const EQUIP_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 /** The option that puts an item on. */
 export const EQUIP_OPTION = /wield|wear|equip/i;
 
-export type EquipResult =
-    | { ok: true }
-    | { ok: false; reason: 'no-option' | 'send-failed' | 'timeout'; message: string };
+export type EquipResult = { ok: true } | Failure<'no-option' | 'send-failed' | 'timeout'>;
 
 /**
  * Wields or wears `item` and waits until it leaves its inventory slot or shows as worn. A copy that is

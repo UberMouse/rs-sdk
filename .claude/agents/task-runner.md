@@ -209,7 +209,7 @@ export default definePlan({
 - The view `v`: `v.inv(item)` (pack; exact name, case-insensitive, or a RegExp), `v.held`/`v.worn`,
   `v.full`, `v.free`, `v.bank(item)` (as last seen open; `undefined` before),
   `v.level(skill)`, `v.hp` (`{ current, max }`), `v.combatLevel`, `v.coins`, `v.last`
-  (`{ phase, status, reason }` or `null`), `v.runs(phase)` and `v.lastDone`/`v.lastFailed(...names)`
+  (`{ phase, status, reason, code?, endedBy? }` or `null`; branch on `code`, never on `reason` text), `v.runs(phase)` and `v.lastDone`/`v.lastFailed(...names)`
   (an unknown phase name throws), `v.x`/`v.z`/`v.floor`, `v.within(spot)` (a square: the larger of
   the x and z differences; `spot` is `{ x, z, radius?, tolerance?, level? }`, the exact tile with
   neither), `v.npcs`/`v.locs`/`v.ground(name, within?)` (counts, like `v.held`/`v.worn`;
@@ -245,7 +245,7 @@ requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase
 and the idle rail (3 phases in a row with no XP, each ending where it started or in a state
 already seen: the plan ends `done` with `nothing left to do: ...` when they all ended `done` (also
 at the first instant repeat of a done phase), and `failed` with `phases make no progress` when any
-failed or stalled). A params typo fails it at once. An `until`
+failed or stalled). A params key the task does not take ends the plan `error` at load, naming phase and key (a single run: `failed`). An `until`
 that holds in combat waits for the fight to end.
 
 **Where plans live.** Reuse a promoted plan in `conductor/plans/` as it is when it fits. Write a
@@ -317,11 +317,11 @@ bun conductor/tools/journal.ts run '<objective>' --file <journal path> --task pl
 
 First, two cases that come before any diagnosis:
 
-- **The bot died** (a reason starting `died`, a respawn in `bun sdk/cli.ts`, items gone): stop
+- **The bot died** (`code` `died`, `endedBy` `interrupt:death`, a respawn in `bun sdk/cli.ts`, items gone): stop
   working the goal. Record where and when, the attacker if the log names one, and the inventory
   before and after, then return (`GOAL unreachable` or `DECISION NEEDED`). Never start another run
   after a death: the conductor decides whether to restore the save.
-- **The run ended with the bot in combat or attacked** (`inCombat`, an `under-attack` reason, hp
+- **The run ended with the bot in combat or attacked** (`inCombat`, code `attacked`, hp
   falling in `bun sdk/cli.ts`): the bot is still being hit while you read logs. Resolve it first:
   `combat` against a weaker attacker if food is held, or `travel` away from it with `"flee": true`
   (the one task that starts in combat), and report a `DECISION NEEDED` at once if neither fits. A

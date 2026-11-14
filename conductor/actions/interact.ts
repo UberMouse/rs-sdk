@@ -7,9 +7,10 @@
 // the evidence wait is left to the caller.
 import type { InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send } from '../core/op';
+import type { Failure } from './context';
 import { useOnLocAction, useOnNpcAction } from './use';
 
-export type InteractResult = { ok: true } | { ok: false; reason: 'no-option' | 'send-failed'; message: string };
+export type InteractResult = { ok: true } | Failure<'no-option' | 'send-failed'>;
 
 interface PublishedOption {
     text: string;
@@ -24,7 +25,7 @@ export function pickOption(
     options: readonly PublishedOption[],
     name: string,
     option: number | RegExp,
-): { ok: true; optionIndex: number; label: string } | { ok: false; reason: 'no-option'; message: string } {
+): { ok: true; optionIndex: number; label: string } | Failure<'no-option'> {
     if (typeof option === 'number')
         return {
             ok: true,

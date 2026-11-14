@@ -4,7 +4,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 
 /** bot.chopTree's 30s wait for logs or the tree gone, in ticks. */
@@ -12,9 +12,7 @@ export const CHOP_WAIT_TICKS = Math.ceil(30_000 / TICK_MS);
 /** The option that chops a tree ("Chop down"). */
 export const CHOP_OPTION = /chop/i;
 
-export type ChopResult =
-    | { ok: true }
-    | { ok: false; reason: 'felled-by-other' | 'timeout' | 'send-failed'; message: string };
+export type ChopResult = { ok: true } | Failure<'felled-by-other' | 'timeout' | 'send-failed'>;
 
 /**
  * Chops `tree` and waits until `logs` are gained or the tree is gone. Success needs logs gained: a tree

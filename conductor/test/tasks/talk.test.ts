@@ -230,6 +230,7 @@ describe('talk: finding the NPC', () => {
         const r = await simulate(talk, { params: dukeParams, timeline: base.series(30) });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('talk: no reachable /Duke Horacio/ in sight');
+        expect(r.result.code).toBeUndefined();
         expect(r.sends).toEqual([]);
     });
 
@@ -239,6 +240,7 @@ describe('talk: finding the NPC', () => {
         expect(r.result.reason).toBe(
             'talk: no reachable /Duke Horacio/ in sight (1 in view but unreachable from here)',
         );
+        expect(r.result.code).toBe('unreachable');
     });
 
     test('three starts in a row that open no dialog fail the run with the last reason', async () => {

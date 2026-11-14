@@ -12,6 +12,7 @@ import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
 import { bankMemory, watchBank } from './bank-memory';
 import { journalMemory } from './journal-memory';
+import { unknownParamsReason } from './param-keys';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { guardLabel } from './interrupts';
 import { type QuestProgress, QUESTS, questProgress } from './quests';
@@ -45,8 +46,11 @@ export interface PlanView {
     hp: { current: number; max: number };
     /** Finished runs of that phase in this plan; throws on a name the plan has no phase for. */
     runs(phase: string): number;
-    /** The previous phase run, or null before the first has ended. */
-    last: { phase: string; status: TaskStatus; reason: string } | null;
+    /**
+     * The previous phase run, or null before the first has ended. `code` and `endedBy` are its result's
+     * (TaskResult.code, TaskResult.endedBy), absent where the result has none: branch on `code`, not on `reason`.
+     */
+    last: { phase: string; status: TaskStatus; reason: string; code?: string; endedBy?: string } | null;
     /** The player's `worldX`; 0 in a state with no player. */
     x: number;
     /** The player's `worldZ`; 0 in a state with no player. */
@@ -305,15 +309,19 @@ function parsePhases(def: PlanDef): ParsedPhase[] {
     return def.phases.map(p => ({ phase: p, result: p.task.params.safeParse(p.params ?? {}) }));
 }
 
-/** Why each phase whose params do not parse against its task's schema is refused, in plan order. */
+/**
+ * Why each phase whose params do not parse against its task's schema, or hold a top-level key it does not
+ * take, is refused, in plan order.
+ */
 export function invalidParams(def: PlanDef, parsed: ParsedPhase[] = parsePhases(def)): string[] {
-    return parsed.flatMap(({ phase: p, result: r }) =>
-        r.success
-            ? []
-            : [
-                  `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
-              ],
-    );
+    return parsed.flatMap(({ phase: p, result: r }) => {
+        if (!r.success)
+            return [
+                `phase "${p.name}" has invalid params: ${r.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
+            ];
+        const unknown = unknownParamsReason(p.task, p.params ?? {});
+        return unknown ? [`phase "${p.name}" has ${unknown}`] : [];
+    });
 }
 
 /** A plan result's params from its parsed phases. */
@@ -1070,7 +1078,14 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             inFlight = null;
             screenshots.push(...result.screenshots);
             lastPhase = chosen.name;
-            if (!observes) last = { phase: chosen.name, status: result.status, reason: result.reason };
+            if (!observes)
+                last = {
+                    phase: chosen.name,
+                    status: result.status,
+                    reason: result.reason,
+                    ...(result.code !== undefined && { code: result.code }),
+                    ...(result.endedBy !== undefined && { endedBy: result.endedBy }),
+                };
             const phaseEnd = (onFail?: OnFailDecision) =>
                 emit({
                     type: 'phase-end',

@@ -49,9 +49,9 @@ const logs = (v: PlanView) => v.inv('Logs');
 const blanket = (v: PlanView) => v.inv("Child's blanket");
 
 // Omad wanders out to the passage west of the chapel door (2602,3209); the closed door (it swings shut again) makes him
-// unreachable from inside, which an Omad talk reports as a failure
-const omadBlocked = (v: PlanView) =>
-    v.last?.status === 'failed' && /unreachable/.test(v.last.reason ?? '') && px(v) >= 2603;
+// unreachable from inside, which an Omad talk reports as a failure. A walk's "no path" failure is not this case: it
+// carries no code, so it does not send the plan to the door
+const omadBlocked = (v: PlanView) => v.last?.status === 'failed' && v.last.code === 'unreachable' && px(v) >= 2603;
 
 const omad = { npc: '^Brother Omad$', at: { x: 2604, z: 3209, tolerance: 4 } };
 const cedric = { npc: '^Brother Cedric$', at: { x: 2614, z: 3259, tolerance: 4 } };

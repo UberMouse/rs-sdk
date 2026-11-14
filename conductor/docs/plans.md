@@ -37,7 +37,7 @@ The catalog already has the shapes to compose:
 | Producer   | the inventory is full (`onFull: 'stop'`) | woodcutting, fishing, mining                             |
 | Consumer   | its input is used up                     | firemaking, fletching, cooking, smithing, crafting, fill |
 | Errand     | its operations are made                  | bank, shop, pickup                                       |
-| Open-ended | never on its own                         | combat, thieving (`stopWhenFull` aside)                  |
+| Open-ended | never on its own                         | combat, thieving (`onFull: stop` aside)                  |
 
 Only the open-ended tasks need an outside "until". `thieving` does not end when its food runs out: a phase needs an `until` on food, or the low-hp guard fails the run (`knight-thieve` does this). [v 2026-10-16 conductor2w3 local]
 
@@ -156,7 +156,7 @@ keeps every phase choice re-derivable from a run's recorded states.
 | `v.quest(id)`       | `'none'`, `'started'` or `'done'` from the quest tab (see below)        |
 | `v.questDone(id)`   | the quest tab shows the quest green                                     |
 | `v.runs(phase)`     | times that phase has run in this plan                                   |
-| `v.last`            | the previous phase's `{ phase, status, reason }`, or `null`             |
+| `v.last`            | the previous phase's `{ phase, status, reason, code?, endedBy? }`, or `null`; branch on `code` (an outcome the task declares, see `--list <task>`), never on `reason` text |
 | `v.x` / `v.z`       | the player's tile; `v.floor` its level (0 the surface); 0 with no player |
 | `v.within(spot)`    | at `spot` (`{ x, z, radius?, tolerance?, level? }`, an `area` or `at` param), Chebyshev; with neither `radius` nor `tolerance`, the exact tile |
 | `v.held(item)`      | count in the pack plus worn; `v.worn(item)` worn only (`v.inv` is the pack only) |
@@ -236,7 +236,8 @@ progress (...): <names>`) if any ended failed or stuck, a real stall. It catches
   `waits` task (the `wait` task) that its phase's `until` ended. They are bounded instead by
   `maxFails` and by `DEFAULT_MAX_WAITS` consecutive `until`-ended waits, of any phase.
 - **Params up front.** Every phase's params are parsed against its task's schema before the plan
-  acts, so a typo fails the plan in the first second, not after an hour of the first phase.
+  acts, so a typo fails the plan in the first second, not after an hour of the first phase. A key the task's
+  schema does not have ends the plan `error` at load, naming the phase and the key; there are no aliases for old names.
 - **Done-at-once twice ends the plan.** A phase that ends done at once (no change), twice in a row from the same start state, ends the plan as done. Split a repeated action into distinct phases (`manhole-open`/`manhole-down`, `cell-door-a`/`-b`), vary the start tile of a retry, or give the phase an `until` on the position change. [v 2026-10-24 questw7 local]
 - **Stale view after a cast, jump or pickup.** The next phase selection can read the pre-action inventory or loc view and re-pick the same phase (a spell cast wastes a 25-tick bloom; repeated jumps). Guard such a phase with `v.last` plus a short walking settle phase. An `items drop` of several named items fails preflight if one is absent: one phase per junk item. A `pickup` can fail "attacked while picking up" near monsters: two identical phases with `onFail: 'continue'`. [v 2026-10-24 questw1 local] A new plan gets the between-phase settle and `v.lastDone`/`v.lastFailed` instead of the `v.last` guard, and one phase with `onFail: 'retry'` instead of the two pickups.
 - **A random-roll failure counts as idle.** A try that can fail without changing anything (a skill roll such as replacing a railing: no XP, same inventory and position) is an idle phase run, and 3 in a row end the plan. Follow each failure with a short `travel` nudge phase to a fresh tile (picked e.g. by `hp % 7`), so the state changes. [v 2026-10-24 questw7 local] A new plan uses `onFail: 'retry'` on the try instead, which stays out of the idle rail; `maxFails` (default 3) still ends the plan after that many failures in a row, so a roll that fails often needs a larger `maxFails`.
@@ -555,7 +556,9 @@ phase(combat, { target: 'Cow', area: COWS, food: ['Trout'], loot: ['Cowhide'] },
   plan, in `v.runs`/`lastDone`/`lastFailed` (and the helpers `ran`, `lastWas`, `lastIs`) arguments or
   compared with `.phase` by `===`/`!==`; (3) a RegExp literal that matches both `Bronze axe` and
   `Bronze pickaxe` (an unanchored `/axe$/i`), skipping one passed to `.replace`, `.replaceAll` or
-  `.split`. It cannot see a phase name inside an array literal
+  `.split`; (4) a failure reason matched by text (`.test`, `includes`, `match`, `matchAll`, `search`,
+  `startsWith`, `endsWith`, `indexOf`, a literal `===`/`!==`), unless an earlier operand of the same `&&`
+  chain tests `.code`. It cannot see a phase name inside an array literal
   (`['a', 'b'].includes(v.last?.phase ?? '')`), a name held in a variable or built by a template
   literal, `==`/`!=`, a `switch` on the phase, or a pattern built with `new RegExp(...)` or given as a
   string.

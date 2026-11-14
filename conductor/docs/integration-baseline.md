@@ -57,6 +57,6 @@ None.
   meets (13.9 s and 20.2 s above).
 - Tests that share world state (a tree, a rock, a ground spawn, shop stock) work ground no other
   test uses, but an earlier run of the same test can leave a stump, a depleted rock or a taken
-  spawn: `actions/mine` (16.0 s vs 6.4 s above) and `smoke/pickup` (waits up to `maxWaitSeconds`,
-  default 90 s, for the knife at (3224, 3202) to respawn) then wait for a respawn.
+  spawn: `actions/mine` (16.0 s vs 6.4 s above) and `smoke/pickup` (waits up to `maxWaitTicks`,
+  default 225 ticks (90 s), for the knife at (3224, 3202) to respawn) then wait for a respawn.
 - `actions/walk` is the longest file (about 230 tiles to Varrock West bank); a busy server slows it.

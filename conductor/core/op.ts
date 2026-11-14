@@ -6,8 +6,12 @@ import type { ActionResult, BotAction, BotWorldState, NearbyLoc } from '../../sd
 
 export type Pred = (state: BotWorldState) => boolean;
 
-/** What a task step or guard reports: nothing to carry on, or `done`/`fail` to end the run. */
-export type Outcome = void | { done: string } | { fail: string };
+/**
+ * What a task step or guard reports: nothing to carry on, or `done`/`fail` to end the run. `code` is a stable
+ * name for why (TaskResult.code), which a plan can branch on where the sentence may be reworded; the task or
+ * guard declares each code it returns (TaskDef.outcomes).
+ */
+export type Outcome = void | { done: string; code?: string } | { fail: string; code?: string };
 
 const critical = Symbol('critical');
 

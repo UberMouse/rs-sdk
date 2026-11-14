@@ -5,7 +5,7 @@
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 
 /** bot.eatFood's 5s wait for HP or the food count to change, in ticks: the most an eat takes in all. */
 export const EAT_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
@@ -16,9 +16,7 @@ export const EAT_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
  */
 export const EAT_ATTEMPT_TICKS = 3;
 
-export type EatResult =
-    | { ok: true; hpGained: number }
-    | { ok: false; reason: 'no-option' | 'send-failed' | 'timeout'; message: string };
+export type EatResult = { ok: true; hpGained: number } | Failure<'no-option' | 'send-failed' | 'timeout'>;
 
 const hpOf = (s: BotWorldState) => s.player?.hp ?? 0;
 

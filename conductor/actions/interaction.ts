@@ -5,7 +5,7 @@ import type { BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../s
 import { type Op, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
 import { MOVED_PREFIX, movementWatch } from './movement';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { type InteractResult, interactItem, interactLoc, interactNpc, sendUseOnLoc, sendUseOnNpc } from './interact';
 import { CANT_REACH, dialogPageSince, dialogSince, messageCursor, messagesSince, messageSince } from './messages';
 
@@ -30,11 +30,7 @@ export type InteractTarget =
 
 export type InteractionResult =
     | { ok: true; effect: string }
-    | {
-          ok: false;
-          reason: 'no-option' | 'send-failed' | 'cant-reach' | 'refused' | 'rejected' | 'no-effect';
-          message: string;
-      };
+    | Failure<'no-option' | 'send-failed' | 'cant-reach' | 'refused' | 'rejected' | 'no-effect'>;
 
 /**
  * Most ticks the settle after a game-driven move waits: a rope thrown across water ends on the throw

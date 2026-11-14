@@ -12,7 +12,7 @@ import { type Op, scan, send, ticks, wait } from '../core/op';
 import { configId, configName, objInfo } from '../lib/packs';
 import { chebyshev, sameTile, type Tile } from '../lib/connectors';
 import type { Move } from '../lib/walk-graph';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { cleanText } from './dismiss';
 import { interactItem, interactLoc, interactNpc } from './interact';
 import { REFUSAL } from './interaction';
@@ -63,16 +63,12 @@ export const retryFits = (m: Move, tick: number, deadline: number | undefined): 
 
 export type CrossResult =
     | { ok: true; at: Tile; attempts: number }
-    | {
-          ok: false;
-          /**
-           * `refused`: the game said no (a message, a discarded op, a choice the row does not answer); `fell`: a failed
-           * roll not tried again; `no-move`: nothing moved the bot in time; `no-target`, `no-item`, `send-failed`:
-           * nothing reached the game.
-           */
-          reason: 'refused' | 'fell' | 'no-move' | 'no-target' | 'no-item' | 'send-failed';
-          message: string;
-      };
+    /**
+     * `refused`: the game said no (a message, a discarded op, a choice the row does not answer); `fell`: a failed
+     * roll not tried again; `no-move`: nothing moved the bot in time; `no-target`, `no-item`, `send-failed`:
+     * nothing reached the game.
+     */
+    | Failure<'refused' | 'fell' | 'no-move' | 'no-target' | 'no-item' | 'send-failed'>;
 
 export interface CrossOptions {
     /** After a failed roll: whether to try again (the walk's plan still prices the move as the better way). */
@@ -120,7 +116,7 @@ function findItem(s: BotWorldState, by: { obj: string } | { category: string }):
     });
 }
 
-type Sent = { ok: true } | { ok: false; reason: 'no-target' | 'no-item' | 'send-failed'; message: string };
+type Sent = { ok: true } | Failure<'no-target' | 'no-item' | 'send-failed'>;
 const sentOrFailed = (r: { ok: true } | { ok: false; message: string }): Sent =>
     r.ok ? { ok: true } : { ok: false, reason: 'send-failed', message: r.message };
 

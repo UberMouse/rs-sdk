@@ -95,7 +95,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2784, z: 3289, radius: 3 }, items: [{ item: 'Damp sticks', count: 1 }], maxWaitSeconds: 20 },
+            { area: { x: 2784, z: 3289, radius: 3 }, items: [{ item: 'Damp sticks', count: 1 }], maxWaitTicks: 50 },
             {
                 name: 'sticks',
                 when: v =>
@@ -109,7 +109,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2765, z: 3278, radius: 3 }, items: [{ item: 'Broken glass', count: 1 }], maxWaitSeconds: 20 },
+            { area: { x: 2765, z: 3278, radius: 3 }, items: [{ item: 'Broken glass', count: 1 }], maxWaitTicks: 50 },
             {
                 name: 'glass',
                 when: v =>

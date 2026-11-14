@@ -7,7 +7,7 @@
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.attack's default 5s wait for the fight to start or the server's refusal, in ticks. */
@@ -23,11 +23,7 @@ const ALREADY_FIGHTING = /already under attack|someone else is fighting|someone 
 
 export type AttackResult =
     | { ok: true }
-    | {
-          ok: false;
-          reason: 'no-option' | 'cant-reach' | 'already-in-combat' | 'target-gone' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-option' | 'cant-reach' | 'already-in-combat' | 'target-gone' | 'send-failed' | 'timeout'>;
 
 /**
  * Attacks `npc` and waits until the fight with it has started: the bot targets it in combat (it

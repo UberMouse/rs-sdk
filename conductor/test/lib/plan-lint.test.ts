@@ -7,6 +7,10 @@ import waitTask from '../../tasks/wait';
 const plan = (...names: string[]): PlanDef =>
     definePlan({ name: 'lint-test', phases: names.map(name => phase(waitTask, { ticks: 1 }, { name })) });
 
+/** The reason-matching problem at `line` for `call`. */
+const flagged = (line: number, call: string) =>
+    `line ${line}: ${call} matches a reason's text, which may be reworded: branch on \`last.code\``;
+
 describe('lintPlan', () => {
     test('a clean plan has no problems', () => {
         const src = `
@@ -63,5 +67,48 @@ describe('lintPlan', () => {
     test("a pattern that rewrites text is not an item pattern: `name.replace(/ /g, '-')`", () => {
         expect(lintPlan(plan('a'), "const id = n => n.replace(/ /g, '-').split(/ /);")).toEqual([]);
         expect(lintPlan(plan('a'), 'const has = v => v.inv(/ /) > 0;')).toHaveLength(1);
+    });
+
+    test("matching a reason's text is flagged, naming last.code", () => {
+        const src = [
+            "const a = v => v.last?.status === 'failed' && /attacked/.test(v.last.reason ?? '');",
+            'const b = v => !!v.last?.reason.match(/unreachable/);',
+            "const c = ({ reason }) => reason.includes('dialog');",
+            "const d = v => v.last?.code === 'dialog' || /Dad/.test(v.last.reason);",
+            "const e = v => v.last?.reason.startsWith('Cannot');",
+            "const f = v => v.last?.reason.endsWith('blocked');",
+            "const g = v => v.last?.reason.indexOf('wall') >= 0;",
+            "const h = v => v.last?.reason === 'no food';",
+            "const i = v => 'no food' !== v.last?.reason;",
+            "const j = v => v.last?.code === 'x' && v.last.reason === 'game text';",
+        ].join('\n');
+        expect(lintPlan(plan('a'), src)).toEqual([
+            flagged(1, "/attacked/.test(v.last.reason ?? '')"),
+            flagged(2, 'v.last?.reason.match(/unreachable/)'),
+            flagged(3, "reason.includes('dialog')"),
+            flagged(4, '/Dad/.test(v.last.reason)'),
+            flagged(5, "v.last?.reason.startsWith('Cannot')"),
+            flagged(6, "v.last?.reason.endsWith('blocked')"),
+            flagged(7, "v.last?.reason.indexOf('wall')"),
+            flagged(8, "v.last?.reason === 'no food'"),
+            flagged(9, "'no food' !== v.last?.reason"),
+        ]);
+    });
+
+    test('a reason compared with a template literal without substitutions is flagged', () => {
+        expect(lintPlan(plan('a'), 'const h = v => v.last?.reason === `no food`;')).toEqual([
+            flagged(1, 'v.last?.reason === `no food`'),
+        ]);
+    });
+
+    test('a status test alone is not a reason match', () => {
+        expect(lintPlan(plan('a'), "const h = v => v.last?.status === 'failed';")).toEqual([]);
+    });
+
+    test('a reason match after a code test in the same && chain is allowed (game text the ending carries)', () => {
+        const src =
+            "const won = v => v.last?.phase === 'a' && v.last.code === 'dialog' && (/Not hurt Dad/i.test(v.last.reason));";
+        expect(lintPlan(plan('a'), src)).toEqual([]);
+        expect(lintPlan(plan('a'), "const ok = v => v.last?.code === 'attacked';")).toEqual([]);
     });
 });

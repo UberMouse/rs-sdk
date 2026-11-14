@@ -7,7 +7,7 @@
 import type { InventoryItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { INVENTORY_SLOTS, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { messageCursor, messageSince } from './messages';
 
 /** bot.unequipItem's 5s wait for the item to leave the equipment, in ticks. */
@@ -19,9 +19,7 @@ export const UNEQUIP_WAIT_TICKS = Math.ceil(5000 / TICK_MS);
 export const UNEQUIP_OPTION_INDEX = 1;
 const NO_SPACE = /inventory space|inventory.*full/i;
 
-export type UnequipResult =
-    | { ok: true }
-    | { ok: false; reason: 'no-room' | 'send-failed' | 'timeout'; message: string };
+export type UnequipResult = { ok: true } | Failure<'no-room' | 'send-failed' | 'timeout'>;
 
 /** `item` (a worn item, as `state.equipment` lists it) is still worn in its slot. */
 const worn = (item: InventoryItem) => (s: { equipment: InventoryItem[] }) =>

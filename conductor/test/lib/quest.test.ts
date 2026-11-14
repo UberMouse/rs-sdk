@@ -660,6 +660,13 @@ describe('defineQuest: the compiled plan', () => {
         ]);
     });
 
+    test('a step with a param its task does not take fails invalidParams and the plan lint', () => {
+        const bad = quest([step('pay', deed, { what: 'pay', quite: true } as never)]);
+        const reason = 'phase "pay" has unknown param "quite" (deed takes: what, quiet)';
+        expect(invalidParams(bad)).toEqual([reason]);
+        expect(lintPlan(bad, '')).toEqual([reason]);
+    });
+
     test("refuses a step with onFail 'continue' and a reached, a predicate or a journal mark", () => {
         const reacheds: NonNullable<QuestStep['reached']>[] = [v => v.questStarted(ID), journal(/paid/)];
         for (const reached of reacheds)

@@ -125,10 +125,12 @@ const Params = z.object({
         .describe(
             'The fraction of max HP to eat `food` below; needs `food` held, and with none the bot waits for HP to regenerate instead.',
         ),
-    stopWhenFull: z
-        .boolean()
-        .default(false)
-        .describe('End the run done once the inventory is full (coins stack, so this is mostly for seeds and loot).'),
+    onFull: z
+        .enum(['continue', 'stop'])
+        .default('continue')
+        .describe(
+            'What to do once the inventory is full: `continue` keeps thieving, `stop` ends the run done (coins stack, so `stop` is mostly for seeds and loot).',
+        ),
 });
 
 type ThievingParams = z.infer<typeof Params>;
@@ -223,7 +225,7 @@ export default defineTask({
     steps: [
         {
             name: 'stop-full',
-            when: ctx => ctx.params.stopWhenFull && ctx.inventoryFull(),
+            when: ctx => ctx.params.onFull === 'stop' && ctx.inventoryFull(),
             run() {
                 return { done: 'inventory full' };
             },

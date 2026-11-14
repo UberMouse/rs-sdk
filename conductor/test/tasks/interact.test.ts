@@ -96,6 +96,7 @@ describe('interact: failures', () => {
     test('no target in sight fails after waiting', async () => {
         const r = await simulate(interact, { params: coffinParams, timeline: world().series(30) });
         expect(r.result.reason).toBe('interact: no reachable loc /^coffin$/ in sight');
+        expect(r.result.code).toBeUndefined();
     });
 
     test('a target in view but unreachable is named so', async () => {
@@ -104,6 +105,7 @@ describe('interact: failures', () => {
         expect(r.result.reason).toBe(
             'interact: no reachable loc /^coffin$/ in sight (1 in view but unreachable from here)',
         );
+        expect(r.result.code).toBe('unreachable');
     });
 
     test("the server's can't-reach fails at once, with the sent option not repeated", async () => {

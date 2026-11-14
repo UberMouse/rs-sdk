@@ -7,7 +7,7 @@
 import type { BotWorldState, GroundItem } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.pickupItem's 10s wait for the item gained, gone or refused, in ticks. */
@@ -19,11 +19,7 @@ const NO_SPACE = /inventory space|inventory.*full/i;
 
 export type PickupResult =
     | { ok: true }
-    | {
-          ok: false;
-          reason: 'cant-reach' | 'inventory-full' | 'taken-by-other' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'cant-reach' | 'inventory-full' | 'taken-by-other' | 'send-failed' | 'timeout'>;
 
 /**
  * Picks up `item` and waits until one more of it is held. The ground item also vanishes when another

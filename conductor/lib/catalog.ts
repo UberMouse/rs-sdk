@@ -3,6 +3,8 @@
 import { readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { z } from 'zod/v4';
+import { GUARDS } from './interrupts';
+import { defOf, peelLayer } from './param-keys';
 import { isPatternParam, isPatternSchema, PATTERN_NOTE } from './spot';
 import type { TaskDef } from './task';
 
@@ -33,6 +35,8 @@ export interface CatalogEntry {
     name: string;
     description: string;
     rules?: string[];
+    /** Outcome code -> when it happens: the task's (TaskDef.outcomes), then those of the guards it installs. */
+    outcomes?: Record<string, string>;
     spots?: string[];
     /** The params as JSON Schema, input side: defaults are optional, a root pipe shows what it takes. */
     params: unknown;
@@ -40,11 +44,26 @@ export interface CatalogEntry {
 
 const paramsSchema = (def: TaskDef) => z.toJSONSchema(def.params, { io: 'input' });
 
+/**
+ * The codes a run of `def` can end with: its own, then each guard's it installs (the shared ones `allow` leaves on,
+ * those a param can turn off included, and its own). A code declared twice shows each distinct sentence once.
+ */
+function outcomesOf(def: TaskDef): Record<string, string> {
+    const sentences = new Map<string, Set<string>>();
+    const guards = [...GUARDS.filter(g => !(def.allow ?? []).some(a => a === g.name)), ...(def.guards ?? [])];
+    for (const declared of [def.outcomes, ...guards.map(g => g.outcomes)])
+        for (const [code, sentence] of Object.entries(declared ?? {}))
+            sentences.set(code, (sentences.get(code) ?? new Set()).add(sentence));
+    return Object.fromEntries([...sentences].map(([code, s]) => [code, [...s].join(' ')]));
+}
+
 export function catalogEntry(def: TaskDef): CatalogEntry {
+    const outcomes = outcomesOf(def);
     return {
         name: def.name,
         description: def.description,
         ...(def.rules?.length ? { rules: def.rules } : {}),
+        ...(Object.keys(outcomes).length ? { outcomes } : {}),
         ...(def.spots?.length ? { spots: def.spots } : {}),
         params: paramsSchema(def),
     };
@@ -67,19 +86,6 @@ export function summaryLine(def: TaskDef): string {
     return `${def.name}: ${firstSentence(def.description)} (params: ${ordered.join(', ') || 'none'})`;
 }
 
-interface Def {
-    type: string;
-    innerType?: z.ZodType;
-    in?: z.ZodType;
-    shape?: Record<string, z.ZodType>;
-    element?: z.ZodType;
-    options?: z.ZodType[];
-    items?: z.ZodType[];
-    rest?: z.ZodType | null;
-}
-const defOf = (s: z.ZodType) => s.def as unknown as Def;
-/** Layers that wrap one schema; a pipe is read on its input side, as `--list` prints it. */
-const WRAPPERS = new Set(['optional', 'default', 'prefault', 'nullable', 'nonoptional', 'readonly', 'catch']);
 /** Schemas with no fields inside. */
 const LEAVES = new Set(['string', 'number', 'boolean', 'bigint', 'enum', 'literal', 'date', 'null', 'any', 'unknown']);
 
@@ -96,10 +102,9 @@ function unwrap(s: z.ZodType): { core: z.ZodType; described: boolean; shown: str
             shown ??= cur.description;
             if (!isPatternSchema(cur) || isPatternParam(cur)) described = true;
         }
-        const d = defOf(cur);
-        if (WRAPPERS.has(d.type) && d.innerType) cur = d.innerType;
-        else if (d.type === 'pipe' && d.in) cur = d.in;
-        else return { core: cur, described, shown };
+        const inner = peelLayer(cur);
+        if (!inner) return { core: cur, described, shown };
+        cur = inner;
     }
 }
 
@@ -173,7 +178,7 @@ export async function listCatalog(args: string[], dir = TASKS_DIR): Promise<stri
         const lines: string[] = [];
         for (const name of all) lines.push(summaryLine(await loadTask(name, dir)));
         lines.push(
-            "A task's full entry (description, rules, spots, params as JSON Schema): bun conductor/run-task.ts --list <task> [<task>...]; every task's: --list --all",
+            "A task's full entry (description, rules, outcomes, spots, params as JSON Schema): bun conductor/run-task.ts --list <task> [<task>...]; every task's: --list --all",
         );
         return lines.join('\n');
     }

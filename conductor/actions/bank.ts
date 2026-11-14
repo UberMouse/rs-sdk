@@ -23,7 +23,7 @@ import {
 import type { BankItem, BotAction, BotWorldState, InventoryItem, NearbyLoc, NearbyNpc } from '../../sdk/types';
 import { type Op, send, ticks, wait } from '../core/op';
 import { countItemId, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 import { type CloseModalResult, type ModalOps, type WithModalResult, withModal } from './modal';
 
@@ -39,8 +39,6 @@ export const NOTE_TOGGLE_WAIT_TICKS = Math.ceil(3000 / TICK_MS);
 /** bank_main:com_93 (withdraw as notes) and bank_main:com_94 (withdraw as items). */
 export const NOTE_COMPONENT = 5386;
 export const ITEM_COMPONENT = 5387;
-
-type Failure<R extends string> = { ok: false; reason: R; message: string };
 
 export type OpenBankResult =
     | { ok: true; message: string }

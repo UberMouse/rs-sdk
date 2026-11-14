@@ -11,6 +11,7 @@ import {
     groupSessions,
     type LogEvent,
     nameOf,
+    lastEndTags,
     newRun,
     openRun,
     parseGained,
@@ -131,6 +132,20 @@ describe('foldRun, a plan', () => {
         expect(run.selections[0]!.last).toBeNull();
         apply({ type: 'result', status: 'done', reason: 'r', xpGained: 'lots' });
         expect(run.result).toMatchObject({ status: 'done', xpGained: {}, inventoryDelta: {}, levelsGained: {} });
+    });
+
+    test("a select's last keeps its code and endedBy, shown after the status", () => {
+        const run = newRun('plan', 'x-plan-p', 'b');
+        const apply = (e: Record<string, unknown>) => applyPlanEvent(run, { t: 1, ...e } as LogEvent);
+        const last = { phase: 'z', status: 'failed', reason: 'r', code: 'attacked', endedBy: 'interrupt:under-attack' };
+        apply({ type: 'select', phase: 'a', checks: {}, last });
+        apply({ type: 'select', phase: 'a', checks: {}, last: { phase: 'z', status: 'done', reason: 'r', code: 3 } });
+        const coded = run.selections[0]!.last!;
+        const plain = run.selections[1]!.last!;
+        expect(coded).toEqual(last as typeof coded);
+        expect(lastEndTags(coded)).toBe(' (code attacked, by interrupt:under-attack)');
+        expect(plain).toEqual({ phase: 'z', status: 'done', reason: 'r' });
+        expect(lastEndTags(plain)).toBe('');
     });
 
     test('a select with no phase starts no run; malformed events are ignored', () => {

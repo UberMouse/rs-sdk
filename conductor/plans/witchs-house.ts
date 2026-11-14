@@ -69,7 +69,7 @@ const HOP = (
     ),
     phase(
         pickup,
-        { area: { x: fromX, z, radius: 2 }, items: [{ item: 'Bones' }], maxWaitSeconds: 60 },
+        { area: { x: fromX, z, radius: 2 }, items: [{ item: 'Bones' }], maxWaitTicks: 150 },
         {
             name: `${name}-wait`,
             when: v => dir(v) && at(v, fromX, z) && !ok(v),
@@ -145,7 +145,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2935, z: 3460, radius: 3 }, items: [{ item: 'Ball' }], maxWaitSeconds: 90 },
+            { area: { x: 2935, z: 3460, radius: 3 }, items: [{ item: 'Ball' }], maxWaitTicks: 225 },
             { name: 'ball', when: v => needBall(v) && px(v) >= 2931, ...R },
         ),
         // --- the experiment: each form turns into the next on death ---
@@ -294,7 +294,7 @@ export default definePlan({
         ),
         phase(
             pickup,
-            { area: { x: 2901, z: 3472, radius: 3, level: 1 }, items: [{ item: 'Diary' }], maxWaitSeconds: 20 },
+            { area: { x: 2901, z: 3472, radius: 3, level: 1 }, items: [{ item: 'Diary' }], maxWaitTicks: 50 },
             { name: 'diary', when: v => lvl(v) === 1 && v.inv('Diary') === 0, ...R },
         ),
         phase(

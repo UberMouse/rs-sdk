@@ -12,7 +12,7 @@
 import type { BotWorldState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { cleanText } from './dismiss';
 import { interactLoc } from './interact';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
@@ -45,11 +45,7 @@ const YES = /yes/i;
 
 export type TollResult =
     | { ok: true }
-    | {
-          ok: false;
-          reason: 'no-coins' | 'no-loc' | 'send-failed' | 'cant-reach' | 'no-dialog' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-coins' | 'no-loc' | 'send-failed' | 'cant-reach' | 'no-dialog' | 'timeout'>;
 
 /** The loc is one of the toll gate's two. */
 export const isTollGate = (l: { x: number; z: number }) => TOLL_GATE_LOCS.some(g => g.x === l.x && g.z === l.z);

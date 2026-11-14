@@ -229,7 +229,8 @@ which is format, lint and `tsc` only; run `bun test conductor` separately.)
 `bun conductor/tools/replay.ts <file>` re-runs the current task code against the recorded states
 and reports the first command that differs from the recorded run. Replay is valid up to that
 divergence (the world doesn't react to new decisions), so it answers "would the new code have
-decided differently here", which is the question a failed run raises.
+decided differently here", which is the question a failed run raises. A recording whose params hold a key
+the task no longer has (dropped or renamed) ends `failed` at preflight naming the key.
 
 Risk: full `BotWorldState` per tick may be large. Measure first; record a trimmed projection
 (player, inventory, equipment, skills, dialog/interfaces, combat, nearby within ~15 tiles, new

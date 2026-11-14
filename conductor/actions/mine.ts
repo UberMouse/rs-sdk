@@ -5,7 +5,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, wait } from '../core/op';
 import { countItems, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 
 /** How long to wait for ore or the rock vanishing (30 s). */
@@ -13,9 +13,7 @@ export const MINE_WAIT_TICKS = Math.ceil(30_000 / TICK_MS);
 /** The option that mines a rock; a mined-out rock keeps it (plainrock1/2), so it never tells a live rock apart. */
 export const MINE_OPTION = /^mine$/i;
 
-export type MineResult =
-    | { ok: true }
-    | { ok: false; reason: 'rock-gone' | 'timeout' | 'send-failed' | 'no-option'; message: string };
+export type MineResult = { ok: true } | Failure<'rock-gone' | 'timeout' | 'send-failed' | 'no-option'>;
 
 /**
  * Mines `rock` and waits until `ore` is gained or the rock is gone. Success needs ore gained: a rock

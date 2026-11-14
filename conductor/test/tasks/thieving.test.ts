@@ -332,11 +332,11 @@ describe('thieving: failure streaks', () => {
 });
 
 describe('thieving: inventory, guards and area', () => {
-    test('stopWhenFull ends the run done on a full inventory; without it the run carries on', async () => {
+    test('onFull stop ends the run done on a full inventory; without it the run carries on', async () => {
         let full = base;
         for (let i = 0; i < 28; i++) full = full.inv(`Junk ${i}`, 1, { id: 2000 + i });
         const r = await simulate(thieving, {
-            params: { ...PARAMS, stopWhenFull: true },
+            params: { ...PARAMS, onFull: 'stop' },
             timeline: manAt(full).series(1),
         });
         expect(r.result.status).toBe('done');

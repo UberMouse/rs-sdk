@@ -26,8 +26,10 @@ import {
     underFire,
     wildernessGuard,
 } from './interrupts';
+import { unknownParamsReason } from './param-keys';
 import { checkStops, describeStop, validateStops, type StopCondition } from './stop';
 import {
+    checkOutcomes,
     type Outcome,
     type Sinks,
     type Step,
@@ -168,8 +170,8 @@ const bankCount =
         return n;
     };
 
-/** `by` is the step or guard that ended the run (TaskResult.endedBy). */
-type End = { status: TaskStatus; reason: string; by?: string };
+/** `by` is the step or guard that ended the run (TaskResult.endedBy), `code` its outcome's (TaskResult.code). */
+type End = { status: TaskStatus; reason: string; by?: string; code?: string };
 
 /** Item name -> count held, a stack counted as its size. */
 export function inventoryCounts(s: BotWorldState): Record<string, number> {
@@ -213,10 +215,24 @@ class AsyncGuard extends Error {
     override name = 'AsyncGuard';
 }
 
-function ended(name: string, outcome: Outcome): End | null {
-    if (outcome && 'fail' in outcome) return { status: 'failed', reason: `${name}: ${outcome.fail}`, by: name };
-    if (outcome && 'done' in outcome) return { status: 'done', reason: `${name}: ${outcome.done}`, by: name };
-    return null;
+/**
+ * The end `outcome` makes of the run, from the step or guard `name` that may end it with the codes in `declared`.
+ * A code it does not declare ends the run `error`: a plan could not look it up.
+ */
+function ended(name: string, outcome: Outcome, declared: ReadonlySet<string>, who: 'step' | 'guard'): End | null {
+    if (!outcome || !('fail' in outcome || 'done' in outcome)) return null;
+    const { code } = outcome;
+    if (code !== undefined && !declared.has(code)) {
+        return {
+            status: 'error',
+            reason: `${who} "${name}" ended with outcome code "${code}", which it does not declare`,
+        };
+    }
+    const end: End =
+        'fail' in outcome
+            ? { status: 'failed', reason: `${name}: ${outcome.fail}`, by: name }
+            : { status: 'done', reason: `${name}: ${outcome.done}`, by: name };
+    return code === undefined ? end : { ...end, code };
 }
 
 const unexpected = (name: string, r: Interpretation<Outcome>): End => ({
@@ -278,14 +294,27 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     }
     const invBefore = inventoryCounts(initial);
 
-    // A def built without defineTask is sized here too; a bad `silent` fails the run once it has started.
+    // A def built without defineTask is sized and its outcome codes checked here too; a bad `silent` or
+    // `outcomes` fails the run once it has started.
     let stuckAfterMs = DEFAULT_STUCK_AFTER_MS;
-    let badWindow: string | null = null;
+    let badDeclaration: string | null = null;
     try {
         stuckAfterMs = taskStuckWindowMs(def);
+        checkOutcomes(`task "${def.name}"`, def.outcomes);
+        for (const g of [...GUARDS, ...(def.guards ?? [])])
+            checkOutcomes(`guard "${g.name}" of task "${def.name}"`, g.outcomes);
     } catch (e) {
-        badWindow = errMessage(e);
+        badDeclaration = errMessage(e);
     }
+    const taskCodes = new Set(Object.keys(def.outcomes ?? {}));
+    const guardCodes = new Map(
+        [...GUARDS, ...(def.guards ?? [])].map(g => [guardLabel(g.name), new Set(Object.keys(g.outcomes ?? {}))]),
+    );
+    /** `ended` for a step (the task's codes) or a guard, by its label (the guard's own). */
+    const endOf = (name: string, outcome: Outcome): End | null => {
+        const own = guardCodes.get(name);
+        return own ? ended(name, outcome, own, 'guard') : ended(name, outcome, taskCodes, 'step');
+    };
     const stepTimeoutMs = def.stepTimeoutMs ?? DEFAULT_STEP_TIMEOUT_MS;
     const stepBudgetTicks = budgetTicksOf(stepTimeoutMs);
     const progressEveryMs = opts.progressEveryMs ?? DEFAULT_PROGRESS_EVERY_MS;
@@ -436,7 +465,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 );
                 if (r.kind === 'returned') return settled(r.value.state);
                 if (r.kind === 'cancelled') return unexpected('settle fight', r);
-                const e = ended(r.by, r.outcome);
+                const e = endOf(r.by, r.outcome);
                 if (e) return { ...e, reason: `${end.reason}; ${e.reason}` };
             }
         } catch (e) {
@@ -455,13 +484,17 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
     };
 
-    const finish = async (endStatus: TaskStatus, endReason: string, endBy?: string): Promise<TaskResult> => {
+    const finish = async (
+        endStatus: TaskStatus,
+        endReason: string,
+        endBy?: string,
+        endCode?: string,
+    ): Promise<TaskResult> => {
         const atStop = stateOrNull();
         const keepsDialog = endStatus === 'done' && !!atStop && holdsDialog(atStop);
-        const { status, reason, by } =
-            endStatus === 'done' && atStop && inFight(atStop) && !keepsDialog
-                ? await settle({ status: endStatus, reason: endReason, by: endBy })
-                : { status: endStatus, reason: endReason, by: endBy };
+        const asked: End = { status: endStatus, reason: endReason, by: endBy, code: endCode };
+        const { status, reason, by, code } =
+            endStatus === 'done' && atStop && inFight(atStop) && !keepsDialog ? await settle(asked) : asked;
         if (status !== 'done') await takeScreenshot(status);
         // Eating first: a slow onEnd must not delay it at low HP.
         if (by !== guardLabel(deathGuard.name) && !keepsDialog) await eatIfHurt();
@@ -492,6 +525,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             status,
             reason,
             ...(by !== undefined && { endedBy: by }),
+            ...(code !== undefined && { code }),
             params: ctx.params ?? opts.rawParams,
             durationMs: now() - startedAt,
             loops,
@@ -522,7 +556,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             `invalid params: ${parsed.error.issues.map(i => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')}`,
         );
     }
-    if (badWindow) return finish('error', badWindow);
+    if (badDeclaration) return finish('error', badDeclaration);
     try {
         validateStops(stops, initial);
     } catch (e) {
@@ -537,6 +571,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
     const names = [...GUARDS, ...(def.guards ?? [])].map(g => g.name);
     const clashes = names.filter((n, i) => names.indexOf(n) !== i);
     if (clashes.length) return finish('error', `task guard name(s) taken: ${[...new Set(clashes)].join(', ')}`);
+    // A plain `z.object` drops a key it does not have, so a misspelt or stale param would run on its default.
+    const unknown = unknownParamsReason(def, opts.rawParams ?? {});
+    if (unknown) return finish('failed', `preflight: ${unknown}`);
     say(`start ${JSON.stringify(ctx.params)}${stops.length ? ` until ${stops.map(describeStop).join(' | ')}` : ''}`);
 
     const start = initial.player;
@@ -703,9 +740,9 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
         }
         switch (r.kind) {
             case 'returned':
-                return ended(name, r.value);
+                return endOf(name, r.value);
             case 'aborted':
-                return ended(r.by, r.outcome);
+                return endOf(r.by, r.outcome);
             case 'cancelled':
                 return ending ?? unexpected(name, r);
         }
@@ -727,7 +764,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             stepRuns[LEFTOVER_STEP] = 1;
             const criticalGuards = guards.filter(g => g.critical);
             const end = await runOp(LEFTOVER_STEP, closeLeftover(ctx, leftover), criticalGuards);
-            if (end) return finish(end.status, end.reason, end.by);
+            if (end) return finish(end.status, end.reason, end.by, end.code);
         }
         for (;;) {
             loops++;
@@ -736,7 +773,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             currentPos = posOf(s);
 
             const end = checkRun(s);
-            if (end) return finish(end.status, end.reason, end.by);
+            if (end) return finish(end.status, end.reason, end.by, end.code);
             const complete = def.isComplete?.(ctx);
             if (complete) return finish('done', complete);
 
@@ -750,7 +787,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                 begin(guard.name);
                 noEffectSteps = 0;
                 const out = guard.run(s);
-                stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guards, guard)) : ended(guard.name, out);
+                stepEnd = isOp(out) ? await runOp(guard.name, out, guardsUnder(guards, guard)) : endOf(guard.name, out);
             } else {
                 // Every step's `when`, so a step that stopped applying loses its streaks even in a loop
                 // where an earlier step runs.
@@ -775,7 +812,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
                     // thrown.
                     if (strayPromise(out))
                         return finish('error', `step "${step.name}" returned a promise: async steps are not supported`);
-                    stepEnd = isOp(out) ? await runOp(step.name, out, guards) : ended(step.name, out);
+                    stepEnd = isOp(out) ? await runOp(step.name, out, guards) : endOf(step.name, out);
                 } finally {
                     running = null;
                 }
@@ -798,7 +835,7 @@ export async function executeTask(def: AnyTaskDef, opts: ExecuteOptions): Promis
             // and starve the watchdog and websocket frames.
             await sleep(0);
 
-            if (stepEnd) return finish(stepEnd.status, stepEnd.reason, stepEnd.by);
+            if (stepEnd) return finish(stepEnd.status, stepEnd.reason, stepEnd.by, stepEnd.code);
         }
     } catch (e) {
         if (e instanceof TickStall) return finish('stuck', e.message);

@@ -13,7 +13,7 @@
 import type { BotWorldState, NearbyLoc } from '../../sdk/types';
 import { type Op, scan, send, ticks, wait } from '../core/op';
 import { TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { interactLoc } from './interact';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 import type { Pathfinder } from './paths';
@@ -71,13 +71,7 @@ export const GNOME_GATE: GateSpec = {
     decline: /busy/i,
 };
 
-export type GateResult =
-    | { ok: true }
-    | {
-          ok: false;
-          reason: 'no-loc' | 'send-failed' | 'cant-reach' | 'no-dialog' | 'timeout';
-          message: string;
-      };
+export type GateResult = { ok: true } | Failure<'no-loc' | 'send-failed' | 'cant-reach' | 'no-dialog' | 'timeout'>;
 
 const clean = (text: string) => text.replaceAll('\\n', '').replace(/@\w+@/g, '').trim();
 export type GateDirection = 'in' | 'out';

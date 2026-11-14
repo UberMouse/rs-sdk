@@ -5,6 +5,7 @@ import {
     applyPhaseEvent,
     applyRunEvent,
     type BotSnapshot,
+    lastEndTags,
     type PhaseLog,
     openRun,
     type PhaseRunEntry,
@@ -961,7 +962,11 @@ function selectionPanel(sel: Selection | undefined): Child[] {
             ),
         ),
         sel.last
-            ? h('div', { class: 'sub-h' }, `after ${sel.last.phase} ${sel.last.status}: ${sel.last.reason}`)
+            ? h(
+                  'div',
+                  { class: 'sub-h' },
+                  `after ${sel.last.phase} ${sel.last.status}${lastEndTags(sel.last)}: ${sel.last.reason}`,
+              )
             : null,
         h('div', { class: 'sub-h' }, `Inventory (${sel.free} free)`),
         countChips(sel.inventory),

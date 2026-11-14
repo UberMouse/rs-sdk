@@ -8,7 +8,7 @@
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
 import { findSkill, TICK_MS } from '../lib/util';
-import type { ActionContext } from './context';
+import type { ActionContext, Failure } from './context';
 import { CANT_REACH, messageCursor, messageSince } from './messages';
 
 /** bot.castSpell's default 3s wait for the cast's XP or the server's refusal, in ticks. */
@@ -24,11 +24,7 @@ const LOW_LEVEL = /magic level is not high enough/i;
 
 export type CastResult =
     | { ok: true; xpGained: number }
-    | {
-          ok: false;
-          reason: 'no-runes' | 'level' | 'cant-reach' | 'target-gone' | 'send-failed' | 'timeout';
-          message: string;
-      };
+    | Failure<'no-runes' | 'level' | 'cant-reach' | 'target-gone' | 'send-failed' | 'timeout'>;
 
 const magicXp = (s: BotWorldState) => findSkill(s, 'Magic')?.experience ?? 0;
 

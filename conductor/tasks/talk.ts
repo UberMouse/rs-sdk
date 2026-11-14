@@ -304,6 +304,10 @@ export default defineTask({
         '`press` follows a conversation with an `npc` and cannot be combined with `travels`.',
         '`amount` answers a prompt the conversation with an `npc` ends in; not with `travels`.',
     ],
+    outcomes: {
+        unreachable:
+            'No `npc` the bot can reach was found, and one or more stand in view that the bot has no route to from here.',
+    },
     spots: [
         'Death Plateau dice game with Harold (stage 50+, gamble open): {"npc":"Harold","choices":["gamble"],"amount":1000,"press":{"component":"death_dice:com_28","ready":"Your roll","until":"You (win|lose)"}}. Harold wins ties, 15 of 36 rolls win, his gold is 100 plus the net losses of the player, the IOU comes with a win over a bet larger than that, max bet 1000, ~47 ticks a game; the reason ends with "You win!" or "You lose!", and the plan reads the coins and IOU. The door of his bedroom (upstairs in the Burthorpe inn) knocks with a dialog, so enter the room first.',
         'Duke Horacio: {"npc":"Duke Horacio","at":{"x":3210,"z":3220,"level":1},"choices":["quests for me","Sure"]}.',
@@ -430,11 +434,9 @@ export default defineTask({
                     progress.answered = 0;
                     const npc = findNpc(ctx);
                     if (!npc) {
-                        const failed = NO_NPC.missWith(
-                            ctx,
-                            `no reachable /${ctx.params.npc}/ in sight${unreachableNote(ctx)}`,
-                        );
-                        if (failed) return failed;
+                        const note = unreachableNote(ctx);
+                        const failed = NO_NPC.missWith(ctx, `no reachable /${ctx.params.npc}/ in sight${note}`);
+                        if (failed) return note ? { ...failed, code: 'unreachable' } : failed;
                         yield* ticks(MISSING_WAIT_TICKS);
                         return;
                     }
