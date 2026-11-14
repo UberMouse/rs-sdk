@@ -11,8 +11,8 @@ import {
     PORTAL,
     USE_OPTION,
 } from '../lib/runecraft';
+import { failStreak, MISSING_LIMIT, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Aubury's rune shop, south-east Varrock (the rune-mysteries plan's stand). */
 const AUBURY = { name: /^aubury$/i, x: 3252, z: 3402, tolerance: 3 };
@@ -24,15 +24,19 @@ const TELEPORT_WAIT_TICKS = 15;
 /** The portal is walked to first, up to a corner to corner of the 64-tile mine (2 tiles a tick running), then p_delay(1). */
 const PORTAL_WAIT_TICKS = 40;
 const FAIL_LIMIT = 3;
-const MISSING_LIMIT = 3;
-const MISSING_WAIT_TICKS = 2;
 const PORTAL_TOLERANCE = 2;
 const STEP_TIMEOUT_MS = 360_000;
-const STUCK_AFTER_MS = stuckWindowMs(
-    failStreakTicks(FAIL_LIMIT, TELEPORT_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, PORTAL_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-);
+const NO_AUBURY = missingTargetStreak('noAubury');
+// Each look for the portal that finds none also walks to the nearest known one (WALK_MAX_TICKS) and waits.
+const NO_PORTAL = failStreak({
+    name: 'noPortal',
+    limit: MISSING_LIMIT,
+    worstTicks: WALK_MAX_TICKS + MISSING_WAIT_TICKS,
+});
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+const TELEPORT_FAILS = failStreak({ name: 'teleportFails', limit: FAIL_LIMIT, worstTicks: TELEPORT_WAIT_TICKS });
+const PORTAL_FAILS = failStreak({ name: 'portalFails', limit: FAIL_LIMIT, worstTicks: PORTAL_WAIT_TICKS });
+const SILENT = [TELEPORT_FAILS, PORTAL_FAILS, WALK_FAILS, NO_AUBURY, NO_PORTAL];
 
 const Params = z.object({
     action: z
@@ -67,7 +71,7 @@ export default defineTask({
     ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     steps: [
         {
@@ -81,13 +85,12 @@ export default defineTask({
             *run(ctx) {
                 const before = ctx.distanceTo(AUBURY.x, AUBURY.z);
                 const r = yield* walkTo(ctx, AUBURY.x, AUBURY.z, AUBURY.tolerance);
-                const fails = ctx.streak('walkFails');
                 if (r.ok || timedOutAdvancing(r, before, ctx.distanceTo(AUBURY.x, AUBURY.z))) {
-                    fails.reset();
+                    WALK_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`walk to Aubury failed (${r.reason}): ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} walks in a row failed: ${r.message}` };
+                return WALK_FAILS.missWith(ctx, `${FAIL_LIMIT} walks in a row failed: ${r.message}`);
             },
         },
         {
@@ -95,21 +98,19 @@ export default defineTask({
             when: ctx => ctx.params.action === 'enter',
             *run(ctx) {
                 const aubury = nearestAubury(ctx);
-                const missing = ctx.streak('noAubury');
                 if (!aubury) {
-                    if (missing.add() >= MISSING_LIMIT) return { fail: 'no reachable Aubury in sight' };
+                    const failed = NO_AUBURY.missWith(ctx, 'no reachable Aubury in sight');
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                NO_AUBURY.clear(ctx);
                 const cursor = messageCursor(ctx.state());
                 const sent = yield* interactNpc(aubury, TELEPORT_OPTION);
-                const fails = ctx.streak('teleportFails');
-                const failed = (why: string): { fail: string } | undefined =>
-                    fails.add() >= FAIL_LIMIT ? { fail: `${FAIL_LIMIT} teleports in a row failed: ${why}` } : undefined;
                 if (!sent.ok && sent.reason === 'no-option')
                     return { fail: `Aubury has no Teleport option (${aubury.options.join(', ')})` };
-                if (!sent.ok) return failed(sent.message);
+                if (!sent.ok)
+                    return TELEPORT_FAILS.missWith(ctx, `${FAIL_LIMIT} teleports in a row failed: ${sent.message}`);
                 const w = yield* wait(
                     'teleport to the essence mine',
                     s =>
@@ -122,7 +123,7 @@ export default defineTask({
                 if (messageSince(w.state, cursor, NOT_QUEST)) return { fail: 'Rune Mysteries is not complete' };
                 const why = messageSince(w.state, cursor, CANT_REACH) ? 'cannot reach Aubury' : 'no teleport in time';
                 yield* log(`teleport failed: ${why}`);
-                return failed(why);
+                return TELEPORT_FAILS.missWith(ctx, `${FAIL_LIMIT} teleports in a row failed: ${why}`);
             },
         },
         {
@@ -133,32 +134,31 @@ export default defineTask({
                     ctx,
                     l => PORTAL.test(l.name) && l.options.some(o => USE_OPTION.test(o)),
                 );
-                const missing = ctx.streak('noPortal');
                 if (!portal) {
                     // None in view: walk to the nearest known portal, then look again.
                     const known = nearestPoint(ctx, ESSENCE_PORTALS);
-                    if (missing.add() >= MISSING_LIMIT)
-                        return {
-                            fail: `no reachable Portal in sight (known portals: ${ESSENCE_PORTALS.map(p => `(${p.x},${p.z})`).join(' ')}; nearest (${known.x},${known.z}) is ${Math.round(ctx.distanceTo(known.x, known.z))} tiles away)`,
-                        };
+                    const failed = NO_PORTAL.missWith(
+                        ctx,
+                        `no reachable Portal in sight (known portals: ${ESSENCE_PORTALS.map(p => `(${p.x},${p.z})`).join(' ')}; nearest (${known.x},${known.z}) is ${Math.round(ctx.distanceTo(known.x, known.z))} tiles away)`,
+                    );
+                    if (failed) return failed;
                     const r = yield* walkTo(ctx, known.x, known.z, PORTAL_TOLERANCE);
                     if (!r.ok)
                         yield* log(`walk to the portal at (${known.x},${known.z}) failed (${r.reason}): ${r.message}`);
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                NO_PORTAL.clear(ctx);
                 const used = yield* interactLoc(portal, USE_OPTION);
-                const fails = ctx.streak('portalFails');
                 if (used.ok) {
                     const w = yield* wait('leave the essence mine', s => !inEssenceMine(s), PORTAL_WAIT_TICKS);
                     if (w.kind === 'met') return;
                 }
                 yield* log(`portal at (${portal.x},${portal.z}) did not take us out`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return {
-                        fail: `${FAIL_LIMIT} portal uses in a row failed at (${portal.x},${portal.z}); try another portal`,
-                    };
+                return PORTAL_FAILS.missWith(
+                    ctx,
+                    `${FAIL_LIMIT} portal uses in a row failed at (${portal.x},${portal.z}); try another portal`,
+                );
             },
         },
     ],

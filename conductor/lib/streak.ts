@@ -66,3 +66,11 @@ export function failStreak(spec: StreakSpec & { what?: string }): PhraseStreak |
               };
     return streak;
 }
+
+/** Looks (a wait of MISSING_WAIT_TICKS between each) a target may stay out of sight before the task fails. */
+export const MISSING_LIMIT = 3;
+export const MISSING_WAIT_TICKS = 2;
+
+/** The streak of looks that found no target: a task wraps it with its own failure text and its own wait. */
+export const missingTargetStreak = (name: string): ReasonStreak =>
+    failStreak({ name, limit: MISSING_LIMIT, worstTicks: MISSING_WAIT_TICKS });

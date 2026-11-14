@@ -13,29 +13,23 @@ import { INTERACT_WAIT_TICKS, interact } from '../actions/interaction';
 import { dialogSince, messageCursor } from '../actions/messages';
 import { CONVERSE_MAX_TICKS, converse, type TalkProgress } from '../actions/talk';
 import { closeModalUntil } from '../actions/modal';
-import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, send, ticks, wait } from '../core/op';
-import { AtSchema, onTile, type Tile, TileSchema, walkToSpotStep } from '../lib/spot';
+import { AtSchema, onTile, type Tile, TileSchema, walkToSpotSilentTicks, walkToSpotStep } from '../lib/spot';
+import { failStreak, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Failed walks or interactions in a row before the task fails. */
 const FAIL_LIMIT = 3;
-/** Loops (2 ticks each) the door may be out of sight before the task fails. */
-const MISSING_LIMIT = 3;
-const MISSING_WAIT_TICKS = 2;
+const MISSING = missingTargetStreak('missing');
+// An Open that never lands waits up to INTERACT_WAIT_TICKS each time.
+const INTERACT_FAILS = failStreak({ name: 'interactFails', limit: FAIL_LIMIT, worstTicks: INTERACT_WAIT_TICKS });
 /** Times the lock may close under the solve step (a click that closed it, a stray close) before the task gives up. */
 const RELOCK_LIMIT = 3;
 /** Ticks the lock gets to show after the door's dialogs have closed (the script opens it the same tick). */
 const LOCK_OPEN_TICKS = 6;
 /** One interaction, its dialog (CONVERSE_MAX_TICKS) and the wait for the lock fit one step; the walk is a step of its own. */
 const STEP_TIMEOUT_MS = 360_000;
-const STUCK_AFTER_MS = stuckWindowMs(
-    CONVERSE_MAX_TICKS,
-    COMBOLOCK_MAX_TICKS,
-    failStreakTicks(FAIL_LIMIT, INTERACT_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-);
+const SILENT = [CONVERSE_MAX_TICKS, COMBOLOCK_MAX_TICKS, INTERACT_FAILS, MISSING, walkToSpotSilentTicks(FAIL_LIMIT)];
 
 /**
  * Peer the Seer's six riddles (viking_peer.rs2 viking_seer_read_riddle), each told by the first line of its first
@@ -193,7 +187,7 @@ export default defineTask({
     // Peer's door opens a message box and a choice that the open step answers itself; the tribal door has no dialog.
     allowGuards: params => (params.door === 'peer' ? ['dialog'] : []),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     steps: [
         {
@@ -248,33 +242,34 @@ export default defineTask({
                 if (m.tried && !m.sent && ctx.state().dialog.isOpen) m.sent = true;
                 if (!m.sent) {
                     const target = doorsInView(ctx)[0];
-                    const missing = ctx.streak('missing');
                     if (!target) {
                         if (door === 'tribal' && doorStandsOpen(ctx))
                             return { done: 'the tribal door already stands open: already solved' };
-                        if (missing.add() >= MISSING_LIMIT) {
-                            const t = doorTile(ctx);
-                            return { fail: `no reachable Door with an Open option at (${t.x},${t.z}) in sight` };
-                        }
+                        const t = doorTile(ctx);
+                        const failed = MISSING.missWith(
+                            ctx,
+                            `no reachable Door with an Open option at (${t.x},${t.z}) in sight`,
+                        );
+                        if (failed) return failed;
                         yield* ticks(MISSING_WAIT_TICKS);
                         return;
                     }
-                    missing.reset();
+                    MISSING.clear(ctx);
                     if (!m.tried) m.cursor = messageCursor(ctx.state());
                     m.tried = true;
                     const r = yield* interact(ctx, { kind: 'loc', loc: target }, OPEN);
-                    const fails = ctx.streak('interactFails');
                     if (!r.ok) {
                         yield* log(`Open Door failed (${r.reason}): ${r.message}`);
                         // Only a send that never landed is repeated: an Open sent twice can undo itself.
                         if (r.reason !== 'send-failed' && r.reason !== 'rejected')
                             return { fail: `${r.reason}: ${r.message}` };
                         m.tried = false;
-                        if (fails.add() >= FAIL_LIMIT)
-                            return { fail: `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})` };
-                        return;
+                        return INTERACT_FAILS.missWith(
+                            ctx,
+                            `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})`,
+                        );
                     }
-                    fails.reset();
+                    INTERACT_FAILS.clear(ctx);
                     m.sent = true;
                     // Already solved (a restart): no lock shows, the door just opens.
                     if (door === 'tribal' && DOOR_OPENED.test(r.effect) && !lockOpen(ctx.state()))

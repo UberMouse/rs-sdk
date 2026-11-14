@@ -17,8 +17,7 @@ import {
     pressComponent,
     resolveComponent,
 } from '../actions/press';
-import { useItemOnLoc } from '../actions/use';
-import { WALK_MAX_TICKS } from '../actions/walk';
+import { USE_WAIT_TICKS, useItemOnLoc } from '../actions/use';
 import { log, type Op, send, ticks, wait } from '../core/op';
 import {
     AtSchema,
@@ -30,19 +29,23 @@ import {
     onTile,
     patternParam,
     TileSchema,
+    walkToSpotSilentTicks,
     walkToSpotStep,
 } from '../lib/spot';
 import { HOLD_HP_FLOOR_FRACTION, HOLD_HP_FLOOR_MIN } from '../lib/engine';
 import { isLevelUp, isUnlockPage } from '../lib/interrupts';
+import { failStreak, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
 
 /** Failed walks, talks or uses in a row before the task fails. */
 const FAIL_LIMIT = 3;
-/** Loops (2 ticks each) the NPC, loc or dialog may be missing before the task fails. */
-const MISSING_LIMIT = 3;
-const MISSING_WAIT_TICKS = 2;
+const NO_DIALOG = missingTargetStreak('noDialog');
+const NO_LOC = missingTargetStreak('noLoc');
+const NO_NPC = missingTargetStreak('noNpc');
+// A use or a talk that never lands waits up to USE_WAIT_TICKS / TALK_OPEN_TICKS each time.
+const USE_FAILS = failStreak({ name: 'useFails', limit: FAIL_LIMIT, worstTicks: USE_WAIT_TICKS });
+const TALK_FAILS = failStreak({ name: 'talkFails', limit: FAIL_LIMIT, worstTicks: TALK_OPEN_TICKS });
 /**
  * Ticks a conversation that `travels` gets to carry the player away after its dialog closes: the sail proc's
  * p_delay is 7 ticks on the sailors' routes and 13-14 on the Entrana monks' (interface_boat/scripts/sail.rs2:22,
@@ -56,11 +59,15 @@ const FOLLOW_UP_OPEN_TICKS = 10;
 /** A walk, then a conversation of up to CONVERSE_MAX_TICKS, a press and the pages around it: all fit one step. */
 const STEP_TIMEOUT_MS = 480_000;
 /** A conversation changes nothing the watchdog sees until its item arrives: outlast the longest. */
-const STUCK_AFTER_MS = stuckWindowMs(
+const SILENT = [
     CONVERSE_MAX_TICKS + PRESS_MAX_TICKS,
-    failStreakTicks(FAIL_LIMIT, TALK_OPEN_TICKS),
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-);
+    TALK_FAILS,
+    USE_FAILS,
+    NO_DIALOG,
+    NO_LOC,
+    NO_NPC,
+    walkToSpotSilentTicks(FAIL_LIMIT),
+];
 
 const Params = z
     .object({
@@ -313,7 +320,7 @@ export default defineTask({
     // The conversation is a dialog this task opens and answers itself: the dialog guard must not click under it.
     allow: ['dialog'],
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
     // An open dialog is the way out of a fight (a kill can open one); the engine's refusal would strand it.
     startInCombat: (p, s) => p.continue && s.dialog.isOpen,
     // Under attack the low-hp eat would close the dialog `continue` answers (combat `stopOnDialog` leaves Morgan Le
@@ -340,7 +347,8 @@ export default defineTask({
                 // answered > 0: a cut-off step resumed; converse waits out the grace for a dialog that just closed.
                 if (!ctx.state().dialog.isOpen && progress.answered === 0) {
                     // The dialog may open a tick after the step that caused it.
-                    if (ctx.streak('noDialog').add() >= MISSING_LIMIT) return { fail: 'no dialog is open to continue' };
+                    const failed = NO_DIALOG.missWith(ctx, 'no dialog is open to continue');
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
@@ -365,27 +373,25 @@ export default defineTask({
                 const item = ctx.state().inventory.find(i => itemMatches(pattern, i));
                 if (!item) return { fail: missingItem(pattern, use.onLoc) };
                 const loc = findLoc(ctx);
-                const missing = ctx.streak('noLoc');
                 if (!loc) {
-                    if (missing.add() >= MISSING_LIMIT)
-                        return {
-                            fail: `no reachable ${use.onLoc}${use.tile ? ` at (${use.tile.x},${use.tile.z})` : ''} in sight`,
-                        };
+                    const failed = NO_LOC.missWith(
+                        ctx,
+                        `no reachable ${use.onLoc}${use.tile ? ` at (${use.tile.x},${use.tile.z})` : ''} in sight`,
+                    );
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                NO_LOC.clear(ctx);
                 const used = yield* useItemOnLoc(ctx, item, loc);
-                const fails = ctx.streak('useFails');
                 if (used.ok) {
-                    fails.reset();
+                    USE_FAILS.clear(ctx);
                     ctx.memory.used++;
                     yield* log(`used ${item.name} on ${loc.name}`);
                     return;
                 }
                 yield* log(`using ${item.name} on ${loc.name} failed: ${used.message}`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} uses in a row failed (last: ${used.message})` };
+                return USE_FAILS.missWith(ctx, `${FAIL_LIMIT} uses in a row failed (last: ${used.message})`);
             },
         },
         {
@@ -422,25 +428,25 @@ export default defineTask({
                     // A new conversation; an open dialog is one a cut-off step left, resumed where it was.
                     progress.answered = 0;
                     const npc = findNpc(ctx);
-                    const missing = ctx.streak('noNpc');
                     if (!npc) {
-                        if (missing.add() >= MISSING_LIMIT)
-                            return { fail: `no reachable /${ctx.params.npc}/ in sight${unreachableNote(ctx)}` };
+                        const failed = NO_NPC.missWith(
+                            ctx,
+                            `no reachable /${ctx.params.npc}/ in sight${unreachableNote(ctx)}`,
+                        );
+                        if (failed) return failed;
                         yield* ticks(MISSING_WAIT_TICKS);
                         return;
                     }
-                    missing.reset();
+                    NO_NPC.clear(ctx);
                     const started = yield* startTalk(ctx, npc, matcher(ctx.params.option));
-                    const fails = ctx.streak('talkFails');
                     if (!started.ok) {
                         yield* log(`talking to ${npc.name} failed: ${started.message}`);
-                        if (fails.add() >= FAIL_LIMIT)
-                            return {
-                                fail: `${FAIL_LIMIT} tries to talk to ${npc.name} failed (last: ${started.message})`,
-                            };
-                        return;
+                        return TALK_FAILS.missWith(
+                            ctx,
+                            `${FAIL_LIMIT} tries to talk to ${npc.name} failed (last: ${started.message})`,
+                        );
                     }
-                    fails.reset();
+                    TALK_FAILS.clear(ctx);
                     // Recorded once the dialog is open: the walk to the NPC is not the journey.
                     const me = ctx.state().player;
                     ctx.memory.from = me ? { x: me.worldX, z: me.worldZ, level: me.level } : null;
