@@ -58,7 +58,7 @@ const Params = z.object({
         .max(MAX_WAIT_SECONDS)
         .default(90)
         .describe(
-            'Give up when a wanted item has not appeared in the area for this long. Default spawns respawn in about 40 s (100 ticks).',
+            'Give up when a wanted item has not appeared in the area for this long. Ground spawns respawn in about 40 s (100 ticks).',
         ),
 });
 
@@ -127,8 +127,8 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
 export default defineTask({
     name: 'pickup',
     description:
-        'Walks to an area and picks up named ground items until the inventory holds each count, ' +
-        'waiting up to `maxWaitSeconds` for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
+        'Picks up named ground items in an area. ' +
+        'It walks there and takes items until the inventory holds each count, waiting up to `maxWaitSeconds` for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
         'an adjacent tile once nothing reachable is left; a take the server refuses ("I can\'t reach that") counts as a failed pickup. ' +
         'Fails if attacked, or if the inventory is full when nothing wanted is on the ground in the area. ' +
         'Refuses areas reaching the Wilderness.',

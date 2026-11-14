@@ -4,7 +4,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { FILL_WAIT_TICKS, fillContainer } from '../actions/fill';
 import { log } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -68,8 +68,9 @@ function usable(params: FillParams, skipped: string[]): (loc: NearbyLoc) => bool
 export default defineTask({
     name: 'fill',
     description:
-        'Fills every empty `container` in the inventory with water, one use at a time, ' +
-        'at a Fountain, Sink or (buckets only) Well; done when no empty one is left. ' +
+        'Fills empty containers with water. ' +
+        'It fills every empty `container` in the inventory, one use at a time, at a Fountain, Sink or Well; done when no empty one is left. ' +
+        `${UNDER_ATTACK_NOTE} ` +
         'Refuses areas reaching the Wilderness.',
     rules: ['The inventory must hold an empty `container`.'],
     spots: [

@@ -6,10 +6,10 @@ import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { type Area, AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
+import { countItems, exactName, findSkill, ticksToSeconds } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
@@ -91,7 +91,6 @@ export const SILENT_STREAK_TICKS = [
     failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
 ];
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
-const waitSeconds = (ticks: number) => Math.round((ticks * TICK_MS) / 1000);
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -102,7 +101,7 @@ const Params = z.object({
             'The rock type to mine, or a list of types: the nearest minable rock of any listed type is mined. `essence` is the Rune Essence Mine rock (reach it with the essence-mine task) and never depletes.',
         ),
     area: AreaSchema.optional().describe(
-        "Where to mine: only rocks inside it are worked, and the bot walks back when further than `radius`. Without it the bot mines wherever it stands, except for `essence` inside the Rune Essence Mine, where it walks to the nearest of the mine's four rock clusters when none is in view (teleport landings can be far from every rock).",
+        "Where to mine: only rocks inside it are worked, and the bot walks back when further than `radius`. Without it the bot mines wherever it stands; for `essence` inside the Rune Essence Mine it walks to the nearest of the mine's four rock clusters when none is in view (teleport landings can be far from every rock).",
     ),
     onFull: z
         .enum(['drop', 'stop'])
@@ -188,7 +187,7 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
         wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS)),
     );
     if (respawn.kind === 'met' || respawn.state.tick - since < d.giveUpTicks) return;
-    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(respawn.state.tick - since);
     const { area } = ctx.params;
     return {
         fail: area
@@ -218,9 +217,10 @@ export default defineTask({
     description:
         'Mines the nearest minable rock of one or more types, repeating until stopped. ' +
         `When every listed rock in reach is mined out it waits for respawns, up to max(${MIN_GIVE_UP_TICKS} ticks, ` +
-        `slowest listed rock respawn ticks + ${GIVE_UP_MARGIN_TICKS} ticks) (${waitSeconds(MIN_GIVE_UP_TICKS)} s for rocks up to gold, ` +
-        `mithril ${waitSeconds(giveUpTicksFor(ROCKS.mithril.respawnTicks))} s, adamantite ${waitSeconds(giveUpTicksFor(ROCKS.adamantite.respawnTicks))} s), then fails: ` +
+        `slowest listed rock respawn ticks + ${GIVE_UP_MARGIN_TICKS} ticks) (${ticksToSeconds(MIN_GIVE_UP_TICKS)} s for rocks up to gold, ` +
+        `mithril ${ticksToSeconds(giveUpTicksFor(ROCKS.mithril.respawnTicks))} s, adamantite ${ticksToSeconds(giveUpTicksFor(ROCKS.adamantite.respawnTicks))} s), then fails: ` +
         'with `area` "area depleted: no reachable <rock> rock in radius N for Ns", without it "no reachable <rock> rock nearby for Ns". ' +
+        `${UNDER_ATTACK_NOTE} ` +
         'Refuses areas reaching the Wilderness.',
     rules: [
         `Refuses rock ${REFUSED_ROCKS.join(', ')}: its ~24 min respawn outlasts the progress watchdog (the engine's check that a task keeps making progress).`,
@@ -231,7 +231,7 @@ export default defineTask({
         )
             .map(r => `${r} ${ROCKS[r].level}`)
             .join(', ')}.`,
-        'Rock `essence` needs `onFull` "stop": "drop" is refused, as it would drop the essence it mines.',
+        'Rock `essence` needs `onFull` "stop": "drop" is refused.',
     ],
     spots: [
         "Bob's Brilliant Axes in Lumbridge sells a bronze pickaxe.",

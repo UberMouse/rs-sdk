@@ -38,7 +38,7 @@ const Params = z.object({
     action: z
         .enum(['enter', 'leave'])
         .describe(
-            '`enter`: Aubury teleports the bot into the mine. `leave`: step through a portal of the mine; that returns the bot beside Aubury (3253,3401) if the mine was entered through Aubury, otherwise to Sedridor in the Wizards Tower (a null exit coordinate defaults to Sedridor, essence_mine.rs2).',
+            '`enter`: Aubury teleports the bot into the mine. `leave`: step through a portal of the mine; that returns the bot beside Aubury (3253,3401) if the mine was entered through Aubury, otherwise to Sedridor in the Wizards Tower (a bot with no recorded entry point comes out at Sedridor).',
         ),
 });
 type EssenceMineParams = z.infer<typeof Params>;
@@ -59,7 +59,7 @@ export default defineTask({
     name: 'essence-mine',
     description:
         'Enters or leaves the Rune Essence Mine. `action` "enter" walks to Aubury in the Varrock rune shop (3252,3402) ' +
-        'and uses his Teleport option (no dialog); done once inside the mine (map square 45_75, x 2880-2943, z 4800-4863). ' +
+        'and uses his Teleport option (no dialog); done once inside the mine (x 2880-2943, z 4800-4863). ' +
         '`action` "leave" uses the nearest Portal in the mine; with no portal in view it walks to the nearest known one; done once outside.',
     rules: ['`enter` needs Rune Mysteries complete; otherwise it fails "Rune Mysteries is not complete".'],
     spots: [

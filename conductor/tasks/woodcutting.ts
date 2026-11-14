@@ -6,9 +6,9 @@ import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, findSkill, TICK_MS } from '../lib/util';
+import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 // Each tree drops exactly one log item; dropping by that exact name keeps other *logs items safe.
@@ -101,7 +101,7 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
         wait('tree respawn', s => s.nearbyLocs.some(isChoppable), left),
     );
     if (respawn.kind === 'met') return;
-    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(respawn.state.tick - since);
     const { area } = ctx.params;
     return {
         fail: area
@@ -116,8 +116,7 @@ export default defineTask({
         'Chops the nearest tree of one kind, repeating until stopped. ' +
         `When every tree in reach is a stump it waits up to ${(NO_TREE_GIVE_UP_TICKS * TICK_MS) / 60_000} min for respawns, then fails ` +
         '"area depleted: no reachable <tree> in radius N for Ns" with `area`, "no reachable <tree> nearby for Ns" without. ' +
-        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. ' +
-        'It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown (sooner if it takes 3 HP). ' +
+        `${UNDER_ATTACK_NOTE} ` +
         'Refuses areas reaching the Wilderness.',
     rules: [
         `Needs an axe in the inventory or worn, and the base Woodcutting level for the tree: ${Object.entries(TREES)

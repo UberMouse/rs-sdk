@@ -41,11 +41,7 @@ const STUCK_AFTER_MS = stuckWindowMs(
 );
 
 const Params = z.object({
-    altar: z
-        .enum(ALTAR_NAMES)
-        .describe(
-            'Which altar to craft at, so which rune. The matching talisman opens the ruins on the surface that lead to its temple.',
-        ),
+    altar: z.enum(ALTAR_NAMES).describe('Which altar to craft at, so which rune.'),
 });
 type RunecraftParams = z.infer<typeof Params>;
 interface RunecraftMemory {
@@ -65,7 +61,8 @@ const inside = (ctx: Ctx) => inTemple(ctx.state(), ctx.params.altar);
 export default defineTask({
     name: 'runecraft',
     description:
-        "Does one runecrafting trip: walks to the altar's Mysterious ruins, uses the talisman on them (no tiaras in this revision), " +
+        'Does one runecrafting trip. ' +
+        "It walks to the altar's Mysterious ruins, uses the talisman on them (no tiaras in this revision), " +
         'binds every rune essence at the altar (Craft-rune; one action for the whole stack), and leaves by the temple portal. ' +
         'Done once the essence is crafted and the bot is back outside by the ruins. Started inside the temple with no essence (a plan ended in the altar), it just leaves and is done. ' +
         'Runes stack: they take one inventory slot per type.',

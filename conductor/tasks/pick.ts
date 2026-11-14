@@ -5,9 +5,9 @@ import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, exactName, TICK_MS } from '../lib/util';
+import { countItems, exactName, ticksToSeconds } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Ticks with no pickable loc at all before failing (40 s); above flax's 10-tick respawn (pickables.rs2 loc_del(10)). */
@@ -97,7 +97,7 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
         wait('respawn', s => s.nearbyLocs.some(isPickable), Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now)),
     );
     if (respawn.kind === 'met') return;
-    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(respawn.state.tick - since);
     const { area } = ctx.params;
     return {
         fail: area
@@ -109,13 +109,13 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
 export default defineTask({
     name: 'pick',
     description:
-        'Picks a pickable loc (the "Pick" option: flax, and the game\'s other crops) one by one until the inventory holds `count` ' +
-        'of `item`, or is full when `count` is omitted; then it ends done ("picked N" / "inventory full: N"). ' +
+        'Picks crops. ' +
+        'It picks locs (scenery objects with a "Pick" option, such as flax plants) until the inventory holds `count` of `item`, or is full when `count` is omitted; then it ends done ("picked N" / "inventory full: N"). ' +
         'With `count` set it fails if the inventory fills first. ' +
-        'One click gives one item (about 3 ticks with the step to the next plant); ' +
-        `a plant sometimes vanishes for a few ticks after a pick, and the task waits up to ${(NO_LOC_GIVE_UP_TICKS * TICK_MS) / 1000} s for a respawn, then fails "area depleted: no reachable <loc> in radius N for Ns" with \`area\`, "no reachable <loc> nearby for Ns" without. ` +
-        'It pauses while attacked (auto-retaliate must finish the fight). Needs nothing carried. ' +
+        `A plant may vanish for a few ticks after a pick; the task waits up to ${ticksToSeconds(NO_LOC_GIVE_UP_TICKS)} s for a respawn, then fails "area depleted: no reachable <loc> in radius N for Ns" with \`area\`, "no reachable <loc> nearby for Ns" without. ` +
+        `${UNDER_ATTACK_NOTE} ` +
         'Refuses areas reaching the Wilderness.',
+    rules: ['Needs nothing carried.', 'One click gives one item (about 3 ticks with the step to the next plant).'],
     spots: [
         "Seers' Village flax field: `area` {x:2743,z:3445,radius:10} (the field spans x 2732-2755, z 3433-3456); verified.",
     ],

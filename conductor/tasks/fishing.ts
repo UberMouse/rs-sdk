@@ -6,9 +6,9 @@ import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, type Op, wait } from '../core/op';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, findSkill, TICK_MS } from '../lib/util';
+import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 interface Method {
@@ -127,7 +127,7 @@ const METHODS_TEXT = METHOD_NAMES.map(name => {
     const m: Method = METHODS[name];
     const needs = m.bait ? `${m.toolName} + ${m.bait.name}` : m.toolName;
     return `${name}: ${needs}, catches ${m.fish.map(bare).join(' and ')}, Fishing ${m.level}; option ${capital(bare(m.option))} at a spot that also offers ${capital(bare(m.otherOption))}`;
-}).join('; ');
+}).join('\n');
 
 const Params = z
     .object({
@@ -135,7 +135,7 @@ const Params = z
             .enum(METHOD_NAMES)
             .default('net')
             .describe(
-                `What to fish with, which sets the tool, bait, fish and spot. Big net is not supported. ${METHODS_TEXT}.`,
+                `What to fish with, which sets the tool, bait, fish and spot. Big net is not supported.\n${METHODS_TEXT}`,
             ),
         area: AreaSchema.optional().describe(
             'Where to fish: only spots inside it are fished, and the bot walks back when further than `radius`. Without it the bot fishes wherever it stands.',
@@ -243,7 +243,7 @@ function* waitForSpot(ctx: Ctx): Op<Outcome> {
         wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left),
     );
     if (found.kind === 'met') return;
-    const seconds = Math.round(((found.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(found.state.tick - since);
     const { area } = ctx.params;
     const kindsText = kinds(ctx.params).join('/');
     const outsideKinds = kinds(ctx.params).map(k => ({ k, ok: ofMethod(k) }));
@@ -268,10 +268,9 @@ export default defineTask({
         'Fishes at fishing spots with one `method`, repeating until stopped. ' +
         'Spots hop between tiles every 112-212 s and it follows them. ' +
         'With a small `area` the spot can be away from it for up to ~3.5 minutes per hop, and the task waits for it, failing ' +
-        `("area depleted", naming a spot visible outside the area) only after ${(NO_SPOT_GIVE_UP_TICKS * TICK_MS) / 1000} s with none. ` +
-        'Fails when the tool or bait is missing (also when the bait runs out). ' +
-        'While attacked it pauses and lets auto-retaliate finish a winnable fight, then resumes. ' +
-        'It fails at once if auto-retaliate is off or the attacker out-levels the bot, and after 40 ticks if the attacker is unknown (sooner if it takes 3 HP). ' +
+        `("area depleted", naming a spot visible outside the area) only after ${ticksToSeconds(NO_SPOT_GIVE_UP_TICKS)} s with none. ` +
+        'It also fails when the bait runs out. ' +
+        `${UNDER_ATTACK_NOTE} ` +
         'Refuses areas reaching the Wilderness.',
     rules: [
         '`fallback` must differ from `method`.',
