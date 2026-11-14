@@ -559,7 +559,11 @@ on its own.
     - `fletching` stringing XP is 0.1 below the cut for willow shortbows and maple longbows; the catalog says "about the same", a wording note.
     - Game knowledge still held in catalog entries (respawn times, shops, spots) could move to the knowledge base.
     - Plan descriptions are set by all 95 plans and printed by nothing.
-  - Audit: declared silent streaks in place of hand-summed `stuckAfterMs`; one streak-then-fail helper, `waitForRespawn` and eat step.
+  - Task bookkeeping: done 2026-11-15 (`failStreak` and `TaskDef.silent` with the window computed, `waitForRespawn`, `eatStep`; design `conductor/docs/task-bookkeeping.md`). Windows that grew: herd 90 s default -> 460000 ms (a real gap: four blocked approach walks of up to 200 ticks ended the run `stuck` before herd's own reason; fixed, test in `herd.test.ts`); locate 124000 -> 380000 (a real gap: the return-to-area walk streak was missing from the hand-summed list); fletching 90 s default -> 136800 (margin only). All others unchanged. Follow-ups:
+    - herd has stretches the watchdog cannot see: a wandering NPC clears the approach count, so the stretch is unbounded in theory.
+    - Prayer toggles change nothing the watchdog watches.
+    - fishing can in theory pass its 800 silent ticks with about six cast timeouts interleaved with spot-moved casts onto adjacent spots with no walk.
+    - `conductor/test/tools/plan-view/server.test.ts` has a timing-flaky RunsStore assertion under full-suite load (seen once, passes alone).
   - Audit: one name for the full-inventory policy param (now visible in the catalog: `onFull`, `stopWhenFull`, `endWhenPackFull`, `pick`'s omitted `count` and `pickup`'s hardwired failure), and one rule for item or NPC names, a regex in some tasks and a whole name in others.
   - Audit: outcome codes in place of failure-wording matches (`clock-tower`, `monks-friend`, `troll-stronghold`; about 91 reason strings).
   - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.

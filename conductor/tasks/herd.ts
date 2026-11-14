@@ -30,8 +30,8 @@ const APPROACH_FAIL_LIMIT = 4;
 /**
  * The longest approach is a walk to a far stand tile; the short step takes APPROACH_WAIT_TICKS. worstTicks is the walk
  * op's cap (WALK_MAX_TICKS), a deliberate upper bound: a route of 70 or more tiles reaches it (walkBudgetTicks), which a
- * copy fenced off from the bot can need. walkTo's no-progress cut-off is kept per target, which moves with the NPC, so
- * it need not end the streak sooner.
+ * copy fenced off from the bot can need. The stand tile may move with the NPC (a fenced NPC stays put, and then walkTo's
+ * no-progress cut-off applies); the bound is safe either way.
  */
 const APPROACH_FAILS = failStreak({
     name: 'approachFails',

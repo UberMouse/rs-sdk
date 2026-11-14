@@ -28,7 +28,7 @@ const PORTAL_TOLERANCE = 2;
 const STEP_TIMEOUT_MS = 360_000;
 const NO_AUBURY = missingTargetStreak('noAubury');
 // A look that finds no portal walks to the nearest known one, but the look that reaches the limit returns before its walk, so
-// at most two walks happen. WALK_FAILS does not count them; the window comes from its entry (FAIL_LIMIT x WALK_MAX_TICKS).
+// at most two walks happen. WALK_FAILS does not count them; the window comes from its entry ((FAIL_LIMIT + 1) x WALK_MAX_TICKS).
 const NO_PORTAL = missingTargetStreak('noPortal');
 // One failed walk to Aubury, capped at WALK_MAX_TICKS.
 const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });

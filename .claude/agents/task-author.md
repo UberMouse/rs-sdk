@@ -15,7 +15,7 @@ you never commit, and you only touch the bot you were given.
   smoke `conductor/test/integration/smoke/woodcutting.itest.ts`. Rationale for the design:
   `conductor/docs/interruptible-tasks.md`.
 - `conductor/lib/task.ts` — the contract (`defineTask`, `Step`, `TaskContext`, `memory`,
-  `streak`, `counter`, `allow`, `guards`, `stepTimeoutMs`, `stuckAfterMs`).
+  `streak`, `counter`, `allow`, `guards`, `silent`, `stepTimeoutMs`).
 - `conductor/lib/engine.ts` and `conductor/lib/interrupts.ts` — what is handled for you: the
   guards (below), the refusal to start while in combat, closing a modal an earlier run left open
   (an op's interface, a bank, a shop, a skill menu) before the first step, `--until` stop conditions, the progress
@@ -79,7 +79,7 @@ you never commit, and you only touch the bot you were given.
 ## The pattern
 
 A task is `defineTask({ name, description, params (zod from 'zod/v4'), rules?, spots?, memory?, allow?, allowGuards?,
-guards?, onEnd?, preflight?, steps, isComplete?, stuckAfterMs?, stepTimeoutMs? })`. Each loop the first step whose
+guards?, onEnd?, preflight?, steps, isComplete?, silent?, stepTimeoutMs? })`. Each loop the first step whose
 `when()` passes runs; a step returns nothing to keep going, `{ fail }` or `{ done }` to end the
 run. Every step is a generator over ops, or a plain function that only decides; an action no op
 covers yet is ported as one first.
@@ -216,13 +216,23 @@ because stopping half way leaves the world in a state no later step can finish o
 Game time is ticks (`state.tick`, 400 ms each). No `Date.now()`, `setTimeout` or `sleep` in core,
 action or task logic. Budgets are tick counts as named constants; to bound "no tree for 2 minutes"
 remember the tick you started at (`NO_TREE_GIVE_UP_TICKS` in `waitForRespawn`). The only
-millisecond numbers are the contract's `stepTimeoutMs` and `stuckAfterMs` (a generator step gets
-`stepTimeoutMs` as a tick budget, `stepBudgetTicks` in `lib/task.ts`, and reads what is left of it
-with `ctx.stepTicksLeft()`). Size `stuckAfterMs` to outlast the task's own longest legitimate
-silence, as woodcutting does for its repeated chop timeouts and smithing for attempts whose walk
-never moves the bot.
+millisecond number is the contract's `stepTimeoutMs` (a generator step gets it as a tick budget,
+`stepBudgetTicks` in `lib/task.ts`, and reads what is left of it with `ctx.stepTicksLeft()`).
+Never set `stuckAfterMs`: list in `silent` every stretch that can leave XP, position, HP and
+inventory unchanged (declared `failStreak`s and tick counts) and `defineTask` computes the
+window. A `silent` entry is the true worst stretch between two changes the watchdog can see, not
+limit times an op's cap; shared walk figures are `WALK_TO_AREA_SILENT_TICKS` (`lib/area.ts`) and
+`walkToSpotSilentTicks` (`lib/spot.ts`).
 
 ### Memory, streaks and counters
+
+- **"N in a row, then fail"**: declare `failStreak({ name, limit, worstTicks, what? })`
+  (`lib/streak.ts`) once, list it in `silent`, and in a step `const failed = X.miss(ctx, last)`
+  (with `what`) or `X.missWith(ctx, text)`; `if (failed) return failed;`. Always return the
+  result. `X.clear(ctx)` on success; `missingTargetStreak(name)` for a missing target. Never
+  hand-write count, compare, fail.
+- **Respawn waits and eating**: `waitForRespawn` (`lib/respawn.ts`) and `eatStep`
+  (`lib/eat-step.ts`); do not copy them.
 
 - **Typed `memory`**: declare an interface and a factory (`memory: (): M => ({ ... })`) and use
   `type Ctx = TaskContext<Params, M>`. `ctx.memory` is then typed; no casts of it, and no untyped

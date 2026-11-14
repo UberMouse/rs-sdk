@@ -29,8 +29,8 @@ The audit's picture was partly out of date: two of the helpers it asked for exis
 
 ## Decisions
 
-- **A fail streak is declared once**, as a value: `failStreak({ name, limit, worstTicks, what })` in
-  `lib/streak.ts`. It carries the limit, the silent ticks it can hold (`failStreakTicks`) and the
+- **A fail streak is declared once**, as a value: `failStreak({ name, limit, worstTicks, what? })` in
+  `lib/streak.ts` (with `what`: `miss`; without: `missWith` only). It carries the limit, the silent ticks it can hold (`failStreakTicks`) and the
   noun of its failure. In a step, `streak.miss(ctx, message)` counts one and returns the `fail`
   outcome at the limit, `streak.clear(ctx)` resets. A reason that does not fit the standard
   sentence passes its own text. The count is still `ctx.streak(name)`, so the engine's reset when
@@ -40,12 +40,12 @@ The audit's picture was partly out of date: two of the helpers it asked for exis
   `stuckWindowMs`. A task no longer writes `stuckAfterMs` itself.
 - **The link is enforced.** `miss` on a streak the running task did not list in `silent` throws,
   so a streak cannot be used without being counted in the window; the unit tests of every task
-  exercise it. The table in `watchdog.test.ts` goes: the rule now holds by construction.
+  exercise it. `watchdog.test.ts` keeps pinned rows (a floor per task in `fixtures/stuck-windows.json`) instead of the 8-task table.
 - **One `waitForRespawn`** in `lib/respawn.ts`: the memory of when "none" began, the give-up ticks,
   the wait's label and predicate, the outside sighting, optional chunking, and the failure text.
-  It exposes its give-up ticks for `silent`.
+  It exposes its give-up ticks for `silent`. As built it takes `target`/`area`/`areaSuffix` rather than a free failure-text builder, and gives up by elapsed ticks alone.
 - **One `eatStep`** in `lib/eat-step.ts`: a food matcher, a threshold, the fail streak. `combat`,
-  `thieving` and `agility` use it.
+  `thieving` and `agility` use it. `keepOnSuccess` keeps agility's behaviour (it never cleared its eat count after a successful eat).
 - **Behaviour does not change.** Every limit, tick count and failure reason stays as it is, to the
   character: plans match on some reasons, and the unit tests pin them. A stuck window may grow where
   the hand-summed list missed a streak, never shrink. The existing unit tests pass unedited except
