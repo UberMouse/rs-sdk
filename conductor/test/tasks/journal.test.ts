@@ -7,7 +7,7 @@ import { definePlan, phase, type PlanView } from '../../lib/plan';
 import { journalTitle, QUESTS } from '../../lib/quests';
 import { defineTask } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
-import journal from '../../tasks/journal';
+import journal, { JOURNAL_MAX_RUN_TICKS } from '../../tasks/journal';
 import { withJournal } from '../journal';
 import { simulate, simulatePlan } from '../simulate';
 import { world } from '../world';
@@ -137,6 +137,28 @@ describe('journal', () => {
         expect(r.result.durationMs).toBe(10 * TICK_MS);
     });
 
+    test('a journal that never opens sends no close, though another modal shows when it gives up', async () => {
+        const base = journalWorld({ clicksToOpen: 0 });
+        let clicks = 0;
+        const react = (action: BotAction, state: BotWorldState): Effect | undefined => {
+            const baseEffect = base(action, state);
+            if (action.type !== 'clickComponent' || ++clicks < 2) return baseEffect;
+            // A bank appears 3 ticks after the second click, before the wait for the journal runs out, and stays.
+            return s =>
+                s.tick >= state.tick + 3
+                    ? world(s)
+                          .bank([{ name: 'Coins', count: 5 }])
+                          .build()
+                    : { ...s };
+        };
+        const r = await simulate(journal, { params: { quest: 'cook' }, timeline: still.series(1), react });
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'journal: the journal did not open within 10 ticks',
+        });
+        expect(r.sends).toEqual(['click questlist:cook', 'click questlist:cook']);
+    });
+
     test("fails on another quest's journal, and on one titled with the tab name, closing it", async () => {
         // The cook quest's tab reads "Cook's Assistant", but its journal is titled "The Cook's Quest".
         expect(COOK).not.toBe(QUESTS.cook!.name);
@@ -193,6 +215,17 @@ describe('journal', () => {
             const short = await read({}, undefined, { expect: 'paid', withinTicks: 8 });
             expect(short.result.reason).toBe(`journal: ${LINES[1]} (no "paid" within 8 ticks)`);
             expect(clicksOf(short.sends)).toBe(2);
+        });
+
+        test('neither the watchdog nor the step budget ends the longest withinTicks of a journal that never shows it', async () => {
+            const r = await read({ clicksToOpen: 2 }, undefined, { expect: 'paid', withinTicks: 100 });
+            expect(r.result).toMatchObject({
+                status: 'done',
+                reason: `journal: ${LINES[1]} (no "paid" within 100 ticks)`,
+            });
+            expect(r.result.durationMs).toBeGreaterThan(100 * TICK_MS);
+            expect(journal.stuckAfterMs).toBeGreaterThan(JOURNAL_MAX_RUN_TICKS * TICK_MS);
+            expect(journal.stepTimeoutMs).toBeGreaterThan(JOURNAL_MAX_RUN_TICKS * TICK_MS);
         });
 
         test('a dialog opening between reads ends the run failed, with no further click', async () => {

@@ -257,6 +257,44 @@ describe('defineQuest: a quest without journal marks', () => {
         expect(r.result).toMatchObject({ status: 'failed', reason: 'chat: deed: chat: nothing happened' });
         expect(ran(r)).toEqual(['chat failed']);
     });
+
+    describe("a step whose onFail is 'continue'", () => {
+        const tryChat = step('chat', deed, { what: 'chat' }, { onFail: 'continue' });
+        const story = { chat: () => {}, ...FINISH };
+
+        test('that fails is followed by the next step', async () => {
+            const r = await run(quest([tryChat, finish]), storyWorld({ refuse: { chat: 1 } }, story));
+            expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+            expect(ran(r)).toEqual(['chat failed', 'finish']);
+        });
+
+        test('runs again after a restart, like any step with no evidence', async () => {
+            const w = storyWorld({ refuse: { chat: 1, finish: 3 } }, story);
+            const first = await run(quest([tryChat, finish]), w);
+            expect(ran(first)).toEqual(['chat failed', 'finish failed', 'finish failed', 'finish failed']);
+            const again = await simulatePlan(quest([tryChat, finish]), { driver: first.driver });
+            expect(again.result.status).toBe('done');
+            expect(ran(again)).toEqual(['chat', 'finish']);
+        });
+
+        test('with a done that does not hold is judged by the done: the story stays at it', async () => {
+            const def = quest([
+                step('chat', deed, { what: 'chat' }, { onFail: 'continue', done: v => v.questStarted(ID) }),
+                finish,
+            ]);
+            const r = await run(def, storyWorld({ refuse: { chat: 1 } }, story));
+            // The runner skips the failed phase at the next selection, and the cursor is still on it.
+            expect(ran(r)).toEqual(['chat failed']);
+            expect(r.result.reason).toContain('no phase applies');
+        });
+
+        test('a function onFail that returns continue does not move the story on', async () => {
+            const def = quest([step('chat', deed, { what: 'chat' }, { onFail: () => 'continue' }), finish]);
+            const r = await run(def, storyWorld({ refuse: { chat: 1 } }, story));
+            expect(ran(r)).toEqual(['chat failed']);
+            expect(r.result.reason).toContain('no phase applies');
+        });
+    });
 });
 
 describe('defineQuest: a quest with a journal mark', () => {
@@ -283,6 +321,22 @@ describe('defineQuest: a quest with a journal mark', () => {
     test('a resumed quest reads first, and the journal sets the base', async () => {
         const r = await run(quest(steps), storyWorld({ progress: 'started', lines: PAID }, effects()));
         expect(ran(r)).toEqual(['journal', 'finish']);
+    });
+
+    test('a mark written without the i flag matches a journal whose case differs', async () => {
+        const cased = [
+            steps[0]!,
+            step('pay', deed, { what: 'pay' }, { reached: journal(/You Have PAID the boys/) }),
+            finish,
+        ];
+        expect(ran(await run(quest(cased), storyWorld({ progress: 'started', lines: PAID }, effects())))).toEqual([
+            'journal',
+            'finish',
+        ]);
+        // After the step, its read (which matches case-insensitively) and the cursor agree: the step runs once.
+        const r = await run(quest(cased), storyWorld({}, effects()));
+        expect(r.result.status).toBe('done');
+        expect(ran(r)).toEqual(['start', 'journal', 'pay', 'journal:pay', 'finish']);
     });
 
     test('a fresh journal that does not match runs the step again', async () => {
@@ -510,6 +564,32 @@ describe('cursor and needsRead', () => {
         expect(() => cursor(bad, fakeView({}))).toThrow('step "a" until threw: nope');
     });
 
+    test("at most one compiled phase's when holds, over views covering every phase selected", () => {
+        const tryChat = step('chat', deed, { what: 'chat' }, { onFail: 'continue' });
+        for (const qd of [q, { ...q, steps: q.steps.map(s => (s.name === 'chat' ? tryChat : s)) }]) {
+            const def = defineQuest(qd);
+            const selected = new Set<string>();
+            const lasts = [
+                null,
+                ...[...qd.steps.map(s => s.name), 'complete'].flatMap(p => [last(p), last(p, 'failed')]),
+            ];
+            for (const progress of ['none', 'started', 'done'] as const)
+                for (const l of lasts)
+                    for (const j of [undefined, 'go', 'paid'])
+                        for (const age of [undefined, 0, 1])
+                            for (const dialog of [false, true])
+                                for (const held of [0, 1, 2]) {
+                                    const o = { progress, last: l, journal: j, age, dialog, held };
+                                    const v = fakeView(o);
+                                    const holds = def.phases.filter(p => p.when!(v)).map(p => p.name);
+                                    expect(holds.length, JSON.stringify(o)).toBeLessThanOrEqual(1);
+                                    if (holds[0]) selected.add(holds[0]);
+                                }
+            // The views reach every phase: the reads at the start and after the mark step, each step, the wait.
+            expect([...selected].sort()).toEqual(def.phases.map(p => p.name).sort());
+        }
+    });
+
     test('are pure: the same view gives the same answer, whatever was asked between', () => {
         const a = fakeView({ progress: 'started', held: 1, last: last('pay'), journal: 'go', age: 1 });
         const b = fakeView({ progress: 'started', journal: 'paid', age: 0, last: last('chat') });
@@ -564,7 +644,8 @@ describe('defineQuest: the compiled plan', () => {
             [{ steps: [chat, chat] }, 'quest "test-quest": step "chat": name used twice'],
             ...(['g', 'y', 'm', 'si'] as const).map((flags): [Partial<QuestDef>, string] => [
                 { steps: [step('pay', deed, { what: 'pay' }, { reached: journal(new RegExp('paid', flags)) })] },
-                `quest "test-quest": step "pay": journal pattern /paid/${flags.includes('i') ? 'is' : flags} has a flag other than i`,
+                // journal() adds the i flag: the message shows the pattern as normalised.
+                `quest "test-quest": step "pay": journal pattern ${new RegExp('paid', flags.includes('i') ? flags : `${flags}i`)} has a flag other than i`,
             ]),
         ];
         for (const [more, message] of cases)

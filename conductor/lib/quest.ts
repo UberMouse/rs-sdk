@@ -27,9 +27,13 @@ export interface JournalMark {
     readonly within?: number;
 }
 
-/** A `reached` that reads the quest's journal. */
+/**
+ * A `reached` that reads the quest's journal. The match is always case-insensitive: the pattern gets the `i` flag, so
+ * the cursor and the step read (which matches its source case-insensitively) agree. A flag other than `i` is refused
+ * by defineQuest.
+ */
 export const journal = (pattern: RegExp, opts: { within?: number } = {}): JournalMark => ({
-    journal: pattern,
+    journal: pattern.flags.includes('i') ? pattern : new RegExp(pattern.source, `${pattern.flags}i`),
     ...(opts.within !== undefined && { within: opts.within }),
 });
 
@@ -47,6 +51,11 @@ export interface QuestStep {
     skip?: Predicate;
     /** Ends the step's run done; a step whose `until` holds on the view is passed, as by a `done` that holds. */
     until?: Phase['until'];
+    /**
+     * As a phase's. The string 'continue' also moves the story on: run order passes the step once its run ended,
+     * failed or done ("try this, carry on if it fails"). A `done` still judges the step alone, and a journal mark
+     * still needs a fresh journal to confirm it. A function that returns 'continue' does not move the story on.
+     */
     onFail?: Phase['onFail'];
     maxFails?: Phase['maxFails'];
     settle?: Phase['settle'];
@@ -137,7 +146,8 @@ function walk(q: QuestDef, v: PlanView, toCursor: boolean): { at: number | null;
         }
     // A `complete` run comes after every step: its retry is not preceded by the steps with no evidence again.
     const j = v.last?.phase === COMPLETE_PHASE ? steps.length : lastStep(q, v);
-    const ranPast = (i: number) => j !== undefined && (j > i || (j === i && v.last?.status === 'done'));
+    const ranPast = (i: number) =>
+        j !== undefined && (j > i || (j === i && (v.last?.status === 'done' || steps[i]!.onFail === 'continue')));
     const passed = (s: QuestStep, i: number): boolean | 'provisional' => {
         if (s.skip && call(s, 'skip', s.skip)) return true;
         if (s.until && call(s, 'until', s.until)) return true;
@@ -204,7 +214,7 @@ export function defineQuest(q: QuestDef): PlanDef {
             fail(q, `step "${s.name}": a name starting "${STEP_READ_PREFIX}" is a step read's`);
         if (seen.has(s.name)) fail(q, `step "${s.name}": name used twice`);
         seen.add(s.name);
-        // The step read hands the task the pattern's source, matched case-insensitively there.
+        // The step read hands the task the pattern's source alone: any flag but `i` would be lost there.
         if (s.reached !== undefined && isMark(s.reached) && s.reached.journal.flags.replace('i', '') !== '')
             fail(q, `step "${s.name}": journal pattern ${s.reached.journal} has a flag other than i`);
     }

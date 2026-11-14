@@ -7,6 +7,7 @@ import { JOURNAL_INTERFACE, journalOf } from '../lib/journal-memory';
 import { journalTitle, QUESTS, questIdByJournalTitle } from '../lib/quests';
 import { Pattern } from '../lib/spot';
 import { defineTask } from '../lib/task';
+import { stuckWindowMs } from '../lib/watchdog';
 
 /** Ticks the journal gets to open after the first click; then one more click and as long again. */
 export const JOURNAL_OPEN_TICKS = 5;
@@ -18,6 +19,14 @@ const LINE_CHARS = 120;
 export const JOURNAL_WITHIN_TICKS = 20;
 /** Ticks between a read with `expect` closing the journal and reading it again. */
 export const JOURNAL_REREAD_TICKS = 4;
+/** The most `withinTicks` allows. */
+export const JOURNAL_MAX_WITHIN_TICKS = 100;
+/**
+ * The longest run: the first read's two clicks, `withinTicks` of re-reads, then a last read's two clicks and its close.
+ * A read moves none of what the watchdog watches, so the whole run is one silent stretch.
+ */
+export const JOURNAL_MAX_RUN_TICKS = 4 * JOURNAL_OPEN_TICKS + JOURNAL_MAX_WITHIN_TICKS + JOURNAL_CLOSE_TICKS + 1;
+const WINDOW_MS = stuckWindowMs(JOURNAL_MAX_RUN_TICKS);
 
 const Params = z.object({
     quest: z
@@ -33,7 +42,7 @@ const Params = z.object({
         .number()
         .int()
         .min(1)
-        .max(100)
+        .max(JOURNAL_MAX_WITHIN_TICKS)
         .optional()
         .describe(`Ticks from the first read to keep reading for \`expect\`; default ${JOURNAL_WITHIN_TICKS}.`),
 });
@@ -56,6 +65,8 @@ export default defineTask({
         'browser client publishes no journal text.',
     params: Params,
     observes: true,
+    stuckAfterMs: WINDOW_MS,
+    stepTimeoutMs: WINDOW_MS,
     // The refusals are a preflight's: a step would see the state only after the dialog guard had answered an open
     // dialog and the engine had closed a modal left open before the run.
     preflight(ctx) {
@@ -110,9 +121,13 @@ export default defineTask({
                             outcome = { fail: `the journal did not open within ${2 * JOURNAL_OPEN_TICKS} ticks` };
                         else outcome = { done: journal.lines.at(-1)!.slice(0, LINE_CHARS) };
 
-                        const c = yield* closeModalUntil(ctx, 'journal', noModal, JOURNAL_CLOSE_TICKS);
+                        // A journal that never opened leaves nothing of ours to close: a modal up now is another's.
+                        const c = journalShown(ctx.state())
+                            ? yield* closeModalUntil(ctx, 'journal', noModal, JOURNAL_CLOSE_TICKS)
+                            : null;
                         open = false;
-                        if (!c.ok && 'done' in outcome) return { fail: `journal read but not closed: ${c.message}` };
+                        if (c && !c.ok && 'done' in outcome)
+                            return { fail: `journal read but not closed: ${c.message}` };
                         if ('fail' in outcome || !expected || expected.test(journal!.lines.join(' '))) return outcome;
                         first ??= seen.tick;
                         // Read again only while the next click still falls within withinTicks of the first read.
