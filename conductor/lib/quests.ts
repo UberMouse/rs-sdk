@@ -179,11 +179,6 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
     hauntedmine: q('Haunted Mine', 'hauntedmine', 11, 381, 'general/configs/quest.constant:30'),
 };
 
-const BY_NAME = new Map(Object.entries(QUESTS).map(([id, info]) => [info.name, id]));
-
-/** The id of the quest whose tab entry reads `name`, or undefined. */
-export const questIdByName = (name: string): string | undefined => BY_NAME.get(name);
-
 /** The title a quest's journal shows. */
 export const journalTitle = (info: QuestInfo): string => info.journalTitle ?? info.name;
 

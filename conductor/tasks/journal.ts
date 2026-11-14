@@ -26,6 +26,9 @@ const Params = z.object({
 /** Nothing of a main modal shows: what the click opened is gone. */
 const noModal = (s: BotWorldState) => !s.interface.isOpen && !s.modalOpen;
 const journalShown = (s: BotWorldState) => interfaceOpen(s, JOURNAL_INTERFACE);
+/** Why a click on the entry must not go out: it would destroy an open chat dialog or a main modal. */
+const clickBlocker = (s: BotWorldState) =>
+    s.dialog.isOpen ? 'dialog open' : s.modalOpen && !journalShown(s) ? 'modal open' : null;
 
 export default defineTask({
     name: 'journal',
@@ -42,15 +45,15 @@ export default defineTask({
         if (!resolveComponent(`questlist:${ctx.params.quest}`))
             return `questlist:${ctx.params.quest} is not a component in interface.pack`;
         const s = ctx.state();
-        if (s.dialog.isOpen) return 'journal not read: dialog open';
-        if (s.modalOpen && !interfaceOpen(s, JOURNAL_INTERFACE)) return 'journal not read: modal open';
-        return null;
+        const blocked = clickBlocker(s);
+        return blocked && `journal not read: ${blocked}`;
     },
     steps: [
         {
             name: 'journal',
             when: () => true,
             *run(ctx) {
+                // The non-null assertions hold: the params schema and preflight checked the quest and its entry.
                 const { quest } = ctx.params;
                 const title = JSON.stringify(journalTitle(QUESTS[quest]!));
                 const entry = `questlist:${quest}`;
@@ -61,6 +64,9 @@ export default defineTask({
                     let seen = ctx.state();
                     // A second click only when the first opened nothing: an open journal without text is judged as is.
                     for (let attempt = 0; attempt < 2 && !journalShown(seen); attempt++) {
+                        // Checked at every send: the state at a re-click is a wait's, after the world moved on.
+                        const blocked = clickBlocker(seen);
+                        if (blocked) return { fail: `journal not read: ${blocked}` };
                         clicked = true;
                         const sent = yield* send({ type: 'clickComponent', componentId, reason: `click ${entry}` });
                         if (!sent.success) return { fail: `click on ${entry} failed: ${sent.message}` };
@@ -83,7 +89,8 @@ export default defineTask({
                     return outcome;
                 } finally {
                     // Cut off (a guard, a stop) after the click: close what it opened, within the cleanup cap.
-                    if (clicked && !closed) yield* closeModalUntil(ctx, 'journal', noModal, CLEANUP_CLOSE_WAIT_TICKS);
+                    if (clicked && !closed && journalShown(ctx.state()))
+                        yield* closeModalUntil(ctx, 'journal', noModal, CLEANUP_CLOSE_WAIT_TICKS);
                 }
             },
         },

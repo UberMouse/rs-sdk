@@ -96,6 +96,21 @@ describe('journal', () => {
         expect(r.result.durationMs).toBe((5 + 2 + 2) * TICK_MS);
     });
 
+    test('does not re-click into a dialog that opened while the journal had not', async () => {
+        const base = journalWorld({ clicksToOpen: 0 });
+        const react = (action: BotAction, state: BotWorldState): Effect | undefined => {
+            const baseEffect = base(action, state);
+            if (action.type !== 'clickComponent') return baseEffect;
+            // A chat dialog appears 3 ticks after the click and stays.
+            return s =>
+                s.tick >= state.tick + 3 ? { ...s, dialog: { isOpen: true, options: [], isWaiting: false } } : { ...s };
+        };
+        const r = await simulate(journal, { params: { quest: 'cook' }, timeline: still.series(1), react });
+        expect(r.sends.filter(x => x.startsWith('click '))).toEqual(['click questlist:cook']);
+        expect(r.result).toMatchObject({ status: 'failed' });
+        expect(r.result.reason).toContain('journal not read: dialog open');
+    });
+
     test('fails when the journal never opens, after two clicks and 10 ticks, with nothing to close', async () => {
         const r = await read({ clicksToOpen: 0 });
         expect(r.result).toMatchObject({
