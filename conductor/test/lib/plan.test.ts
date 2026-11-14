@@ -4,8 +4,10 @@ import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { type Effect, TimelineDriver } from '../../core/drivers/timeline';
 import { send, wait } from '../../core/op';
 import {
+    combatAtLeast,
     definePlan,
     isPlan,
+    levelAtLeast,
     type Phase,
     phase,
     type PlanView,
@@ -1002,6 +1004,27 @@ describe('phase runs', () => {
     });
 });
 
+/** What `f` reads off the view at the plan's first selection; the plan then ends, no phase applying. */
+async function look<T>(state: BotWorldState, f: (v: PlanView) => T): Promise<T> {
+    const seen: T[] = [];
+    await sim(plan([phase(train, {}, { when: v => (seen.push(f(v)), false) })]), { timeline: [state] });
+    if (seen.length !== 1) throw new Error(`look: ${seen.length} selections`);
+    return seen[0]!;
+}
+/** The message `f` throws, or null. */
+const thrown = (f: () => unknown): string | null => {
+    try {
+        f();
+        return null;
+    } catch (e) {
+        return (e as Error).message;
+    }
+};
+const NO_PLAYER: BotWorldState = { ...BASE.build(), player: null };
+const { x: LX, z: LZ } = LUMBRIDGE;
+const whereAndLevel = (v: PlanView) => [v.x, v.z, v.floor, v.combatLevel];
+const questsStarted = (v: PlanView) => [v.questStarted('imp'), v.questStarted('cook'), v.questStarted('doric')];
+
 describe('the view', () => {
     test('v.bank remembers the bank as last seen open in an earlier phase', async () => {
         // The bank is open at ticks 2 and 3, while the first phase runs.
@@ -1258,6 +1281,235 @@ describe('the view', () => {
             [0, null],
             [1, { phase: 'train', status: 'done', reason: 'train: trained' }],
         ]);
+    });
+
+    test('x, z, floor and combatLevel read the player; 0 in a state with no player', async () => {
+        const at = BASE.player({ at: { x: LX + 5, z: LZ - 2, level: 1 }, combatLevel: 40 }).build();
+        expect(await look(at, whereAndLevel)).toEqual([LX + 5, LZ - 2, 1, 40]);
+        expect(await look(NO_PLAYER, whereAndLevel)).toEqual([0, 0, 0, 0]);
+    });
+
+    test('within counts Chebyshev tiles to radius, else tolerance, else the exact tile, and checks a given level', async () => {
+        const seen = await look(BASE.build(), v => ({
+            radius: [
+                v.within({ x: LX + 3, z: LZ + 3, radius: 3 }),
+                v.within({ x: LX + 3, z: LZ, radius: 2 }),
+                v.within({ x: LX + 1, z: LZ, radius: 0, tolerance: 5 }),
+            ],
+            tolerance: [v.within({ x: LX - 2, z: LZ, tolerance: 2 }), v.within({ x: LX, z: LZ - 2, tolerance: 1 })],
+            exact: [v.within({ x: LX, z: LZ }), v.within({ x: LX + 1, z: LZ })],
+            level: [v.within({ x: LX, z: LZ, radius: 5, level: 0 }), v.within({ x: LX, z: LZ, radius: 5, level: 1 })],
+        }));
+        expect(seen).toEqual({
+            radius: [true, false, false],
+            tolerance: [true, false],
+            exact: [true, false],
+            level: [true, false],
+        });
+        expect(await look(NO_PLAYER, v => v.within({ x: 0, z: 0, radius: 10_000 }))).toBe(false);
+    });
+
+    test('held counts the pack and what is worn, worn only what is worn; coins counts the pack', async () => {
+        const state = BASE.inv('Bronze sword').inv('Coins', 250).equipment({ name: 'Bronze sword' }).build();
+        const seen = await look(state, v => [
+            v.held('bronze sword'),
+            v.worn('Bronze sword'),
+            v.held(/^bronze/i),
+            v.held('Bones'),
+            v.worn('Bones'),
+            v.coins,
+        ]);
+        expect(seen).toEqual([2, 1, 2, 24, 0, 250]);
+        expect(await look(BASE.build(), v => v.coins)).toBe(0);
+    });
+
+    test('npcs, locs and ground count by exact name or pattern, within a distance when given', async () => {
+        const state = BASE.npc('Cow', LX + 2, LZ)
+            .npc('Cow', LX, LZ + 6)
+            .npc('Cow calf', LX + 1, LZ)
+            .loc('Tree', LX + 1, LZ)
+            .loc('Tree', LX - 5, LZ)
+            .ground('Bones', LX, LZ, 3)
+            .ground('Bones', LX + 4, LZ)
+            .build();
+        const seen = await look(state, v => ({
+            npcs: [v.npcs('cow'), v.npcs('Cow', 2), v.npcs(/^cow/i), v.npcs(/^cow/i, 1)],
+            locs: [v.locs('tree'), v.locs('Tree', 4), v.locs('Oak')],
+            ground: [v.ground('bones'), v.ground('Bones', 0)],
+        }));
+        expect(seen).toEqual({ npcs: [2, 1, 3, 1], locs: [2, 1, 0], ground: [2, 1] });
+    });
+
+    test('said matches a dialog line, a page across its lines, the open dialog and game messages, not player chat', async () => {
+        const state = BASE.recentDialog(['Hello there.', 'I need some'])
+            .recentDialog(['flour please.'])
+            .recentDialog(['Bring me an egg', 'and a pot of flour.'])
+            .message('You catch a shrimp.')
+            .message('the secret word', 2)
+            .dialog({ text: 'Select an option' })
+            .build();
+        const seen = await look(state, v => [
+            v.said(/^hello there\.$/i),
+            v.said(/an egg and a pot/),
+            v.said(/some flour/),
+            v.said(/catch a shrimp/),
+            v.said(/secret word/),
+            v.said(/select an option/i),
+        ]);
+        // A pattern joins the lines of one page, not two pages.
+        expect(seen).toEqual([true, true, false, true, false, true]);
+    });
+
+    test('said with sinceTicks leaves out pages and messages older than that', async () => {
+        const state = BASE.tick(10)
+            .recentDialog(['Old page'])
+            .message('Old message')
+            .tick(20)
+            .recentDialog(['New page'])
+            .message('New message')
+            .build();
+        const seen = await look(state, v => [
+            v.said(/Old page/),
+            v.said(/Old page/, 5),
+            v.said(/Old message/, 5),
+            v.said(/Old message/, 10),
+            v.said(/New page/, 5),
+            v.said(/New message/, 0),
+        ]);
+        expect(seen).toEqual([true, false, false, true, true, true]);
+    });
+
+    test('lastDone and lastFailed read the previous run, by any phase or one of those named', async () => {
+        const stall = defineTask({ ...watch, name: 'stall', stuckAfterMs: 2000 });
+        const seen: boolean[][] = [];
+        // The first phase's `when` is asked once a selection; each phase runs once, then none applies.
+        const r = await sim(
+            plan([
+                phase(
+                    train,
+                    {},
+                    {
+                        when: v => {
+                            seen.push([
+                                v.lastDone(),
+                                v.lastDone('train'),
+                                v.lastDone('broke', 'stall'),
+                                v.lastFailed(),
+                                v.lastFailed('broke'),
+                                v.lastFailed('train', 'stall'),
+                            ]);
+                            return v.runs('train') === 0;
+                        },
+                    },
+                ),
+                phase(failing('broke'), {}, { when: v => v.runs('broke') === 0, onFail: 'continue' }),
+                phase(stall, {}, { when: v => v.runs('stall') === 0, onFail: 'continue' }),
+            ]),
+        );
+        expect(selected(r)).toEqual(['train', 'broke', 'stall', null]);
+        expect(seen).toEqual([
+            [false, false, false, false, false, false],
+            [true, true, false, false, false, false],
+            [false, false, false, true, true, false],
+            [false, false, false, true, false, true],
+        ]);
+    });
+
+    test('lastDone and lastFailed throw on a name the plan has no phase for, before any run as after', async () => {
+        const seen = await look(BASE.build(), v => [
+            thrown(() => v.lastDone('nope')),
+            thrown(() => v.lastFailed('nope')),
+        ]);
+        expect(seen).toEqual(['no phase "nope" in plan "test-plan"', 'no phase "nope" in plan "test-plan"']);
+    });
+
+    test('questStarted holds for a yellow quest only; throws on an unknown id', async () => {
+        const quests = BASE.quests({ imp: 'started', cook: 'done' }).build();
+        expect(await look(quests, questsStarted)).toEqual([true, false, false]);
+        expect(await look(BASE.build(), v => thrown(() => v.questStarted('nope')))).toBe(
+            'unknown quest "nope"; see QUESTS in lib/quests.ts',
+        );
+    });
+
+    test("the select event's reads record each new call and scalar", async () => {
+        const r = await sim(
+            plan([
+                phase(
+                    train,
+                    {},
+                    {
+                        when: v =>
+                            [
+                                v.x,
+                                v.z,
+                                v.floor,
+                                v.combatLevel,
+                                v.coins,
+                                v.within({ x: LX, z: LZ, radius: 2 }),
+                                v.held('Bones'),
+                                v.worn('Bones'),
+                            ].length < 0,
+                    },
+                ),
+                phase(
+                    scripted('other', [{ done: 'ok' }]),
+                    {},
+                    {
+                        when: v =>
+                            [
+                                v.npcs('Cow', 3),
+                                v.locs(/tree/i),
+                                v.ground('Bones'),
+                                v.said(/hello/),
+                                v.lastDone(),
+                                v.lastFailed('train'),
+                                v.questStarted('imp'),
+                            ].length < 0,
+                    },
+                ),
+            ]),
+        );
+        expect(r.events.find(e => e.type === 'select')?.reads).toEqual({
+            train: {
+                x: LX,
+                z: LZ,
+                floor: 0,
+                combatLevel: 3,
+                coins: 0,
+                'within({"x":3222,"z":3218,"radius":2})': true,
+                "held('Bones')": 24,
+                "worn('Bones')": 0,
+            },
+            other: {
+                "npcs('Cow', 3)": 0,
+                'locs(/tree/i)': 0,
+                "ground('Bones')": 0,
+                'said(/hello/)': false,
+                'lastDone()': false,
+                "lastFailed('train')": false,
+                "questStarted('imp')": false,
+            },
+        });
+    });
+});
+
+describe('requires builders', () => {
+    test('combatAtLeast and levelAtLeast make one named entry each', () => {
+        expect(Object.keys({ ...combatAtLeast(5), ...levelAtLeast('woodcutting', 10) })).toEqual([
+            'combat level 5+',
+            'Woodcutting 10+',
+        ]);
+    });
+
+    test('a plan short of one fails naming it; one that meets both runs', async () => {
+        const short = await sim(needs({ ...combatAtLeast(4) }));
+        expect(short.result).toMatchObject({ status: 'failed', reason: 'plan requires combat level 4+' });
+        const low = await sim(needs({ ...combatAtLeast(3), ...levelAtLeast('Woodcutting', 2) }));
+        expect(low.result).toMatchObject({ status: 'failed', reason: 'plan requires Woodcutting 2+' });
+        const met = await sim(
+            needs({ ...combatAtLeast(3), ...levelAtLeast('woodcutting', 1) }, v => v.runs('train') > 0),
+        );
+        expect(met.result.status).toBe('done');
     });
 });
 

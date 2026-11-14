@@ -7,7 +7,7 @@
 // `until`); its outcome either loops back to selection or ends the plan. Every phase run gets its
 // own driver, log and recording from `newPhaseRun`, so each replays like a task run.
 import type { z } from 'zod/v4';
-import type { BotWorldState } from '../../sdk/types';
+import { type BotWorldState, isPlayerChat } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
 import { bankMemory, watchBank } from './bank-memory';
@@ -46,6 +46,47 @@ export interface PlanView {
     runs(phase: string): number;
     /** The previous phase run, or null before the first has ended. */
     last: { phase: string; status: TaskStatus; reason: string } | null;
+    /** The player's `worldX`; 0 in a state with no player. */
+    x: number;
+    /** The player's `worldZ`; 0 in a state with no player. */
+    z: number;
+    /** The player's floor (`level`, 0 the surface); 0 in a state with no player. */
+    floor: number;
+    /**
+     * Whether the player stands within `radius ?? tolerance ?? 0` tiles (Chebyshev, as walkTo counts them) of
+     * (`x`, `z`) and, when `level` is given, on that floor: an `area` or an `at` param as tasks take them, so a phase
+     * can ask `v.within(AREA)`. False in a state with no player.
+     */
+    within(spot: { x: number; z: number; radius?: number; tolerance?: number; level?: number }): boolean;
+    /** Count in the pack plus worn, `item` as `inv` takes it. */
+    held(item: string | RegExp): number;
+    /** Count worn, `item` as `inv` takes it. */
+    worn(item: string | RegExp): number;
+    /**
+     * Nearby NPCs of that name (a string is an exact name, case-insensitive), at most `within` tiles away by their
+     * reported `distance` when given.
+     */
+    npcs(name: string | RegExp, within?: number): number;
+    /** Nearby locs of that name, as `npcs` counts them. */
+    locs(name: string | RegExp, within?: number): number;
+    /** Ground item piles of that name, as `npcs` counts them: piles, not the items stacked in them. */
+    ground(item: string | RegExp, within?: number): number;
+    /**
+     * Whether `pattern` matches a line of a recent dialog page, a whole page with its lines joined by single spaces
+     * (for text the client wraps across lines), the open dialog's text, or a game message (not player chat). With
+     * `sinceTicks`, only pages and messages from at most that many ticks before `state.tick`.
+     */
+    said(pattern: RegExp, sinceTicks?: number): boolean;
+    /** The previous phase run ended `done` and, when names are given, was one of them; throws on an unknown name. */
+    lastDone(...names: string[]): boolean;
+    /** The previous phase run ended `failed` or `stuck` and, when names are given, was one of them; throws as `lastDone`. */
+    lastFailed(...names: string[]): boolean;
+    /** The player's combat level; 0 in a state with no player. */
+    combatLevel: number;
+    /** Coins in the pack. */
+    coins: number;
+    /** Whether the quest tab shows the quest started (yellow); throws on an unknown id, as `quest` does. */
+    questStarted(id: string): boolean;
 }
 
 /** Pure: no I/O, no clock, no state of its own, so every phase choice re-derives from the states. */
@@ -105,21 +146,40 @@ export interface PlanNeed {
 }
 
 const pattern = (item: string | RegExp) => (typeof item === 'string' ? exactName(item) : item);
+const COINS = exactName('Coins');
 
 /** What a need is called in the start event and the failure reason: its label, else its name or pattern source. */
 export const needLabel = (n: PlanNeed): string => n.label ?? (typeof n.item === 'string' ? n.item : n.item.source);
+
+const wornCount = (s: BotWorldState, re: RegExp) =>
+    s.equipment.filter(i => re.test(i.name)).reduce((a, i) => a + i.count, 0);
+/** What `v.held` and a need count: the pack plus what is worn. */
+const heldCount = (s: BotWorldState, re: RegExp) => countItems(s, re) + wornCount(s, re);
 
 /** The needs a state is short of, as `N Label (held H)` phrases. */
 export function shortNeeds(s: BotWorldState, needs: PlanNeed[]): string[] {
     const out: string[] = [];
     for (const n of needs) {
-        const re = pattern(n.item);
         const want = n.count ?? 1;
-        const held = countItems(s, re) + s.equipment.filter(i => re.test(i.name)).reduce((a, i) => a + i.count, 0);
+        const held = heldCount(s, pattern(n.item));
         if (held < want) out.push(`${want} ${needLabel(n)} (held ${held})`);
     }
     return out;
 }
+
+/** A `requires` entry to spread into it: the player's combat level is at least `n`. */
+export const combatAtLeast = (n: number): Record<string, Predicate> => ({
+    [`combat level ${n}+`]: v => v.combatLevel >= n,
+});
+
+/** A `requires` entry to spread into it: the base level of `skill` is at least `n` (`Smithing 30+`). */
+export const levelAtLeast = (skill: string, n: number): Record<string, Predicate> => ({
+    [`${skill.charAt(0).toUpperCase()}${skill.slice(1)} ${n}+`]: v => v.level(skill) >= n,
+});
+
+/** How many of `xs` match `re`, at most `within` tiles away when given. */
+const countNear = (xs: { name: string; distance: number }[], re: RegExp, within?: number) =>
+    xs.filter(e => re.test(e.name) && (within === undefined || e.distance <= within)).length;
 
 export interface PlanDef {
     name: string;
@@ -473,6 +533,13 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
 
     const view = (s: BotWorldState): PlanView => {
         const known = bankSeen.counts();
+        const p = s.player;
+        /** The previous run ended in one of `statuses` and, when `names` are given, was a run of one of them. */
+        const lastWas = (statuses: TaskStatus[], names: string[]) => {
+            for (const name of names)
+                if (!summaries.has(name)) throw new Error(`no phase "${name}" in plan "${def.name}"`);
+            return !!last && statuses.includes(last.status) && (names.length === 0 || names.includes(last.phase));
+        };
         return {
             state: s,
             inv: item => countItems(s, pattern(item)),
@@ -505,6 +572,34 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 return summary.runs;
             },
             last,
+            x: p?.worldX ?? 0,
+            z: p?.worldZ ?? 0,
+            floor: p?.level ?? 0,
+            within: spot =>
+                !!p &&
+                Math.max(Math.abs(p.worldX - spot.x), Math.abs(p.worldZ - spot.z)) <=
+                    (spot.radius ?? spot.tolerance ?? 0) &&
+                (spot.level === undefined || p.level === spot.level),
+            held: item => heldCount(s, pattern(item)),
+            worn: item => wornCount(s, pattern(item)),
+            npcs: (name, within) => countNear(s.nearbyNpcs, pattern(name), within),
+            locs: (name, within) => countNear(s.nearbyLocs, pattern(name), within),
+            ground: (item, within) => countNear(s.groundItems, pattern(item), within),
+            said: (re, sinceTicks) => {
+                const fresh = (e: { tick: number }) => sinceTicks === undefined || s.tick - e.tick <= sinceTicks;
+                if (s.dialog.isOpen && s.dialog.text !== undefined && re.test(s.dialog.text)) return true;
+                if (s.recentDialogs.some(d => fresh(d) && (d.text.some(l => re.test(l)) || re.test(d.text.join(' ')))))
+                    return true;
+                return s.gameMessages.some(m => fresh(m) && !isPlayerChat(m.type) && re.test(m.text));
+            },
+            lastDone: (...names) => lastWas(['done'], names),
+            lastFailed: (...names) => lastWas(['failed', 'stuck'], names),
+            combatLevel: p?.combatLevel ?? 0,
+            coins: countItems(s, COINS),
+            questStarted: id => {
+                if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
+                return questProgress(s, id) === 'started';
+            },
         };
     };
 
