@@ -176,8 +176,8 @@ export default defineTask({
     name: 'thieving',
     description:
         'Pickpockets one kind of NPC, repeating until stopped. ' +
-        'It picks the nearest free, reachable one and waits out the stun after a caught attempt, ' +
-        `${STUN_TICKS} ticks for every NPC but the Hero's 10; a catch deals damage (1 for Man, Woman, Farmer and Gnome, ` +
+        'It picks the nearest free, reachable one. The game stuns the bot for ' +
+        `${STUN_TICKS} ticks after a caught attempt (10 for a Hero) and the task waits ${STUN_TICKS + STUN_MARGIN_TICKS} ticks; a catch deals damage (1 for Man, Woman, Farmer and Gnome, ` +
         '2 for warriors, rogues and guards, 3 for Knights, Watchmen and Paladins, 4 for a Hero); the NPC does not fight back. ' +
         'Eats `food` when low; with no food held it waits ' +
         'for HP to regenerate, and fails if it does not. When no free NPC is in the area it waits, and fails after ' +

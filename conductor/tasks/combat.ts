@@ -161,9 +161,7 @@ const Params = z
             .string()
             .trim()
             .optional()
-            .describe(
-                'A shield to wield if not already worn, by exact name (carried or worn at the start, else refused).',
-            ),
+            .describe('A shield to wield if not already worn, by exact name; it adds defence for the fight.'),
         ammo: z
             .string()
             .trim()
@@ -265,7 +263,8 @@ const Params = z
             .describe(
                 "Leave the prayers this run turned on when it ends, for a plan's following non-combat phases (walk, pick " +
                     'up, climb) in a hostile area; they drain the points until the `prayer` task turns them off. They also ' +
-                    "stay on when `stopOnDialog`'s kept dialog is still open at the end (a prayer click would close it). A prayer " +
+                    "stay on when `stopOnDialog`'s kept dialog is still open at the end (a prayer click would close it), and the " +
+                    "run's `done` reason then names them. A prayer " +
                     "an earlier phase kept on, or already on at the start, is not this run's: a later combat phase never " +
                     'turns it off, only the `prayer` task does.',
             ),
