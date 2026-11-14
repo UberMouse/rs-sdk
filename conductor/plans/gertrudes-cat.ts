@@ -13,7 +13,7 @@ const up = (v: PlanView) => v.state.player?.level === 1;
 const down = (v: PlanView) => v.state.player?.level === 0;
 const hasSeasoned = (v: PlanView) => v.inv(/^Seasoned sardine$/i) > 0;
 const hasKitten = (v: PlanView) => v.inv("Fluffs' kitten") > 0;
-// The walker does not open her door, so Gertrude reads as unreachable until it is open.
+// Her door shut reads as Gertrude unreachable (the door: wiki/quests/gertudes-cat.md).
 const gertrudeReachable = (v: PlanView) => v.state.nearbyNpcs.some(n => n.name === 'Gertrude' && n.reachable === true);
 const crates: [number, number][] = [
     [3305, 3500],
@@ -68,8 +68,7 @@ export default defineQuest({
             { npc: '^Gertrude$', at: gertrude, choices: ['Well, I suppose I could'] },
             { reached: v => v.quest('fluffs') !== 'none' },
         ),
-        // The first talk right after the quest starts sometimes closes before its choices: the journal says whether
-        // it paid, and the quest's retry runs it again.
+        // The journal says whether a talk paid: one that closed early runs again.
         step(
             'pay',
             talk,
@@ -106,7 +105,7 @@ export default defineQuest({
                     tile: { x, z },
                     at: { x, z: z - 1, level: 0, tolerance: 2 },
                 },
-                { skip: hasKitten, maxFails: 8 },
+                { skip: hasKitten, onFail: 'continue', maxFails: 8 },
             ),
         ),
         step('climb-up-2', interact, ladderUp, { until: up }),
