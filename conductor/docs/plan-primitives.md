@@ -101,8 +101,6 @@ Direction, to be designed after a spike:
   (design: `conductor/docs/task-catalog.md`).
 - Task bookkeeping: done 2026-11-15 (design `conductor/docs/task-bookkeeping.md`); was: declared silent streaks in place of hand-summed `stuckAfterMs` (25 tasks), one
   streak-then-fail helper (93 blocks), one `waitForRespawn`, one eat step.
-- Param naming: five names for the full-inventory policy; exact names against pattern sources.
-- Outcome codes: three plans match failure wording (`clock-tower`, `monks-friend`,
-  `troll-stronghold`); actions use about 91 reason strings with synonyms.
+- Param naming and outcome codes: done 2026-11-15 (design `conductor/docs/naming-outcomes.md`).
 - Places by name from the world index (216 literal coordinate pairs in training plans; Seers bank
   spelled three ways), plan parameters, and level-band stages.

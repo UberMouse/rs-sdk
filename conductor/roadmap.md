@@ -564,8 +564,7 @@ on its own.
     - Prayer toggles change nothing the watchdog watches.
     - fishing can in theory pass its 800 silent ticks with about six cast timeouts interleaved with spot-moved casts onto adjacent spots with no walk.
     - `conductor/test/tools/plan-view/server.test.ts` has a timing-flaky RunsStore assertion under full-suite load (seen once, passes alone).
-  - Audit: one name for the full-inventory policy param (`onFull` now in gathering, thieving and combat; still open: `pick`'s omitted `count` and `pickup`'s hardwired failure), and one rule for item or NPC names, a regex in some tasks and a whole name in others.
-  - Audit: outcome codes in place of failure-wording matches (`clock-tower`, `monks-friend`, `troll-stronghold`; about 91 reason strings).
+  - Outcome codes and param naming: done 2026-11-15 (design `conductor/docs/naming-outcomes.md`): the three plans branch on `v.last.code`, `onFull` in thieving and combat, `maxWaitTicks` in pickup, unknown params refused. Open items are under Review follow-ups.
   - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.
   - Migrate promoted plans to the view members and primitives (`retry`, `wait`, `defaults`, `v.said`, `v.held`) when next touched or re-run.
   - fm-99, willow-burn and oak-draynor-drop count an axe with `v.inv` (the pack only), so a wielded axe reads as none and triggers a needless fetch or purchase; `v.held` (pack plus worn) fixes it, to be changed with a run.
@@ -816,3 +815,11 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - Runner token use (retro #3): after the 2026-10-23 prompt fixes runners cost 0.1-0.9 M cache reads (fishcook99 0.34 M, imp roaming
   0.92 M, resume 0.10 M) against 5-14 M for the three before (thieve-55 13.9 M, melee-20 9.1 M, crafting80 6.9 M). Fixed; the leak
   moved to review delegates (above).
+- Naming and outcomes: selector names are kept (`npc`, `target`, `name`, `item`, `food`, `product` mean different kinds per task).
+- Naming and outcomes: the op reason synonyms are kept (about 90 values; the groups are in `conductor/docs/naming-outcomes.md`).
+- Naming and outcomes: more codes are added with the plan that needs one.
+- shop: still walks with its own `{x, z}` `at`; it could move onto the shared walk step and `AtSchema`.
+- under-attack guard: the stalled-fight ending shares the code `attacked`; a plan that wants to tell it apart needs its own code.
+- monks-friend: the door phase no longer fires after a failed walk whose reason said "unreachable" (not run live).
+- troll-stronghold: a `dad` fight failing with "dialog open before any fight" now takes the generic dialog phase (not run live).
+- plan-view: the page shows `code` and `endedBy`.

@@ -42,7 +42,9 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
   budget, cancelling the step (its `finally` blocks run) where needed. Tasks therefore carry no
   threat, dialog or timeout handling of their own.
 - A step returns nothing to loop, `{ fail }` or `{ done }`; the run ends in one `TaskResult`
-  printed as the `RESULT` line.
+  printed as the `RESULT` line. An ending a plan would branch on carries a `code` the task declares in
+  `outcomes` (`--list <task>` prints them); a plan reads it as `v.last.code`, never the reason text. A param
+  the task's schema does not have fails the run at preflight.
 - Every run is recorded next to its log (`conductor/runs/<bot>/<runId>.ticks.ndjson.gz`, about
   47 KiB a minute, about 2.8 MB an hour): what the code observed and every command it sent. `bun conductor/tools/replay.ts
   <file>` re-runs the current task code on it and prints the first command that differs.
@@ -129,7 +131,7 @@ no engines for NixOS); `up.sh` runs it.
 
 ```bash
 bun conductor/run-task.ts --list            # index: one line per task
-bun conductor/run-task.ts --list mining     # a task's description, rules, spots and params
+bun conductor/run-task.ts --list mining     # a task's description, rules, outcome codes, spots and params
 bun conductor/run-task.ts conductor1 woodcutting --params '{"area":{"x":3195,"z":3220}}' --until minutes:1
 ```
 

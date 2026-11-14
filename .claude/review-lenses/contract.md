@@ -47,6 +47,13 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
   belongs to the guards (save a dialog or interface the op opens and answers itself as explicit
   steps, like `fletch`'s make menu or `smith`'s anvil interface in `OP_OWNED_INTERFACES`).
 
+- **T10 Outcome codes.** A step or guard that ends a run a plan would branch on returns a `code`
+  and declares it in `outcomes` (`TaskDef.outcomes`, `TaskGuard.outcomes`); a returned code that is
+  not declared ends the run `error`. Every declared code has a sentence on when it happens that is true
+  of the code, and a code a plan branches on has one. A plan (or its `when`/`until`) matching reason
+  text (`.test`, `includes`, `match`, `startsWith`, a literal `===`) instead of `last.code` is flagged,
+  unless an earlier operand of its `&&` chain tests `.code`.
+
 Types, async hygiene, naming, comments and style are the `code-quality` lens.
 
 ## Bands
@@ -57,7 +64,7 @@ Types, async hygiene, naming, comments and style are the `code-quality` lens.
   the death interrupt); a description that promises what the code doesn't do; duplicated logic
   whose copies already differ; a T7 `await` in a step; a
   T8 missing unit test (where T8 asks for one), missing smoke (any changed task) or missing op test; a T9 op
-  that handles threats or dialogs itself.
+  that handles threats or dialogs itself; a T10 plan matching reason text, or a code returned and not declared.
 - **C** — hard-coding that only matters for future spots; a raw `send` where an op exists
   but the effect is checked; naming.
 - **D** — style preferences with no effect on the conductor or on maintenance.
