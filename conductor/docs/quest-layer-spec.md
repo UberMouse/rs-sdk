@@ -253,6 +253,11 @@ needed (same guards: started, not blocked, `journalAge > 0`) while any `JournalM
 after `base` with no `done` is passed that way, so the confirmation happens at the first selection
 with no dialog or modal open.
 
+**Amendment (2026-11-14, from Task 3's code review):** a step whose `until` is set and holds on
+the view is passed, as by a `done` that holds (before, such a step was never chosen and nothing
+else applied). A throw from a step's `reached`, `skip`, `until` or `done` is rethrown as
+`step "<name>" <which> threw: <message>`.
+
 ## Task 4 — `gertrudes-cat` as a quest, proven live
 
 **Files:** `conductor/plans/gertrudes-cat.ts` (rewritten with `defineQuest`, same plan name and
