@@ -144,19 +144,25 @@ export const SILENT_STREAK_TICKS = [failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_T
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
-    mode: z.enum(['smelt', 'smith']),
-    /** Metal: smelt mode makes this bar; smith mode uses this bar. */
-    bar: z.enum(BARS).default('bronze'),
-    /** Smith mode only: product to forge, e.g. "dagger", "axe", "med helm", "platebody". */
-    product: z.string().default('dagger'),
-    /** Stay near the furnace / anvil; walk back when further than `radius`. */
-    area: AreaSchema.optional(),
-    /**
-     * Smith mode only: what to do with the forged products once the bars are used up. 'keep' leaves them in
-     * the inventory; 'drop' drops them (only the products: never bars, ore, runes, tools or coins), for a
-     * loop that trains Smithing without a bank.
-     */
-    onDone: z.enum(['keep', 'drop']).default('keep'),
+    mode: z
+        .enum(['smelt', 'smith'])
+        .describe('`smelt` makes bars at a furnace; `smith` forges products from bars at an anvil.'),
+    bar: z.enum(BARS).default('bronze').describe('The metal: `smelt` mode makes this bar; `smith` mode uses this bar.'),
+    product: z
+        .string()
+        .default('dagger')
+        .describe(
+            `\`smith\` mode only: the product to forge, as the anvil names it (any case, spacing or alias: "Square-shield" is "sq shield"): ${Object.keys(PRODUCTS).join(', ')}.`,
+        ),
+    area: AreaSchema.optional().describe(
+        'Centre it on the furnace or anvil: the bot stays near it and walks back when further than `radius`, and walks there when far away. Omit to work where it stands.',
+    ),
+    onDone: z
+        .enum(['keep', 'drop'])
+        .default('keep')
+        .describe(
+            '`smith` mode only: what to do with the forged products once the bars are used up. `keep` leaves them in the inventory; `drop` drops them (only the products: never bars, ore, runes, tools or coins), for a loop that trains Smithing without a bank.',
+        ),
 });
 
 type SmithingParams = z.infer<typeof Params>;
@@ -244,14 +250,26 @@ function* walkToStation(ctx: Ctx, station: NearbyLoc): Op<string | null> {
 export default defineTask({
     name: 'smithing',
     description:
-        'Smithing in two modes. mode "smelt": at a furnace, smelt `bar` one at a time through its Smelt menu (bronze needs copper + tin 1:1; iron; ' +
-        'steel/mithril/adamant/runite also need coal) until the ores run out. mode "smith": at an anvil with a hammer, ' +
-        'forge `product` (dagger, axe, mace, med helm, sword, scimitar, longsword, full helm, sq shield, warhammer, battleaxe, ' +
-        'chainbody, kiteshield, 2h sword, platelegs, plateskirt, platebody, and nails: steel bar only, 2 Nails a bar, stacked, Smithing 34) from `bar` until the bars run out. ' +
-        'Needs the Smithing level for the bar/product (checked against the engine configs) and, to smith, a hammer. ' +
-        'Smelting takes about 8 ticks a bar; iron has a 50% failure chance. ' +
-        '`area` centres on the furnace/anvil; it walks there when far away. Known spots: Lumbridge furnace (3225,3256), ' +
-        'Varrock west anvils (3188,3421). Smith mode with `onDone: "drop"` drops the forged products once the bars run out (default "keep"), for a bankless loop. The Al Kharid furnace (3272,3185) works from its open east side: a reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
+        'Smelts ore into bars at a furnace (mode "smelt") or forges bars into products at an anvil (mode "smith"). ' +
+        "Smelting goes one bar at a time through the furnace's Smelt menu, about 8 ticks a bar, until the ores run out; iron has a 50% failure chance. " +
+        'Smithing forges `product` from `bar` until the bars run out. ' +
+        'A reachable station within 8 tiles is interacted with directly, and walked to first only after such an attempt failed.',
+    rules: [
+        `Smelting needs these ores in the inventory and this base Smithing level: ${Object.values(SMELT)
+            .map(
+                r =>
+                    `${r.bar} ${r.level} (${[r.ore, ...(r.extra ? [`${r.extra.count} ${r.extra.item}`] : [])].join(' + ')})`,
+            )
+            .join(', ')}.`,
+        'Smithing needs the base Smithing level for the bar and product (checked against the engine configs), a hammer and enough bars for one product.',
+        'Nails: steel bar only, 2 Nails a bar, stacked, Smithing 34.',
+        '`onDone` "drop" applies to mode "smith" only, and is refused when the inventory already holds a copy of the product (the drop would clear it too): bank it first.',
+    ],
+    spots: [
+        'Lumbridge furnace (3225,3256).',
+        'Varrock west anvils (3188,3421).',
+        'The Al Kharid furnace (3272,3185) works from its open east side.',
+    ],
     params: Params,
     memory: (): SmithingMemory => ({ directFrom: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

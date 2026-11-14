@@ -45,20 +45,34 @@ const FEATHER_WAIT_TICKS = Math.ceil(FEATHER_WAIT_MS / TICK_MS);
 const STRING_WAIT_TICKS = FEATHER_WAIT_TICKS;
 
 const Params = z.object({
-    /** Product: "arrow shaft", "short bow" or "long bow" (the dialog labels). "shortbow (u)" / "longbow (u)" are accepted too. */
-    product: z.string().min(1),
-    /** Exact item name of the logs to cut. */
-    logs: z.string().default('Logs'),
-    /** Logs per make-menu click (10, 5 or 1); a level-up or interruption ends a batch early and the next cut step resumes. */
-    batch: z.union([z.literal(1), z.literal(5), z.literal(10)]).default(10),
-    /** After the logs are cut, attach Feathers to the Arrow shafts (needs product "arrow shaft"). */
-    attachFeathers: z.boolean().default(false),
-    /**
-     * String the bows (product "short bow" or "long bow" from `logs`): after the logs are cut, use a Bow string
-     * on every unstrung bow of that kind in the inventory. With no logs left in the inventory it strings the
-     * unstrung bows already held (no knife needed).
-     */
-    string: z.boolean().default(false),
+    product: z
+        .string()
+        .min(1)
+        .describe(
+            'What to cut: "arrow shaft", "short bow" or "long bow" (the dialog labels, case-insensitive); "shortbow (u)" and "longbow (u)" are accepted too.',
+        ),
+    logs: z
+        .string()
+        .default('Logs')
+        .describe(
+            'The logs to cut, by exact item name (whole name, case-insensitive); the run cuts until none of that type is left, and other log types in the inventory are left alone.',
+        ),
+    batch: z
+        .union([z.literal(1), z.literal(5), z.literal(10)])
+        .default(10)
+        .describe(
+            'Logs cut per make-menu click, about 0.8 s per log: 10, 5 or 1. A level-up or interruption ends a batch early and the next cut step resumes.',
+        ),
+    attachFeathers: z
+        .boolean()
+        .default(false)
+        .describe('After the logs are cut, use Feathers on the Arrow shafts to make Headless arrows.'),
+    string: z
+        .boolean()
+        .default(false)
+        .describe(
+            'After the logs are cut, use a Bow string on every unstrung bow of that kind in the inventory (one per use, no delay, same XP as the cut). With no logs left in the inventory it strings the unstrung bows already held, with no knife needed.',
+        ),
 });
 
 type FletchParams = z.infer<typeof Params>;
@@ -105,15 +119,16 @@ const wantsFeathers = (ctx: Ctx) => ctx.params.attachFeathers && /shaft/.test(no
 export default defineTask({
     name: 'fletching',
     description:
-        'Use a knife on logs from the inventory to make `product` ("arrow shaft", "short bow", "long bow") ' +
-        'until no `logs` (exact item name, default "Logs") are left. With attachFeathers and product "arrow shaft", ' +
-        'then uses Feathers on the Arrow shafts to make Headless arrows (needs Feathers in the inventory). Members world only. Needs a knife (no nearby shop sells one: ' +
-        'ground spawn near (3224,3202), or Shantay Pass shop), the logs and the Fletching level. Works anywhere; ' +
-        'the run fails if something attacks the bot. Other log types in the inventory are left alone. ' +
-        'Cuts `batch` logs (10 default, 5 or 1) per make-menu click, ~0.8 s per log. ' +
-        'With `string` (product "short bow" or "long bow"), then uses a Bow string on each unstrung bow it cut ' +
-        '(one per use, no delay, same XP as the cut); with no logs held it strings the unstrung bows already in the ' +
-        'inventory and needs no knife. Ends when logs and strings or bows run out.',
+        'Uses a knife on logs from the inventory to make `product`, until no `logs` are left, then optionally attaches feathers to the shafts or strings the bows. ' +
+        'Works anywhere; the run fails if something attacks the bot. Ends when logs and strings or bows run out.',
+    rules: [
+        `Needs a knife, the logs and the base Fletching level: ${Object.entries(BOW_LEVELS)
+            .map(([logs, l]) => `${logs} short bow ${l.shortBow}, long bow ${l.longBow}`)
+            .join('; ')}; arrow shafts level ${SHAFT_LEVEL} and only from normal "Logs". Other log types are refused.`,
+        '`attachFeathers` needs product "arrow shaft" and Feathers in the inventory.',
+        '`string` needs product "short bow" or "long bow" and a Bow string in the inventory; stringing bows already held needs neither knife nor logs.',
+    ],
+    spots: ['Knives: no nearby shop sells one; there is a ground spawn near (3224,3202), and a Shantay Pass shop.'],
     params: Params,
 
     preflight(ctx) {

@@ -210,19 +210,8 @@ describe('patternsWithoutNote', () => {
     });
 });
 
-/** Tasks that do not yet keep the catalog's rules. A task is added only by being exempted here, and this list must reach empty: the guard fails a listed task that keeps the rules. */
-const NOT_YET = [
-    'bank',
-    'cooking',
-    'crafting',
-    'firemaking',
-    'fletching',
-    'herblore',
-    'shop',
-    'smithing',
-    'spell-items',
-    'spinning',
-];
+/** Tasks that do not yet keep the catalog's rules. It is empty now; a task is parked here only deliberately, in the open, and the guard fails a listed task that keeps the rules. */
+const NOT_YET: string[] = [];
 const MAX_DESCRIPTION = 900;
 
 /** What a task breaks of the catalog's rules, one line each; empty when it keeps them all. */

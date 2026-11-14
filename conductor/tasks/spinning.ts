@@ -38,13 +38,31 @@ export const ATTEMPT_SILENT_TICKS = WHEEL_WALK_TICKS + SPIN_MAX_TICKS;
 const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
 
 const Params = z.object({
-    /** What to spin: flax into bow strings (Crafting 10) or wool into balls of wool. */
-    material: z.enum(['flax', 'wool']).default('flax'),
-    /**
-     * The wheel's tile and floor; the task walks there (by the floor's stairs or ladder, lib/connectors.ts).
-     * Omit to use a wheel already in view. Seers' Village: {x:2711,z:3471,level:1}.
-     */
-    wheel: z.object({ x: z.number(), z: z.number(), level: z.number().int().min(0).default(0) }).optional(),
+    material: z
+        .enum(['flax', 'wool'])
+        .default('flax')
+        .describe(
+            `What to spin: flax into bow strings (base Crafting ${SPINNABLES.flax.level}) or wool into balls of wool (Crafting ${SPINNABLES.wool.level}).`,
+        ),
+    wheel: z
+        .object({
+            x: z
+                .number()
+                .describe(
+                    'Tile x of the wheel (its loc tile from services/spinning-wheel is fine: the task stands on the stand tile of the world index beside it).',
+                ),
+            z: z.number().describe('Tile z of the wheel.'),
+            level: z
+                .number()
+                .int()
+                .min(0)
+                .default(0)
+                .describe(
+                    "The wheel's floor; the task walks there by the floor's stairs or ladder (lib/connectors.ts).",
+                ),
+        })
+        .optional()
+        .describe('The wheel to walk to. Omit to use a wheel already in view.'),
 });
 
 type SpinParams = z.infer<typeof Params>;
@@ -96,11 +114,16 @@ function awayFromWheel(ctx: Ctx): boolean {
 export default defineTask({
     name: 'spinning',
     description:
-        'Spin flax into bow strings (or wool into balls of wool) at a spinning wheel: opens the wheel\'s menu, picks "Make X" and spins everything held in one go ' +
-        '(about 2 ticks per item). Ends done when none is left. Needs Crafting 10 for flax (members world), the material in the inventory and a wheel: ' +
-        '`wheel` gives its tile (the loc tile of services/spinning-wheel is fine: the task stands on the stand tile of the world index beside it) and floor and the task walks there, up the stairs or ladder if needed; omit it to use a wheel in view. ' +
-        "Known wheel: Seers' Village {x:2711,z:3471,level:1} (ladder in the house at (2715,3470), door at (2716,3472); bank 25 tiles away). " +
+        'Spins flax into bow strings (or wool into balls of wool) at a spinning wheel: opens the wheel\'s menu, picks "Make X" and spins everything held in one go ' +
+        '(about 2 ticks per item). Ends done when none is left. ' +
+        'The `wheel` tile gives where to walk, up the stairs or ladder if needed. ' +
         'Flax comes from the `pick` task; the strings go to a `bank` run.',
+    rules: [
+        'Needs the material in the inventory, the base Crafting level for it, and a wheel: `wheel` or one in view (otherwise refused). A `wheel` reaching the Wilderness is refused.',
+    ],
+    spots: [
+        "Seers' Village: `wheel` {x:2711,z:3471,level:1} (ladder in the house at (2715,3470), door at (2716,3472); bank 25 tiles away).",
+    ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,

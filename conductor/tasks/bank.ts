@@ -28,21 +28,52 @@ export const SILENT_STREAK_TICKS = [
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
-    /** Walk here first (a bank, e.g. Varrock West (3185,3436)). Omit to walk to the nearest bank in `lib/banks.ts`. */
-    area: AreaSchema.optional(),
-    /** Inventory items to deposit, by exact name. Omit `count` to deposit all of that item. */
-    deposit: z.array(z.object({ item: z.string().min(1), count: z.number().int().positive().optional() })).default([]),
-    /** Deposit every inventory item whose exact name is not listed here (tools stay). Runs after `deposit`. Worn gear is untouched. */
-    depositAllExcept: z.array(z.string().min(1)).optional(),
-    /**
-     * Bank items to withdraw, by exact name, after all deposits. Fails if the bank holds fewer than `count`,
-     * unless `upTo`: then it withdraws the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots, or for a stackable item per the obj configs one free slot or a held stack), and none held or no room is skipped.
-     */
+    area: AreaSchema.optional().describe(
+        'Where to bank: the bot walks here first. Omit it to walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), or not at all with a bank booth or banker already in view. Draynor is never picked: pass it as an explicit area.',
+    ),
+    deposit: z
+        .array(
+            z.object({
+                item: z
+                    .string()
+                    .min(1)
+                    .describe('The inventory item to deposit, by its exact name (whole name, case-insensitive).'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .optional()
+                    .describe('How many to deposit; omit to deposit all of that item.'),
+            }),
+        )
+        .default([])
+        .describe('Inventory items to deposit, first of all.'),
+    depositAllExcept: z
+        .array(z.string().min(1))
+        .optional()
+        .describe(
+            'Names to keep: after `deposit`, deposits every inventory item whose exact name (whole name, case-insensitive) is not listed, so tools stay. Worn gear is untouched.',
+        ),
     withdraw: z
         .array(
-            z.object({ item: z.string().min(1), count: z.number().int().positive(), upTo: z.boolean().default(false) }),
+            z.object({
+                item: z
+                    .string()
+                    .min(1)
+                    .describe('The bank item to withdraw, by its exact name (whole name, case-insensitive).'),
+                count: z.number().int().positive().describe('How many to withdraw.'),
+                upTo: z
+                    .boolean()
+                    .default(false)
+                    .describe(
+                        'Take the lesser of `count`, what the open bank lists (a same-trip deposit of the item counts) and what the inventory can take (its free slots; a stackable item per the obj configs needs one free slot, or none if a stack is held), instead of failing when the bank holds fewer. An item none is held of or with no room is skipped, not a failure; a short or skipped entry is named in the done reason.',
+                    ),
+            }),
         )
-        .default([]),
+        .default([])
+        .describe(
+            'Bank items to withdraw, after all deposits. Fails if the bank holds fewer than `count`, unless `upTo`.',
+        ),
 });
 
 type BankParams = z.infer<typeof Params>;
@@ -235,11 +266,21 @@ function bankAreaOf(ctx: Ctx): Area | undefined {
 export default defineTask({
     name: 'bank',
     description:
-        'Walk to a bank (optional `area`, e.g. Varrock West {x:3185,z:3436,radius:6}; none = walk to the bank the fewest run ticks away by the world index (lib/banks.ts: any bank site the bot can reach, members ones included, through the doors its levels open and the Al Kharid toll if it carries 10 coins; quest-gated banks are never picked, as the bot state shows no quests), ' +
-        'never Draynor (dark wizards; it works with an explicit area {x:3092,z:3243,radius:3}); fails if the walk cannot get there, and without an area refuses off the surface or where no walk reaches a bank, e.g. inside an agility course). ' +
-        'The no-area walk can be long (from Lumbridge: Varrock West, ~120 run ticks, without coins; Al Kharid, ~56, with them), and NPCs attack unarmed low-level bots on the walks out of Lumbridge (learnings/hazards.md): wield a weapon first. Then open it, deposit (`deposit` [{item,count?}], count omitted = all; ' +
-        'then `depositAllExcept` [names] deposits everything else so tools stay), then withdraw (`withdraw` [{item,count,upTo?}]; `upTo` true takes the lesser of count, what the bank holds and what the inventory can take (free slots; a stackable item needs one free slot, or none if a stack is held), and none held or no room is skipped, not a failure; it counts what the open bank lists then, so same-trip deposits of the item count; a short or skipped entry is named in the done reason), close the bank; done when every operation is made. ' +
-        'Never sells or drops. Fails (no looping) if the bank holds fewer of an item than asked (unless `upTo`), or the inventory lacks a listed deposit. No bank in Lumbridge castle or anywhere in Lumbridge on this server: its map data has no booth or banker on any floor (learnings/banking.md).',
+        'Walks to a bank, opens it, deposits, withdraws and closes it; done when every operation is made. ' +
+        'Deposits run first (`deposit`, then `depositAllExcept`), then withdrawals, so freed slots can be refilled in one trip. ' +
+        `Never sells or drops. Fails (no looping) if the walk cannot get there, if the bank holds fewer of an item than asked (unless \`upTo\`), or after ${OPEN_FAIL_LIMIT} failed opens.`,
+    rules: [
+        'Needs at least one of `deposit`, `depositAllExcept` and `withdraw`.',
+        'Every `deposit` item must be in the inventory, and its counts together (an entry without `count` means all) must not exceed what is held: an item listed twice needs a `count` on each entry.',
+        'Without `area` it refuses off the surface (another floor or underground) with no bank in view, and where no walk reaches a bank, e.g. inside an agility course.',
+        'Without `area` the walk can be long, and NPCs attack unarmed low-level bots on the walks out of Lumbridge (learnings/hazards.md): wield a weapon first.',
+    ],
+    spots: [
+        'Varrock West: `area` {x:3185,z:3436,radius:6}.',
+        'Draynor bank: `area` {x:3092,z:3243,radius:3}; never picked without an area (dark wizards).',
+        'Without `area` from Lumbridge: Varrock West, ~120 run ticks, without coins; Al Kharid, ~56, with them.',
+        'No bank in Lumbridge castle or anywhere in Lumbridge on this server: its map data has no booth or banker on any floor (learnings/banking.md).',
+    ],
     params: Params,
     memory: (): BankMemory => ({ opsMade: 0, inFlight: null, chosen: null, upToShort: [] }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
