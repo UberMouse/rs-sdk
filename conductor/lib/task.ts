@@ -174,6 +174,12 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * that its phase's `until` ended out of the idle rail (runPlan), bounded by DEFAULT_MAX_WAITS consecutive `until`-ended waits, of any phase. A run that ends any other way counts as usual.
      */
     waits?: true;
+    /**
+     * A task that only looks (the quest journal read). In a plan (runPlan) its runs do not become `v.last`, leave
+     * `skip` and `prevDone` as they were, stay out of the idle rail and the `maxWaits` count (except that one during
+     * which a journal text changed clears the idle run), and do not age the journal (`v.journalAge`).
+     */
+    observes?: true;
 }
 
 /** A generator step's tick budget: its `stepTimeoutMs` in ticks, rounded up, as the engine enforces it. */

@@ -154,6 +154,11 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
     hauntedmine: q('Haunted Mine', 'hauntedmine', 11, 381, 'general/configs/quest.constant:30'),
 };
 
+const BY_NAME = new Map(Object.entries(QUESTS).map(([id, info]) => [info.name, id]));
+
+/** The id of the quest whose tab entry (and journal title) reads `name`, or undefined. */
+export const questIdByName = (name: string): string | undefined => BY_NAME.get(name);
+
 /** The least a channel holds when if_setcolour set it (it keeps 5 bits per channel: 0xF8 or 0x00). */
 const HIGH = 0x80;
 

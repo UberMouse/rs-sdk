@@ -11,6 +11,7 @@ import { type BotWorldState, isPlayerChat } from '../../sdk/types';
 import type { Pathfinder } from '../actions/paths';
 import type { Driver } from '../core/interpret';
 import { bankMemory, watchBank } from './bank-memory';
+import { journalMemory } from './journal-memory';
 import { executeTask, inventoryCounts, progressSignature } from './engine';
 import { guardLabel } from './interrupts';
 import { type QuestProgress, QUESTS, questProgress } from './quests';
@@ -88,6 +89,17 @@ export interface PlanView {
     coins: number;
     /** Whether the quest tab shows the quest started (yellow); throws on an unknown id, as `quest` does. */
     questStarted(id: string): boolean;
+    /**
+     * Whether `pattern` matches the quest's journal text as last seen open in this plan run (its lines joined by
+     * single spaces, so a phrase the journal wraps across lines matches); undefined before this plan run has seen it.
+     * Throws on an unknown id, as `quest` does.
+     */
+    journalSays(id: string, pattern: RegExp): boolean | undefined;
+    /**
+     * Acting phase runs (of tasks without `observes`) that ended since the quest's journal was last seen open: 0 right
+     * after a read; undefined before this plan run has seen it. Throws on an unknown id, as `quest` does.
+     */
+    journalAge(id: string): number | undefined;
 }
 
 /** Pure: no I/O, no clock, no state of its own, so every phase choice re-derives from the states. */
@@ -517,14 +529,22 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const bankSeen = bankMemory();
     /** The bank as first seen open: the bank the plan started with, for the result's bankDelta. */
     let bankFirst: ReadonlyMap<string, number> | null = null;
+    /** Whether a journal text changed (not a first sight) since the current phase run started. */
+    let journalChanged = false;
+    /** Each quest's journal as last seen open in any state the plan or a phase read. */
+    const journalSeen = journalMemory(sight => {
+        if (sight.changed) journalChanged = true;
+        emit({ type: 'journal', ...sight });
+    });
     let seen: BotWorldState | null = null;
     const observe = (s: BotWorldState): BotWorldState => {
         seen = s;
         bankSeen.observe(s);
         bankFirst ??= bankSeen.counts();
+        journalSeen.observe(s);
         return s;
     };
-    /** A phase's driver, with every state it hands out observed for the bank memory. */
+    /** A phase's driver, with every state it hands out observed for the bank and journal memories. */
     const watched = (d: Driver): Driver => watchBank(d, { ...bankSeen, observe });
     /** The bank memory as a record (an event's, a phase run's); null before the bank has been seen open. */
     const bankRecord = () => {
@@ -561,7 +581,10 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
     const recent: PhaseRunRef[] = [];
     const screenshots: string[] = [];
     let loops = 0;
+    /** The last acting phase run (`TaskDef.observes` runs are not). */
     let last: PlanView['last'] = null;
+    /** The phase of the last phase run, of any task: the result's `lastStep`. */
+    let lastPhase: string | null = null;
     const parsed = parsePhases(def);
     const params = paramsOf(def, parsed);
     /**
@@ -646,6 +669,15 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
                 return questProgress(s, id) === 'started';
             },
+            journalSays: (id, pat) => {
+                if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
+                const text = journalSeen.text(id);
+                return text === undefined ? undefined : stateless(pat).test(text);
+            },
+            journalAge: id => {
+                if (!QUESTS[id]) throw new Error(`unknown quest "${id}"; see QUESTS in lib/quests.ts`);
+                return journalSeen.age(id);
+            },
         };
     };
 
@@ -676,7 +708,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         runs: { phases: PhaseSummary[]; recent: PhaseRunRef[]; lastStep: string | null } = {
             phases: [...summaries.values()],
             recent,
-            lastStep: last?.phase ?? null,
+            lastStep: lastPhase,
         },
     ): PlanResult => {
         const s = stateOrNull() ?? seen ?? first;
@@ -783,7 +815,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
         }));
         const runs = [...recent];
         const f = inFlight;
-        if (!f) return build('error', reason, { phases, recent: runs, lastStep: last?.phase ?? null });
+        if (!f) return build('error', reason, { phases, recent: runs, lastStep: lastPhase });
         const own = f.result;
         const summary = phases.find(p => p.phase === f.phase);
         if (summary)
@@ -905,7 +937,9 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     break;
                 }
             }
-            skip = null;
+            const observes = entry?.phase.task.observes === true;
+            // A look between an acting run and the next leaves that run's skip for the next acting selection.
+            if (!observes) skip = null;
             emit({
                 type: 'select',
                 phase: entry?.phase.name ?? null,
@@ -991,6 +1025,7 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 }
             };
             let result: TaskResult;
+            journalChanged = false;
             try {
                 result = await executeTask(chosen.task, {
                     driver: watched(run.driver),
@@ -1012,6 +1047,10 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                 await close();
             }
             running = null;
+            /** What the run read changed a journal: progress the idle signature does not see. */
+            const journalMoved = journalChanged;
+            // Aged before the settle, so a journal still open in the settle's reads is a sight after the run.
+            if (!observes) journalSeen.aged();
 
             tally(
                 summary,
@@ -1028,7 +1067,8 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
             );
             inFlight = null;
             screenshots.push(...result.screenshots);
-            last = { phase: chosen.name, status: result.status, reason: result.reason };
+            lastPhase = chosen.name;
+            if (!observes) last = { phase: chosen.name, status: result.status, reason: result.reason };
             const phaseEnd = (onFail?: OnFailDecision) =>
                 emit({
                     type: 'phase-end',
@@ -1083,11 +1123,18 @@ export async function runPlan(def: PlanDef, opts: RunPlanOptions): Promise<PlanR
                     return finish(result.status, `${chosen.name}: ${result.reason}`);
                 if (n >= (chosen.maxFails ?? def.defaults?.maxFails ?? DEFAULT_MAX_FAILS))
                     return finish('failed', `${chosen.name} failed ${n} times in a row: ${result.reason}`);
-                if (decision === 'continue') skip = chosen.name;
+                // A look leaves the skip as the acting run before it set it (TaskDef.observes).
+                if (decision === 'continue' && !observes) skip = chosen.name;
             }
 
             // Settled before the retry's early return too: every selection reads a world that stopped changing.
             const after = await settlePhase(chosen, stateOrNull());
+            // A look is outside the idle rail, the maxWaits count and the XP mark: the acting runs around it are judged as
+            // if it had not run. A journal it saw change is progress, though, which the idle signature cannot see.
+            if (observes) {
+                if (journalMoved) idle = [];
+                continue;
+            }
             if (after && totalXp(after) > xpMark) {
                 xpMark = totalXp(after);
                 endsSinceXp.clear();
