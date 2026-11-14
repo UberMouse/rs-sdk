@@ -2,11 +2,12 @@
 // of the states it observes.
 import { describe, expect, test } from 'bun:test';
 import { type JournalSight, journalMemory, journalOf } from '../../lib/journal-memory';
-import { QUESTS } from '../../lib/quests';
-import { journalDump, withJournal } from '../journal';
+import { journalTitle, QUESTS } from '../../lib/quests';
+import { journalDump, withJournal, withQuestJournal } from '../journal';
 import { world } from '../world';
 
-const RUNE = QUESTS.runemysteries!.name;
+// Its journal is titled "Rune Mysteries", not the tab's "Rune Mysteries Quest".
+const RUNE = journalTitle(QUESTS.runemysteries!);
 const BASE = world().build();
 const open = (lines: string[], title = RUNE) => withJournal(BASE, title, lines);
 
@@ -64,6 +65,17 @@ describe('journalMemory', () => {
         expect(m.text('runemysteries')).toBeUndefined();
         m.observe(open(['I need to find', 'the head wizard.']));
         expect(m.text('runemysteries')).toBe('I need to find the head wizard.');
+    });
+
+    test('a journal is matched by its own title: cook\'s is "The Cook\'s Quest", and its tab name names no journal', () => {
+        const { m, sights } = memory();
+        m.observe(withJournal(BASE, "Cook's Assistant", ['by its tab name']));
+        expect(m.text('cook')).toBeUndefined();
+        m.observe(withQuestJournal(BASE, 'cook', ['I can start this quest by speaking to the Cook.']));
+        expect(sights).toEqual([
+            { quest: 'cook', text: 'I can start this quest by speaking to the Cook.', changed: false },
+        ]);
+        expect(journalOf(withQuestJournal(BASE, 'cook', ['a line']))?.title).toBe("The Cook's Quest");
     });
 
     test('a title that names no quest is ignored', () => {

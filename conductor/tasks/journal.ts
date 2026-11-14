@@ -4,7 +4,7 @@ import { CLEANUP_CLOSE_WAIT_TICKS, closeModalUntil } from '../actions/modal';
 import { interfaceOpen, resolveComponent } from '../actions/press';
 import { send, wait } from '../core/op';
 import { JOURNAL_INTERFACE, journalOf } from '../lib/journal-memory';
-import { QUESTS } from '../lib/quests';
+import { journalTitle, QUESTS, questIdByJournalTitle } from '../lib/quests';
 import { defineTask } from '../lib/task';
 
 /** Ticks the journal gets to open after the first click; then one more click and as long again. */
@@ -31,10 +31,13 @@ export default defineTask({
     name: 'journal',
     description:
         "Reads a quest's journal: clicks its quest-tab entry, sees the journal open, closes it, and ends done with " +
-        "the last line; the plan's journal memory keeps the text. It refuses while a dialog or modal is open (the " +
-        'click would destroy it). Needs the lite client: the browser client publishes no journal text.',
+        "the last line; the plan's journal memory keeps the text. Its preflight refuses to start while a dialog or " +
+        'modal is open (the click would destroy it). Needs the lite client: the browser client publishes no journal ' +
+        'text.',
     params: Params,
     observes: true,
+    // The refusals are a preflight's: a step would see the state only after the dialog guard had answered an open
+    // dialog and the engine had closed a modal left open before the run.
     preflight(ctx) {
         if (!resolveComponent(`questlist:${ctx.params.quest}`))
             return `questlist:${ctx.params.quest} is not a component in interface.pack`;
@@ -49,7 +52,7 @@ export default defineTask({
             when: () => true,
             *run(ctx) {
                 const { quest } = ctx.params;
-                const title = QUESTS[quest]!.name;
+                const title = JSON.stringify(journalTitle(QUESTS[quest]!));
                 const entry = `questlist:${quest}`;
                 const componentId = resolveComponent(entry)!.componentId;
                 let clicked = false;
@@ -66,8 +69,8 @@ export default defineTask({
                     }
                     const journal = journalOf(seen);
                     let outcome: { done: string } | { fail: string };
-                    if (journal && journal.title !== title)
-                        outcome = { fail: `the journal opened is ${JSON.stringify(journal.title)}'s, not ${title}'s` };
+                    if (journal && questIdByJournalTitle(journal.title) !== quest)
+                        outcome = { fail: `the journal opened is ${JSON.stringify(journal.title)}, not ${title}` };
                     else if (journalShown(seen) && !journal?.lines.length)
                         outcome = { fail: "journal has no text: this client's interface dump carries none" };
                     else if (!journal)

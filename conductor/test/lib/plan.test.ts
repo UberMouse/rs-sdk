@@ -23,7 +23,7 @@ import {
     type Predicate,
 } from '../../lib/plan';
 import { journalOf } from '../../lib/journal-memory';
-import { QUEST_TAB_REQUIRED, QUESTS } from '../../lib/quests';
+import { journalTitle, QUEST_TAB_REQUIRED, QUESTS } from '../../lib/quests';
 import { SETTLE_TICKS } from '../../lib/engine';
 import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Outcome } from '../../lib/task';
@@ -2181,7 +2181,7 @@ describe('reward lumps outside a phase', () => {
     });
 });
 
-const RUNE = QUESTS.runemysteries!.name;
+const RUNE = journalTitle(QUESTS.runemysteries!);
 
 /** `plant`, and a 'read journal' send showing the journal for one tick with the next of `pages` (the last repeating). */
 function journalPages(pages: string[][]) {

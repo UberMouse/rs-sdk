@@ -10,7 +10,7 @@ test(
                 const run = await runTask(name, 'journal', { quest: 'cook' }, ['minutes:1']);
                 const detail = `${JSON.stringify(run.result)}\n${run.stderr}`;
                 expect(run.result.status, detail).toBe('done');
-                expect(run.result.reason, detail).toMatch(/^journal: .*Cook/);
+                expect(run.result.reason, detail).toMatch(/^journal: .*Lumbridge Castle/);
             },
             { connect: false },
         );

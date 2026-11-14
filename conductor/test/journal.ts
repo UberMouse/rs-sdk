@@ -2,6 +2,7 @@
 // (`debugInfo`, one line per component), the title in 8144 and the text lines from 8145, 8146 skipped.
 import type { BotWorldState } from '../../sdk/types';
 import { JOURNAL_INTERFACE } from '../lib/journal-memory';
+import { journalTitle, QUESTS } from '../lib/quests';
 import { world } from './world';
 
 const dumpLine = (id: number, text: string) => `    #${id} type=4 btn=0 text=${JSON.stringify(text)}`;
@@ -17,3 +18,7 @@ export function withJournal(s: BotWorldState, title: string, lines: string[], de
     const open = world(s).modal(JOURNAL_INTERFACE).build();
     return { ...open, interface: { ...open.interface, debugInfo: debugInfo ?? journalDump(title, lines) } };
 }
+
+/** `s` with quest `id`'s journal open, titled as the game titles it (journalTitle, not always the tab name). */
+export const withQuestJournal = (s: BotWorldState, id: string, lines: string[]): BotWorldState =>
+    withJournal(s, journalTitle(QUESTS[id]!), lines);

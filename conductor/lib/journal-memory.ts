@@ -2,7 +2,7 @@
 // (lib/plan.ts, PlanView.journalSays and journalAge), fed every state the plan or a phase reads, as the bank memory is.
 import type { BotWorldState } from '../../sdk/types';
 import { interfaceOpen, interfaceTexts } from '../actions/press';
-import { questIdByName } from './quests';
+import { questIdByJournalTitle } from './quests';
 
 /** The quest journal: the interface a click on a quest-tab entry opens. */
 export const JOURNAL_INTERFACE = 8134;
@@ -11,7 +11,7 @@ const TITLE_COMPONENT = 8144;
 const LINE_COMPONENTS = [8145, ...Array.from({ length: 8195 - 8147 + 1 }, (_, i) => 8147 + i)];
 
 export interface Journal {
-    /** The quest's name, as its tab entry shows it. */
+    /** The journal's title (lib/quests.ts journalTitle), not always the tab entry's name. */
     title: string;
     /** The non-empty text lines, in component order. */
     lines: string[];
@@ -57,7 +57,7 @@ export function journalMemory(onSight: (sight: JournalSight) => void = () => {})
         if (s === seen) return s;
         seen = s;
         const journal = journalOf(s);
-        const quest = journal && questIdByName(journal.title);
+        const quest = journal && questIdByJournalTitle(journal.title);
         if (!journal || !quest) return s;
         const text = journal.lines.join(' ');
         const before = kept.get(quest);

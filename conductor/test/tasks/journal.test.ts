@@ -4,7 +4,7 @@ import type { BotAction, BotWorldState } from '../../../sdk/types';
 import { resolveComponent } from '../../actions/press';
 import type { Effect } from '../../core/drivers/timeline';
 import { definePlan, phase, type PlanView } from '../../lib/plan';
-import { QUESTS } from '../../lib/quests';
+import { journalTitle, QUESTS } from '../../lib/quests';
 import { defineTask } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
 import journal from '../../tasks/journal';
@@ -12,7 +12,8 @@ import { withJournal } from '../journal';
 import { simulate, simulatePlan } from '../simulate';
 import { world } from '../world';
 
-const COOK = QUESTS.cook!.name;
+// "The Cook's Quest": the journal's title, not the tab's "Cook's Assistant".
+const COOK = journalTitle(QUESTS.cook!);
 const COOK_ENTRY = resolveComponent('questlist:cook')!.componentId;
 const LINES = ['I can start this quest by speaking to the', 'Cook in the kitchen of Lumbridge Castle.'];
 
@@ -105,14 +106,18 @@ describe('journal', () => {
         expect(r.result.durationMs).toBe(10 * TICK_MS);
     });
 
-    test("fails on another quest's journal, and closes it", async () => {
-        const r = await read({ title: 'Dragon Slayer' });
-        expect(r.result).toMatchObject({
-            status: 'failed',
-            reason: `journal: the journal opened is "Dragon Slayer"'s, not ${COOK}'s`,
-        });
-        expect(r.sends).toEqual(['click questlist:cook', 'close journal']);
-        expect(r.driver.state().interface.isOpen).toBe(false);
+    test("fails on another quest's journal, and on one titled with the tab name, closing it", async () => {
+        // The cook quest's tab reads "Cook's Assistant", but its journal is titled "The Cook's Quest".
+        expect(COOK).not.toBe(QUESTS.cook!.name);
+        for (const title of ['Dragon Slayer', QUESTS.cook!.name]) {
+            const r = await read({ title });
+            expect(r.result).toMatchObject({
+                status: 'failed',
+                reason: `journal: the journal opened is ${JSON.stringify(title)}, not "The Cook's Quest"`,
+            });
+            expect(r.sends).toEqual(['click questlist:cook', 'close journal']);
+            expect(r.driver.state().interface.isOpen).toBe(false);
+        }
     });
 
     test('fails on a journal with no text lines, and closes it', async () => {
