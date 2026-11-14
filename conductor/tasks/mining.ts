@@ -6,10 +6,10 @@ import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { type Area, AreaSchema, inArea, refuseArea, returnToAreaStep, walkToArea, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { ESSENCE_ROCK_SPOTS, inEssenceMine, nearestPoint } from '../lib/runecraft';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
+import { countItems, exactName, findSkill, ticksToSeconds } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
@@ -95,12 +95,20 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 const STEP_TIMEOUT_MS = 300_000;
 
 const Params = z.object({
-    /** Required. One rock type or a list; the nearest minable rock of any listed type is mined. */
-    rock: z.union([z.enum(ROCK_NAMES), z.array(z.enum(ROCK_NAMES)).min(1)]),
-    /** Stay near here; walk back when further than `radius`. Omit to mine wherever the bot is. */
-    area: AreaSchema.optional(),
-    /** What to do when the inventory is full: drop the ores and keep mining, or end the run holding them. */
-    onFull: z.enum(['drop', 'stop']).default('drop'),
+    rock: z
+        .union([z.enum(ROCK_NAMES), z.array(z.enum(ROCK_NAMES)).min(1)])
+        .describe(
+            'The rock type to mine, or a list of types: the nearest minable rock of any listed type is mined. `essence` is the Rune Essence Mine rock (reach it with the essence-mine task) and never depletes.',
+        ),
+    area: AreaSchema.optional().describe(
+        "Where to mine: only rocks inside it are worked, and the bot walks back when further than `radius`. Without it the bot mines wherever it stands; for `essence` inside the Rune Essence Mine it walks to the nearest of the mine's four rock clusters when none is in view (teleport landings can be far from every rock).",
+    ),
+    onFull: z
+        .enum(['drop', 'stop'])
+        .default('drop')
+        .describe(
+            'What to do when the inventory is full. "drop" drops each ore as it is mined, and also all ore of the listed types held before the run (nothing accumulates; a backstop step drops ore if the inventory fills anyway); a full inventory of other items fails the run. Use it for cheap ores. "stop" ends the run done ("inventory full: N ores") holding the ore, e.g. to smelt; ore held before the run counts toward the full load. Use it for valuable ores.',
+        ),
 });
 
 type MiningParams = z.infer<typeof Params>;
@@ -179,7 +187,7 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
         wait('rock respawn', s => s.nearbyLocs.some(isMinable), Math.min(left, RESPAWN_CHUNK_TICKS)),
     );
     if (respawn.kind === 'met' || respawn.state.tick - since < d.giveUpTicks) return;
-    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(respawn.state.tick - since);
     const { area } = ctx.params;
     return {
         fail: area
@@ -207,17 +215,28 @@ function essenceSpotToWalkTo(ctx: Ctx): Area | null {
 export default defineTask({
     name: 'mining',
     description:
-        'Mine one or more rock types (`rock`, required: clay, copper, tin, iron, silver, coal, gold, mithril, adamantite, or a list; ' +
-        'runite is refused, its ~24 min respawn outlasts the progress watchdog); the nearest minable rock of any listed type is mined. ' +
-        '`onFull` "drop" (default) drops each ore as it is mined and also drops ore held before the run (nothing accumulates; the full-inventory ' +
-        'drop-ores step is a backstop; a full inventory of other items fails the run; for cheap ores, use "stop" for valuable ones). It discards all held ore ' +
-        'of the listed types, not only what the run mined. "stop" ends the run done ("inventory full: N ores") holding the ore, e.g. to smelt; ' +
-        'ore held before the run counts toward the full load. Needs a pickaxe ' +
-        "(inventory or worn, usable at the base Mining level; Bob's Brilliant Axes in Lumbridge sells a bronze one) and the level for every listed rock. " +
-        'When every listed rock in reach is mined out it waits for respawns, up to max(300 ticks, slowest listed rock respawn ticks + 75 ticks) ' +
-        '(2 min for rocks up to coal, mithril 190 s, adamantite 350 s), then fails: with `area` "area depleted: no reachable <rock> rock in radius N for Ns", ' +
-        'without it "no reachable <rock> rock nearby for Ns". With `area` it stays within `radius` of that centre; without it, it mines ' +
-        'wherever the bot stands, except `essence` inside the Rune Essence Mine, which walks to the nearest of the mine\'s four rock clusters when none is in view (teleport landings can be far from every rock). `essence` is the Rune Essence Mine rock (reach it with the essence-mine task); it needs onFull "stop" (refused with "drop") and never depletes. Verified spot: SE Varrock mine (3285,3365; copper, tin). Refuses areas reaching the Wilderness.',
+        'Mines the nearest minable rock of one or more types, repeating until stopped. ' +
+        `When every listed rock in reach is mined out it waits for respawns, up to max(${MIN_GIVE_UP_TICKS} ticks, ` +
+        `slowest listed rock respawn ticks + ${GIVE_UP_MARGIN_TICKS} ticks) (${ticksToSeconds(MIN_GIVE_UP_TICKS)} s for rocks up to gold, ` +
+        `mithril ${ticksToSeconds(giveUpTicksFor(ROCKS.mithril.respawnTicks))} s, adamantite ${ticksToSeconds(giveUpTicksFor(ROCKS.adamantite.respawnTicks))} s), then fails: ` +
+        'with `area` "area depleted: no reachable <rock> rock in radius N for Ns", without it "no reachable <rock> rock nearby for Ns". ' +
+        `${UNDER_ATTACK_NOTE} ` +
+        'Refuses areas reaching the Wilderness.',
+    rules: [
+        `Refuses rock ${REFUSED_ROCKS.join(', ')}: its ~24 min respawn outlasts the progress watchdog (the engine's check that a task keeps making progress).`,
+        `Needs a pickaxe in the inventory or worn, usable at the base Mining level (${Object.entries(PICKAXE_LEVELS)
+            .map(([tier, level]) => `${tier} ${level}`)
+            .join(', ')}), and the base Mining level of every listed rock: ${ROCK_NAMES.filter(
+            r => !REFUSED_ROCKS.includes(r),
+        )
+            .map(r => `${r} ${ROCKS[r].level}`)
+            .join(', ')}.`,
+        'Rock `essence` needs `onFull` "stop": "drop" is refused.',
+    ],
+    spots: [
+        "Bob's Brilliant Axes in Lumbridge sells a bronze pickaxe.",
+        'SE Varrock mine at (3285,3365): copper and tin.',
+    ],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): MiningMemory => ({ noRockSinceTick: null, areaWatch: newAreaWatch() }),

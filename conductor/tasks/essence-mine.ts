@@ -35,8 +35,11 @@ const STUCK_AFTER_MS = stuckWindowMs(
 );
 
 const Params = z.object({
-    /** `enter`: Aubury teleports the bot into the mine. `leave`: step through a portal of the mine, back to Aubury's shop. */
-    action: z.enum(['enter', 'leave']),
+    action: z
+        .enum(['enter', 'leave'])
+        .describe(
+            '`enter`: Aubury teleports the bot into the mine. `leave`: step through a portal of the mine; that returns the bot beside Aubury (3253,3401) if the mine was entered through Aubury, otherwise to Sedridor in the Wizards Tower (a bot with no recorded entry point comes out at Sedridor).',
+        ),
 });
 type EssenceMineParams = z.infer<typeof Params>;
 type Ctx = TaskContext<EssenceMineParams>;
@@ -55,10 +58,13 @@ const atAubury = (ctx: Ctx) => {
 export default defineTask({
     name: 'essence-mine',
     description:
-        'Enter or leave the Rune Essence Mine (needs Rune Mysteries complete). `action` "enter": walks to Aubury in the Varrock rune shop (3252,3402) ' +
-        'and uses his Teleport option (no dialog); done once inside the mine (map square 45_75, x 2880-2943, z 4800-4863). ' +
-        '`action` "leave": uses the nearest Portal in the mine, which returns the bot beside Aubury (3253,3401) if the mine was entered through Aubury, otherwise to Sedridor in the Wizards Tower (a null exit coordinate defaults to Sedridor, essence_mine.rs2); with no portal in view it walks to the nearest known one; done once outside. ' +
-        'Mine the essence with the mining task (rock "essence", onFull "stop"); craft it with the runecraft task.',
+        'Enters or leaves the Rune Essence Mine. `action` "enter" walks to Aubury in the Varrock rune shop (3252,3402) ' +
+        'and uses his Teleport option (no dialog); done once inside the mine (x 2880-2943, z 4800-4863). ' +
+        '`action` "leave" uses the nearest Portal in the mine; with no portal in view it walks to the nearest known one; done once outside.',
+    rules: ['`enter` needs Rune Mysteries complete; otherwise it fails "Rune Mysteries is not complete".'],
+    spots: [
+        'Used before the mining task (rock "essence", onFull "stop") to mine the essence, and the runecraft task to craft it.',
+    ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,

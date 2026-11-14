@@ -11,8 +11,9 @@ Does the task fit the catalog the conductor plans with, and reuse what exists?
 - **T2 Params over hard-coding.** Locations, targets and "what to do when full" are params when
   the task makes sense in more than one place; defaults are the verified spot from the knowledge
   base. Magic numbers that encode game facts are named.
-- **T3 Catalog description.** `description` tells the conductor what the task does, its
-  requirements, and known-good spots, and matches the code (no promised mode the code lacks).
+- **T3 Catalog description.** the catalog entry tells the conductor what the task does and
+  matches the code (no promised mode the code lacks): `description` (what it does, how it ends, what it
+  refuses), each param's `.describe()`, `rules` (requirements) and `spots` (known-good places).
 - **T4 Ops first.** A step does its game actions with ops from `conductor/actions` (`chop`,
   `interactLoc`, …), and when none exists for an action the task needs, ports one (see T9); raw
   `send` commands only with a stated reason and effect checks (game-semantics G1).

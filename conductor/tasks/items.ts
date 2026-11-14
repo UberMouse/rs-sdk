@@ -8,7 +8,7 @@ import { unequip } from '../actions/unequip';
 import { useItemOnItem } from '../actions/use';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, wait } from '../core/op';
-import { AtSchema, matcher, Pattern, walkToSpotStep } from '../lib/spot';
+import { AtSchema, matcher, patternParam, walkToSpotStep } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { INVENTORY_SLOTS } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -38,8 +38,15 @@ export const WORN_SLOTS: Record<string, number> = {
     ammo: 13,
 };
 
-/** An item by name (case-insensitive regex), optionally pinned to an obj id. */
-const ItemRef = z.union([Pattern, z.object({ name: Pattern, id: z.number().int().nonnegative().optional() })]);
+const ItemRef = z
+    .union([
+        patternParam('The item name.'),
+        z.object({
+            name: patternParam('The item name.'),
+            id: z.number().int().nonnegative().optional().describe('Its obj id, to tell apart items sharing a name.'),
+        }),
+    ])
+    .describe('An item: a name, or `{ name, id }` pinned to an obj id.');
 type ItemRef = z.infer<typeof ItemRef>;
 
 const nameOf = (r: ItemRef) => (typeof r === 'string' ? r : r.name);
@@ -52,32 +59,60 @@ const isSlotName = (s: string) => Object.hasOwn(WORN_SLOTS, s.toLowerCase());
 
 const Params = z
     .object({
-        /** Use `use` on `on` (both in the inventory): Tinderbox on Black candle. */
         combine: z
             .object({
-                use: ItemRef,
-                on: ItemRef,
-                product: ItemRef.optional(),
-                /** The option to pick when the use opens a choice menu (Pot of flour on a Bucket of water: "Pastry dough"). */
-                choice: Pattern.optional(),
+                use: ItemRef.describe('The inventory item used, by name or `{ name, id }`.'),
+                on: ItemRef.describe('The inventory item it is used on.'),
+                product: ItemRef.optional().describe(
+                    `What the combine makes: done when it appears. A combine that keeps both inputs needs it, else it fails after ${FAIL_LIMIT} uses that changed nothing.`,
+                ),
+                choice: patternParam(
+                    'The option to pick when the use opens a choice menu (Pot of flour on a Bucket of water: "Pastry dough"); a menu with no `choice` fails.',
+                ).optional(),
             })
-            .optional(),
-        /**
-         * Drop these inventory items (name patterns; `count` = inventory slots, a stack is one) where the bot
-         * stands, or at `at`. Only what is named is ever dropped.
-         */
+            .optional()
+            .describe(
+                'Use `use` on `on`, both in the inventory (Tinderbox on Black candle); done when the product appears or either item is used up.',
+            ),
         drop: z
-            .array(z.object({ item: Pattern, count: z.number().int().min(1).max(INVENTORY_SLOTS).default(1) }))
+            .array(
+                z.object({
+                    item: patternParam('The inventory item to drop, by name.'),
+                    count: z
+                        .number()
+                        .int()
+                        .min(1)
+                        .max(INVENTORY_SLOTS)
+                        .default(1)
+                        .describe('Inventory slots of it to drop: a stack is one.'),
+                }),
+            )
             .min(1)
-            .optional(),
-        /** Take worn items off: `all`, a slot name (head, cape, amulet, weapon, body, shield, legs, hands, feet, ring, ammo) or an item name pattern. */
-        unequip: z.array(Pattern).min(1).optional(),
-        /** Wear these inventory items. */
-        equip: z.array(ItemRef).min(1).optional(),
-        /** Where to stand first (for a drop on a spot, `tolerance` 1). */
-        at: AtSchema.optional(),
-        /** For `drop`: the choices of a dialog the drop opens, answered in order; without them it is left open for the next task. */
-        choices: z.array(Pattern).default([]),
+            .optional()
+            .describe(
+                'Drop these inventory items where the bot stands, or at `at`. Only what is named is ever dropped.',
+            ),
+        unequip: z
+            .array(
+                patternParam(
+                    `\`all\` or a slot name (${Object.keys(WORN_SLOTS).join(', ')}), each compared whole and not as a regex; failing those, a worn item's name.`,
+                ),
+            )
+            .min(1)
+            .optional()
+            .describe(
+                'Take worn items off into the inventory. For places that refuse worn gear (the Entrana boat, the Glarial tomb).',
+            ),
+        equip: z.array(ItemRef).min(1).optional().describe('Wear these inventory items.'),
+        at: AtSchema.optional().describe(
+            'Where to stand first; the task walks only when it is given (for a drop on a spot, `tolerance` 1).',
+        ),
+        choices: z
+            .array(patternParam('The option to click at one multi-option page, by its text.'))
+            .default([])
+            .describe(
+                'For `drop`: the choices of a dialog the drop opens, answered in order; without them the dialog is left open for the next task (a `talk` with `continue`).',
+            ),
     })
     .refine(
         p => [p.combine, p.drop, p.unequip, p.equip].filter(x => x !== undefined).length === 1,
@@ -203,15 +238,21 @@ const roomShort = (s: BotWorldState, need: number) => need - (INVENTORY_SLOTS - 
 export default defineTask({
     name: 'items',
     description:
-        'Inventory and equipment steps quest plans need; give exactly one of: ' +
-        '`combine` {use, on, product?, choice?} uses one inventory item on another (Tinderbox on Black candle; names are case-insensitive regexes or {name, id}), done when the product appears or either item is used up (`choice` answers the menu the use opens, e.g. "Pastry dough" for Pot of flour on Bucket of water; a menu with no `choice` fails; a combine that keeps both inputs needs `product`, else it fails after 3 uses that changed nothing; a name matching several different items must be {name, id}); ' +
-        '`drop` [{item, count}] drops the named items (count = slots) where the bot stands or at `at` (tolerance 1 for a spot such as the Camelot magic symbol {x:2780,z:3515}); only named items are dropped, and a name that matches different items is refused. ' +
-        'Any dialog the drop opens (a level-up too) ends it: check the result reason. ' +
-        'A drop that opens a dialog (Bat bones on the symbol summon Thrantax and stay in the pack) ends the task with the dialog left open for the next `talk` (an npc-less talk continues it), or answers it with `choices`; ' +
-        '`unequip` ["all" | slot name (head cape amulet weapon body shield legs hands feet ring ammo) | item name regex] takes worn items off into the inventory (the Entrana boat and the Glarial tomb refuse worn gear), failing when the inventory has no room; ' +
-        '`equip` [name | {name, id}] wears inventory items. It walks only when `at` is given. ' +
-        'E.g. {"combine":{"use":"^Tinderbox$","on":"^Black candle$"}}; {"drop":[{"item":"^Bat bones$"}],"at":{"x":2780,"z":3515,"tolerance":1},"choices":["Snarthon Candtrick Termanto"]}. ' +
+        'Inventory and equipment steps quest plans need: combines two inventory items, drops named items, takes worn ' +
+        'items off, or wears inventory items. Done when the combine has made its product or used an item up, the drops ' +
+        'are made, nothing named is worn any more, or everything named is worn. Any dialog the drop opens (a level-up ' +
+        'too) ends it: check the result reason. `unequip` fails when the inventory has no room. Refuses an `at` in the Wilderness.',
+    rules: [
+        'Give exactly one of `combine`, `drop`, `unequip`, `equip`.',
+        '`choices` belongs to `drop`.',
+        'A `combine` name that matches several different items in the pack must be `{ name, id }`.',
+        'A `drop` name that matches different items is refused: name one exactly.',
+    ],
+    spots: [
+        'Camelot magic symbol {x:2780,z:3515} (Merlin\'s Crystal): Bat bones dropped on it summon Thrantax and stay in the pack; the drop opens his dialog: {"drop":[{"item":"^Bat bones$"}],"at":{"x":2780,"z":3515,"tolerance":1},"choices":["Snarthon Candtrick Termanto"]}.',
+        'Black candle: {"combine":{"use":"^Tinderbox$","on":"^Black candle$"}}.',
         'Recipes: wiki/quests/merlins-crystal.md.',
+    ],
     params: Params,
     memory: (): ItemsMemory => ({
         base: null,

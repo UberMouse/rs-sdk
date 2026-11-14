@@ -4,6 +4,7 @@ import {
     castTeleport,
     missingRunes,
     TELEPORT_NAMES,
+    TELEPORT_TOLERANCE,
     TELEPORT_WAIT_TICKS,
     TELEPORTS,
 } from '../actions/teleport';
@@ -13,8 +14,7 @@ import { findSkill, TICK_MS } from '../lib/util';
 import { wildernessLevel } from '../lib/wilderness';
 
 const Params = z.object({
-    /** The spell, by the town it goes to. */
-    spell: z.enum(TELEPORT_NAMES),
+    spell: z.enum(TELEPORT_NAMES).describe('The standard-spellbook teleport, by the place it goes to.'),
 });
 
 type TeleportParams = z.infer<typeof Params>;
@@ -32,18 +32,23 @@ const spellOf = (ctx: Ctx) => TELEPORTS[ctx.params.spell];
 export default defineTask({
     name: 'teleport',
     description:
-        'Cast one standard-spellbook teleport, once, to leave a place with no walkable exit (the Entrana dungeon, ' +
-        'a one-way ladder): `spell` varrock | lumbridge | falador | camelot | ardougne | watchtower | trollheim. ' +
-        'Needs the Magic level (varrock 25, lumbridge 31, falador 37, camelot 45, ardougne 51, watchtower 58, trollheim 61) ' +
-        'and the runes in the inventory (a worn matching staff stands in for its rune; lumbridge: 3 air + 1 earth + 1 law). ' +
-        "Ardougne, Watchtower and Trollheim also need their quests (Plague City, Watchtower, Eadgar's Ruse), which the server checks. " +
-        'Ends done once the bot stands within 3 tiles of the destination with the Magic XP paid; done at once, casting nothing, ' +
-        'when it already stands there (even without the level or runes). Fails on missing level or runes, ' +
-        'or when the server refuses (quest, duel arena, Tutorial Island, Fishing Trawler, Castle Wars). ' +
-        'It sends one cast per run and never resends: the once-only guarantee is per run, and a failed cast ' +
-        '(no-teleport, send-failed) may have spent the runes, so a plan must not select teleport again after one ' +
-        'without a changed condition (position, inventory). Never cast in the Wilderness: the shared wilderness guard ' +
-        'fails any run that starts there (levels 1-20 included); the preflight refusal above level 20 is only a clearer message.',
+        'Casts one standard-spellbook teleport, once, to leave a place with no walkable exit (the Entrana dungeon, ' +
+        `a one-way ladder). Done once the bot stands within ${TELEPORT_TOLERANCE} tiles of the destination with the ` +
+        'Magic XP paid; done at once, casting nothing, when it already stands there (even without the level or runes). ' +
+        'Fails on missing level or runes, or when the server refuses (quest, duel arena, Tutorial Island, Fishing ' +
+        'Trawler, Castle Wars). It sends one cast per run and never resends: the once-only guarantee is per run, and a ' +
+        'failed cast (no-teleport, send-failed) may have spent the runes, so a plan must not select teleport again ' +
+        'after one without a changed condition (position, inventory). Never casts in the Wilderness: the shared ' +
+        `wilderness guard fails any run that starts there (levels 1-${MAX_TELEPORT_WILDERNESS_LEVEL} included); the ` +
+        `preflight refusal above level ${MAX_TELEPORT_WILDERNESS_LEVEL} is only a clearer message.`,
+    rules: [
+        `The bot needs the spell's Magic level and its runes in the inventory (a worn matching staff stands in for its rune): ${Object.entries(
+            TELEPORTS,
+        )
+            .map(([name, s]) => `${name} Magic ${s.level}, ${s.runes.map(r => `${r.count} ${r.name}`).join(' + ')}`)
+            .join('; ')}.`,
+        "Ardougne, Watchtower and Trollheim also need their quests (Plague City, Watchtower, Eadgar's Ruse), which the server checks.",
+    ],
     params: Params,
     memory: (): TeleportMemory => ({ castTick: null }),
     // One cast and one wait: the engine's defaults are far longer than the 4 s the cast can take.

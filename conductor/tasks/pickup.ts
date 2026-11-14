@@ -34,12 +34,32 @@ const STANDS = [
 ] as const;
 
 const Params = z.object({
-    /** Walk to this area and pick up inside it. */
-    area: AreaSchema,
-    /** Ground items to hold in the inventory, by exact name (case-insensitive). */
-    items: z.array(z.object({ item: z.string().min(1), count: z.number().int().positive().default(1) })).min(1),
-    /** Give up when a wanted item has not appeared for this long (seconds). Default spawns respawn in about 40 s (100 ticks). */
-    maxWaitSeconds: z.number().positive().max(MAX_WAIT_SECONDS).default(90),
+    area: AreaSchema.describe('Where to pick up: the bot walks here, and only ground items inside it are taken.'),
+    items: z
+        .array(
+            z.object({
+                item: z
+                    .string()
+                    .min(1)
+                    .describe('The ground item to take, by its whole name compared case-insensitively.'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .default(1)
+                    .describe('How many of it the inventory must hold, counting any held before the run.'),
+            }),
+        )
+        .min(1)
+        .describe('The ground items to hold in the inventory; the run ends done once each count is held.'),
+    maxWaitSeconds: z
+        .number()
+        .positive()
+        .max(MAX_WAIT_SECONDS)
+        .default(90)
+        .describe(
+            'Give up when a wanted item has not appeared in the area for this long. Ground spawns respawn in about 40 s (100 ticks).',
+        ),
 });
 
 type PickupParams = z.infer<typeof Params>;
@@ -107,10 +127,17 @@ function* waitForSpawn(ctx: Ctx, want: string): Op<Outcome> {
 export default defineTask({
     name: 'pickup',
     description:
-        'Walk to an area and pick up named ground items (exact names, with counts) until the inventory holds each count, ' +
-        'waiting up to maxWaitSeconds for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
-        'an adjacent tile once nothing reachable is left; a take the server refuses ("I can\'t reach that") counts as a failed pickup. Verified spots: Panning tray on a Table at area {x:3369,z:3379,radius:4}; Pot (kitchen) at {x:3210,z:3212,radius:3}; Knife at area {x:3224,z:3202,radius:4} ' +
-        '(SE of Lumbridge castle). Fails if attacked or the inventory is full.',
+        'Picks up named ground items in an area. ' +
+        'It walks there and takes items until the inventory holds each count, waiting up to `maxWaitSeconds` for respawns. An item on a blocked tile (a spawn on a Table: Panning tray, kitchen pot) is taken from ' +
+        'an adjacent tile once nothing reachable is left; a take the server refuses ("I can\'t reach that") counts as a failed pickup. ' +
+        'Fails if attacked, or if the inventory is full when nothing wanted is on the ground in the area. ' +
+        'Refuses areas reaching the Wilderness.',
+    rules: ['The inventory needs a free slot for each entry of `items`.'],
+    spots: [
+        'Panning tray on a Table: `area` {x:3369,z:3379,radius:4}.',
+        'Pot (kitchen): `area` {x:3210,z:3212,radius:3}.',
+        'Knife (SE of Lumbridge castle): `area` {x:3224,z:3202,radius:4}.',
+    ],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): PickupMemory => ({ noItemSinceTick: null, standTries: 0, areaWatch: newAreaWatch() }),

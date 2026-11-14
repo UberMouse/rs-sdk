@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import { PRAYER_LEVELS } from '../../sdk/types';
-import { PRAYERS, prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
+import { PRAYER_CONFLICTS, PRAYERS, prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
 import { log } from '../core/op';
 import { defineTask, type TaskContext } from '../lib/task';
 
@@ -13,16 +13,22 @@ const PrayerName = z
 
 const Params = z
     .object({
-        /** Prayers to switch on, by name ("Protect from Melee"). Switching one on switches off any it conflicts with. */
         on: z
             .array(PrayerName)
             .superRefine((names, c) => {
                 const conflict = prayerConflict(names);
                 if (conflict) c.addIssue({ code: 'custom', message: conflict });
             })
-            .default([]),
-        /** Prayers to switch off, by name. */
-        off: z.array(PrayerName).default([]),
+            .default([])
+            .describe(
+                'Prayers to switch on, by whole name, case-insensitive, not a regex (e.g. ["Protect from Melee"]). Switching one on switches off any it conflicts with.',
+            ),
+        off: z
+            .array(PrayerName)
+            .default([])
+            .describe(
+                'Prayers to switch off, by whole name, case-insensitive, not a regex; one that is already off is left alone.',
+            ),
     })
     .refine(p => p.on.length + p.off.length > 0, { message: 'name a prayer in `on` or `off`' })
     .refine(p => !p.on.some(n => p.off.some(o => prayerIndex(o) === prayerIndex(n))), {
@@ -46,13 +52,17 @@ const wrong = (ctx: Ctx) => {
 export default defineTask({
     name: 'prayer',
     description:
-        'Sets prayers by name and leaves them as set: `on` (e.g. ["Protect from Melee"]) switches prayers on, `off` switches ' +
-        'prayers off; done when the published prayer state matches (a prayer already as asked is left alone), failing when the Prayer ' +
-        'level or the prayer points are short. For a plan: use it after a `combat` run with `keepPrayersOn: true` to switch the ' +
-        'protection prayer off once the hostile area is left, or to switch one on before a walk through it. Prayers drain points ' +
-        "while on (70 points last about 155 s with Protect from Melee), so leaving one on is the plan's explicit choice. " +
-        'Each click closes any open dialog, so run it before a dialog is the next thing to answer, not between a dialog and its answer. ' +
-        'Prayers that switch each other off (the three protection prayers; Thick/Rock/Steel Skin; the strength and the attack groups) cannot be named together in `on`.',
+        'Switches prayers on or off by name and leaves them as set. Done when the prayers match what was asked ' +
+        '(a prayer already as asked is left alone); fails when a prayer will not switch. Each click closes any open ' +
+        'dialog, so run it before a dialog is the next thing to answer, not between a dialog and its answer. ' +
+        'Plans use it after a `combat` run with `keepPrayersOn: true`, to switch the protection prayer off once the ' +
+        'hostile area is left, or on before a walk through it. A prayer drains points while on (70 points last ' +
+        "about 155 s with Protect from Melee), so leaving one on is the plan's explicit choice.",
+    rules: [
+        'Name a prayer in `on` or `off`; no prayer in both.',
+        `Prayers that switch each other off cannot be named together in \`on\`: ${PRAYER_CONFLICTS.map(g => g.map(i => PRAYERS[i]).join('/')).join('; ')}.`,
+        "A prayer to switch on needs the bot's Prayer level and prayer points left; short of either, the task fails.",
+    ],
     params: Params,
 
     preflight(ctx) {

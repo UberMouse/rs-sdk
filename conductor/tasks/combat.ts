@@ -20,6 +20,8 @@ import {
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
 import { attackers, isLevelUp, isUnlockPage, PLAYER_TARGET_OFFSET, recentlyHit } from '../lib/interrupts';
 import { squareReachesWilderness } from '../lib/wilderness';
+import { HOLD_HP_FLOOR_FRACTION, HOLD_HP_FLOOR_MIN } from '../lib/engine';
+import { LOW_HP_MAX_FRACTION, lowHpFraction } from '../lib/threat';
 import { COMBAT_SPELL_NAMES, COMBAT_SPELLS, STAFF_RUNES } from '../lib/spells';
 import { defineTask, type Outcome, type Step, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
@@ -108,66 +110,134 @@ const STEP_TIMEOUT_MS = 300_000;
 /** Without food, preflight refuses NPCs above this combat level (chickens are 1, cows 2). */
 const NO_FOOD_MAX_NPC_LEVEL = 5;
 
+/**
+ * The bones `buryBones` picks up and buries: the `bones` category items monsters drop that the bury script accepts
+ * (skill_prayer/configs/bones.obj, scripts/bury_bone.rs2). The burnt and pasted quest bones are left out.
+ */
+const BONE_NAMES = [
+    'Bones',
+    'Big bones',
+    'Bat bones',
+    'Wolf bones',
+    'Babydragon bones',
+    'Dragon bones',
+    'Jogre bones',
+    'Shaikahan bones',
+];
+
 const Params = z
     .object({
-        /** Exact NPC name (case-insensitive), e.g. "Chicken", "Cow". */
-        target: z.string().trim().min(1),
-        /**
-         * The skill to train. Attack/Strength/Defence pick the melee style that trains it; Ranged needs a bow
-         * as `weapon` and `ammo`; Magic needs a `spell`.
-         */
-        skill: z.enum(SKILLS).default('Attack'),
-        /** Train `skill` even at level 99 (preflight otherwise refuses an Attack/Strength/Defence/Ranged style that is maxed). */
-        allowMaxed: z.boolean().optional(),
-        /** Where to fight. Required: the bot never wanders beyond `radius` of this centre. */
-        area: AreaSchema,
-        /**
-         * Which NPCs are targets. "area" (default): only those inside `area`. "visible": the nearest free reachable
-         * matching NPC anywhere in view, for targets that roam, flee or teleport (imps); `area` then only anchors the
-         * run: the bot walks back to it when no target is in view (and no wanted loot lies near). Loot is picked up
-         * wherever it lies near the bot. Free targets, and loot, within WILDERNESS_MARGIN tiles of the Wilderness are never taken (an attacker is still fought).
-         */
-        targetRange: z.enum(['area', 'visible']).default('area'),
-        /** Inventory item names to wield if not already worn, e.g. "Bronze sword". The bot must meet the item's wield requirement. */
-        weapon: z.string().trim().optional(),
-        shield: z.string().trim().optional(),
-        /** Ranged: the ammunition item name to wield (e.g. "Bronze arrow"); also what `loot` should list to reuse fallen arrows. */
-        ammo: z.string().trim().optional(),
-        /** Magic: the combat spell cast on each target; its runes come from the inventory; a worn Staff of air/water/earth/fire covers only its own rune. */
-        spell: z.enum(COMBAT_SPELL_NAMES).optional(),
-        /** Food item names to eat when HP falls below `eatBelow` of max. The engine also eats any food below 50%. */
-        food: z.array(z.string().trim()).default([]),
-        eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW),
-        /** Bury bones for Prayer XP (also picks bones up). */
-        buryBones: z.boolean().default(false),
-        /** Ground item names to pick up after a kill (exact, case-insensitive), e.g. ["Feather", "Cowhide"]. */
-        loot: z.array(z.string().trim()).default([]),
-        /** Refuse (and never attack) NPCs with combat level above the bot's combat level plus this. */
-        maxLevelGap: z.number().min(0).default(DEFAULT_MAX_LEVEL_GAP),
-        /**
-         * Only attack NPCs of this exact combat level, for NPCs that share a name across levels (the Monks of
-         * Zamorak are 17, 22 and 30; only the level-30 one drops the Golden key). An NPC already attacking the
-         * bot is fought whatever its level, as the server refuses any other attack while one is on the bot.
-         */
-        level: z.number().int().min(1).optional(),
-        /** Only attack NPCs of at least / at most this combat level (`level` as a range). */
-        minLevel: z.number().int().min(1).optional(),
-        maxLevel: z.number().int().min(1).optional(),
-        /**
-         * End the run `done` as soon as a quest dialog opens, leaving it open for the next phase (Sir Mordred's
-         * death opens Morgan Le Faye's choice, which the shared dialog guard would answer "No. He deserves to
-         * die."). The dialog guard is off for the run, so level-up dialogs are clicked away by the task itself.
-         */
-        stopOnDialog: z.boolean().default(false),
-        /**
-         * How long to keep waiting for a target to appear (a single imp or boss respawns in 50-100 ticks) before
-         * failing "no free reachable ...". Default 0: the usual 20 looks, about 60 ticks. Capped at MAX_RESPAWN_WAIT_TICKS.
-         */
-        respawnWaitTicks: z.number().int().min(0).max(MAX_RESPAWN_WAIT_TICKS).default(0),
-        /**
-         * Prayers to hold on for the fight, by name ("Protect from Melee"): turned on once a target is picked (before the
-         * attack), back off when the run ends (only those it turned on). The run fails when the prayer points run out.
-         */
+        target: z
+            .string()
+            .trim()
+            .min(1)
+            .describe('The NPC to fight, by exact name (case-insensitive, not a regex), e.g. "Chicken", "Cow".'),
+        skill: z
+            .enum(SKILLS)
+            .default('Attack')
+            .describe('The skill to train. Attack, Strength and Defence pick the melee style that trains it.'),
+        allowMaxed: z
+            .boolean()
+            .optional()
+            .describe('Train `skill` even at level 99 (otherwise refused; Magic is never refused).'),
+        area: AreaSchema.describe(
+            'Where to fight: the bot never wanders beyond `radius` of this centre, and walks back to it when away.',
+        ),
+        targetRange: z
+            .enum(['area', 'visible'])
+            .default('area')
+            .describe(
+                'Which NPCs are targets. "area": only those inside `area`. "visible": the nearest free reachable matching NPC ' +
+                    'anywhere in view, for targets that roam, flee or teleport (imps); `area` then only anchors the run: the ' +
+                    'bot walks back to it only when no target is in view and no wanted loot lies near. Loot is picked up ' +
+                    'wherever it lies near the bot.',
+            ),
+        weapon: z
+            .string()
+            .trim()
+            .optional()
+            .describe('An item to wield if not already worn, by exact name (e.g. "Bronze sword"); a bow for Ranged.'),
+        shield: z
+            .string()
+            .trim()
+            .optional()
+            .describe('A shield to wield if not already worn, by exact name; it adds defence for the fight.'),
+        ammo: z
+            .string()
+            .trim()
+            .optional()
+            .describe(
+                'Ranged: the ammunition to wield, by exact name (e.g. "Bronze arrow"); list it in `loot` too to pick fallen ones up and re-wield them.',
+            ),
+        spell: z
+            .enum(COMBAT_SPELL_NAMES)
+            .optional()
+            .describe(
+                'Magic: the combat spell cast on each target, e.g. "Wind Strike"; its runes come from the inventory, and a ' +
+                    'worn Staff of air, water, earth or fire covers only its own rune.',
+            ),
+        food: z
+            .array(z.string().trim())
+            .default([])
+            .describe(
+                `Food to eat when HP falls below \`eatBelow\`, by exact item name. The engine's low-HP guard, which eats or ends the run when HP is low, also eats any food carried below ${Math.round(lowHpFraction(1) * 100)}% of max HP, ${Math.round(lowHpFraction(2) * 100)}% with two attackers on the bot and ${Math.round(LOW_HP_MAX_FRACTION * 100)}% with three or more.`,
+            ),
+        eatBelow: z
+            .number()
+            .min(0.1)
+            .max(0.9)
+            .default(DEFAULT_EAT_BELOW)
+            .describe(
+                'The fraction of max HP to eat `food` below; needs `food` held, and with none the bot does not eat here.',
+            ),
+        buryBones: z
+            .boolean()
+            .default(false)
+            .describe(`Bury bones for Prayer XP, picking them up too: ${BONE_NAMES.join(', ')}.`),
+        loot: z
+            .array(z.string().trim())
+            .default([])
+            .describe(
+                'Ground items to pick up after a kill, by exact name (case-insensitive), e.g. ["Feather", "Cowhide"].',
+            ),
+        maxLevelGap: z
+            .number()
+            .min(0)
+            .default(DEFAULT_MAX_LEVEL_GAP)
+            .describe("Refuse (and never attack) NPCs with a combat level above the bot's combat level plus this."),
+        level: z
+            .number()
+            .int()
+            .min(1)
+            .optional()
+            .describe(
+                'Only attack NPCs of this exact combat level, for NPCs that share a name across levels (the Monks of ' +
+                    'Zamorak are 17, 22 and 30; only the level-30 one drops the Golden key). An NPC already attacking the ' +
+                    'bot is fought whatever its level, as the server refuses any other attack while one is on the bot.',
+            ),
+        minLevel: z.number().int().min(1).optional().describe('Only attack NPCs of at least this combat level.'),
+        maxLevel: z.number().int().min(1).optional().describe('Only attack NPCs of at most this combat level.'),
+        stopOnDialog: z
+            .boolean()
+            .default(false)
+            .describe(
+                'End the run `done` the moment a quest dialog opens, leaving it open for a following `talk` (Sir ' +
+                    "Mordred's death opens Morgan Le Faye's choice, which the engine's dialog guard would answer \"No. He " +
+                    'deserves to die."). The guard is off for the run, so the task clicks level-up dialogs away itself. ' +
+                    `While the dialog is open the engine holds it while HP is above the larger of ${HOLD_HP_FLOOR_MIN} HP and ` +
+                    `${Math.round(HOLD_HP_FLOOR_FRACTION * 100)}% of max HP (rounded up) and eats at or below it; a dialog open before any fight fails the run.`,
+            ),
+        respawnWaitTicks: z
+            .number()
+            .int()
+            .min(0)
+            .max(MAX_RESPAWN_WAIT_TICKS)
+            .default(0)
+            .describe(
+                'How long to keep waiting for a target to appear (a single imp or boss respawns in 50-100 ticks) before ' +
+                    `failing "no free reachable ...". The default wait is ${NO_TARGET_LIMIT} looks, about ` +
+                    `${NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS} ticks; a value under that changes nothing.`,
+            ),
         prayers: z
             .array(
                 z
@@ -180,24 +250,35 @@ const Params = z
                 const conflict = prayerConflict(names);
                 if (conflict) c.addIssue({ code: 'custom', message: conflict });
             })
-            .default([]),
-        /**
-         * Leave the prayers this run turned on when it ends, for a plan's following non-combat phases (walk, pick
-         * up, climb) in a hostile area; the plan turns them off with the `prayer` task. They drain the points
-         * until then. Default false: they go off when the run ends, except under `stopOnDialog`'s open dialog.
-         * A prayer an earlier phase kept on, or already on at the start, is not ours: a later combat phase never
-         * turns it off, only the `prayer` task does.
-         */
-        keepPrayersOn: z.boolean().default(false),
-        /**
-         * End the run `done` when `loot` (or `buryBones`) is set, a wanted ground item lies in reach and the pack is
-         * full so it cannot be picked up, after any fight in progress ends: a plan then goes on to a bank phase.
-         * Wanted loot includes bones when `buryBones` is set. `fullPackTicks` in the diagnostics is approximate (ticks
-         * between looks that both saw the pack blocking loot). Meant for non-stackable loot (herbs, hides, bones): a
-         * full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, feathers)
-         * that the game would still pick up. Default false: combat goes on fighting with the loot left on the ground.
-         */
-        endWhenPackFull: z.boolean().default(false),
+            .default([])
+            .describe(
+                'Prayers to hold on for the fight, by whole name, case-insensitive, not a regex (e.g. ["Protect from ' +
+                    'Melee"]); prayers that switch each other off cannot be named together. Turned on once a target is ' +
+                    'picked (before the attack); those this run turned on go off when it ends. The run fails when the ' +
+                    'prayer points run out.',
+            ),
+        keepPrayersOn: z
+            .boolean()
+            .default(false)
+            .describe(
+                "Leave the prayers this run turned on when it ends, for a plan's following non-combat phases (walk, pick " +
+                    'up, climb) in a hostile area; they drain the points until the `prayer` task turns them off. They also ' +
+                    "stay on when `stopOnDialog`'s kept dialog is still open at the end (a prayer click would close it), and the " +
+                    "run's `done` reason then names them. A prayer " +
+                    "an earlier phase kept on, or already on at the start, is not this run's: a later combat phase never " +
+                    'turns it off, only the `prayer` task does.',
+            ),
+        endWhenPackFull: z
+            .boolean()
+            .default(false)
+            .describe(
+                'End the run `done` when `loot` (or `buryBones`) is set, a wanted ground item lies in reach and the pack is ' +
+                    'full so it cannot be picked up, after any fight in progress ends: a plan then goes on to a bank phase. ' +
+                    'Wanted loot includes bones when `buryBones` is set. Meant for non-stackable loot (herbs, hides, bones): ' +
+                    'a full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, ' +
+                    'feathers) that the game would still pick up. Off: combat goes on fighting with the loot left on the ground. ' +
+                    '`fullPackTicks` in the diagnostics is approximate (ticks between looks that both saw the pack blocking loot).',
+            ),
     })
     .refine(p => p.minLevel === undefined || p.maxLevel === undefined || p.minLevel <= p.maxLevel, {
         message: 'minLevel is above maxLevel',
@@ -237,20 +318,6 @@ interface CombatMemory {
 }
 type Ctx = TaskContext<CombatParams, CombatMemory>;
 
-/**
- * The bones `buryBones` picks up and buries: the `bones` category items monsters drop that the bury script accepts
- * (skill_prayer/configs/bones.obj, scripts/bury_bone.rs2). The burnt and pasted quest bones are left out.
- */
-const BONE_NAMES = [
-    'Bones',
-    'Big bones',
-    'Bat bones',
-    'Wolf bones',
-    'Babydragon bones',
-    'Dragon bones',
-    'Jogre bones',
-    'Shaikahan bones',
-];
 const BURY_OPTION = /^bury$/i;
 const isBones = (i: { name: string }) => BONE_NAMES.some(n => exactName(n).test(i.name));
 const countBones = (s: BotWorldState) => s.inventory.filter(isBones).length;
@@ -628,25 +695,29 @@ const returnToArea: Step<CombatParams, CombatMemory> = {
 export default defineTask({
     name: 'combat',
     description:
-        `Train a combat skill on one kind of NPC inside an area (starts even while under attack when an attacker is a target or all attackers are weaker than the bot; the low-HP guard eats during the run), or with \`targetRange: "visible"\` on any matching NPC in view (imps and other roamers; \`area\` then only anchors the run; the bot walks back to it only when no target or loot is in view). Targets and loot within ${WILDERNESS_MARGIN} tiles of the Wilderness are never taken. Wields the given weapon/shield, sets the attack ` +
-        'style for `skill` (Attack/Strength/Defence/Ranged), attacks the nearest reachable matching NPC that is not ' +
-        'fighting someone else, waits for the kill, repeats. Ranged: `weapon` is a bow and `ammo` its arrows (wielded; ' +
-        'fails "out of <ammo>" when none are left; list the arrow in `loot` to pick fallen ones up and re-wield them). ' +
-        'Magic: casts `spell` (free-to-play Strike/Bolt/Blast, e.g. "Wind Strike", 1 Mind + 1 Air rune per cast) at ' +
-        "each target with runes from the inventory (a worn Staff of <element> replaces just that element's rune); fails when runes run out or the " +
-        'Magic level is too low. Optional food (eaten below `eatBelow`), bone burying (Bones, Big bones, Bat bones, Wolf bones, Babydragon bones, Dragon bones, Jogre bones, Shaikahan bones) and a loot list; an NPC already attacking the bot is fought first. ' +
-        'Refuses areas reaching the Wilderness and NPCs more than `maxLevelGap` (default 5) levels above the bot. ' +
-        'The engine waits out low HP when there is no food, so without food it refuses NPCs above combat level 5. ' +
-        'Refuses (preflight) a `skill` already at level 99 unless `allowMaxed: true`. ' +
-        'Weapon/shield need the bot to meet their wield requirement. `level` (or `minLevel`/`maxLevel`) attacks only NPCs ' +
-        'of that combat level (Monk of Zamorak: 17, 22, 30 share a name); `prayers` (e.g. ["Protect from Melee"]) are ' +
-        'turned on once a target is picked (before the attack) and, those this run turned on, off when the run ends, unless `keepPrayersOn` or an open `stopOnDialog` dialog (below), failing when the prayer points run out; ' +
-        '`keepPrayersOn: true` leaves them on instead, for a plan that walks, picks up or climbs on in a hostile area (they drain until the `prayer` task turns them off); a prayer an earlier phase kept on, or already on at the start, does not belong to this run, so a later combat phase never turns it off and only the `prayer` task ends it; the one other exception is `stopOnDialog` ending the run on an open quest dialog, which a prayer click would close, so the prayers stay on there whatever `keepPrayersOn` says; ' +
-        "`endWhenPackFull: true` ends the run `done` when `loot` is set, a wanted item lies in reach and the pack is full, after any fight ends (default false: combat keeps fighting), for a plan's bank phase; the RESULT's diagnostics carry `kills` (targets seen dead or gone after a fight; an NPC that left view counts too, a heuristic), `lootPicked` and `fullPackTicks` (approximate: ticks between looks that both saw loot in reach and the pack full). `buryBones` bones count as wanted loot for `endWhenPackFull`, which is meant for non-stackable loot (herbs, hides, bones): a full pack counts as blocking whatever the loot, even stackable loot already held (coins, runes, feathers). " +
-        "`respawnWaitTicks` (default 0 = about 60 ticks) keeps waiting for a lone target to respawn; `stopOnDialog` ends the run `done` the moment a dialog opens (Sir Mordred's death opens Morgan Le Faye's " +
-        'choice) and leaves it open (prayers it turned on stay on, named in the reason), with the dialog guard off, for a following `talk`; the open dialog is also kept from the low-HP eat and the end-of-run settle and eat (above the HP floor, the larger of 8 and a quarter of max HP); a dialog open before any fight fails the run. Spots: Lumbridge chickens (3231,3295, ' +
-        'radius 8; fenced coop with a gate; verified); Lumbridge cows (3253,3290, radius 12; south gate at ' +
-        '3253,3266; unverified).',
+        'Trains a combat skill by fighting one kind of NPC. It wields the given weapon and shield, sets the attack ' +
+        'style for `skill`, attacks the nearest reachable matching NPC that is not fighting someone else, waits ' +
+        'for the kill, and repeats; an NPC already attacking the bot is fought first. Starts even while under ' +
+        'attack when an attacker is a target or all attackers are weaker than the bot. ' +
+        `Targets and loot within ${WILDERNESS_MARGIN} tiles of the Wilderness are never taken (an attacker is still ` +
+        'fought). Ranged fails "out of <ammo>" when none are left; Magic fails when runes run out or the Magic level ' +
+        "is too low. The RESULT's diagnostics carry `kills` (targets seen dead or gone after a fight; an NPC that left " +
+        'view counts too, a heuristic), `lootPicked` and `fullPackTicks`. Refuses an area reaching the Wilderness.',
+    rules: [
+        'Ranged needs `weapon` (a bow) and `ammo`; Magic needs `spell`, the Magic level for it and its runes.',
+        `A cast of Wind Strike takes ${Object.entries(COMBAT_SPELLS['Wind Strike'].runes)
+            .map(([rune, n]) => `${n} ${rune}`)
+            .join(' and ')}.`,
+        '`weapon`, `shield` and `ammo` must be worn or in the inventory, and the bot must meet their wield requirement.',
+        "NPCs more than `maxLevelGap` levels above the bot's combat level are refused. The engine waits out low HP " +
+            `when there is no food, so without food the task refuses NPCs above combat level ${NO_FOOD_MAX_NPC_LEVEL}.`,
+        '`level` cannot be combined with `minLevel` / `maxLevel`, and `minLevel` must not be above `maxLevel`.',
+        'Each of `prayers` needs its Prayer level, and the bot needs prayer points left to start.',
+    ],
+    spots: [
+        'Lumbridge chickens: `area` {x:3231,z:3295,radius:8}; fenced coop with a gate; verified.',
+        'Lumbridge cows: `area` {x:3253,z:3290,radius:12}; south gate at 3253,3266; unverified.',
+    ],
     params: Params,
     diagnostics(ctx) {
         // The run can end on the tick the last kill lands, before any step settles it; settleKill is idempotent.

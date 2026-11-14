@@ -62,12 +62,18 @@ const unreachableLast = (l: NearbyLoc) => (l.reachable === false ? 1 : 0);
 const sameLoc = (a: NearbyLoc, b: NearbyLoc) => a.name === b.name && a.x === b.x && a.z === b.z && a.level === b.level;
 
 const Params = z.object({
-    /** Exact item name of the raw food to cook, e.g. "Raw shrimps". Only this food is cooked. */
-    food: z.string(),
-    /** Cook at a source within `radius` of this centre; walk there when further. Omit to use one in sight of the bot. */
-    area: AreaSchema.optional(),
-    /** Drop the burnt food (fish, meat, chicken, lobster, swordfish) once nothing is left to cook. */
-    dropBurnt: z.boolean().default(false),
+    food: z
+        .string()
+        .describe(
+            'The raw food to cook, by its exact item name (whole name, case-insensitive, e.g. "Raw shrimps"); only this food is cooked.',
+        ),
+    area: AreaSchema.optional().describe(
+        'Cook at a source within `radius` of this centre, walking there when further. Omit to use one in sight of the bot; a source in sight further off is walked to.',
+    ),
+    dropBurnt: z
+        .boolean()
+        .default(false)
+        .describe('Drop the burnt food (fish, meat, chicken, lobster, swordfish) once nothing is left to cook.'),
 });
 
 type CookingParams = z.infer<typeof Params>;
@@ -179,15 +185,22 @@ function* cookOnce(ctx: Ctx, source: NearbyLoc): Op<{ fail: string } | { failure
 export default defineTask({
     name: 'cooking',
     description:
-        'Cook one raw food type (`food`, exact item name: Raw shrimps, Raw anchovies, Raw sardine, Raw herring, Raw trout, Raw pike, ' +
-        'Raw salmon, Raw tuna, Raw lobster, Raw swordfish, Raw beef, Raw chicken, Raw rat meat, Raw bear meat) on a Range, Fire, Fireplace ' +
-        'or Cooking pot until none of it is left, then done. This game version has no cook-all menu: one item is cooked per use, about 3-4 ticks. ' +
-        'Burnt food is normal at low levels and never a failure; the run reports "N cooked, M burnt" and `dropBurnt` drops the burnt food at the end. ' +
-        'Refuses to start with none of the food, below its Cooking level, or for a members-only food. Fails when no source is in sight (pass `area`), or when none can be reached from any tile beside it. ' +
-        'A source the bot cannot reach from where it stands is walked round (each tile beside it inside the area is tried); the run fails only when no tile reaches it. ' +
-        'The quest-gated "Cooking range" in the Lumbridge castle kitchen is never used. ' +
-        "Verified spots: the Range at (3230,3196), south of Bob's Brilliant Axes in Lumbridge, area {x:3230,z:3196,radius:6}: it is reachable only from its east side (x 3231), so a bot arriving from the west walks round to it; " +
-        'the Cooking pot at (3232,3238) beside the Lumbridge general store, area {x:3232,z:3238,radius:6}, works as well.',
+        'Cooks one raw food type on a Range, Fire, Fireplace or Cooking pot until none of it is left, then done. ' +
+        'This game version has no cook-all menu: one item is cooked per use, about 3-4 ticks. ' +
+        'Burnt food is normal at low levels and never a failure; the run reports "N cooked, M burnt". ' +
+        'Fails when no source is in sight (pass `area`), or when none can be reached from any tile beside it: ' +
+        'a source the bot cannot reach from where it stands is walked round (each tile beside it inside the area is tried). ' +
+        'The quest-gated "Cooking range" in the Lumbridge castle kitchen is never used.',
+    rules: [
+        `\`food\` must be one of these, with the base Cooking level each needs: ${Object.entries(FOOD_LEVELS)
+            .map(([food, level]) => `${food} ${level}`)
+            .join(', ')}. Any other food is refused.`,
+        'Refuses to start with none of the food in the inventory or below its Cooking level.',
+    ],
+    spots: [
+        "The Range at (3230,3196), south of Bob's Brilliant Axes in Lumbridge: `area` {x:3230,z:3196,radius:6}. It is reachable only from its east side (x 3231), so a bot arriving from the west walks round to it.",
+        'The Cooking pot at (3232,3238) beside the Lumbridge general store: `area` {x:3232,z:3238,radius:6}.',
+    ],
     params: Params,
     memory: (): CookingMemory => ({ approached: [], source: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

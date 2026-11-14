@@ -554,9 +554,13 @@ on its own.
     - A plan the idle rail ends with an unmet `until` reports status done ("plan until not met"), which reads wrongly for a quest
       that did not finish.
     - The wiki page for Gertrude's Cat is misspelt `wiki/quests/gertudes-cat.md`.
-  - Audit: generate the task catalog text from the param schemas (`.describe()`), as `wait` does.
+  - Task catalog: done 2026-11-14 (every param described on its schema field, `rules` and `spots`, `--list` an index and `--list <task>` an entry, a guard test; design `conductor/docs/task-catalog.md`). Follow-ups:
+    - `MAX_FAILURE_DAMAGE = 2` in `conductor/tasks/thieving.ts` understates the pickpocket damage of Knights, Watchmen and Paladins (3) and the Hero (4) in the pickpocket dbrow, so a no-food run on those targets can drop below the low-HP line after one caught attempt and end "no food" where it should have waited to regenerate. The `STUN_TICKS` comment in `conductor/actions/pickpocket.ts` says 8 for every target though the Hero's stun is 10, and the task's wait of 8 + 2 ticks leaves no slack for it.
+    - `fletching` stringing XP is 0.1 below the cut for willow shortbows and maple longbows; the catalog says "about the same", a wording note.
+    - Game knowledge still held in catalog entries (respawn times, shops, spots) could move to the knowledge base.
+    - Plan descriptions are set by all 95 plans and printed by nothing.
   - Audit: declared silent streaks in place of hand-summed `stuckAfterMs`; one streak-then-fail helper, `waitForRespawn` and eat step.
-  - Audit: one name for the full-inventory policy param, and exact names against pattern sources.
+  - Audit: one name for the full-inventory policy param (now visible in the catalog: `onFull`, `stopWhenFull`, `endWhenPackFull`, `pick`'s omitted `count` and `pickup`'s hardwired failure), and one rule for item or NPC names, a regex in some tasks and a whole name in others.
   - Audit: outcome codes in place of failure-wording matches (`clock-tower`, `monks-friend`, `troll-stronghold`; about 91 reason strings).
   - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.
   - Migrate promoted plans to the view members and primitives (`retry`, `wait`, `defaults`, `v.said`, `v.held`) when next touched or re-run.

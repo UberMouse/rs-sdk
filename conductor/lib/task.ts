@@ -95,9 +95,19 @@ export interface Step<P = unknown, M extends object = UntypedMemory> {
 
 export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = UntypedMemory> {
     name: string;
-    /** One or two lines for the conductor's catalog: what it trains/does and where. */
+    /**
+     * What the task does, when it ends done or failed, and what it refuses; its first sentence is the task's
+     * line in the `--list` index. Not a walk through the params: each is described on its field (`.describe()`).
+     */
     description: string;
     params: S;
+    /**
+     * Rules that span params or come from preflight, one plain sentence each ("`use` or `option`, not both"):
+     * JSON Schema drops `.refine`, so the catalog says them here.
+     */
+    rules?: string[];
+    /** Verified spots, example params objects and where the task is used ("used by"), one string each. */
+    spots?: string[];
     /** A fresh `ctx.memory` for each run; its return type types `ctx.memory`. Default `{}`, untyped. */
     memory?(): M;
     /**

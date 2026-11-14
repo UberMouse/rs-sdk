@@ -109,15 +109,41 @@ const secondaryKey = (name: string): SecondaryKey | undefined =>
 
 const Params = z
     .object({
-        /**
-         * `clean`: grimy herbs the level allows. `unfinished`: clean herbs on Vials of water. `finish`: unfinished
-         * potions plus a secondary. `all`: those three in that order on what the pack holds.
-         */
-        mode: z.enum(['clean', 'unfinished', 'finish', 'all']).default('all'),
-        /** Herbs to work ("Guam leaf", "irit"); default every herb. In `all` with `pairs`, default the pairs' herbs. */
-        herbs: z.array(z.string().trim().min(1)).optional(),
-        /** Potions to finish: the unfinished potion ("Guam potion (unf)" or "guam") and the secondary ("Eye of newt"). Default every recipe the pack can make. */
-        pairs: z.array(z.object({ unf: z.string().trim().min(1), secondary: z.string().trim().min(1) })).optional(),
+        mode: z
+            .enum(['clean', 'unfinished', 'finish', 'all'])
+            .default('all')
+            .describe(
+                '`clean` cleans every grimy herb the level allows (62 XP for guam up to 375 for torstol, no delay), `unfinished` puts clean herbs on Vials of water (0 XP), `finish` adds a secondary to an unfinished potion (the XP), `all` does those three in that order on what the pack holds.',
+            ),
+        herbs: z
+            .array(z.string().trim().min(1))
+            .optional()
+            .describe(
+                'Limits the herbs worked, by name. Case is ignored and the words grimy, clean, unfinished, potion, leaf, weed and "(unf)" and every character that is not a letter or space are dropped; what remains must be the herb\'s name ("dwarf" stands for dwarf weed, "marentill" for marrentill). "irit", "Irit leaf", "grimy irit" and "Guam potion (unf)" work; any other extra word ("super irit") makes the herb unknown. Default every herb; in `all` with `pairs`, the pairs\' herbs.',
+            ),
+        pairs: z
+            .array(
+                z.object({
+                    unf: z
+                        .string()
+                        .trim()
+                        .min(1)
+                        .describe(
+                            'The unfinished potion, named as `herbs` names a herb ("Guam potion (unf)", "guam").',
+                        ),
+                    secondary: z
+                        .string()
+                        .trim()
+                        .min(1)
+                        .describe(
+                            'The secondary, by its item name ("Eye of newt"), case-insensitive and ignoring spaces and punctuation.',
+                        ),
+                }),
+            )
+            .optional()
+            .describe(
+                'The potions to finish, e.g. [{"unf":"Guam potion (unf)","secondary":"Eye of newt"}] (attack potion, 625 XP). Without it every known recipe the pack and level allow is made (guam + eye of newt, irit + eye of newt = super attack 2500 XP, harralander + chocolate dust = energy 1687 XP, ...); recipes that share an unfinished potion resolve in table order (ranarr: defence before prayer, avantoe: fishing before super energy, harralander: restore before energy), so set `pairs` when the pack holds competing secondaries.',
+            ),
     })
     .refine(p => p.pairs === undefined || p.mode === 'finish' || p.mode === 'all', {
         message: '`pairs` belongs to mode "finish" or "all"',
@@ -234,14 +260,18 @@ function leftovers(s: BotWorldState): string {
 export default defineTask({
     name: 'herblore',
     description:
-        'Train Herblore on herbs and secondaries the pack already holds; a plan around it banks and withdraws. ' +
-        '`mode` "clean" cleans every grimy herb the level allows (62 XP for guam up to 375 for torstol, no delay), "unfinished" puts clean herbs on Vials of water (0 XP), ' +
-        '"finish" adds a secondary to an unfinished potion (the XP), "all" (default) does the three in that order. ' +
-        '`herbs` limits the herbs ("irit"); `pairs` names the potions to finish, e.g. [{"unf":"Guam potion (unf)","secondary":"Eye of newt"}] ' +
-        '(attack potion, 625 XP); without it every known recipe the pack and level allow is made (guam + eye of newt, irit + eye of newt = super attack 2500 XP, ' +
-        'harralander + chocolate dust = energy 1687 XP, ...); recipes that share an unfinished potion resolve in table order (ranarr: defence before prayer, avantoe: fishing before super energy, harralander: restore before energy), so set `pairs` when the pack holds competing secondaries. One use per tick, no make menu. Ends `done` when no allowed action is left in the pack ' +
-        '(fails to start if there is none). Works anywhere; needs members. Herbs: chaos druids (Edgeville Dungeon is Wilderness; Taverley Dungeon), ' +
-        "eye of newt 3 gp at Jatix in Taverley, vials of water 2 gp at Aemad's in East Ardougne, chocolate dust at Funch's.",
+        'Trains Herblore on herbs and secondaries the pack already holds; a plan around it banks and withdraws. ' +
+        'It cleans grimy herbs, puts clean herbs on Vials of water and adds secondaries to unfinished potions, as `mode` says. ' +
+        'One use per tick, no make menu. Ends `done` when no allowed action is left in the pack. Works anywhere.',
+    rules: [
+        '`pairs` belongs to `mode` "finish" or "all".',
+        'Refuses a herb it does not know, and a `pairs` entry whose unfinished potion and secondary make no known recipe.',
+        'Refuses to start when the pack holds nothing to do for the `mode` at the Herblore level.',
+    ],
+    spots: [
+        'Herbs: chaos druids (Edgeville Dungeon is Wilderness; Taverley Dungeon).',
+        "Eye of newt 3 gp at Jatix in Taverley, vials of water 2 gp at Aemad's in East Ardougne, chocolate dust at Funch's.",
+    ],
     params: Params,
     memory: (): HerbloreMemory => ({ cleaned: 0, unfinished: 0, finished: 0 }),
     diagnostics: ctx => ({ diagnostics: { ...ctx.memory } }),

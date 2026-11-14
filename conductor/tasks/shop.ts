@@ -47,30 +47,72 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 const TRADE_STEP_YIELD_TICKS = Math.floor(Math.ceil(STEP_TIMEOUT_MS / TICK_MS) / 2);
 
 const Params = z.object({
-    /** Exact shopkeeper name (case-insensitive, not a regex): "Shop keeper", "Bob". */
-    npc: z.string().min(1),
-    /** Walk here first (the shop's coordinates). Omit when already standing in the shop. */
-    at: z.object({ x: z.number(), z: z.number() }).optional(),
-    /** Inventory items to sell, by exact name. Omit `count` to sell all of that item. `minUnitPrice` checks the shop's current (opening) unit price and fails the run if it is lower or the item is not quoted; prices shift with stock over a multi-unit trade. */
+    npc: z
+        .string()
+        .min(1)
+        .describe(
+            'The shopkeeper to trade with, by exact name (whole name, case-insensitive, not a regex): "Shop keeper", "Bob".',
+        ),
+    at: z
+        .object({
+            x: z.number().describe('World tile x (east-west) of the shop.'),
+            z: z.number().describe('World tile z (north-south) of the shop.'),
+        })
+        .optional()
+        .describe(
+            "Walk here first (the shop's world tile coordinates, on the ground floor). Omit when already standing in the shop.",
+        ),
     sell: z
         .array(
             z.object({
-                item: z.string().min(1),
-                count: z.number().int().positive().optional(),
-                minUnitPrice: z.number().int().nonnegative().optional(),
+                item: z
+                    .string()
+                    .min(1)
+                    .describe('The inventory item to sell, by its exact name (whole name, case-insensitive).'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .optional()
+                    .describe('How many to sell; omit to sell all of that item.'),
+                minUnitPrice: z
+                    .number()
+                    .int()
+                    .nonnegative()
+                    .optional()
+                    .describe(
+                        "Checks the shop's current (opening) unit price and fails the run if it is lower or the item is not quoted; prices shift with stock over a multi-unit trade.",
+                    ),
             }),
         )
-        .default([]),
-    /** Shop items to buy, by exact name. `maxUnitPrice` checks the shop's current (opening) unit price and fails the run if it is higher or the item is not stocked; prices shift with stock over a multi-unit trade. */
+        .default([])
+        .describe('Inventory items to sell.'),
     buy: z
         .array(
             z.object({
-                item: z.string().min(1),
-                count: z.number().int().positive(),
-                maxUnitPrice: z.number().int().nonnegative().optional(),
+                item: z
+                    .string()
+                    .min(1)
+                    .describe('The shop item to buy, by its exact name (whole name, case-insensitive).'),
+                count: z
+                    .number()
+                    .int()
+                    .positive()
+                    .describe(
+                        'How many to buy. The task fails if the shop stocks fewer, the coins run short or the inventory fills; the reason says how many arrived.',
+                    ),
+                maxUnitPrice: z
+                    .number()
+                    .int()
+                    .nonnegative()
+                    .optional()
+                    .describe(
+                        "Checks the shop's current (opening) unit price and fails the run if it is higher or the item is not stocked; prices shift with stock over a multi-unit trade.",
+                    ),
             }),
         )
-        .default([]),
+        .default([])
+        .describe('Shop items to buy.'),
 });
 
 type ShopParams = z.infer<typeof Params>;
@@ -250,11 +292,14 @@ function* walkToKeeper(ctx: Ctx): Op<void> {
 export default defineTask({
     name: 'shop',
     description:
-        'Walk to a ground-floor shop (optional `at`), open it via the exact shopkeeper name `npc`, sell inventory items (`sell`, count omitted = all), ' +
-        'then buy items (`buy`), close the shop; done when every trade is made. Sells first so a run funds its own purchases. ' +
-        'Optional per-entry price guards: `minUnitPrice` on sells, `maxUnitPrice` on buys. Only trades with a shop this run opened. ' +
-        'Fails (no looping) if the shop has no stock, coins run out, or it will not buy an item; the reason reports coins received. ' +
-        'E.g. npc "Bob" at (3232,3203); shops and their npcs are in learnings/shops.md.',
+        'Sells inventory items to a shop, then buys from it. ' +
+        'It walks to `at` if given, opens the shop via the shopkeeper `npc` and closes it; done when every trade is made. Sells first so a run funds its own purchases. Only trades with a shop this run opened. ' +
+        'Fails (no looping) if the shop has no stock, coins run out, or it will not buy an item; the reason reports coins received.',
+    rules: [
+        'Needs at least one sell or buy; with nothing to sell it needs coins in the inventory. A shop in the Wilderness (`at`) is refused.',
+        'Every `sell` item must be in the inventory, and its counts together (an entry without `count` means all) must not exceed what is held: an item listed twice needs a `count` on each entry.',
+    ],
+    spots: ['Example: `npc` "Bob", `at` {x:3232,z:3203}.', 'Shops and their npcs are in learnings/shops.md.'],
     params: Params,
     memory: (): ShopMemory => ({ tradesMade: 0, coinsReceived: 0, coinsSpent: 0, inFlight: null }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

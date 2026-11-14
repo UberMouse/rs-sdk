@@ -19,31 +19,68 @@ const isPattern = (source: string) => {
         return false;
     }
 };
-/** A case-insensitive regex given as a string. */
-export const Pattern = z.string().refine(isPattern, 'not a valid regular expression');
+/** How a `Pattern` is matched (by `matcher`), told wherever one is a param. */
+export const PATTERN_NOTE =
+    'A case-insensitive regex given as a string, matched anywhere in the text: "Sheep" also matches any longer text containing it, "^Sheep$" only "Sheep" itself.';
+export const Pattern = z.string().refine(isPattern, 'not a valid regular expression').describe(PATTERN_NOTE);
 export const matcher = (source: string) => new RegExp(source, 'i');
 
-/** Where to stand first: walked to (across floors, through doors) unless already within `tolerance`. */
-export const AtSchema = z.object({
-    x: z.number(),
-    z: z.number(),
-    level: z.number().int().optional(),
-    /** Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile). */
-    tolerance: z.number().int().min(0).default(DEFAULT_TOLERANCE),
-    /**
-     * Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts):
-     * `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through
-     * the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.
-     */
-    met: z.array(z.string()).optional(),
-});
+const describedAtUse = new WeakSet<z.ZodType>();
+/** `Pattern` described at its use: `sentence` (what the param means), then PATTERN_NOTE. Same shape and checks.
+ * Chaining a cloning method (`.min()`, `.refine()`, another `.describe()`) on the result loses the marker, and the
+ * catalog guard then reports the field; wrap it only with `.optional()`, `.default()` or `z.array(...)`. */
+export function patternParam(sentence: string): typeof Pattern {
+    const schema = Pattern.describe(`${sentence} ${PATTERN_NOTE}`);
+    describedAtUse.add(schema);
+    return schema;
+}
+/** Whether `schema` was made by `patternParam`. */
+export const isPatternParam = (schema: z.ZodType): boolean => describedAtUse.has(schema);
+
+/** Whether `schema` carries Pattern's regex check: `Pattern` or a schema made from it. */
+export const isPatternSchema = (schema: z.ZodType): boolean =>
+    (schema.def as { checks?: { def?: { fn?: unknown } }[] }).checks?.some(c => c.def?.fn === isPattern) ?? false;
+
+export const AtSchema = z
+    .object({
+        x: z.number().describe('Tile x of the spot.'),
+        z: z.number().describe('Tile z of the spot.'),
+        level: z
+            .number()
+            .int()
+            .optional()
+            .describe(
+                "The spot's floor (0 for the surface). Omit to walk on the bot's own floor (floor 0 when the spot is across the surface/underground divide) and count any floor as there.",
+            ),
+        tolerance: z
+            .number()
+            .int()
+            .min(0)
+            .default(DEFAULT_TOLERANCE)
+            .describe(
+                'Tiles (Chebyshev) from `x`, `z` that count as there; 0 is that exact tile (a loc used from one side only, behind a wall from the next tile).',
+            ),
+        met: z
+            .array(z.string())
+            .optional()
+            .describe(
+                "Requirement tokens the plan knows the account meets that its state does not show (the walk's `met`, lib/account.ts): `quest:priestperil>=4` lets the walk plan through the Priest in Peril temple door, `quest:runemysteries` through the Rune Mysteries teleport. Absent: the walk plans only through ways that ask nothing the state cannot show.",
+            ),
+    })
+    .describe('Where to stand first: walked to (across floors, through doors) unless already within `tolerance`.');
 export type At = z.infer<typeof AtSchema>;
 
-/**
- * One exact tile: picks the loc (or NPC) standing on it instead of the nearest one of that name. `level`
- * applies to locs only: an NPC reports no level, so it is matched on x and z.
- */
-export const TileSchema = z.object({ x: z.number().int(), z: z.number().int(), level: z.number().int().optional() });
+export const TileSchema = z
+    .object({
+        x: z.number().int().describe('Tile x.'),
+        z: z.number().int().describe('Tile z.'),
+        level: z
+            .number()
+            .int()
+            .optional()
+            .describe('The floor; applies to locs only: an NPC reports no level, so it is matched on x and z.'),
+    })
+    .describe('One exact tile: picks the loc (or NPC) standing on it instead of the nearest one of that name.');
 export type Tile = z.infer<typeof TileSchema>;
 
 /** A thing at (x, z) stands on `tile`; the level counts only when the tile gives one and the thing knows its own. */
@@ -52,8 +89,11 @@ export const onTile = (thing: { x: number; z: number; level?: number }, tile: Ti
     thing.z === tile.z &&
     (tile.level === undefined || (thing.level ?? tile.level) === tile.level);
 
-/** An inventory item to use: a name regex, or `{ id }` for one exact item (three buckets of water share a name). */
-export const ItemSpec = z.union([Pattern, z.object({ id: z.number().int() })]);
+export const ItemSpec = z
+    .union([patternParam("The item's name."), z.object({ id: z.number().int().describe('The item id.') })])
+    .describe(
+        'An inventory item to use: a name, or `{ id }` for one exact item (three buckets of water share a name).',
+    );
 export type ItemSpec = z.infer<typeof ItemSpec>;
 
 export const itemMatches = (spec: ItemSpec, item: InventoryItem): boolean =>

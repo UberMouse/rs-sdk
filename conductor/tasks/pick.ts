@@ -5,9 +5,9 @@ import { log, type Op, wait } from '../core/op';
 import { WALK_MAX_TICKS } from '../actions/walk';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
-import { countItems, exactName, TICK_MS } from '../lib/util';
+import { countItems, exactName, ticksToSeconds } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Ticks with no pickable loc at all before failing (40 s); above flax's 10-tick respawn (pickables.rs2 loc_del(10)). */
@@ -31,14 +31,30 @@ const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 const STEP_TIMEOUT_MS = 300_000;
 
 const Params = z.object({
-    /** The pickable loc's exact name as the game shows it (case-insensitive), e.g. "Flax". */
-    loc: z.string().min(1),
-    /** The exact name of the item one pick gives, e.g. "Flax". */
-    item: z.string().min(1),
-    /** Stop `done` once the inventory holds this many of `item`. Omit to pick until the inventory is full. */
-    count: z.number().int().positive().max(28).optional(),
-    /** Stay near here; walk back when further than `radius`. Omit to pick wherever the bot is. */
-    area: AreaSchema.optional(),
+    loc: z
+        .string()
+        .min(1)
+        .describe(
+            'The pickable loc to pick, by its whole name as the game shows it, compared case-insensitively, e.g. "Flax".',
+        ),
+    item: z
+        .string()
+        .min(1)
+        .describe(
+            'The item one pick gives, by its whole name compared case-insensitively, e.g. "Flax". Counted in the inventory.',
+        ),
+    count: z
+        .number()
+        .int()
+        .positive()
+        .max(28)
+        .optional()
+        .describe(
+            'Stop done once the inventory holds this many of `item`, counting any held before the run. It fails if the inventory fills first. Omitted, it picks until the inventory is full. One click gives one item, about 3 ticks with the step to the next plant.',
+        ),
+    area: AreaSchema.optional().describe(
+        'Where to pick: only plants inside it are picked, and the bot walks back when further than `radius`. Without it the bot picks wherever it stands.',
+    ),
 });
 
 type PickParams = z.infer<typeof Params>;
@@ -81,7 +97,7 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
         wait('respawn', s => s.nearbyLocs.some(isPickable), Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now)),
     );
     if (respawn.kind === 'met') return;
-    const seconds = Math.round(((respawn.state.tick - since) * TICK_MS) / 1000);
+    const seconds = ticksToSeconds(respawn.state.tick - since);
     const { area } = ctx.params;
     return {
         fail: area
@@ -93,14 +109,14 @@ function* waitForRespawn(ctx: Ctx): Op<Outcome> {
 export default defineTask({
     name: 'pick',
     description:
-        'Pick a pickable loc (the "Pick" option: flax, and the game\'s other crops) one by one until the inventory holds `count` ' +
-        'of `item`, or is full when `count` is omitted; then it ends done ("picked N" / "inventory full: N"). ' +
-        '`loc` and `item` are exact names ("Flax"/"Flax"). One click gives one item (about 3 ticks with the step to the next plant); ' +
-        'a plant sometimes vanishes for a few ticks after a pick, and the task waits up to 40 s for a respawn, then fails "area depleted". ' +
-        'With `area` it stays within `radius` of that centre, otherwise it picks wherever the bot stands. ' +
-        "Pauses while attacked (auto-retaliate must finish the fight). Verified: Seers' Village flax field, " +
-        'area {x:2743,z:3445,radius:10} (the field spans x 2732-2755, z 3433-3456). Needs nothing carried. ' +
-        'Refuses areas reaching the Wilderness.',
+        'Picks items from scenery objects with a "Pick" option, such as flax plants. ' +
+        'It picks until the inventory holds `count` of `item`, or is full when `count` is omitted, then ends done ("picked N" / "inventory full: N"); needs nothing carried. ' +
+        `A plant may vanish briefly after a pick; the task waits up to ${ticksToSeconds(NO_LOC_GIVE_UP_TICKS)} s for a respawn, then fails "area depleted: no reachable <loc> in radius N for Ns" with \`area\`, "no reachable <loc> nearby for Ns" without. ` +
+        UNDER_ATTACK_NOTE,
+    rules: ['Refuses an `area` reaching the Wilderness.'],
+    spots: [
+        "Seers' Village flax field: `area` {x:2743,z:3445,radius:10} (the field spans x 2732-2755, z 3433-3456); verified.",
+    ],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): PickMemory => ({ noLocSinceTick: null, areaWatch: newAreaWatch() }),

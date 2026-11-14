@@ -33,7 +33,7 @@ This skill keeps durable state. **Before the first write, Read
 
 | Piece | What it is |
 |---|---|
-| `bun conductor/run-task.ts --list` | the catalog: each task's name, description and JSON-schema params |
+| `bun conductor/run-task.ts --list` | the catalog index: one line per task; `--list <task>` prints a task's params (JSON Schema), rules and verified spots, `--list --all` every entry |
 | `bun conductor/run-task.ts <bot> <task> --params '<json>' --until <stop>... [--takeover]` | runs one task; refuses to start when the bot is in combat or already has a controller attached (the gateway enforces this for every script; `--takeover` pre-empts it); last stdout line is `RESULT <json>` (status `done`/`failed`/`stuck`/`error`, reason, xpGained, levelsGained, inventoryDelta, stepRuns, screenshots, logFile) |
 | `bun conductor/run-task.ts <bot> --plan <file> --until <stop>...` | runs a plan: phases of catalog tasks chosen from the world state each time one ends. RESULT has `task: "plan:<name>"`, the plan totals, `phases` (per phase: runs, statuses, durationMs, xpGained, lastReason) and `recent` (the last 3 phase runs with their logs). The runner's tool; you read its results |
 | `conductor/plans/<name>.ts` | promoted plans, committed (reference: `chop-burn.ts`). Drafts live in `conductor/runs/<bot>/plans/` (gitignored) until you promote them |

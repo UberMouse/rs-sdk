@@ -10,6 +10,9 @@ type Skill = BotWorldState['skills'][number];
  */
 export const TICK_MS = 400;
 
+/** Game ticks as whole seconds at the local tick length, for messages and descriptions. */
+export const ticksToSeconds = (ticks: number): number => Math.round((ticks * TICK_MS) / 1000);
+
 /** JSON with sorted keys, so equal values always give the same string (params grouping, command matching). */
 export function canonical(v: unknown): string {
     if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;

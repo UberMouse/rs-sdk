@@ -97,8 +97,8 @@ Direction, to be designed after a spike:
 
 ## Other follow-ups from the audit (not in this build)
 
-- Task catalog: no field uses `.describe()`, so about 42k characters of `description` prose restate
-  the params; generate the catalog text from the schema. `wait` starts the convention.
+- Task catalog: done; params are described on their schema fields and `--list` is generated from them
+  (design: `conductor/docs/task-catalog.md`).
 - Task bookkeeping: declared silent streaks in place of hand-summed `stuckAfterMs` (25 tasks), one
   streak-then-fail helper (93 blocks), one `waitForRespawn`, one eat step.
 - Param naming: five names for the full-inventory policy; exact names against pattern sources.

@@ -186,8 +186,8 @@ export default definePlan({
   before every phase choice; one that fails ends the plan `failed` with `plan requires <what>`.
   Without an `until`, a plan runs until `--until`, a failure or a rail.
 - `phase(task, params, { name?, when?, until?, onFail?, maxFails?, settle? })`: `task` is the task
-  module's default export; `params` are its params (`bun conductor/run-task.ts --list` shows each schema,
-  and a task file's description names its verified spots). `name` defaults to the task's name and
+  module's default export; `params` are its params (`bun conductor/run-task.ts --list <task>` prints its params, rules and
+  verified spots). `name` defaults to the task's name and
   must be unique (name two bank phases). `when(v)`: may it start (default always).
   `until(v)`: ends the phase `done` early, checked every tick. `onFail`: `'fail'` (default),
   `'continue'` (skip it for the next selection, so a fallback below gets the turn), `'retry'`

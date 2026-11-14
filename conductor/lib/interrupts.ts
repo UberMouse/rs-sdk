@@ -41,11 +41,17 @@ const REGEN_CAP_TICKS = 500;
  */
 const DIALOG_STUCK_LIMIT = 6;
 /** Ticks one fight with an attacker the state does not name may last while the bot waits for auto-retaliate. */
-const UNKNOWN_ATTACKER_TICK_LIMIT = 40;
+export const UNKNOWN_ATTACKER_TICK_LIMIT = 40;
 /** The unknown-attacker wait fails once the bot lost this much hp. */
-const UNKNOWN_ATTACKER_HP_LOSS = 3;
+export const UNKNOWN_ATTACKER_HP_LOSS = 3;
 /** A named fight fails when neither the bot's hp nor the attacker's health percent changed for this many ticks. */
-const NO_PROGRESS_TICKS = 60;
+export const NO_PROGRESS_TICKS = 60;
+/** The under-attack guard's behaviour in plain words, for the descriptions of the tasks that install it. */
+export const UNDER_ATTACK_NOTE =
+    `When something attacks the bot, the task stops work and lets auto-retaliate finish the fight, then carries on, starting its current step again. ` +
+    `It fails at once if auto-retaliate is off or the attacker's combat level is above the bot's. ` +
+    `A named attacker fails it only after ${NO_PROGRESS_TICKS} ticks with no HP change on either side; ` +
+    `an unknown attacker (a player, a ranged hit) after ${UNKNOWN_ATTACKER_TICK_LIMIT} ticks, or sooner once ${UNKNOWN_ATTACKER_HP_LOSS} HP is lost.`;
 /** A hit this many ticks old still counts as an ongoing attack. */
 const RECENT_HIT_TICKS = 10;
 /** An NPC farther than this (tiles) is not the one fighting the bot. */

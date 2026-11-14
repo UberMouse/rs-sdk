@@ -41,8 +41,7 @@ const STUCK_AFTER_MS = stuckWindowMs(
 );
 
 const Params = z.object({
-    /** Which altar (rune type): the F2P ones. The matching talisman opens its ruins. */
-    altar: z.enum(ALTAR_NAMES),
+    altar: z.enum(ALTAR_NAMES).describe('Which altar to craft at, so which rune.'),
 });
 type RunecraftParams = z.infer<typeof Params>;
 interface RunecraftMemory {
@@ -62,11 +61,17 @@ const inside = (ctx: Ctx) => inTemple(ctx.state(), ctx.params.altar);
 export default defineTask({
     name: 'runecraft',
     description:
-        "One runecrafting trip: with the altar's talisman and rune essence held, walk to its Mysterious ruins, use the talisman on them (no tiaras in this revision), " +
-        'bind every rune essence at the altar (Craft-rune; one action for the whole stack), and leave by the temple portal. ' +
-        '`altar`: air, mind, water, earth, fire or body (levels 1/2/5/9/14/20; ruins at air (2984,3291), mind (2981,3513), water (3184,3164), earth (3305,3473), fire (3312,3254), body (3052,3444)). ' +
-        'Done once the essence is crafted and the bot is back outside by the ruins. Started inside the temple with no essence (a plan ended in the altar), it just leaves and is done. Fails with no essence or talisman. Get essence with the essence-mine task + mining rock "essence". ' +
+        'Does one runecrafting trip. ' +
+        "It walks to the altar's Mysterious ruins, uses the talisman on them (no tiaras in this revision), " +
+        'binds every rune essence at the altar (Craft-rune; one action for the whole stack), and leaves by the temple portal. ' +
+        'Done once the essence is crafted and the bot is back outside by the ruins. Started inside the temple with no essence (a plan ended in the altar), it just leaves and is done. ' +
         'Runes stack: they take one inventory slot per type.',
+    rules: [
+        `The base Runecraft level must reach the altar's: ${ALTAR_NAMES.map(n => `${n} ${ALTARS[n].level}`).join(', ')}.`,
+        `Needs rune essence held (get it with the essence-mine task and the mining task, rock "essence") and the altar's talisman in the inventory, which opens the ruins (${ALTAR_NAMES.map(n => ALTARS[n].talisman).join(', ')}); started inside the altar's temple it needs neither.`,
+        'Refuses to start in the Rune Essence Mine (leave it first with the essence-mine task, action "leave") or at ruins in the Wilderness.',
+    ],
+    spots: [`Ruins: ${ALTAR_NAMES.map(n => `${n} (${ALTARS[n].ruins.x},${ALTARS[n].ruins.z})`).join(', ')}.`],
     params: Params,
     memory: (): RunecraftMemory => ({ crafted: false, leaveOnly: false }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

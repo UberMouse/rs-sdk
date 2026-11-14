@@ -21,7 +21,7 @@ import {
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, type Outcome, wait } from '../core/op';
 import { AreaSchema, refuseArea, returnToAreaStep } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -46,12 +46,21 @@ export const ATTEMPT_SILENT_TICKS = STATION_WALK_TICKS + OP_MAX_TICKS;
 const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
 
 const Params = z.object({
-    /** Pottery product: "pot", "pie dish" or "bowl". */
-    product: z.enum(POTTERY_PRODUCTS).default('pot'),
-    /** Also fire the unfired product in a pottery oven (more XP, no level needed); false stops at the unfired item. */
-    fire: z.boolean().default(true),
-    /** Stay near the wheel and oven; walk back when further than `radius`. */
-    area: AreaSchema.optional(),
+    product: z
+        .enum(POTTERY_PRODUCTS)
+        .default('pot')
+        .describe(
+            `The pottery item to shape, with the base Crafting level it needs: ${POTTERY_PRODUCTS.map(p => `"${p}" ${POTTERY[p].level}`).join(', ')}.`,
+        ),
+    fire: z
+        .boolean()
+        .default(true)
+        .describe(
+            'Also fire the unfired product in a pottery oven (more XP, no level needed; the product sometimes cracks); false stops at the unfired item.',
+        ),
+    area: AreaSchema.optional().describe(
+        'Centre it on the wheel and oven: the bot stays near them and walks back when further than `radius`. Omit to work where it stands.',
+    ),
 });
 
 type CraftParams = z.infer<typeof Params>;
@@ -122,15 +131,20 @@ function* workAtStation(ctx: Ctx, w: StationWork): Op<Outcome> {
 export default defineTask({
     name: 'crafting',
     description:
-        'Crafting by pottery. Works the inventory down: soft clay is shaped on a potter\'s wheel into `product` ("pot" level 1, ' +
-        '"pie dish" level 7, "bowl" level 8) one by one, any clay with a bucket, jug or bowl of water is first softened, ' +
-        'and with `fire` (default true) the unfired products are fired in a pottery oven (cracks sometimes). ' +
-        'Stops when no soft clay, softenable clay or unfired product is left. Needs the Crafting level for the product ' +
-        'and the wheel (and, to fire, the oven) within reach: `area` centres on them and it walks there when far away. ' +
-        'Known spot: Barbarian Village wheels (3087,3409) and oven (3084,3407), ground floor, no gate. ' +
-        'Materials come from elsewhere: clay is mined (Varrock south-east mine (3180,3372), Rimmington (2986,3239)), ' +
-        'water from a well or fountain (bucket from the Lumbridge General Store, 2 gp). Each soften uses up one ' +
-        'filled container, so bring one per clay. Does not use the spinning wheel, leather or gems.',
+        "Shapes soft clay into `product` on a potter's wheel, one by one. " +
+        'Any clay with a bucket, jug or bowl of water is first softened, and with `fire` the unfired products are fired in a pottery oven. ' +
+        'Stops when no soft clay, softenable clay or unfired product is left. ' +
+        `${UNDER_ATTACK_NOTE} ` +
+        'Does not use the spinning wheel, leather or gems.',
+    rules: [
+        'Needs the Crafting level for the product and the wheel within reach, but only when something is left to shape (soft clay, or clay with water); to fire, it needs the oven within reach. With `area` it walks there when far away; without it the wheel and oven must already be reachable nearby, or it refuses.',
+        'Each soften uses up one filled water container (bucket, jug or bowl of water), so bring one per clay.',
+        'Refuses when there is nothing to craft: no soft clay, no clay with water and, with `fire`, no unfired product.',
+    ],
+    spots: [
+        'Barbarian Village wheels (3087,3409) and oven (3084,3407), ground floor, no gate.',
+        'Clay is mined at the Varrock south-east mine (3180,3372) and at Rimmington (2986,3239); water comes from a well or fountain, and a bucket from the Lumbridge General Store for 2 gp.',
+    ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,

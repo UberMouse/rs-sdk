@@ -18,7 +18,7 @@ import { errMessage, fileStamp } from './util';
 
 export const USAGE = `usage: bun conductor/run-task.ts <bot> <task> [--params '<json>'] [--until level:<skill>:<n>|xp:<skill>:<n>|minutes:<n>]... [--takeover]
        bun conductor/run-task.ts <bot> --plan <file> [--until ...]... [--takeover]
-       bun conductor/run-task.ts --list
+       bun conductor/run-task.ts --list [<task>... | --all]
   --objective <title> --journal <abs path> (given together): when the run ends, append its journal line
   (kind run: task, command, result, a verdict from status and reason) to that file; nothing if it never ran`;
 

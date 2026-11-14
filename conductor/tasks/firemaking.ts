@@ -41,19 +41,19 @@ const LINE_WALK_FAIL_LIMIT = 3;
 /** One light plus the walk back to an area can exceed the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
+/** The client reports nearby locs (fires) only this far (Chebyshev) from the player; a tile further out may hold an unseen fire. */
+const SCAN_RADIUS = 15;
+
 const Params = z.object({
-    /** Exact item name of the logs to burn. */
-    logs: z.string().default('Logs'),
-    /** Burn near here; walk back when further than `radius`. Lines are picked only inside it. */
-    area: AreaSchema,
+    logs: z.string().default('Logs').describe('The logs to burn, by exact item name (whole name, case-insensitive).'),
+    area: AreaSchema.describe(
+        `Where to burn: the bot stays within \`radius\` of this centre and walks back when further, and lines are picked only on tiles inside it within ${SCAN_RADIUS} of the bot, as far as the client reports fires. Pick open ground: narrow paths between walls fit only a few fires.`,
+    ),
 });
 
 type FiremakingParams = z.infer<typeof Params>;
 
 const hasTinderbox = (state: BotWorldState) => state.inventory.some(i => TINDERBOX.test(i.name));
-
-/** The client reports nearby locs (fires) only this far (Chebyshev) from the player; a tile further out may hold an unseen fire. */
-const SCAN_RADIUS = 15;
 
 const key = (x: number, tileZ: number) => `${x},${tileZ}`;
 
@@ -131,13 +131,17 @@ export function pickLine(ctx: Ctx, logs: number): Line | null {
 export default defineTask({
     name: 'firemaking',
     description:
-        'Light logs from the inventory with a tinderbox until none of the given log type are left. ' +
-        'Needs a tinderbox, the logs (exact item name, default "Logs") and the Firemaking level for them. ' +
-        'Each light moves the bot one tile west, so it first picks a line inside `area` of clear tiles running east to west ' +
-        '(walkable per the collision data, no fire or other loc, no ground item, and the step west between each two tiles open: no wall or fence on the edge), long enough for the logs held, and burns along it; ' +
-        'when the line is used up, or a tile refuses a fire, it picks a fresh line, and fails when no line is left in the area, when line starts are unreachable, or when lights keep failing. ' +
-        'Requires `area`: it stays within `radius` of that centre (lines are picked only on tiles within 15 of the bot, as far as the client reports fires), so pick open ground; narrow paths between walls fit only a few fires. ' +
-        'Verified spot: area {x:3230,z:3240,radius:6} (field east of the Lumbridge General Store).',
+        'Lights logs from the inventory with a tinderbox until none of the given log type are left. ' +
+        'Each light moves the bot one tile west, so it first picks a line inside `area` of clear tiles running east to west, long enough for the logs held, and burns along it; ' +
+        'when the line is used up, or a tile refuses a fire, it picks a fresh line. ' +
+        'Fails when no line is left in the area, when line starts are unreachable, or when lights keep failing.',
+    rules: [
+        `Needs a tinderbox, the logs and the base Firemaking level for them: ${Object.entries(LOG_LEVELS)
+            .map(([logs, level]) => `${logs} ${level}`)
+            .join(', ')}. Any other log type is refused.`,
+        'A line tile must be walkable per the collision data, hold no fire or other loc and no ground item, and the step west between each two tiles must be open (no wall or fence on the edge).',
+    ],
+    spots: ['`area` {x:3230,z:3240,radius:6}: the field east of the Lumbridge General Store.'],
     params: Params,
     memory: (): Mem => ({ line: null, bad: new Set(), lit: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

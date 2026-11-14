@@ -4,7 +4,7 @@ import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { FILL_WAIT_TICKS, fillContainer } from '../actions/fill';
 import { log } from '../core/op';
 import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
-import { underAttackGuard } from '../lib/interrupts';
+import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -35,10 +35,12 @@ export const ATTEMPT_SILENT_TICKS = SOURCE_WALK_TICKS + FILL_WAIT_TICKS;
 const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
 
 const Params = z.object({
-    /** What to fill: "Bucket", "Jug", "Bowl" or "Vial". */
-    container: Containers.default('Bucket'),
-    /** Stay near the water source; walk there when far away. Omit to use one already in view. */
-    area: AreaSchema.optional(),
+    container: Containers.default('Bucket').describe(
+        'The kind of empty container to fill. A Fountain or Sink fills any of them, a Well only a Bucket.',
+    ),
+    area: AreaSchema.optional().describe(
+        'Where the water source is: the bot walks to it and only sources inside it are used. Without it the bot uses a source already in view.',
+    ),
 });
 
 type FillParams = z.infer<typeof Params>;
@@ -66,12 +68,16 @@ function usable(params: FillParams, skipped: string[]): (loc: NearbyLoc) => bool
 export default defineTask({
     name: 'fill',
     description:
-        'Fills every empty `container` ("Bucket" default, "Jug", "Bowl" or "Vial") in the inventory with water, one use at a time, ' +
-        'at a Fountain, Sink or (buckets only) Well in view; done when no empty one is left. `area` walks to the source first ' +
-        'and keeps to it. Feeds the crafting task, which softens clay with a bucket, jug or bowl of water (one per clay). ' +
-        "Known sources by the Barbarian Village potter's wheel (3087,3409): none in the village; " +
-        'nearest are the Falador park fountain (3038,3353), the Varrock sink (3146,3451) and the Varrock fountains (3190,3468); ' +
-        'in Lumbridge the castle fountain (3221,3210) and sink (3205,3215), well (3142,3208).',
+        'Fills empty containers with water. ' +
+        'It fills every empty `container` in the inventory, one use at a time, at a Fountain, Sink or Well; done when no empty one is left. ' +
+        `${UNDER_ATTACK_NOTE} ` +
+        'Refuses areas reaching the Wilderness.',
+    rules: ['The inventory must hold an empty `container`.'],
+    spots: [
+        'Used by the crafting task, which softens clay with a bucket, jug or bowl of water (one per clay).',
+        "Known sources by the Barbarian Village potter's wheel (3087,3409): none in the village; nearest are the Falador park fountain (3038,3353), the Varrock sink (3146,3451) and the Varrock fountains (3190,3468).",
+        'In Lumbridge: the castle fountain (3221,3210), sink (3205,3215) and well (3142,3208).',
+    ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
     stuckAfterMs: STUCK_AFTER_MS,

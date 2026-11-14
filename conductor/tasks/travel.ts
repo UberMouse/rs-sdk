@@ -22,31 +22,56 @@ const WAYPOINT_TOLERANCE = 4;
 /** Standing this close to the gate's stand tile the gate is opened. */
 const GATE_STAND_TOLERANCE = 2;
 
-const Point = z.object({ x: z.number(), z: z.number() });
+const Point = z.object({
+    x: z.number().describe('World tile x coordinate.'),
+    z: z.number().describe('World tile z coordinate (north).'),
+});
 const Params = z.object({
-    /** The destination. `level` defaults to the bot's own (0 across the surface/underground divide). */
-    to: Point.extend({ level: z.number().int().optional() }),
-    /**
-     * Requirement tokens for every walk of the trip; see AtSchema.met in lib/spot.ts for what they are and examples.
-     */
-    met: z.array(z.string()).default([]),
-    /** Tiles from `to` that count as arrived. */
-    tolerance: z.number().int().min(1).default(3),
-    /** Points to pass in order before `to` (to keep to a safe road, or to cross a stretch the route finder cannot). */
-    waypoints: z.array(Point).default([]),
-    /**
-     * Run from a fight: the task may start in combat (every other task refuses to), walks without
-     * stopping for the attack, and is done only once out of combat at `to`.
-     */
-    flee: z.boolean().default(false),
-    /**
-     * Opt in to the Wilderness: `to` and the waypoints may lie in it and the Wilderness guard stands down
-     * (death still ends the run). Needs `minFood` food to start; it eats at low HP and, with no food left
-     * in a fight or still losing HP, the low-hp guard fails the run rather than walking on to die.
-     */
-    wilderness: z.boolean().default(false),
-    /** Food items (anything with an Eat option) a `wilderness` run must carry to start (at least 1 whatever is set). */
-    minFood: z.number().int().min(0).default(WILDERNESS_MIN_FOOD),
+    to: Point.extend({
+        level: z
+            .number()
+            .int()
+            .optional()
+            .describe("The floor; defaults to the bot's own (0 across the surface/underground divide)."),
+    }).describe('The destination.'),
+    met: z
+        .array(z.string())
+        .default([])
+        .describe(
+            'Requirement tokens the plan knows the account meets that the state does not show, for every walk of the trip ' +
+                '(e.g. `quest:priestperil>=4` for the Priest in Peril temple door, which the walk plans through only with it); ' +
+                'the same tokens as `met` on a spot (lib/spot.ts).',
+        ),
+    tolerance: z.number().int().min(1).default(3).describe('Tiles from `to` that count as arrived.'),
+    waypoints: z
+        .array(Point)
+        .default([])
+        .describe(
+            'Points to pass in order before `to`: to keep to a safe road (e.g. north of z 3240 past the Draynor dark ' +
+                'wizards), or to cross a stretch the route finder cannot.',
+        ),
+    flee: z
+        .boolean()
+        .default(false)
+        .describe(
+            'Run from a fight: the task may start in combat (every other task refuses to) and is done only once out of ' +
+                'combat at `to`. In combat at low HP with no food held it keeps walking instead of failing (out of combat ' +
+                'it still rests to regenerate).',
+        ),
+    wilderness: z
+        .boolean()
+        .default(false)
+        .describe(
+            'Opt in to the Wilderness: `to` and the waypoints may lie in it, and the Wilderness guard stands down (death still ends the run).',
+        ),
+    minFood: z
+        .number()
+        .int()
+        .min(0)
+        .default(WILDERNESS_MIN_FOOD)
+        .describe(
+            'Food items (anything with an Eat option) a `wilderness` run must carry to start; at least 1 whatever this is set to.',
+        ),
 });
 
 type TravelParams = z.infer<typeof Params>;
@@ -102,16 +127,24 @@ const waypointsLeft = (ctx: Ctx) => ctx.params.waypoints.slice(ctx.memory.nextWa
 export default defineTask({
     name: 'travel',
     description:
-        'Walk to a point `to` {x,z,level?} within `tolerance` (default 3) tiles, optionally through `waypoints` [{x,z}] first ' +
-        '(a safe road, e.g. north of z 3240 past the Draynor dark wizards). Uses the walkTo op, so it opens the doors and gates ' +
-        "on its route and climbs the stairs, ladders and trapdoors of lib/connectors.ts (including the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar, Glarial's tomb (its ladder out only: a pebble move enters it)); `met` [tokens] names requirements the plan knows the account meets that the state does not show (e.g. `quest:priestperil>=4` for the Priest in Peril temple door, which the walk plans through only with it); it never enters the Wilderness unless `wilderness: true` (then `to` may be inside it, e.g. the Wilderness agility course door 2998,3915 from Edgeville; needs `minFood` (default 3, at least 1) food items to start, eats at low HP, and the low-hp guard fails the run when low in a fight with no food (except with `flee`, which walks on); death still ends it; walking is not stopped by attacks, so skeletons and wolves en route cost HP, not the run; carry only food and no valuables: a PvP or skeleton death loses the inventory). A destination inside the Gnome " +
-        'Stronghold (the agility course start 2474,3436) goes via its entrance gate at 2459,3383, opened here ' +
-        "(declining Femi's boxes dialog once). Far trips take several walks (Lumbridge to the Gnome Stronghold is about 700 tiles). " +
-        'CARRY FOOD (a dozen or more) for long trips: the route from Lumbridge to the Gnome Stronghold crosses White Wolf Mountain, ' +
-        'where wolves attack and cost HP; it eats at low HP, and with no food the low-hp guard fails the run. ' +
-        'With `flee: true` it also starts while in combat (the way out of a fight no other task will start in), walks on ' +
-        'without stopping for the attack, eats held food at low HP, and is done only once out of combat at `to`. In combat at low HP with no food held it keeps walking (the low-hp guard does not end a flee run; out of combat it still rests to regenerate); death still ends it. ' +
-        'Fails where the route breaks: no path, a locked gate, or three failed walks in a row.',
+        'Walks to `to`, through `waypoints` first. Uses walkTo, so it opens the doors and gates on its route and ' +
+        'climbs the stairs, ladders and trapdoors in the connectors table of known shortcuts, quest dungeons included. ' +
+        `A destination inside the Gnome Stronghold goes via its entrance gate at ${GNOME_GATE.loc.x},${GNOME_GATE.loc.z}, opened here ` +
+        "(declining Femi's boxes dialog once). Far trips take several walks. Attacks do not stop the walk, so " +
+        "monsters en route cost HP, not the run; it eats held food at low HP, and with none the engine's low-HP guard, which ends the " +
+        'run when HP is low, fails it when low in a fight or still losing HP (except with `flee`); death still ends it. Done within `tolerance` of `to` (with ' +
+        `\`flee\`, once out of combat there, failing if still in combat after ${FLEE_SETTLE_LOOPS} ticks). Fails where ` +
+        `the route breaks: no path, a locked gate, or ${WALK_FAIL_LIMIT} failed walks in a row. Never enters the ` +
+        'Wilderness unless `wilderness: true`.',
+    rules: ['Without `wilderness: true`, `to` and every waypoint must lie outside the Wilderness.'],
+    spots: [
+        "The Gnome Stronghold's agility course start is {x:2474,z:3436}; the route from Lumbridge (about 700 tiles) " +
+            'crosses White Wolf Mountain, where wolves attack and cost HP.',
+        "The connectors cover the quest dungeons: the Paterdomus mausoleum, the Tree Gnome Village cellar and Glarial's tomb (its ladder out only: a pebble move enters it).",
+        'On any long trip carry food (a dozen or more): monsters en route cost HP.',
+        'Wilderness agility course door {x:2998,z:3915} from Edgeville, with `wilderness: true`; skeletons and wolves en ' +
+            'route cost HP. Carry only food and no valuables: a PvP or skeleton death loses the inventory.',
+    ],
     params: Params,
     memory: (): TravelMemory => ({ nextWaypoint: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

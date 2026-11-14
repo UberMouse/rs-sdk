@@ -2,6 +2,7 @@ import { z } from 'zod/v4';
 import { Spells } from '../../sdk/spells';
 import { CAST_ITEM_WAIT_TICKS, castOnItem } from '../actions/cast-item';
 import { log } from '../core/op';
+import { PATTERN_NOTE } from '../lib/spot';
 import { defineTask, type TaskContext } from '../lib/task';
 import { findSkill } from '../lib/util';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
@@ -58,11 +59,20 @@ const SPELL_NAMES = [
 ] as const;
 
 const Params = z.object({
-    spell: z.enum(SPELL_NAMES),
-    /** Regular expression (case-insensitive) matched against inventory item names, e.g. "^iron ore$". */
-    item: regexSource,
-    /** Stop after this many casts; omit to cast until no matching item is left. */
-    count: z.number().int().positive().optional(),
+    spell: z
+        .enum(SPELL_NAMES)
+        .describe(
+            `The spell to cast, with the base Magic level it needs: ${SPELL_NAMES.map(n => `${n} (${SPELLS[n].name}) ${SPELLS[n].level}`).join(', ')}.`,
+        ),
+    item: regexSource.describe(
+        `The inventory items to cast on, matched against their names, e.g. "^iron ore$". ${PATTERN_NOTE} Coins and runes are never a target, whatever it matches.`,
+    ),
+    count: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe('Stop after this many casts; omit to cast until no matching item is left.'),
 });
 
 type SpellParams = z.infer<typeof Params>;
@@ -81,12 +91,14 @@ const itemsLeft = (ctx: Ctx) => ctx.state().inventory.filter(i => isTarget(ctx, 
 export default defineTask({
     name: 'spell-items',
     description:
-        'Cast one spell on inventory items again and again: `spell` superheat | low-alchemy | high-alchemy | enchant-1..5, ' +
-        '`item` a regex on item names (e.g. "^iron ore$"), `count` optional (default: until no matching item is left). ' +
-        'Never targets coins or runes. Needs the Magic level and the runes in the inventory (a worn Staff of fire stands in for fire runes). ' +
-        'Superheat Item on iron ore never fails and pays Smithing XP and Magic XP per cast (with 2+ coal held and Smithing 30+ it makes steel instead and uses up 2 coal per cast, so do not carry coal unless steel is wanted); ' +
-        'it needs Magic 43, 1 nature rune and 4 fire runes per cast. It does not bank or fetch more: ends done when the items or the count run out, ' +
-        'fails when runes run out or the server refuses ("You need..."). Stays where the bot stands.',
+        'Casts one spell on inventory items again and again, until the items or the count run out. ' +
+        'It does not bank or fetch more, and stays where the bot stands. ' +
+        'Fails when runes run out or the server refuses ("You need...").',
+    rules: [
+        'Needs the Magic level for the spell and its runes in the inventory (a worn Staff of fire stands in for fire runes); refuses when no inventory item matches `item`.',
+        'Superheat Item on iron ore never fails and pays Smithing XP and Magic XP per cast; it needs 1 nature rune and 4 fire runes per cast.',
+        'With 2+ coal held and Smithing 30+, superheating iron ore makes steel instead and uses up 2 coal per cast, so do not carry coal unless steel is wanted.',
+    ],
     params: Params,
     memory: (): SpellMemory => ({ casts: 0 }),
     stuckAfterMs: STUCK_AFTER_MS,

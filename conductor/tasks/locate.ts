@@ -4,7 +4,7 @@ import { messageCursor, messageSince } from '../actions/messages';
 import { ROUTE_TOO_LONG, timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, wait } from '../core/op';
 import { AreaSchema, type Area, refuseArea, returnToAreaStep } from '../lib/area';
-import { ItemSpec, itemLabel, itemMatches, matcher, missingItem, Pattern } from '../lib/spot';
+import { ItemSpec, itemLabel, itemMatches, matcher, missingItem, patternParam } from '../lib/spot';
 import { defineTask } from '../lib/task';
 import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
@@ -35,29 +35,42 @@ const MIN_STEP = 1;
 export const COMPASS_HINT = '\\b(?:north-?east|north-?west|south-?east|south-?west|north|south|east|west)\\b';
 
 const Params = z.object({
-    /** The inventory item whose option prints the hint (name regex or `{ id }`): the Hunters' talisman. */
-    item: ItemSpec,
-    /** The item option that asks for a hint (regex on the option text): "Locate". */
-    option: Pattern,
-    /** A game message carrying a compass word (north, south-east, ...): the direction to walk. */
-    hint: Pattern.default(COMPASS_HINT),
-    /** A game message that ends the run done: the target is found ("The Draugen is here"). */
-    stop: Pattern,
-    /**
-     * A game message saying the thing hunted moved off and the hint now points at a new one ("moved elsewhere"):
-     * the step sizes start over. Without this match no relocation is noticed.
-     */
-    moved: Pattern.default('moved elsewhere'),
-    /** An NPC name regex; the run is done as soon as one stands in view (checked before each locate). */
-    target: Pattern.optional(),
-    /** Tiles walked per hop along each compass axis at most; an axis whose direction flips halves its step (to 1), the same direction twice doubles it back. */
-    step: z.number().int().min(MIN_STEP).max(30).default(8),
-    /** Stay inside this area: a hop is clipped to it, and a hint that points out of it fails the run. */
-    area: AreaSchema.optional(),
-    /** Locate-and-walk hops before the run fails: the hints did not converge. */
-    maxHops: z.number().int().min(1).default(60),
-    /** Times the hunted thing may move off (see `moved`) before the run fails. */
-    maxRelocations: z.number().int().min(0).default(6),
+    item: ItemSpec.describe(
+        "The inventory item whose option prints the hint (a name or `{ id }`): the Hunters' talisman.",
+    ),
+    option: patternParam('The item option that asks for a hint, by its text: "Locate".'),
+    hint: patternParam(
+        'A game message carrying a compass word (north, south-east, ...; +z is north): the direction to walk.',
+    ).default(COMPASS_HINT),
+    stop: patternParam('A game message that ends the run done: the target is found ("The Draugen is here").'),
+    moved: patternParam(
+        'A game message saying the thing hunted moved off and the hint now points at a new one (the server re-locates it by itself): the step sizes start over. Without this match no relocation is noticed.',
+    ).default('moved elsewhere'),
+    target: patternParam(
+        "An NPC name; the run is done as soon as one stands in view (checked before each locate), even if it is another hunter's.",
+    ).optional(),
+    step: z
+        .number()
+        .int()
+        .min(MIN_STEP)
+        .max(30)
+        .default(8)
+        .describe('Tiles walked per hop along each compass axis at most.'),
+    area: AreaSchema.optional().describe(
+        'Stay inside this area: a hop is clipped to it, and a hint that points out of it fails the run. Pass one: without it a hunt can wander far.',
+    ),
+    maxHops: z
+        .number()
+        .int()
+        .min(1)
+        .default(60)
+        .describe('Locate-and-walk hops before the run fails: the hints did not converge.'),
+    maxRelocations: z
+        .number()
+        .int()
+        .min(0)
+        .default(6)
+        .describe('Times the hunted thing may move off (see `moved`) before the run fails.'),
 });
 
 type LocateParams = z.infer<typeof Params>;
@@ -104,14 +117,17 @@ const startOver = (m: LocateMemory, step: number) => {
 export default defineTask({
     name: 'locate',
     description:
-        'Follows an item\'s compass hints to a moving target. Each hop uses the item\'s option (`option`, e.g. "Locate"), reads the ' +
-        'game message it prints, and walks `step` tiles that way (north/south/east/west/north-east/... by `hint`, +z is north), then asks again; ' +
-        'done once a message matching `stop` appears, or an NPC matching `target` is in view. An axis whose direction flips between hints halves its step (down to 1) and the same direction twice doubles it back, a diagonal hop whose tile is blocked is tried along one axis, ' +
-        'so the walk closes in on the target instead of circling it. A hop is clipped to `area` (centre, radius), and a hint pointing out of it fails the run; ' +
-        'it fails after `maxHops` hops (the hints do not converge), `maxRelocations` times the thing hunted moved off (message `moved`; the server then re-locates by itself), ' +
-        "or three locates with no hint. Needs the item held. Verified: the Fremennik Trials Hunters' talisman near Rellekka (Sigli): " +
-        '{"item":"^Hunters\' talisman$","option":"^Locate$","stop":"Draugen is here","target":"^The Draugen$","area":{"x":2690,"z":3620,"radius":70}}, ' +
-        'then run `combat` on "The Draugen" (wiki/quests/fremennik-trials.md). Pass an `area`: without one a hunt can wander far. Threats on the way are left to the engine guards. A `target` already in view ends the run done, even if it is another hunter\'s. Refuses an area reaching the Wilderness.',
+        "Follows an item's compass hints to a moving target: each hop uses the item's option, reads the game message " +
+        'it prints, walks up to `step` tiles that way, then asks again. Done once a message matching `stop` appears, ' +
+        'or an NPC matching `target` is in view. An axis whose direction flips between hints halves its step (down to ' +
+        '1) and the same direction twice doubles it back, and a diagonal hop whose tile is blocked is tried along one ' +
+        'axis, so the walk closes in on the target instead of circling it. Fails after `maxHops` hops, `maxRelocations` ' +
+        `moves of the thing hunted, a hint pointing out of \`area\`, or ${LOCATE_FAIL_LIMIT} locates in a row with no ` +
+        'hint. Threats on the way are left to the engine guards. Refuses an area reaching the Wilderness.',
+    rules: ['Needs `item` held at the start.'],
+    spots: [
+        'Verified: the Fremennik Trials Hunters\' talisman near Rellekka (Sigli): {"item":"^Hunters\' talisman$","option":"^Locate$","stop":"Draugen is here","target":"^The Draugen$","area":{"x":2690,"z":3620,"radius":70}}, then run `combat` on "The Draugen" (wiki/quests/fremennik-trials.md).',
+    ],
     params: Params,
     memory: (): LocateMemory => ({ stepX: 0, stepZ: 0, last: null, relocations: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,

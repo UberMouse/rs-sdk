@@ -84,15 +84,30 @@ export const SILENT_STREAK_TICKS = [
 const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
-    /** Exact NPC name (case-insensitive), e.g. "Man", "Farmer". Must be in PICKPOCKET_LEVELS. */
-    npc: z.string().trim().min(1),
-    /** Where to work. Optional: without it, any matching NPC in view. */
-    area: AreaSchema.optional(),
-    /** Food item names to eat below `eatBelow` of max HP. */
-    food: z.array(z.string().trim()).default([]),
-    eatBelow: z.number().min(0.1).max(0.9).default(DEFAULT_EAT_BELOW),
-    /** End the run done once the inventory is full (coins stack, so this is mostly for seeds and loot). */
-    stopWhenFull: z.boolean().default(false),
+    npc: z
+        .string()
+        .trim()
+        .min(1)
+        .describe('The NPC to pickpocket, by exact name (case-insensitive), e.g. "Man", "Farmer".'),
+    area: AreaSchema.optional().describe(
+        'Where to work: only NPCs inside it are picked, and the bot walks back toward its centre when none is free. Without it, any matching NPC in view.',
+    ),
+    food: z
+        .array(z.string().trim())
+        .default([])
+        .describe('Food to eat when HP drops below `eatBelow`, by exact item name.'),
+    eatBelow: z
+        .number()
+        .min(0.1)
+        .max(0.9)
+        .default(DEFAULT_EAT_BELOW)
+        .describe(
+            'The fraction of max HP to eat `food` below; needs `food` held, and with none the bot waits for HP to regenerate instead.',
+        ),
+    stopWhenFull: z
+        .boolean()
+        .default(false)
+        .describe('End the run done once the inventory is full (coins stack, so this is mostly for seeds and loot).'),
 });
 
 type ThievingParams = z.infer<typeof Params>;
@@ -160,12 +175,20 @@ function* walkAndPick(ctx: Ctx, npc: NearbyNpc): Op<PickpocketResult> {
 export default defineTask({
     name: 'thieving',
     description:
-        'Pickpocket one kind of NPC (`npc`, exact name, e.g. "Man") repeating until stopped: picks the nearest ' +
-        'reachable one inside the optional `area`, waits out the 8-tick stun after a caught attempt (1 damage, ' +
-        '2 for warriors; the NPC does not fight back), eats optional `food` below `eatBelow` (with no food held it waits for HP to regenerate, and fails if it does not), and, when no free NPC is in the area, waits (walking back toward the area centre every so often) and fails after 100 looks (300 ticks). Loot (coins) accumulates; ' +
-        "`stopWhenFull` ends the run done on a full inventory. Refuses an NPC above the bot's Thieving level " +
-        '(Man/Woman 1, Farmer 10, Warrior 25, Guard 40...), areas reaching the Wilderness, and NPCs with no ' +
-        'pickpocket config. Verified spot: Men around Lumbridge castle (3222,3218, radius 6) at Thieving 1.',
+        'Pickpockets one kind of NPC, repeating until stopped. ' +
+        'It picks the nearest free, reachable one. The game stuns the bot for ' +
+        `${STUN_TICKS} ticks after a caught attempt (10 for a Hero) and the task waits ${STUN_TICKS + STUN_MARGIN_TICKS} ticks; a catch deals damage (1 for Man, Woman, Farmer and Gnome, ` +
+        '2 for warriors, rogues and guards, 3 for Knights, Watchmen and Paladins, 4 for a Hero); the NPC does not fight back. ' +
+        'Eats `food` when low; with no food held it waits ' +
+        'for HP to regenerate, and fails if it does not. When no free NPC is in the area it waits, and fails after ' +
+        `${NO_TARGET_LIMIT} looks (${NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS} ticks). Loot (coins) accumulates. ` +
+        'Refuses an NPC with no pickpocket config, one above the Thieving level, and an area reaching the Wilderness.',
+    rules: [
+        `The bot's base Thieving level must reach the NPC's: ${Object.entries(PICKPOCKET_LEVELS)
+            .map(([npc, level]) => `${npc} ${level}`)
+            .join(', ')}.`,
+    ],
+    spots: ['Men around Lumbridge castle: `area` {x:3222,z:3218,radius:6} at Thieving 1.'],
     params: Params,
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): ThievingMemory => ({ stunnedUntil: -Infinity, areaWatch: newAreaWatch() }),
