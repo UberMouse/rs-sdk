@@ -542,11 +542,18 @@ on its own.
   `lib/engine.ts`, `lib/task.ts`, `actions/walk.ts` and `context.ts`, the walking tasks (combat,
   smithing, shop, firemaking, `lib/area.ts`) and their tests; re-review the tasks.
 - **Plan-primitives follow-ups** (design: `conductor/docs/plan-primitives.md`):
-  - Quest layer: `defineQuest({ id, steps })` compiling to phases, replacing hand-built stage tracking in quest plans.
-  - Quest layer: a stage cursor from a step's `done` evidence and a persisted per-bot record. The
-    stage probe's spike is done (journal text reads from `state.interface.debugInfo` on the lite
-    client; the browser client would need `debugInfo` added; see `conductor/docs/plan-primitives.md`);
-    what remains is the `defineQuest` design with the cursor.
+  - Quest layer: done 2026-11-14 (`defineQuest`, `step`, the `journal` task; design `conductor/docs/quest-layer.md`, how-to
+    `conductor/docs/plans.md` Quests; `gertrudes-cat` converted and run live). Follow-ups:
+    - Convert the remaining quest plans as each is next run.
+    - Browser-client journal text: its `debugInfo` lists buttons only, so the journal read is lite-client only (a `server/webclient` change).
+    - Quest requirements (skills, other quests, items) declared once and checked from `lib/quests`.
+    - Step skeletons generated from a quest's `*_journal.rs2` script.
+    - Lite-client bug: `captureDialogToHistory` (`server/webclient/src/lite/actions.ts`) records a dialog page only when its chat
+      interface differs from the last one recorded, so a message box straight after another never reaches `recentDialogs` and a
+      task's `expect` cannot see it (`learnings/dialogs.md`); the fix is in `server/`, which conductor work does not change.
+    - A plan the idle rail ends with an unmet `until` reports status done ("plan until not met"), which reads wrongly for a quest
+      that did not finish.
+    - The wiki page for Gertrude's Cat is misspelt `wiki/quests/gertudes-cat.md`.
   - Audit: generate the task catalog text from the param schemas (`.describe()`), as `wait` does.
   - Audit: declared silent streaks in place of hand-summed `stuckAfterMs`; one streak-then-fail helper, `waitForRespawn` and eat step.
   - Audit: one name for the full-inventory policy param, and exact names against pattern sources.

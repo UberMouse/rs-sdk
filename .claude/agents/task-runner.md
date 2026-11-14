@@ -66,8 +66,7 @@ script walked the bot under attack and it died, 2026-10-11).
    notification is the result (retro #5: one runner spent ~28 wait-only turns and 9 `sleep; tail`
    check-ins over 45 min).
 5. Every training phase carries its own `until` on its level or XP target (`until: v => v.level('Mining') >= 99`):
-   a phase's `when` is only checked between phase runs, so a phase with none trains on past the goal (mining-wc-99
-   mined 25 of its 75 min past Mining 99, 2026-10-31).
+   a phase's `when` is only checked between phase runs, so a phase with none trains on past the goal.
 6. Every run carries `--objective '<objective>' --journal <abs journal path>` (run-task journals it
    itself), written out in full each time: the shell is zsh, which does not word-split `$J`, so flags
    held in a variable arrive as one argument (`unknown flag --objective…`, retro #7). After every RESULT, write your state file before any other command, and act on a
@@ -157,8 +156,7 @@ the first phase whose `when` holds runs next, so a plan chooses from the world s
 position in a list: it resumes correctly on any inventory. Put **consumers above producers** so
 the inventory drains before it refills. Gate errand and training phases on what the inventory
 **holds**, not on `runs()` counts: a training phase waits until everything it and its sibling
-phases need is held, so every errand in one town happens on one visit (a ranged phase that ran
-once the arrows were bought never bought the runes, same town, 2026-10-11). Banks are one
+phases need is held, so every errand in one town happens on one visit. Banks are one
 account-wide bank (`bank.inv`, `scope=perm`): bank at the booth nearest the route, never at a
 "bank holding" an item. Design: `conductor/docs/plans.md`. The reference is
 `conductor/plans/chop-burn.ts` (promoted, smoke-tested):
@@ -206,8 +204,7 @@ export default definePlan({
   the box with `COVER_MARGIN` (3) tiles to spare (`wiki/world/README.md`). Never take the site's
   centre and guess a radius. A tight area makes the bot stand waiting ("no ... spot available,
   waiting") while a target sits just outside it. A wide area only costs a few tiles of walking
-  (user, 2026-10-23). Catherby harpoon: radius 5 waited 275 s and then failed; the spots ranged
-  over x 2836-2860. When a run shows targets the world index doesn't list, say so under lessons
+  (user, 2026-10-23). Catherby harpoon: radius 5 waited 275 s, then failed. When a run shows targets the world index doesn't list, say so under lessons
   with the tiles.
 - The view `v`: `v.inv(item)` (pack; exact name, case-insensitive, or a RegExp), `v.held`/`v.worn`,
   `v.full`, `v.free`, `v.bank(item)` (as last seen open; `undefined` before),
@@ -219,10 +216,10 @@ export default definePlan({
   `v.ground` counts piles, not the items in one), `v.said(pattern, sinceTicks?)`,
   `v.questStarted(id)`, `v.state` (the rest). Predicates are pure: no I/O, clock or state.
   `requires` can spread `combatAtLeast(n)` and `levelAtLeast(skill, n)`.
-- A `when` that picks a processing phase tests that phase's own input, not a family of items (a
-  bowl phase gated on "anything unfired" also matched unfired pots, pottery-craft, 2026-10-11).
+- A `when` that picks a processing phase tests that phase's own input, not a family of items.
 - One-shot: `when: v => v.runs('withdraw') === 0`, ended by the plan's `until` (`v.runs('burn') > 0`).
-- A plan imports only `@conductor/lib/plan` and `@conductor/tasks/<task>`.
+- A plan imports only `@conductor/lib/plan` and `@conductor/tasks/<task>`; a quest plan also `@conductor/lib/quest`.
+- **A new quest plan is written with `defineQuest`** (steps in story order; `conductor/docs/plans.md` "Quests", example `conductor/plans/gertrudes-cat.ts`), not as a hand-built plan. Give a step `reached`, `done` or `skip` wherever the game shows it; one with none runs again after a restart, so it must be harmless to repeat. Journal wording comes from the quest's `*_journal.rs2` under `server/content/scripts/quests/`; check it against the plan log's `journal` events.
 - **Carry only what the plan uses.** Inventory slots are the plan's throughput: a leftover
   product from an earlier plan (arrow shafts, cooked fish not needed yet), a tool superseded by a
   better one (a bronze axe beside a steel axe) or a tool no phase uses (a pickaxe while fishing)
@@ -232,14 +229,13 @@ export default definePlan({
   constraints allow (logs, burnt food).
   A bank trip costs walking time: make one only when slots run out (or a restock is due), and
   bank everything then. A stackable product (coins, arrow shafts, runes) takes one slot however
-  many you hold, so it never justifies a trip (banking coins every 300 gp wasted a thieving run).
+  many you hold, so it never justifies a trip.
 - **Count slots before gating on an item count.** A phase that ends on `v.inv('X') >= N` needs
   N <= 28 minus every slot the pack holds then (food, tools, key, shield, Coins, what the
   phase's `loot` also picks up); write the sum in a plan comment, or end a loot phase on
-  `v.free === 0`. A gate the pack cannot meet runs to the `minutes` cap (herblore-druids,
-  2026-10-31: 10 herbs wanted, 19 slots held, 85 min for 9 herbs).
+  `v.free === 0`. A gate the pack cannot meet runs to the `minutes` cap.
 - **Kill rates come from XP, not steps.** kills = melee XP / (4 x target HP x 25); a
-  `stepRuns.fight` is not a kill (herblore-druids: 1,190 kills/h reported, ~450 true).
+  `stepRuns.fight` is not a kill.
 
 What ends a plan: no phase applies (`failed`, `no phase applies (last: <phase> <status>:
 <reason>)`; the plan log's `select` event shows what each phase's `when` and `until` answered), a
@@ -287,8 +283,7 @@ then journals the run itself when it ends.
   `bun conductor/run-task.ts <bot> <task> --params '<json>' --until ... --objective ... --journal ...`,
   is only for one errand outside any loop (buy a tool, walk to the plan's start), at most one
   between plans. Two plain runs in a row (a RESULT `hint` says so), or a task you have run before
-  toward this goal, mean the work repeats: stop and write the plan (smithing, travel, smithing,
-  bank, travel as plain runs instead of one smelt -> smith -> bank plan, 2026-10-11).
+  toward this goal, mean the work repeats: stop and write the plan.
 - The last stdout line is `RESULT <json>`, a plan's with `task: "plan:<name>"`, the plan totals,
   `phases` (per phase: `runs`, `statuses`, `durationMs`, `xpGained`, `lastReason`) and `recent`
   (the last 3 phase runs: `runId`, `logFile`, `status`, `reason`). Its `logFile` is the plan's

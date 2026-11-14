@@ -22,7 +22,8 @@ import {
     type PlanResult,
     type Predicate,
 } from '../../lib/plan';
-import { QUEST_TAB_REQUIRED } from '../../lib/quests';
+import { journalOf } from '../../lib/journal-memory';
+import { journalTitle, QUEST_TAB_REQUIRED, QUESTS } from '../../lib/quests';
 import { SETTLE_TICKS } from '../../lib/engine';
 import type { StopCondition } from '../../lib/stop';
 import { defineTask, type Outcome } from '../../lib/task';
@@ -31,6 +32,7 @@ import chopBurnPlan from '../../plans/chop-burn';
 import waitTask from '../../tasks/wait';
 import woodcutting from '../../tasks/woodcutting';
 import { act } from '../core/fixtures';
+import { withJournal } from '../journal';
 import { type PlanSimulation, simulatePlan, type SimulatePlanOptions } from '../simulate';
 import { LUMBRIDGE, world } from '../world';
 
@@ -213,6 +215,9 @@ function scripted(name: string, outcomes: Outcome[]) {
 }
 
 const failing = (name: string) => scripted(name, [{ fail: 'cannot' }]);
+
+/** An `observes` task that looks at nothing and ends done. */
+const glance = { ...scripted('glance', [{ done: 'looked' }]), observes: true as const };
 
 const plan = (phases: Phase[], until?: Predicate): PlanDef => definePlan({ name: 'test-plan', phases, until });
 
@@ -939,6 +944,13 @@ describe('rails', () => {
         expect(r.result).toMatchObject({ status: 'failed', reason: `${NO_PROGRESS}: a, b, a` });
     });
 
+    test('observes runs between idle runs leave the idle run as it was: the rail still ends the plan', async () => {
+        const looks = [phase(glance, {}, { when: v => v.runs('glance') < v.runs('a') + v.runs('b') }), ...handBack];
+        const r = await sim(plan(looks));
+        expect(selected(r)).toEqual(['a', 'glance', 'b', 'glance', 'a']);
+        expect(r.result).toMatchObject({ status: 'done', reason: `${NOTHING}: a, b done (try: nothing to do)` });
+    });
+
     test('retried failures that change nothing are left to maxFails, not the idle rail', async () => {
         const r = await sim(plan([phase(failing('a'), {}, { onFail: 'retry', maxFails: 5 })]));
         expect(selected(r)).toEqual(['a', 'a', 'a', 'a', 'a']);
@@ -994,6 +1006,19 @@ describe('rails', () => {
         const r = await sim(def, { timeline: guardEvery10, maxWaits: 3, maxIdlePhases: 9 });
         expect(r.result).toMatchObject({ status: 'done', reason: 'plan until met' });
         expect(selected(r)).toEqual(['wait', 'wait', 'b', 'wait', 'wait', 'b', 'wait', 'wait']);
+    });
+
+    test('an observes run between until-ended waits neither counts as one nor resets the count', async () => {
+        const def = plan([
+            phase(glance, {}, { when: v => v.runs('glance') < v.runs('wait') }),
+            phase(waitTask, { ticks: 50 }, { until: guardBeside }),
+        ]);
+        const r = await sim(def, { timeline: guardEvery10, maxWaits: 3 });
+        expect(selected(r)).toEqual(['wait', 'glance', 'wait', 'glance', 'wait']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'wait waited 3 times in a row with its until met each time',
+        });
     });
 
     test('waits that run their ticks out with nothing changed end the plan as the rail does', async () => {
@@ -2153,5 +2178,235 @@ describe('reward lumps outside a phase', () => {
         const r = await sim(plan([phase(failing('f'), {})]), { timeline: reward(1, 2) });
         expect(r.result.status).toBe('failed');
         expect(r.result.xpGained).toEqual({});
+    });
+});
+
+const RUNE = journalTitle(QUESTS.runemysteries!);
+
+/** `plant`, and a 'read journal' send showing the journal for one tick with the next of `pages` (the last repeating). */
+function journalPages(pages: string[][]) {
+    let read = 0;
+    return (action: BotAction): Effect | undefined => {
+        if (action.reason !== 'read journal') return plant(action);
+        const lines = pages[Math.min(read++, pages.length - 1)]!;
+        let shown = false;
+        return s => (shown ? s : ((shown = true), withJournal(s, RUNE, lines)));
+    };
+}
+
+/** An `observes` task that opens the journal and ends done once it shows. */
+const peek = defineTask({
+    name: 'peek',
+    description: 'plan test journal read',
+    params: z.object({}),
+    observes: true,
+    // It opens the journal on purpose.
+    allow: ['interface'],
+    steps: [
+        {
+            name: 'read',
+            when: () => true,
+            *run() {
+                yield* send(act('read journal'));
+                const w = yield* wait('the journal', s => journalOf(s) !== null, 5);
+                return w.kind === 'timeout' ? { fail: 'no journal' } : { done: 'read' };
+            },
+        },
+    ],
+});
+
+/** Idle phases a and b in turn, with a journal read (peek) after each, the journal showing `pages` in turn. */
+const idleWithReads = (pages: string[][]) =>
+    sim(
+        plan(
+            [
+                phase(peek, {}, { when: v => v.runs('peek') < v.runs('a') + v.runs('b') }),
+                phase(
+                    scripted('noop', [{ done: 'nothing to do' }]),
+                    {},
+                    { name: 'a', when: v => v.last?.phase !== 'a' },
+                ),
+                phase(scripted('noop', [{ done: 'nothing to do' }]), {}, { name: 'b' }),
+            ],
+            v => v.runs('a') + v.runs('b') >= 5,
+        ),
+        { react: journalPages(pages) },
+    );
+
+const journalEvents = (r: PlanSimulation) => r.events.filter(e => e.type === 'journal');
+
+describe('the journal memory and observes tasks', () => {
+    test("v.journalSays follows the quest's text as last seen in a phase run, joined across wrapped lines", async () => {
+        const pages = [
+            ['I need to find', 'the head wizard.'],
+            ['Sedridor wants me to take', 'the talisman.'],
+        ];
+        /** What each selection read: the first phase's `when` is asked at every one. */
+        const atSelection: unknown[] = [];
+        const inTrain: unknown[] = [];
+        const peekWhen = (v: PlanView) => {
+            atSelection.push([v.journalSays('runemysteries', /find the head/), journalOf(v.state)]);
+            return v.runs('peek') <= v.runs('train') && v.runs('peek') < 2;
+        };
+        const r = await sim(
+            plan(
+                [
+                    phase(peek, {}, { when: peekWhen }),
+                    phase(
+                        train,
+                        {},
+                        {
+                            when: v => (
+                                inTrain.push([
+                                    v.journalSays('runemysteries', /find the head/),
+                                    v.journalSays('runemysteries', /talisman/g),
+                                    v.journalSays('runemysteries', /talisman/g),
+                                ]),
+                                true
+                            ),
+                        },
+                    ),
+                ],
+                v => v.runs('train') >= 2,
+            ),
+            { react: journalPages(pages) },
+        );
+        expect(selected(r)).toEqual(['peek', 'train', 'peek', 'train']);
+        // The journal shows only during peek's runs: no selection reads it open.
+        expect(atSelection).toEqual([
+            [undefined, null],
+            [true, null],
+            [true, null],
+            [false, null],
+        ]);
+        expect(inTrain).toEqual([
+            [true, false, false],
+            [false, true, true],
+        ]);
+        expect(r.result.status).toBe('done');
+    });
+
+    test("a journal seen only in a state the phase's driver read reaches the memory", async () => {
+        // The phase's until ends it at tick 3, in a fight; the engine waits the fight out through the phase's driver
+        // alone (no external stop), and the journal shows at tick 6 of that wait only.
+        const timeline = BASE.series(20, (w, i) =>
+            i >= 3 && i < 9 ? w.player({ inCombat: true, lastDamageTick: i }) : w,
+        ).map((s, i) => (i === 6 ? withJournal(s, RUNE, ['seen in the fight']) : s));
+        const seen: unknown[] = [];
+        const r = await sim(
+            plan(
+                [
+                    phase(watch, {}, { when: v => v.runs('watch') < 1, until: v => v.state.tick >= 3 }),
+                    phase(train, {}, { when: v => (seen.push(v.journalSays('runemysteries', /in the fight/)), true) }),
+                ],
+                v => v.runs('train') >= 1,
+            ),
+            { timeline },
+        );
+        expect(stoppedAt(r)).toBe(3);
+        expect(settledAt(r)).toBe(9);
+        expect(seen).toEqual([true]);
+    });
+
+    test('an unknown quest id throws, as v.quest does', async () => {
+        const ids = await look(BASE.build(), v => [
+            thrown(() => v.journalSays('nope', /x/)),
+            thrown(() => v.journalAge('nope')),
+            v.journalSays('runemysteries', /x/),
+            v.journalAge('runemysteries'),
+        ]);
+        const unknown = 'unknown quest "nope"; see QUESTS in lib/quests.ts';
+        expect(ids).toEqual([unknown, unknown, undefined, undefined]);
+    });
+
+    test('v.journalAge is 0 after a read, rises by one per acting run and not for an observes run', async () => {
+        const ages: unknown[] = [];
+        const r = await sim(
+            plan(
+                [
+                    // Asked first at every selection, so it records the age each one reads.
+                    phase(peek, {}, { when: v => (ages.push(v.journalAge('runemysteries')), ages.length === 1) }),
+                    phase(glance, {}, { when: v => v.runs('glance') <= v.runs('train') }),
+                    phase(train, {}),
+                ],
+                v => v.runs('train') >= 2,
+            ),
+            { react: journalPages([['a line']]) },
+        );
+        expect(selected(r)).toEqual(['peek', 'glance', 'train', 'glance', 'train']);
+        expect(ages).toEqual([undefined, 0, 0, 1, 1]);
+    });
+
+    test("after an observes run v.last is the acting run before it, whose 'continue' skip still applies", async () => {
+        const lasts: unknown[] = [];
+        const r = await sim(
+            plan(
+                [
+                    phase(busy(), {}, { onFail: 'continue' }),
+                    phase(glance, {}, { when: v => v.runs('glance') < v.runs('primary') }),
+                    phase(train, {}, { when: v => (lasts.push([v.last, v.lastFailed('primary')]), true) }),
+                ],
+                v => v.runs('train') >= 1,
+            ),
+        );
+        expect(selected(r)).toEqual(['primary', 'glance', 'train']);
+        const checks = r.events.filter(e => e.type === 'select').map(e => (e.checks as Record<string, string>).primary);
+        expect(checks).toEqual(['chosen', 'skipped: failed last', 'skipped: failed last']);
+        expect(lasts).toEqual([[{ phase: 'primary', status: 'failed', reason: 'try: busy' }, true]]);
+        // The result's lastStep is the last phase run of any task.
+        expect(r.result.lastStep).toBe('train');
+    });
+
+    test('an observes run that saw the journal text change clears the idle run', async () => {
+        const moving = await idleWithReads([['one'], ['two'], ['three'], ['four'], ['five']]);
+        expect(selected(moving)).toEqual(['a', 'peek', 'b', 'peek', 'a', 'peek', 'b', 'peek', 'a']);
+        expect(moving.result).toMatchObject({ status: 'done', reason: 'plan until met' });
+        // The same text each time: no progress, and the rail ends the plan as without the reads.
+        const still = await idleWithReads([['one']]);
+        expect(selected(still)).toEqual(['a', 'peek', 'b', 'peek', 'a']);
+        expect(still.result.reason).toBe('nothing left to do: a, b done (try: nothing to do); plan until not met');
+    });
+
+    test('an observes phase whose when never goes false ends the plan failed after maxIdlePhases runs', async () => {
+        const r = await sim(plan([phase(glance, {})]));
+        expect(selected(r)).toEqual(['glance', 'glance', 'glance']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'glance looked 3 times in a row with no acting run between',
+        });
+        const longer = await sim(plan([phase(glance, {})]), { maxIdlePhases: 5 });
+        expect(selected(longer)).toHaveLength(5);
+    });
+
+    test('alternating observes phases are counted together', async () => {
+        const stare = { ...scripted('stare', [{ done: 'looked' }]), observes: true as const };
+        const r = await sim(
+            plan([phase(glance, {}, { when: v => v.runs('glance') <= v.runs('stare') }), phase(stare, {})]),
+        );
+        expect(selected(r)).toEqual(['glance', 'stare', 'glance']);
+        expect(r.result).toMatchObject({
+            status: 'failed',
+            reason: 'looked 3 times in a row across glance, stare with no acting run between',
+        });
+    });
+
+    test('an acting run between observes runs resets their count', async () => {
+        const r = await sim(
+            plan([phase(glance, {}, { when: v => v.runs('glance') < 2 || v.runs('train') >= 1 }), phase(train, {})]),
+        );
+        expect(selected(r)).toEqual(['glance', 'glance', 'train', 'glance', 'glance', 'glance']);
+        expect(r.result.reason).toBe('glance looked 3 times in a row with no acting run between');
+    });
+
+    test('the journal event is logged on the first sight and on a change only', async () => {
+        const r = await sim(
+            plan([phase(peek, {}), phase(train, {})], v => v.runs('peek') >= 3),
+            { react: journalPages([['one'], ['one'], ['two']]) },
+        );
+        expect(selected(r)).toEqual(['peek', 'peek', 'peek']);
+        expect(journalEvents(r)).toEqual([
+            { type: 'journal', quest: 'runemysteries', text: 'one', changed: false },
+            { type: 'journal', quest: 'runemysteries', text: 'two', changed: true },
+        ]);
     });
 });

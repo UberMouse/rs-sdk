@@ -63,6 +63,9 @@ among them 19 `no phase applies` and 18 preflight refusals.
 
 ## Next: the quest layer
 
+Built: see [`quest-layer.md`](quest-layer.md) (design) and `docs/plans.md` (Quests). The notes below
+are the audit that led to it.
+
 A quest is a linear story, and a plan is a priority list with no stage: the quest tab shows only
 none/started/done, since the server sends no quest varp. So quest plans are written finish-first and
 each reinvents stage tracking: held items, dialog-history patterns (23 plans read

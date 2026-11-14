@@ -156,6 +156,9 @@ inventory. A plan's `requires` names what it needs throughout; one that stops ho
 `failed`. Phase options (`when`, `until`, `onFail`, `maxFails`, `settle`), plan options
 (`defaults`, `settle`) and the `wait` task are in `docs/plans.md`. The reference is
 `conductor/plans/chop-burn.ts`.
+A quest is written with `defineQuest` (`conductor/lib/quest.ts`): steps in story order, the step the
+story is at found from the world and the quest's journal (read on the lite client only);
+`docs/plans.md` (Quests), example `conductor/plans/gertrudes-cat.ts`.
 
 ```bash
 bun conductor/run-task.ts conductor1 --plan conductor/plans/chop-burn.ts --until minutes:5

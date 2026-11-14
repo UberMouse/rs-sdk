@@ -34,6 +34,11 @@ export interface QuestInfo {
     completeSource: string;
     /** A quirk of the source, if any. */
     note?: string;
+    /**
+     * The journal's title where it differs from `name`: the name the quest's journal script passes to
+     * `~quest_journal` (`questlist:<id>`'s if_button script), which the journal shows in its title component.
+     */
+    journalTitle?: string;
 }
 
 const QUESTS_RS2 = 'server/content/scripts/general/scripts/quests.rs2';
@@ -55,11 +60,16 @@ const q = (
     ...(note ? { note } : {}),
 });
 
+const journal = (info: QuestInfo, journalTitle: string): QuestInfo => ({ ...info, journalTitle });
+
 /** Every quest of the quest tab by id (the `questlist:<id>` component name of the content). */
 export const QUESTS: Readonly<Record<string, QuestInfo>> = {
-    runemysteries: q('Rune Mysteries Quest', 'runemysteries', 6, 306, 'general/configs/quest.constant:50'),
-    doric: q("Doric's Quest", 'doricquest', 100, 307, 'general/configs/quest.constant:17'),
-    cook: q("Cook's Assistant", 'cookquest', 2, 308, 'general/configs/quest.constant:12'),
+    runemysteries: journal(
+        q('Rune Mysteries Quest', 'runemysteries', 6, 306, 'general/configs/quest.constant:50'),
+        'Rune Mysteries',
+    ),
+    doric: journal(q("Doric's Quest", 'doricquest', 100, 307, 'general/configs/quest.constant:17'), "Dorics' Quest"),
+    cook: journal(q("Cook's Assistant", 'cookquest', 2, 308, 'general/configs/quest.constant:12'), "The Cook's Quest"),
     romeojuliet: q('Romeo & Juliet', 'rjquest', 100, 309, 'general/configs/quest.constant:49'),
     hetty: q("Witch's Potion", 'hetty', 3, 310, 'general/configs/quest.constant:33'),
     chompybird: q('Big Chompy Bird Hunting', 'chompybird', 65, 311, 'general/configs/quest.constant:10'),
@@ -71,7 +81,10 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
     sheep: q('Sheep Shearer', 'sheep', 22, 317, 'general/configs/quest.constant:53'),
     fluffs: q("Gertrude's Cat", 'fluffs', 6, 318, 'general/configs/quest.constant:25'),
     demon: q('Demon Slayer', 'demonstart', 30, 319, 'general/configs/quest.constant:15'),
-    prince: q('Prince Ali Rescue', 'princequest', 110, 320, 'general/configs/quest.constant:48'),
+    prince: journal(
+        q('Prince Ali Rescue', 'princequest', 110, 320, 'general/configs/quest.constant:48'),
+        'The Rescue Of Prince Ali',
+    ),
     fortress: q("Black Knight's Fortress", 'spy', 4, 321, 'general/configs/quest.constant:9'),
     haunted: q('Ernest the Chicken', 'haunted', 3, 322, 'general/configs/quest.constant:29'),
     hunt: q("Pirate's Treasure", 'hunt', 4, 323, 'general/configs/quest.constant:34'),
@@ -91,17 +104,20 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
         'the Phoenix Gang route (%phoenixgang, complete 10, quests.rs2:332) also colours this entry',
     ),
     elena: q('Plague City', 'elenaquest', 29, 336, 'general/configs/quest.constant:23'),
-    seaslug: q('Sea Slug Quest', 'seaslugquest', 12, 337, 'general/configs/quest.constant:52'),
+    seaslug: journal(q('Sea Slug Quest', 'seaslugquest', 12, 337, 'general/configs/quest.constant:52'), 'Sea Slug'),
     arthur: q("Merlin's Crystal", 'arthur', 7, 338, 'general/configs/quest.constant:4'),
     tree: q('Tree Gnome Village', 'treequest', 9, 339, 'general/configs/quest.constant:57'),
     waterfall: q('Waterfall Quest', 'waterfall_quest', 10, 340, 'general/configs/quest.constant:60'),
     grail: q('Holy Grail', 'grail', 10, 341, 'general/configs/quest.constant:27'),
     ball: q("Witch's House", 'ballquest', 7, 342, 'general/configs/quest.constant:5'),
     murder: q('Murder Mystery', 'murderquest', 2, 343, 'general/configs/quest.constant:45'),
-    itexam: q('Digsite Quest', '~itexam_progress', 9, 344, 'general/configs/quest.constant:38'),
+    itexam: journal(
+        q('Digsite Quest', '~itexam_progress', 9, 344, 'general/configs/quest.constant:38'),
+        'The Dig Site',
+    ),
     misc: q('Throne of Miscellania', 'misc_quest', 100, 345, 'general/configs/quest.constant:44'),
     hazeelcult: q('Hazeel Cult', 'hazeelcultquest', 9, 346, 'general/configs/quest.constant:31'),
-    hero: q("Hero's Quest", 'heroquest', 15, 347, 'general/configs/quest.constant:32'),
+    hero: journal(q("Hero's Quest", 'heroquest', 15, 347, 'general/configs/quest.constant:32'), "Heroes' Quest"),
     itgronigen: q('Observatory Quest', 'itgronigen', 7, 348, 'general/configs/quest.constant:39'),
     arena: q('Fight Arena', 'arenaquest', 14, 349, 'general/configs/quest.constant:3'),
     junglepotion: q('Jungle Potion', 'junglepotion', 12, 350, 'general/configs/quest.constant:41'),
@@ -121,9 +137,15 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
     ),
     zombiequeen: q('Shilo Village', 'zombiequeen', 15, 362, 'general/configs/quest.constant:62'),
     crest: q('Family Crest', 'crestquest', 11, 363, 'general/configs/quest.constant:13'),
-    desertrescue: q('The Tourist Trap', 'desertrescue', 30, 364, 'general/configs/quest.constant:16'),
+    desertrescue: journal(
+        q('The Tourist Trap', 'desertrescue', 30, 364, 'general/configs/quest.constant:16'),
+        'Tourist Trap',
+    ),
     itwatchtower: q('Watch Tower', 'itwatchtower', 13, 365, 'general/configs/quest.constant:40'),
-    legends: q('Legends Quest', 'legendsquest', 75, 366, 'general/configs/quest.constant:42'),
+    legends: journal(
+        q('Legends Quest', 'legendsquest', 75, 366, 'general/configs/quest.constant:42'),
+        'The Legends Quest',
+    ),
     elemental_workshop: q(
         'Elemental Workshop',
         'elemental_workshop_bits',
@@ -144,7 +166,10 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
         'quests/quest_troll_love/configs/quest_troll_love.constant:11',
     ),
     tbwt: q('Tai Bwo Wannai Trio', 'tbwt_main', 6, 373, 'general/configs/quest.constant:64'),
-    mortton: q('Shades of Mortton', 'morttonquest', 85, 374, 'general/configs/quest.constant:67'),
+    mortton: journal(
+        q('Shades of Mortton', 'morttonquest', 85, 374, 'general/configs/quest.constant:67'),
+        "Shades of Mort'ton",
+    ),
     regicide: q('Regicide', 'regicide_quest', 15, 375, 'general/configs/quest.constant:65'),
     viking: q('The Fremennik Trials', 'viking', 10, 376, 'general/configs/quest.constant:68'),
     horror: q('Horror from the Deep', 'horrorquest', 10, 377, 'general/configs/quest.constant:69'),
@@ -153,6 +178,14 @@ export const QUESTS: Readonly<Record<string, QuestInfo>> = {
     routequest: q('In Search of the Myreque', 'routequest', 105, 380, 'general/configs/quest.constant:70'),
     hauntedmine: q('Haunted Mine', 'hauntedmine', 11, 381, 'general/configs/quest.constant:30'),
 };
+
+/** The title a quest's journal shows. */
+export const journalTitle = (info: QuestInfo): string => info.journalTitle ?? info.name;
+
+const BY_JOURNAL_TITLE = new Map(Object.entries(QUESTS).map(([id, info]) => [journalTitle(info), id]));
+
+/** The id of the quest whose journal is titled `title`, or undefined. */
+export const questIdByJournalTitle = (title: string): string | undefined => BY_JOURNAL_TITLE.get(title);
 
 /** The least a channel holds when if_setcolour set it (it keeps 5 bits per channel: 0xF8 or 0x00). */
 const HIGH = 0x80;

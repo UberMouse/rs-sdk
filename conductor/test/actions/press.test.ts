@@ -34,6 +34,14 @@ describe('press: reading the interface', () => {
         expect(interfaceSays(base, /roll/)).toBeUndefined();
     });
 
+    test('a dump line whose text does not parse is skipped, the rest kept', () => {
+        const s = withDice(base, 'Your roll...');
+        const lines = s.interface.debugInfo ?? [];
+        const bad = '    #9999 type=4 btn=0 text="bad \\q escape"';
+        const mixed = { ...s, interface: { ...s.interface, debugInfo: [bad, ...lines] } };
+        expect([...interfaceTexts(mixed).values()]).toEqual(['', 'Your roll...']);
+    });
+
     test('a component name resolves to its interface and component ids', () => {
         expect(resolveComponent('death_dice:com_28')).toEqual({ interfaceId: 6675, componentId: ROLL_BUTTON });
         expect(resolveComponent('death_dice:com_9999')).toBeUndefined();

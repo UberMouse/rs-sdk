@@ -9,6 +9,7 @@
 // it close the anvil's smithing interface, which upstream would: the smith op owns that one.
 import type { BotAction, BotWorldState, DialogState } from '../../sdk/types';
 import { type Op, send, wait } from '../core/op';
+import { JOURNAL_INTERFACE } from '../lib/journal-memory';
 import { TICK_MS } from '../lib/util';
 import { COMBOLOCK_INTERFACES } from './combolock';
 import type { ActionContext } from './context';
@@ -47,12 +48,14 @@ export const DEATH_DICE_INTERFACE = 6675;
  * (leftoverModal, lib/engine.ts). The combination locks (combolockdoor, tribal_door2: actions/combolock.ts) are
  * opened by a door interaction and worked by the combolock task's solve step, which runs under withModal so every
  * exit path closes the lock; one left from a killed run is a leftoverModal, closed at the next run's start. Harold's
- * dice table is opened by the conversation the talk task drives and rolled in by its `press`, which closes it.
+ * dice table is opened by the conversation the talk task drives and rolled in by its `press`, which closes it. The
+ * quest journal is opened and closed by the journal task (tasks/journal.ts).
  */
 export const OP_OWNED_INTERFACES: ReadonlySet<number> = new Set([
     SMITHING_INTERFACE,
     DEATH_DICE_INTERFACE,
     ...COMBOLOCK_INTERFACES,
+    JOURNAL_INTERFACE,
 ]);
 
 /**

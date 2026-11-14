@@ -174,6 +174,16 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
      * that its phase's `until` ended out of the idle rail (runPlan), bounded by DEFAULT_MAX_WAITS consecutive `until`-ended waits, of any phase. A run that ends any other way counts as usual.
      */
     waits?: true;
+    /**
+     * A task that only looks, such as the quest journal read. In a plan (runPlan), the acting runs around a look are
+     * judged as if it had not run. A look does not become `v.last`. It leaves `skip` and `prevDone` as they were. It
+     * does not age the journal (`v.journalAge`). It is not counted by the idle rail or by `maxWaits`.
+     *
+     * Two things still count. A look during which a journal text changed resets the idle run, since that change is
+     * progress. And consecutive looks, of any phase, are counted on their own: `maxIdlePhases` of them with no acting
+     * run between ends the plan failed.
+     */
+    observes?: true;
 }
 
 /** A generator step's tick budget: its `stepTimeoutMs` in ticks, rounded up, as the engine enforces it. */
