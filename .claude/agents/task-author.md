@@ -73,7 +73,7 @@ you never commit, and you only touch the bot you were given.
   plan needs one, not for every ending. The codes show in `--list <task>` after `rules`.
 - Params: a key the schema does not have is refused at preflight, so a renamed param needs no alias and
   every plan using the old name must change. Spell the same choice the same way across tasks
-  (`onFull: 'continue' | 'stop'`); a pattern param to an item is `patternParam`.
+  (`onFull`: `'continue' | 'stop'` where a full pack does not block the work, `'drop' | 'stop'` where it does); a pattern param to an item is `patternParam`.
 - Use what the context and `conductor/lib/` already provide instead of task-local copies:
   `ctx.inventoryFull()`, `ctx.distanceTo(x, z)`, `countItems`, `findSkill`, and for any task that
   works one spot (trees, rocks, fishing spots, monsters) `lib/area.ts`: an
@@ -127,8 +127,8 @@ passes its `ctx` as the `ActionContext`.
   <thing> method; closest upstream is <method> @ <sha>.` instead. Either is followed by a paragraph on how the op differs from upstream and why.
 - **The result is a tagged union**: `{ ok: true } | { ok: false; reason: '<closed set>'; message }`
   so a step can branch on `reason` and log `message`. No throws for game outcomes.
-  A new list of reasons compared against an op's reason is typed with `ReasonOf<typeof op>`
-  (`actions/context.ts`), never `string[]`; a new op's failure is `Failure<'a' | 'b'>`.
+  A new list of reasons compared against an op's reason is typed with `ReasonOf<` the op's result type `>`,
+  e.g. `readonly ReasonOf<WalkResult>[]` (`actions/context.ts`), never `string[]`; a new op's failure is `Failure<'a' | 'b'>`.
 - **`ActionContext` first, only if the op reads state** (`ctx.state()`). An op that only sends takes
   none (`interactLoc`).
 - **An op waits only for its own effect** (logs gained or tree gone; ore gained). No threat, HP,

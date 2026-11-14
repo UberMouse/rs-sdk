@@ -564,7 +564,7 @@ on its own.
     - Prayer toggles change nothing the watchdog watches.
     - fishing can in theory pass its 800 silent ticks with about six cast timeouts interleaved with spot-moved casts onto adjacent spots with no walk.
     - `conductor/test/tools/plan-view/server.test.ts` has a timing-flaky RunsStore assertion under full-suite load (seen once, passes alone).
-  - Outcome codes and param naming: done 2026-11-15 (design `conductor/docs/naming-outcomes.md`): the three plans branch on `v.last.code`, `onFull` in thieving and combat, `maxWaitTicks` in pickup, unknown params refused. Open items are under Review follow-ups.
+  - Outcome codes and param naming: done 2026-11-15 (design `conductor/docs/naming-outcomes.md`): the three plans branch on `v.last.code`, `onFull` in thieving and combat, `maxWaitTicks` in pickup, unknown params refused, plan-view shows `code` and `endedBy`. Open items are under Review follow-ups.
   - Audit: places by name from the world index (216 literal coordinate pairs in training plans), plan parameters, level-band stages.
   - Migrate promoted plans to the view members and primitives (`retry`, `wait`, `defaults`, `v.said`, `v.held`) when next touched or re-run.
   - fm-99, willow-burn and oak-draynor-drop count an axe with `v.inv` (the pack only), so a wielded axe reads as none and triggers a needless fetch or purchase; `v.held` (pack plus worn) fixes it, to be changed with a run.
@@ -822,4 +822,3 @@ Review findings `task-review` deferred because their fix needs work outside the 
 - under-attack guard: the stalled-fight ending shares the code `attacked`; a plan that wants to tell it apart needs its own code.
 - monks-friend: the door phase no longer fires after a failed walk whose reason said "unreachable" (not run live).
 - troll-stronghold: a `dad` fight failing with "dialog open before any fight" now takes the generic dialog phase (not run live).
-- plan-view: the page shows `code` and `endedBy`.

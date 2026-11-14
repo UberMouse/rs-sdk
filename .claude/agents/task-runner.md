@@ -245,7 +245,7 @@ requirement in `requires` not holding (`failed`, `plan requires <key>`), a phase
 and the idle rail (3 phases in a row with no XP, each ending where it started or in a state
 already seen: the plan ends `done` with `nothing left to do: ...` when they all ended `done` (also
 at the first instant repeat of a done phase), and `failed` with `phases make no progress` when any
-failed or stalled). A params key the task does not take fails the plan at load, naming the phase (a single run: `failed` at preflight). An `until`
+failed or stalled). A params key the task does not take ends the plan `error` at load, naming phase and key (a single run: `failed`). An `until`
 that holds in combat waits for the fight to end.
 
 **Where plans live.** Reuse a promoted plan in `conductor/plans/` as it is when it fits. Write a
