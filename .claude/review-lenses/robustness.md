@@ -38,8 +38,9 @@ Does every run end, end for the right reason, and say why?
 - **R9 Game time.** Budgets and give-up limits are ticks (`state.tick`, `wait`/`ticks`), as
   named constants. `Date.now()`, `setTimeout` or a sleep in task, action or core logic is wrong:
   it neither follows game time nor replays in a unit test. (Only the contract's `stepTimeoutMs`
-  and `stuckAfterMs` are milliseconds, and `stuckAfterMs` outlasts the task's own longest
-  legitimate silence.)
+  is milliseconds. The stuck window is computed from `silent`: check that it lists every
+  declared `failStreak` the task uses and a tick count for every other stretch that can leave XP,
+  position, HP and inventory unchanged, and that no task sets `stuckAfterMs`.)
 
 ## Bands
 

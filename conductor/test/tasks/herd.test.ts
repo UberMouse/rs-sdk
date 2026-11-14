@@ -1,7 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 import type { BotAction, BotWorldState } from '../../../sdk/types';
+import { walkBudgetTicks } from '../../actions/walk';
 import type { Effect } from '../../core/drivers/timeline';
+import { DEFAULT_STUCK_AFTER_MS } from '../../lib/engine';
+import { TICK_MS } from '../../lib/util';
 import herd, { PROD_ANIM, nextPush, pushDirection, remaining, standTile } from '../../tasks/herd';
+import { door, fakePaths } from '../paths';
 import { walking } from '../react';
 import { simulate } from '../simulate';
 import { world } from '../world';
@@ -295,5 +299,41 @@ describe('herd: failures', () => {
         });
         expect(r.result.status).toBe('failed');
         expect(r.result.reason).toBe('herd: no progress in 12 prods (26 tiles left at best)');
+    });
+
+    test('four walks to the NPC that run out of ticks where they started fail the run, before the watchdog', async () => {
+        // A door between the bot and the stand tile that never opens, and a bot that cannot move: each walk
+        // spends its whole budget standing still, four of them far longer than the 90 s default window.
+        const stand = { x: 2598, z: 3367 };
+        const from = { x: stand.x, z: stand.z - 15 };
+        const shut = door(from.x, from.z + 5);
+        const paths = fakePaths(
+            () => ({
+                success: true,
+                reachedDestination: true,
+                waypoints: [
+                    { ...shut, level: 0 },
+                    { ...stand, level: 0 },
+                ],
+            }),
+            [shut],
+        );
+        const r = await simulate(herd, {
+            params: { name: `^${SHEEP}$`, route: ROUTE },
+            timeline: field({ x: 2597, z: 3367 }, from)
+                .loc('Door', shut.x, shut.z, { options: ['Open'] })
+                .series(1),
+            pathfinder: paths,
+            react: walking(
+                () => undefined,
+                () => true,
+            ),
+        });
+        const budget = walkBudgetTicks(15);
+        expect(4 * budget * TICK_MS).toBeGreaterThan(DEFAULT_STUCK_AFTER_MS);
+        expect(r.result.status).toBe('failed');
+        expect(r.result.reason).toBe(
+            `herd: can't walk to the NPC at (2597,3367): Walk to (2598, 3367) ran out of its ${budget} ticks at (2598, 3352)`,
+        );
     });
 });

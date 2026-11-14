@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { type GuardRun, lowHpGuard } from '../../lib/interrupts';
-import { isLowHp, LOW_HP_FRACTION, LOW_HP_MAX_FRACTION, lowHpFraction } from '../../lib/threat';
+import { hpBelow, isLowHp, LOW_HP_FRACTION, LOW_HP_MAX_FRACTION, lowHpFraction } from '../../lib/threat';
 import { world } from '../world';
 
 const at = (hp: number) => world().player({ maxHp: 49, hp }).build();
@@ -15,6 +15,21 @@ describe('lowHpFraction', () => {
         expect(lowHpFraction(2)).toBeCloseTo(0.65);
         expect(lowHpFraction(3)).toBeCloseTo(0.8);
         expect(lowHpFraction(9)).toBe(LOW_HP_MAX_FRACTION);
+    });
+});
+
+describe('hpBelow', () => {
+    test('is false with no player', () => {
+        expect(hpBelow({ ...at(1), player: null }, 0.5)).toBe(false);
+    });
+
+    test('is false when max HP is 0', () => {
+        expect(hpBelow(world().player({ maxHp: 0, hp: 0 }).build(), 0.5)).toBe(false);
+    });
+
+    test('is true only strictly below the fraction', () => {
+        expect(hpBelow(at(24), 0.5)).toBe(true);
+        expect(hpBelow(at(24.5), 0.5)).toBe(false);
     });
 });
 

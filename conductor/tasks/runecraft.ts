@@ -14,9 +14,9 @@ import {
     PORTAL,
     USE_OPTION,
 } from '../lib/runecraft';
+import { failStreak, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
 
 const CRAFT_OPTION = /^craft-?rune$/i;
@@ -30,15 +30,26 @@ const CRAFT_WAIT_TICKS = 15;
 const LEAVE_WAIT_TICKS = 30;
 const CRAFT_DELAY_TICKS = 3;
 const FAIL_LIMIT = 3;
-const MISSING_LIMIT = 3;
-const MISSING_WAIT_TICKS = 2;
+const NO_PORTAL = missingTargetStreak('noPortal');
+const NO_ALTAR = missingTargetStreak('noAltar');
+// One failed portal use: the wait to leave the temple (LEAVE_WAIT_TICKS).
+const LEAVE_FAILS = failStreak({
+    name: 'leaveFails',
+    limit: FAIL_LIMIT,
+    worstTicks: LEAVE_WAIT_TICKS,
+    what: 'portal uses',
+});
+// One failed craft: the wait for the essence to go (CRAFT_WAIT_TICKS; CRAFT_DELAY_TICKS follows only a success).
+const CRAFT_FAILS = failStreak({ name: 'craftFails', limit: FAIL_LIMIT, worstTicks: CRAFT_WAIT_TICKS, what: 'crafts' });
+// One failed entry: the wait to land in the temple (ENTER_WAIT_TICKS).
+const ENTER_FAILS = failStreak({ name: 'enterFails', limit: FAIL_LIMIT, worstTicks: ENTER_WAIT_TICKS });
+// A walk toward the ruins ends within WALK_MAX_TICKS.
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: WALK_MAX_TICKS });
+// Counts arrivals at the ruins that find none: the first arrival moved the bot (visible), the repeats are re-walks from
+// within the tolerance that end at once, so one attempt is a tick.
+const RUINS_ABSENT = failStreak({ name: 'ruinsAbsent', limit: FAIL_LIMIT, worstTicks: 1 });
 const STEP_TIMEOUT_MS = 360_000;
-const STUCK_AFTER_MS = stuckWindowMs(
-    failStreakTicks(FAIL_LIMIT, ENTER_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, LEAVE_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, CRAFT_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-);
+const SILENT = [ENTER_FAILS, LEAVE_FAILS, CRAFT_FAILS, WALK_FAILS, RUINS_ABSENT, NO_PORTAL, NO_ALTAR];
 
 const Params = z.object({
     altar: z.enum(ALTAR_NAMES).describe('Which altar to craft at, so which rune.'),
@@ -75,7 +86,7 @@ export default defineTask({
     params: Params,
     memory: (): RunecraftMemory => ({ crafted: false, leaveOnly: false }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -111,21 +122,20 @@ export default defineTask({
                 // A temple with nothing to craft: leave and be done (`enter` would fail on the missing essence).
                 if (!ctx.memory.crafted) ctx.memory.leaveOnly = true;
                 const portal = nearest(ctx, l => PORTAL.test(l.name) && l.options.some(o => USE_OPTION.test(o)));
-                const missing = ctx.streak('noPortal');
                 if (!portal) {
-                    if (missing.add() >= MISSING_LIMIT) return { fail: 'no reachable Portal in the temple' };
+                    const failed = NO_PORTAL.missWith(ctx, 'no reachable Portal in the temple');
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                NO_PORTAL.clear(ctx);
                 const used = yield* interactLoc(portal, USE_OPTION);
-                const fails = ctx.streak('leaveFails');
                 if (used.ok) {
                     const w = yield* wait('leave the temple', s => !inTemple(s, ctx.params.altar), LEAVE_WAIT_TICKS);
                     if (w.kind === 'met') return;
                 }
                 yield* log('the portal did not take us out');
-                if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} portal uses in a row failed` };
+                return LEAVE_FAILS.miss(ctx);
             },
         },
         {
@@ -133,15 +143,14 @@ export default defineTask({
             when: ctx => inside(ctx),
             *run(ctx) {
                 const altar = nearest(ctx, l => ALTAR.test(l.name) && l.options.some(o => CRAFT_OPTION.test(o)));
-                const missing = ctx.streak('noAltar');
                 if (!altar) {
-                    if (missing.add() >= MISSING_LIMIT) return { fail: 'no reachable Altar in the temple' };
+                    const failed = NO_ALTAR.missWith(ctx, 'no reachable Altar in the temple');
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                NO_ALTAR.clear(ctx);
                 const sent = yield* interactLoc(altar, CRAFT_OPTION);
-                const fails = ctx.streak('craftFails');
                 if (sent.ok) {
                     const w = yield* wait('bind the essence', s => countItems(s, ESSENCE) === 0, CRAFT_WAIT_TICKS);
                     if (w.kind === 'met') {
@@ -159,7 +168,7 @@ export default defineTask({
                     return;
                 }
                 yield* log(`craft failed: ${sent.ok ? 'the essence stayed in the inventory' : sent.message}`);
-                if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} crafts in a row failed` };
+                return CRAFT_FAILS.miss(ctx);
             },
         },
         {
@@ -177,29 +186,27 @@ export default defineTask({
                 if (!loc || loc.distance > RUINS_TOLERANCE + 2) {
                     const before = ctx.distanceTo(ruins.x, ruins.z);
                     const r = yield* walkTo(ctx, ruins.x, ruins.z, RUINS_TOLERANCE);
-                    const walkFails = ctx.streak('walkFails');
                     if (r.ok || timedOutAdvancing(r, before, ctx.distanceTo(ruins.x, ruins.z))) {
-                        walkFails.reset();
+                        WALK_FAILS.clear(ctx);
                         // Arrived with the ruins still out of sight: not the place we think.
-                        const absent = ctx.streak('ruinsAbsent');
-                        if (r.ok && !loc && absent.add() >= FAIL_LIMIT)
-                            return { fail: `Mysterious ruins not found near (${ruins.x},${ruins.z})` };
+                        if (r.ok && !loc)
+                            return RUINS_ABSENT.missWith(
+                                ctx,
+                                `Mysterious ruins not found near (${ruins.x},${ruins.z})`,
+                            );
                         return;
                     }
                     yield* log(`walk to the ${ctx.params.altar} ruins failed (${r.reason}): ${r.message}`);
-                    if (walkFails.add() >= FAIL_LIMIT)
-                        return { fail: `${FAIL_LIMIT} walks in a row failed: ${r.message}` };
-                    return;
+                    return WALK_FAILS.missWith(ctx, `${FAIL_LIMIT} walks in a row failed: ${r.message}`);
                 }
-                ctx.streak('ruinsAbsent').reset();
+                RUINS_ABSENT.clear(ctx);
                 const used = yield* useItemOnLoc(ctx, talisman, loc);
-                const fails = ctx.streak('enterFails');
                 if (used.ok) {
                     const w = yield* wait('enter the temple', s => inTemple(s, ctx.params.altar), ENTER_WAIT_TICKS);
                     if (w.kind === 'met') return;
                 }
                 yield* log(`entering the ruins failed: ${used.ok ? 'no teleport' : used.message}`);
-                if (fails.add() >= FAIL_LIMIT) return { fail: `${FAIL_LIMIT} tries to enter the ruins failed` };
+                return ENTER_FAILS.missWith(ctx, `${FAIL_LIMIT} tries to enter the ruins failed`);
             },
         },
     ],

@@ -1,14 +1,14 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyLoc } from '../../sdk/types';
+import type { NearbyLoc } from '../../sdk/types';
 import { PICK_OPTION, PICK_WAIT_TICKS, pick } from '../actions/pick';
-import { log, type Op, wait } from '../core/op';
-import { WALK_MAX_TICKS } from '../actions/walk';
-import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { log, type Op } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting } from '../lib/area-watch';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { waitForRespawn } from '../lib/respawn';
 import { countItems, exactName, ticksToSeconds } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Ticks with no pickable loc at all before failing (40 s); above flax's 10-tick respawn (pickables.rs2 loc_del(10)). */
 const NO_LOC_GIVE_UP_TICKS = 100;
@@ -16,17 +16,21 @@ const NO_LOC_GIVE_UP_TICKS = 100;
 const PICK_FAIL_LIMIT = 8;
 /** Consecutive picks that ended with the plant gone and nothing gained (another picker, a click that never ran). */
 const GONE_FAIL_LIMIT = 20;
-/**
- * Nothing changes while a pick times out, so the watchdog must outlast PICK_FAIL_LIMIT timeouts in a row
- * for the task to report them; the no-loc wait and the walks back to the area are the other silences.
- */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(PICK_FAIL_LIMIT, PICK_WAIT_TICKS),
-    failStreakTicks(GONE_FAIL_LIMIT, PICK_WAIT_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    NO_LOC_GIVE_UP_TICKS,
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+// Nothing changes while a pick times out: PICK_WAIT_TICKS each.
+const PICK_FAILS = failStreak({
+    name: 'pickFails',
+    limit: PICK_FAIL_LIMIT,
+    worstTicks: PICK_WAIT_TICKS,
+    what: 'picks',
+});
+// A pick that ends with the plant gone waited at most PICK_WAIT_TICKS.
+const GONE_FAILS = failStreak({
+    name: 'goneFails',
+    limit: GONE_FAIL_LIMIT,
+    worstTicks: PICK_WAIT_TICKS,
+});
+/** The watchdog outlasts the fail streaks, the no-loc wait and the walks back to the area. */
+const SILENT = [PICK_FAILS, GONE_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_LOC_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 
@@ -80,30 +84,20 @@ function plantOfKind(params: PickParams): (loc: NearbyLoc) => boolean {
     return l => name.test(l.name) && l.reachable === true && l.options.some(o => PICK_OPTION.test(o));
 }
 
-/** Nothing to pick: stay put (returnToAreaStep keeps us inside) and wait for a respawn, failing after NO_LOC_GIVE_UP_TICKS. */
-function* waitForRespawn(ctx: Ctx): Op<Outcome> {
-    const now = ctx.state().tick;
-    if (ctx.memory.noLocSinceTick === null) {
-        ctx.memory.noLocSinceTick = now;
-        yield* log(`no ${ctx.params.loc} to pick, waiting for a respawn`);
-    }
-    const since = ctx.memory.noLocSinceTick;
+/** Nothing to pick: wait for a respawn, failing after NO_LOC_GIVE_UP_TICKS with none. */
+function* waitForPlant(ctx: Ctx): Op<Outcome> {
     const isPickable = pickable(ctx.params);
-    const seen = (s: BotWorldState) => outsideSighting(s, ctx.params.area, s.nearbyLocs, plantOfKind(ctx.params));
-    const respawn = yield* trackIdle(
-        ctx,
-        ctx.memory.areaWatch,
-        seen,
-        wait('respawn', s => s.nearbyLocs.some(isPickable), Math.max(0, since + NO_LOC_GIVE_UP_TICKS - now)),
-    );
-    if (respawn.kind === 'met') return;
-    const seconds = ticksToSeconds(respawn.state.tick - since);
-    const { area } = ctx.params;
-    return {
-        fail: area
-            ? `area depleted: no reachable ${ctx.params.loc} in radius ${area.radius} for ${seconds}s`
-            : `no reachable ${ctx.params.loc} nearby for ${seconds}s`,
-    };
+    return yield* waitForRespawn(ctx, {
+        since: { get: () => ctx.memory.noLocSinceTick, set: t => (ctx.memory.noLocSinceTick = t) },
+        giveUpTicks: NO_LOC_GIVE_UP_TICKS,
+        label: 'respawn',
+        until: s => s.nearbyLocs.some(isPickable),
+        log: `no ${ctx.params.loc} to pick, waiting for a respawn`,
+        watch: ctx.memory.areaWatch,
+        seen: s => outsideSighting(s, ctx.params.area, s.nearbyLocs, plantOfKind(ctx.params)),
+        target: ctx.params.loc,
+        area: ctx.params.area,
+    });
 }
 
 export default defineTask({
@@ -123,7 +117,7 @@ export default defineTask({
     // Interacting with a loc cancels auto-retaliate, so a bot under attack must not touch one.
     guards: [underAttackGuard],
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight: ctx => refuseArea(ctx.params.area),
 
@@ -153,26 +147,24 @@ export default defineTask({
                     .state()
                     .nearbyLocs.filter(pickable(ctx.params))
                     .sort((x, y) => x.distance - y.distance)[0];
-                if (!loc) return yield* waitForRespawn(ctx);
+                if (!loc) return yield* waitForPlant(ctx);
                 ctx.memory.noLocSinceTick = null;
                 const picked = yield* pick(ctx, loc, exactName(ctx.params.item));
-                const fails = ctx.streak('pickFails');
-                const gone = ctx.streak('goneFails');
                 if (picked.ok) {
-                    fails.reset();
-                    gone.reset();
+                    PICK_FAILS.clear(ctx);
+                    GONE_FAILS.clear(ctx);
                     return;
                 }
                 if (picked.reason === 'gone') {
-                    fails.reset();
-                    if (gone.add() >= GONE_FAIL_LIMIT)
-                        return { fail: `${GONE_FAIL_LIMIT} plants in a row vanished before they were picked` };
-                    return;
+                    PICK_FAILS.clear(ctx);
+                    return GONE_FAILS.missWith(
+                        ctx,
+                        `${GONE_FAIL_LIMIT} plants in a row vanished before they were picked`,
+                    );
                 }
-                gone.reset();
+                GONE_FAILS.clear(ctx);
                 yield* log(`pick failed: ${picked.message}`);
-                if (fails.add() >= PICK_FAIL_LIMIT)
-                    return { fail: `${PICK_FAIL_LIMIT} picks in a row failed (last: ${picked.message})` };
+                return PICK_FAILS.miss(ctx, picked.message);
             },
         },
     ],

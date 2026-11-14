@@ -1,15 +1,15 @@
 import { z } from 'zod/v4';
-import type { BotWorldState, NearbyNpc } from '../../sdk/types';
+import type { NearbyNpc } from '../../sdk/types';
 import { FISH_WAIT_TICKS, countAny, fish, tileOf } from '../actions/fish';
 import { drop } from '../actions/drop';
-import { WALK_MAX_TICKS } from '../actions/walk';
-import { log, type Op, wait } from '../core/op';
-import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { log, type Op } from '../core/op';
+import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting } from '../lib/area-watch';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
+import { waitForRespawn } from '../lib/respawn';
 import { countItems, findSkill, ticksToSeconds, TICK_MS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 interface Method {
     /** The spot option that starts this method. */
@@ -105,16 +105,18 @@ const NO_SPOT_GIVE_UP_TICKS = 700;
 const FISH_FAIL_LIMIT = 6;
 /** Consecutive casts that ended with the spot gone and no fish caught. */
 const SPOT_MOVE_LIMIT = 10;
+// Each failed attempt is a cast that waited out FISH_WAIT_TICKS with nothing changing the watchdog sees.
+const FISH_FAILS = failStreak({
+    name: 'fishFails',
+    limit: FISH_FAIL_LIMIT,
+    worstTicks: FISH_WAIT_TICKS,
+    what: 'fish attempts',
+});
 /**
- * A timeout is silent, so the watchdog must outlast FISH_FAIL_LIMIT of them in a row (one more covers the
- * sends between them), and the no-spot wait, for the task to report them.
+ * The spot-move count needs no entry of its own: a hop ends the cast's wait early and the next cast walks the bot to
+ * the new spot, which the watchdog sees; a cast that waits it out is a FISH_FAILS miss.
  */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(FISH_FAIL_LIMIT, FISH_WAIT_TICKS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    NO_SPOT_GIVE_UP_TICKS,
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
+const SILENT = [FISH_FAILS, WALK_TO_AREA_SILENT_TICKS, NO_SPOT_GIVE_UP_TICKS];
 /** The longest legitimate step is a walk back to a far area; the engine default (120s) can be shorter. */
 const STEP_TIMEOUT_MS = 300_000;
 /** The no-spot wait runs inside one step, so its step budget must cover it (plus the walk and a cast). */
@@ -216,50 +218,37 @@ function pickKind(ctx: Ctx): { kind: MethodName; spots: NearbyNpc[] } | null {
     return null;
 }
 
-/** No spot of the kind in reach: stay put (returnToAreaStep keeps us inside) and wait, failing after NO_SPOT_GIVE_UP_TICKS. */
+/** No spot of the kind in reach: wait, failing after NO_SPOT_GIVE_UP_TICKS with none. */
 function* waitForSpot(ctx: Ctx): Op<Outcome> {
-    const now = ctx.state().tick;
-    if (ctx.memory.noSpotSinceTick === null) {
-        ctx.memory.noSpotSinceTick = now;
-        yield* log(`no ${kinds(ctx.params).join('/')} fishing spot available, waiting`);
-    }
-    const since = ctx.memory.noSpotSinceTick;
-    const left = Math.max(0, since + NO_SPOT_GIVE_UP_TICKS - now);
     const isFishable = kinds(ctx.params).map(k => fishable(ctx.params, k));
     const ofKinds = kinds(ctx.params).map(ofMethod);
-    const seen = (s: BotWorldState) =>
-        outsideSighting(
-            s,
-            ctx.params.area,
-            s.nearbyNpcs
-                .filter(n => ofKinds.some(ok => ok(n)))
-                .map(n => ({ name: n.name, ...tileOf(n), distance: n.distance })),
-            () => true,
-        );
-    const found = yield* trackIdle(
-        ctx,
-        ctx.memory.areaWatch,
-        seen,
-        wait('fishing spot', s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))), left),
-    );
-    if (found.kind === 'met') return;
-    const seconds = ticksToSeconds(found.state.tick - since);
-    const { area } = ctx.params;
-    const kindsText = kinds(ctx.params).join('/');
     const outsideKinds = kinds(ctx.params).map(k => ({ k, ok: ofMethod(k) }));
-    let where = '';
-    for (const n of found.state.nearbyNpcs) {
-        const hit = outsideKinds.find(o => o.ok(n));
-        if (hit) {
-            where = `; ${hit.k} spot exists outside area at (${tileOf(n).x},${tileOf(n).z})`;
-            break;
-        }
-    }
-    return {
-        fail: area
-            ? `area depleted: no reachable ${kindsText} fishing spot in radius ${area.radius} for ${seconds}s${where}`
-            : `no reachable ${kindsText} fishing spot nearby for ${seconds}s`,
-    };
+    return yield* waitForRespawn(ctx, {
+        since: { get: () => ctx.memory.noSpotSinceTick, set: t => (ctx.memory.noSpotSinceTick = t) },
+        giveUpTicks: NO_SPOT_GIVE_UP_TICKS,
+        label: 'fishing spot',
+        until: s => s.nearbyNpcs.some(n => isFishable.some(f => f(n))),
+        log: `no ${kinds(ctx.params).join('/')} fishing spot available, waiting`,
+        watch: ctx.memory.areaWatch,
+        seen: s =>
+            outsideSighting(
+                s,
+                ctx.params.area,
+                s.nearbyNpcs
+                    .filter(n => ofKinds.some(ok => ok(n)))
+                    .map(n => ({ name: n.name, ...tileOf(n), distance: n.distance })),
+                () => true,
+            ),
+        target: `${kinds(ctx.params).join('/')} fishing spot`,
+        area: ctx.params.area,
+        areaSuffix: end => {
+            for (const n of end.nearbyNpcs) {
+                const hit = outsideKinds.find(o => o.ok(n));
+                if (hit) return `; ${hit.k} spot exists outside area at (${tileOf(n).x},${tileOf(n).z})`;
+            }
+            return '';
+        },
+    });
 }
 
 export default defineTask({
@@ -288,7 +277,7 @@ export default defineTask({
     // Fishing re-sends an interaction that would cancel auto-retaliate, so a bot under attack must not.
     guards: [underAttackGuard],
     stepTimeoutMs: NO_SPOT_STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const refused = missingSupply(ctx);
@@ -368,10 +357,9 @@ export default defineTask({
                 const resume = !!current;
                 mem.fishing = null;
                 const caught = yield* fish(ctx, spot, m.option, m.fish, { resume });
-                const fails = ctx.streak('fishFails');
                 const moves = ctx.streak('spotMoves');
                 if (caught.ok) {
-                    fails.reset();
+                    FISH_FAILS.clear(ctx);
                     moves.reset();
                     mem.fishing = { index: spot.index, ...tileOf(spot) };
                     return;
@@ -387,8 +375,7 @@ export default defineTask({
                     return;
                 }
                 yield* log(`fish failed: ${caught.message}`);
-                if (fails.add() >= FISH_FAIL_LIMIT)
-                    return { fail: `${FISH_FAIL_LIMIT} fish attempts in a row failed (last: ${caught.message})` };
+                return FISH_FAILS.miss(ctx, caught.message);
             },
         },
     ],

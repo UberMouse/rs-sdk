@@ -4,10 +4,10 @@ import { BURN_WAIT_TICKS, burn } from '../actions/burn';
 import { collisionPaths } from '../actions/paths';
 import { timedOutAdvancing, WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, wait } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Firemaking level per log type, from server/content/scripts/skill_firemaking/configs/firemaking.obj
@@ -24,20 +24,25 @@ const LOG_LEVELS: Record<string, number | undefined> = {
 
 const TINDERBOX = /^tinderbox$/i;
 const BURN_FAIL_LIMIT = 5;
-/**
- * The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`: the walks
- * back to the area (WALK_FAIL_LIMIT of them, each up to WALK_MAX_TICKS without moving the bot) and the
- * lights (BURN_FAIL_LIMIT timed-out ones, each BURN_WAIT_TICKS of nothing).
- */
-export const SILENT_STREAK_TICKS = [
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    failStreakTicks(BURN_FAIL_LIMIT, BURN_WAIT_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
-/** Ticks to let the bot step west off a fire it just lit before deciding from where it stands. */
-const STEP_OFF_WAIT_TICKS = 3;
+// A timed-out light changes nothing the watchdog sees for BURN_WAIT_TICKS.
+const BURN_FAILS = failStreak({
+    name: 'burnFails',
+    limit: BURN_FAIL_LIMIT,
+    worstTicks: BURN_WAIT_TICKS,
+    what: 'lights',
+});
 /** Consecutive walks to a line's start that fail before the task gives up. */
 const LINE_WALK_FAIL_LIMIT = 3;
+// A failed walk to a line's start can stall for WALK_MAX_TICKS without moving the bot.
+const LINE_WALK_FAILS = failStreak({
+    name: 'lineWalkFails',
+    limit: LINE_WALK_FAIL_LIMIT,
+    worstTicks: WALK_MAX_TICKS,
+});
+/** The watchdog outlasts the fail streaks, so the task's own reason surfaces and not `stuck`. */
+const SILENT = [WALK_TO_AREA_SILENT_TICKS, LINE_WALK_FAILS, BURN_FAILS];
+/** Ticks to let the bot step west off a fire it just lit before deciding from where it stands. */
+const STEP_OFF_WAIT_TICKS = 3;
 /** One light plus the walk back to an area can exceed the engine's default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
@@ -145,7 +150,7 @@ export default defineTask({
     params: Params,
     memory: (): Mem => ({ line: null, bad: new Set(), lit: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();
@@ -192,9 +197,8 @@ export default defineTask({
                 if (p.worldX !== line.x || p.worldZ !== line.z) {
                     const before = ctx.distanceTo(line.x, line.z);
                     const walked = yield* walkTo(ctx, line.x, line.z, 0);
-                    const walkFails = ctx.streak('lineWalkFails');
                     if (walked.ok) {
-                        walkFails.reset();
+                        LINE_WALK_FAILS.clear(ctx);
                         return;
                     }
                     yield* log(`walk to line start (${line.x},${line.z}) failed: ${walked.message}`);
@@ -205,16 +209,14 @@ export default defineTask({
                     )
                         return;
                     abandonLine(mem, line);
-                    if (walkFails.add() >= LINE_WALK_FAIL_LIMIT)
-                        return {
-                            fail: `${LINE_WALK_FAIL_LIMIT} line starts in a row unreachable (last: ${walked.message})`,
-                        };
-                    return;
+                    return LINE_WALK_FAILS.missWith(
+                        ctx,
+                        `${LINE_WALK_FAIL_LIMIT} line starts in a row unreachable (last: ${walked.message})`,
+                    );
                 }
                 const burned = yield* burn(ctx, exactName(ctx.params.logs));
-                const fails = ctx.streak('burnFails');
                 if (burned.ok) {
-                    fails.reset();
+                    BURN_FAILS.clear(ctx);
                     mem.lit++;
                     mem.line = { ...line, x: line.x - 1 };
                     // The bot steps west once the fire catches: let it, so the next light starts from the next tile.
@@ -228,8 +230,8 @@ export default defineTask({
                 yield* log(`light failed: ${burned.message}`);
                 // Not about the tile, and retrying cannot help.
                 if (burned.reason === 'level-too-low' || burned.reason === 'no-logs') return { fail: burned.message };
-                if (fails.add() >= BURN_FAIL_LIMIT)
-                    return { fail: `${BURN_FAIL_LIMIT} lights in a row failed (last: ${burned.message})` };
+                const failed = BURN_FAILS.miss(ctx, burned.message);
+                if (failed) return failed;
                 // A refused tile, or one holding the logs after a timeout (burn.ts), is never lit on again; pick a
                 // fresh line. Other failures are not about the tile.
                 if (burned.reason === 'cant-light-here' || burned.reason === 'timeout') abandonLine(mem, line);

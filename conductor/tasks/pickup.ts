@@ -1,24 +1,18 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, GroundItem } from '../../sdk/types';
 import { PICKUP_GRACE_TICKS, PICKUP_WAIT_TICKS, pickup } from '../actions/pickup';
-import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
+import { walkTo } from '../actions/walk';
 import { log, type Op, ticks } from '../core/op';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS, walkToArea } from '../lib/area';
 import { defineTask, type Outcome, type TaskContext } from '../lib/task';
 import { countItems, exactName, INVENTORY_SLOTS, TICK_MS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
+import { failStreakTicks } from '../lib/watchdog';
 
 const FAIL_LIMIT = 3;
 /** Ticks to wait for a spawn to reappear before looking again. */
 const WAIT_TICKS = 5;
 const MAX_WAIT_SECONDS = 300;
-/** The engine's no-progress watchdog must outlast the longest allowed wait, so the task's own give-up fires first. */
-export const SILENT_STREAK_TICKS = [
-    Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS),
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 /** Walking to a far area outlasts the default step timeout. */
 const STEP_TIMEOUT_MS = 120_000;
 
@@ -33,6 +27,15 @@ const STANDS = [
     [-1, 0],
 ] as const;
 
+/**
+ * The engine's no-progress watchdog must outlast the longest allowed wait, so the task's own give-up fires first. The
+ * pickup count stays hand-written (its limit depends on the item); an attempt takes at most the pickup wait and grace.
+ */
+const SILENT = [
+    Math.ceil((MAX_WAIT_SECONDS * 1000) / TICK_MS),
+    WALK_TO_AREA_SILENT_TICKS,
+    failStreakTicks(Math.max(FAIL_LIMIT, STANDS.length), PICKUP_WAIT_TICKS + PICKUP_GRACE_TICKS),
+];
 const Params = z.object({
     area: AreaSchema.describe('Where to pick up: the bot walks here, and only ground items inside it are taken.'),
     items: z
@@ -142,7 +145,7 @@ export default defineTask({
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): PickupMemory => ({ noItemSinceTick: null, standTries: 0, areaWatch: newAreaWatch() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const s = ctx.state();

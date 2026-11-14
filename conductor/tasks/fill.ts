@@ -3,11 +3,11 @@ import type { BotWorldState, InventoryItem, NearbyLoc } from '../../sdk/types';
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { FILL_WAIT_TICKS, fillContainer } from '../actions/fill';
 import { log } from '../core/op';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 // server/content/scripts/general_use/scripts/water_sources.rs2: one use fills one container. A Fountain or
 // Sink fills a bucket, jug, bowl or vial; a Well (and the desert well) only a bucket.
@@ -32,7 +32,12 @@ const STEP_TIMEOUT_MS = 90_000;
 export const SOURCE_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - FILL_WAIT_TICKS);
 /** The longest attempt that changes nothing the watchdog sees: a walk that never moves the bot, then the fill. */
 export const ATTEMPT_SILENT_TICKS = SOURCE_WALK_TICKS + FILL_WAIT_TICKS;
-const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
+const FILL_FAILS = failStreak({
+    name: 'fillFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'fills',
+});
 
 const Params = z.object({
     container: Containers.default('Bucket').describe(
@@ -80,7 +85,7 @@ export default defineTask({
     ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: [FILL_FAILS, WALK_TO_AREA_SILENT_TICKS],
     memory: (): FillMemory => ({ skipped: [] }),
     guards: [underAttackGuard],
 
@@ -104,11 +109,6 @@ export default defineTask({
             name: 'fill',
             when: () => true,
             *run(ctx: Ctx) {
-                const fails = ctx.streak('fillFails');
-                const failed = (message: string) =>
-                    fails.add() >= FAIL_LIMIT
-                        ? { fail: `${FAIL_LIMIT} fills in a row failed (last: ${message})` }
-                        : undefined;
                 const container = emptyOf(ctx.state(), ctx.params.container);
                 if (!container) return;
                 const source = ctx
@@ -117,18 +117,18 @@ export default defineTask({
                     .sort((a, b) => a.distance - b.distance)[0];
                 if (!source) {
                     yield* log(`no water source in view for a ${ctx.params.container}`);
-                    return failed('no water source in view (pass `area` at one)');
+                    return FILL_FAILS.miss(ctx, 'no water source in view (pass `area` at one)');
                 }
                 if (ctx.distanceTo(source.x, source.z) > SOURCE_REACH) {
                     const w = yield* walkTo(ctx, source.x, source.z, SOURCE_REACH, { reserveTicks: FILL_WAIT_TICKS });
                     if (!w.ok) {
                         yield* log(`walk to the ${source.name} failed: ${w.message}`);
-                        return failed(w.message);
+                        return FILL_FAILS.miss(ctx, w.message);
                     }
                 }
                 const r = yield* fillContainer(ctx, container, source);
                 if (r.ok) {
-                    fails.reset();
+                    FILL_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`fill failed: ${r.message}`, { reason: r.reason });
@@ -136,7 +136,7 @@ export default defineTask({
                     ctx.memory.skipped.push(sourceKey(source));
                     yield* log(`skipping the ${source.name} at ${source.x},${source.z}: not a water source`);
                 }
-                return failed(r.message);
+                return FILL_FAILS.miss(ctx, r.message);
             },
         },
     ],

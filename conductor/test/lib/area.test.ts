@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'bun:test';
 import { walkBudgetTicks } from '../../actions/walk';
-import { type Area, returnToAreaStep } from '../../lib/area';
-import type { Step } from '../../lib/task';
+import { z } from 'zod/v4';
+import { type Area, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../../lib/area';
+import { defineTask, type Step } from '../../lib/task';
 import { TICK_MS } from '../../lib/util';
-import { runTask } from '../engine/harness';
+import { stuckWindowMs } from '../../lib/watchdog';
+import { runDef, runTask } from '../engine/harness';
 import { door, fakePaths } from '../paths';
 import { walking } from '../react';
 import type { Simulation } from '../simulate';
@@ -94,5 +96,40 @@ describe('an area with a level', () => {
         const area: Area = { x: START.x, z: START.z, radius: 5, level: 1 };
         const r = await runTask([returnToAreaStep(() => area), there], upstairs.series(1), { pathfinder: noRoute });
         expect(r.result.stepRuns['return-to-area']).toBeUndefined();
+    });
+});
+
+describe('walkToArea: the stuck window', () => {
+    const area: Area = { x: START.x + 20, z: START.z, radius: 5 };
+    const run = (window: { silent?: number[] }) =>
+        runDef(
+            defineTask({
+                name: 'walker',
+                description: 'area walk window test',
+                params: z.object({}),
+                steps: [returnToAreaStep(() => area), there],
+                ...window,
+            }),
+            world().player({ at: START }).series(1),
+            { react: walking() },
+        );
+
+    test('a task whose silent does not cover the walk errors on it, naming the task', async () => {
+        const r = await run({ silent: [1] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain(
+            `task "walker": its stuck window (${stuckWindowMs(1)} ms) does not cover the area walk (WALK_TO_AREA_SILENT_TICKS) (${WALK_TO_AREA_SILENT_TICKS} ticks); list it in silent`,
+        );
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a task that lists it walks', async () => {
+        const r = await run({ silent: [WALK_TO_AREA_SILENT_TICKS] });
+        expect(r.result.reason).toBe('there: in the area');
+    });
+
+    test('a task without silent is not checked', async () => {
+        const r = await run({});
+        expect(r.result.reason).toBe('there: in the area');
     });
 });

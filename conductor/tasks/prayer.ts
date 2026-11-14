@@ -1,10 +1,22 @@
 import { z } from 'zod/v4';
 import { PRAYER_LEVELS } from '../../sdk/types';
-import { PRAYER_CONFLICTS, PRAYERS, prayerActive, prayerConflict, prayerIndex, setPrayer } from '../actions/prayer';
+import {
+    PRAYER_CONFLICTS,
+    PRAYER_WAIT_TICKS,
+    PRAYERS,
+    prayerActive,
+    prayerConflict,
+    prayerIndex,
+    setPrayer,
+} from '../actions/prayer';
 import { log } from '../core/op';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
+import { DEFAULT_WINDOW_TICKS } from '../lib/watchdog';
 
 const FAIL_LIMIT = 3;
+/** A toggle is one send and one PRAYER_WAIT_TICKS wait for the prayer to switch. */
+const SET_FAILS = failStreak({ name: 'setFails', limit: FAIL_LIMIT, worstTicks: PRAYER_WAIT_TICKS });
 
 const PrayerName = z
     .string()
@@ -64,6 +76,7 @@ export default defineTask({
         "A prayer to switch on needs the bot's Prayer level and prayer points left; short of either, the task fails.",
     ],
     params: Params,
+    silent: [SET_FAILS, DEFAULT_WINDOW_TICKS],
 
     preflight(ctx) {
         const s = ctx.state();
@@ -90,18 +103,17 @@ export default defineTask({
             name: 'set',
             when: () => true,
             *run(ctx: Ctx) {
-                const fails = ctx.streak('setFails');
                 // Off first: turning one off never fails for points, and frees the slot a conflicting on would take anyway.
                 for (const { name, on } of wrong(ctx).sort((a, b) => Number(a.on) - Number(b.on))) {
                     const r = yield* setPrayer(ctx, name, on);
                     if (r.ok) {
-                        fails.reset();
+                        SET_FAILS.clear(ctx);
                         if (r.changed) yield* log(`prayer ${name} ${on ? 'on' : 'off'}`);
                         continue;
                     }
                     if (r.reason === 'no-points' || r.reason === 'level') return { fail: r.message };
-                    if (fails.add() >= FAIL_LIMIT)
-                        return { fail: `could not turn ${name} ${on ? 'on' : 'off'}: ${r.message}` };
+                    const failed = SET_FAILS.missWith(ctx, `could not turn ${name} ${on ? 'on' : 'off'}: ${r.message}`);
+                    if (failed) return failed;
                 }
             },
         },

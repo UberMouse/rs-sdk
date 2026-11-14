@@ -38,7 +38,7 @@ The task loop is UberUtils/ArteDungeon's Strategy pattern: each loop the first s
 - Waits are game ticks (400 ms here), not wall clock. Every wait is a point where the engine can
   act: it runs the **guards** (`lib/interrupts.ts`: death, wilderness, low HP, dialog,
   leftover-interface, plus a task's own such as `underAttackGuard`), applies `--until` stops, the
-  watchdog (XP, position, inventory and HP unchanged for `stuckAfterMs`) and the step's tick
+  watchdog (XP, position, inventory and HP unchanged for the stuck window `defineTask` computes from the task's `silent` list, 90 s with none) and the step's tick
   budget, cancelling the step (its `finally` blocks run) where needed. Tasks therefore carry no
   threat, dialog or timeout handling of their own.
 - A step returns nothing to loop, `{ fail }` or `{ done }`; the run ends in one `TaskResult`

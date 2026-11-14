@@ -1,6 +1,6 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, NearbyNpc } from '../../sdk/types';
-import { eat } from '../actions/eat';
+import { EAT_WAIT_TICKS } from '../actions/eat';
 import {
     PICKPOCKET_ACK_TICKS,
     PICKPOCKET_OPTION,
@@ -13,12 +13,13 @@ import {
 import { WALK_MAX_TICKS, walkTo } from '../actions/walk';
 import { log, type Op, ticks, wait } from '../core/op';
 import { areaWatchReport, type AreaWatch, newAreaWatch, outsideSighting, trackIdle } from '../lib/area-watch';
-import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_FAIL_LIMIT, walkToArea } from '../lib/area';
+import { AreaSchema, inArea, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS, walkToArea } from '../lib/area';
+import { eatStep, foodInInventory, wantsToEat } from '../lib/eat-step';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { LOW_HP_FRACTION } from '../lib/threat';
 import { exactName, findSkill } from '../lib/util';
 import { isInWilderness } from '../lib/wilderness';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /**
  * Thieving level each pickpocketable NPC needs, by lower-case name, from
@@ -73,15 +74,35 @@ const REGEN_CAP_TICKS = 800;
 const REGEN_SLICE_LIMIT = REGEN_CAP_TICKS / REGEN_SLICE_TICKS;
 const STEP_TIMEOUT_MS = 300_000;
 
-/** The watchdog waits for the longest silent failure streak, so each reports its own reason. */
-export const SILENT_STREAK_TICKS = [
+/** One attempt that never reaches the NPC: a walk to it that never moves the bot, then the send and the op's waits. */
+const PICK_FAILS = failStreak({
+    name: 'pickFails',
+    limit: PICK_FAIL_LIMIT,
+    worstTicks: WALK_MAX_TICKS + AFTER_WALK_TICKS,
+    what: 'pickpockets',
+});
+/** One failed eat: its wait (EAT_WAIT_TICKS). */
+const EAT_FAILS = failStreak({ name: 'eatFails', limit: EAT_FAIL_LIMIT, worstTicks: EAT_WAIT_TICKS });
+/** One refused attempt: the send and the op's waits, then the stun wait it sets. */
+const BLOCKED = failStreak({
+    name: 'blocked',
+    limit: BLOCKED_LIMIT,
+    worstTicks: AFTER_WALK_TICKS + STUN_TICKS + STUN_MARGIN_TICKS,
+});
+
+/**
+ * The watchdog waits for the longest silent failure streak, so each reports its own reason: the looks for a
+ * target, the walks back to the area, the regen wait, the eat step's failed eats (each waiting out EAT_WAIT_TICKS)
+ * and the fail streaks.
+ */
+const SILENT = [
     NO_TARGET_LIMIT * NO_TARGET_WAIT_TICKS,
-    failStreakTicks(WALK_FAIL_LIMIT, WALK_MAX_TICKS),
-    failStreakTicks(PICK_FAIL_LIMIT, WALK_MAX_TICKS + AFTER_WALK_TICKS),
-    failStreakTicks(BLOCKED_LIMIT, AFTER_WALK_TICKS + STUN_TICKS + STUN_MARGIN_TICKS),
+    WALK_TO_AREA_SILENT_TICKS,
+    PICK_FAILS,
+    BLOCKED,
     REGEN_CAP_TICKS + REGEN_SLICE_TICKS,
+    EAT_FAILS,
 ];
-const STUCK_AFTER_MS = stuckWindowMs(...SILENT_STREAK_TICKS);
 
 const Params = z.object({
     npc: z
@@ -120,13 +141,6 @@ interface ThievingMemory {
 type Ctx = TaskContext<ThievingParams, ThievingMemory>;
 
 const levelNeeded = (npc: string) => PICKPOCKET_LEVELS[npc.toLowerCase()];
-
-const foodInInventory = (s: BotWorldState, p: ThievingParams) =>
-    s.inventory.find(i => p.food.some(f => exactName(f).test(i.name)));
-
-/** The eat rule: HP below `eatBelow` of max and a configured food is held. */
-const wantsToEat = (s: BotWorldState, p: ThievingParams) =>
-    !!s.player && s.player.maxHp > 0 && s.player.hp < s.player.maxHp * p.eatBelow && !!foodInInventory(s, p);
 
 /**
  * No food and too little HP to take one more caught attempt without dropping under the engine's
@@ -193,7 +207,7 @@ export default defineTask({
     diagnostics: ctx => areaWatchReport(ctx.memory.areaWatch, ctx.params.area),
     memory: (): ThievingMemory => ({ stunnedUntil: -Infinity, areaWatch: newAreaWatch() }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const p = ctx.params;
@@ -215,21 +229,12 @@ export default defineTask({
             },
         },
         returnToAreaStep<ThievingParams>(params => params.area),
-        {
-            name: 'eat',
-            when: ctx => wantsToEat(ctx.state(), ctx.params),
-            *run(ctx) {
-                const food = foodInInventory(ctx.state(), ctx.params);
-                if (!food) return;
-                const eatFails = ctx.streak('eatFails');
-                const r = yield* eat(ctx, food);
-                if (r.ok) {
-                    eatFails.reset();
-                    return;
-                }
-                if (eatFails.add() >= EAT_FAIL_LIMIT) return { fail: `could not eat ${food.name}: ${r.message}` };
-            },
-        },
+        eatStep<ThievingParams>({
+            wants: wantsToEat,
+            food: foodInInventory,
+            streak: EAT_FAILS,
+            failText: (food, r) => `could not eat ${food.name}: ${r.message}`,
+        }),
         {
             name: 'regen',
             when: ctx => needsRegen(ctx.state(), ctx.params),
@@ -290,12 +295,10 @@ export default defineTask({
                 }
                 noTarget.reset();
 
-                const pickFails = ctx.streak('pickFails');
-                const blocked = ctx.streak('blocked');
                 const r = yield* walkAndPick(ctx, target);
                 if (r.ok) {
-                    pickFails.reset();
-                    blocked.reset();
+                    PICK_FAILS.clear(ctx);
+                    BLOCKED.clear(ctx);
                     if (r.outcome === 'caught') {
                         stunFrom(ctx);
                     }
@@ -305,12 +308,10 @@ export default defineTask({
                 if (r.reason === 'not-started' || r.reason === 'in-combat') {
                     // Most likely stunned or fighting: sending more only restarts the server's clock.
                     stunFrom(ctx);
-                    if (blocked.add() >= BLOCKED_LIMIT)
-                        return { fail: `${BLOCKED_LIMIT} pickpockets in a row refused (last: ${r.message})` };
-                    return;
+                    return BLOCKED.missWith(ctx, `${BLOCKED_LIMIT} pickpockets in a row refused (last: ${r.message})`);
                 }
-                if (pickFails.add() >= PICK_FAIL_LIMIT)
-                    return { fail: `${PICK_FAIL_LIMIT} pickpockets in a row failed (last: ${r.message})` };
+                const failed = PICK_FAILS.miss(ctx, r.message);
+                if (failed) return failed;
                 yield* ticks(PICK_RETRY_TICKS);
             },
         },

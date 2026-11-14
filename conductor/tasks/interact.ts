@@ -12,7 +12,6 @@ import {
     useOnNpc,
 } from '../actions/interaction';
 import { CONVERSE_MAX_TICKS, converse, type TalkProgress } from '../actions/talk';
-import { WALK_MAX_TICKS } from '../actions/walk';
 import { log, send, ticks } from '../core/op';
 import { foodCount } from '../lib/interrupts';
 import {
@@ -25,25 +24,21 @@ import {
     onTile,
     patternParam,
     TileSchema,
+    walkToSpotSilentTicks,
     walkToSpotStep,
 } from '../lib/spot';
+import { failStreak, MISSING_WAIT_TICKS, missingTargetStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness, WILDERNESS_MIN_FOOD, wildernessFoodRefusal } from '../lib/wilderness';
 
 /** Failed walks or interactions in a row before the task fails. */
 const FAIL_LIMIT = 3;
-/** Loops (2 ticks each) the target may be out of sight before the task fails. */
-const MISSING_LIMIT = 3;
-const MISSING_WAIT_TICKS = 2;
+const MISSING = missingTargetStreak('missing');
+// One failed interaction: the wait for its effect (INTERACT_WAIT_TICKS, which includes the walk up to the target).
+const INTERACT_FAILS = failStreak({ name: 'interactFails', limit: FAIL_LIMIT, worstTicks: INTERACT_WAIT_TICKS });
 /** One interaction wait, its settle and the dialog answers it opens (CONVERSE_MAX_TICKS) fit one step; the walk is a step of its own. */
 const STEP_TIMEOUT_MS = 360_000;
-const STUCK_AFTER_MS = stuckWindowMs(
-    CONVERSE_MAX_TICKS,
-    INTERACT_WAIT_TICKS,
-    failStreakTicks(FAIL_LIMIT, INTERACT_WAIT_TICKS),
-    failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS),
-);
+const SILENT = [CONVERSE_MAX_TICKS, INTERACT_WAIT_TICKS, INTERACT_FAILS, MISSING, walkToSpotSilentTicks(FAIL_LIMIT)];
 
 /** Options that destroy what they are used on: refused for an item target unless `opIndex` + `allowDestructiveOption` name the op. */
 const DESTRUCTIVE_ITEM_OPTIONS = ['Drop', 'Destroy', 'Release', 'Empty'];
@@ -278,7 +273,7 @@ export default defineTask({
     allowGuards: params => (params.choices.length > 0 ? ['dialog'] : []),
     allowWilderness: params => params.wilderness,
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const { at, target, option, use, name, wilderness, minFood, opIndex, allowDestructiveOption } = ctx.params;
@@ -333,19 +328,18 @@ export default defineTask({
                 }
                 if (use && !held) return { fail: missingItem(use.item, name) };
                 const { targets, unreachable } = candidates(ctx);
-                const missing = ctx.streak('missing');
                 const nearest = targets[0];
                 if (!nearest) {
-                    if (missing.add() >= MISSING_LIMIT)
-                        return {
-                            fail:
-                                `no ${takeUnreachable ? '' : 'reachable '}${target} /${name}/${tile ? ` at (${tile.x},${tile.z})` : ''} in sight` +
-                                (unreachable > 0 ? ` (${unreachable} in view but unreachable from here)` : ''),
-                        };
+                    const failed = MISSING.missWith(
+                        ctx,
+                        `no ${takeUnreachable ? '' : 'reachable '}${target} /${name}/${tile ? ` at (${tile.x},${tile.z})` : ''} in sight` +
+                            (unreachable > 0 ? ` (${unreachable} in view but unreachable from here)` : ''),
+                    );
+                    if (failed) return failed;
                     yield* ticks(MISSING_WAIT_TICKS);
                     return;
                 }
-                missing.reset();
+                MISSING.clear(ctx);
                 let opItem: InventoryItem | undefined;
                 if (opIndex !== undefined && optionRx) {
                     // The step re-checks what preflight saw: the item may arrive later, or its options may differ per stack.
@@ -389,9 +383,8 @@ export default defineTask({
                     if (label !== undefined && isDestructiveLabel(label)) ctx.memory.destructiveSent = true;
                 }
                 const r = yield* attempt;
-                const fails = ctx.streak('interactFails');
                 if (r.ok) {
-                    fails.reset();
+                    INTERACT_FAILS.clear(ctx);
                     if (ctx.params.choices.length > 0) {
                         ctx.memory.sent = true;
                         return yield* answerDialog(ctx, `${what} on ${name}: ${r.effect}`);
@@ -421,8 +414,10 @@ export default defineTask({
                     return {
                         fail: `${r.reason}: ${r.message} (op ${opIndex} "${sentLabel}" is destructive and is not sent twice)`,
                     };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})` };
+                return INTERACT_FAILS.missWith(
+                    ctx,
+                    `${FAIL_LIMIT} tries in a row failed (last ${r.reason}: ${r.message})`,
+                );
             },
         },
     ],

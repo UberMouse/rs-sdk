@@ -1,7 +1,8 @@
 import { z } from 'zod/v4';
-import { fletch } from '../actions/fletch';
-import { useItemOnItem } from '../actions/use';
+import { FLETCH_CLOSE_TICKS, FLETCH_MAKE_TICKS, FLETCH_MENU_TICKS, fletch } from '../actions/fletch';
+import { USE_WAIT_TICKS, useItemOnItem } from '../actions/use';
 import { log, wait } from '../core/op';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItems, exactName, findSkill, TICK_MS } from '../lib/util';
 
@@ -43,6 +44,25 @@ const FEATHER_WAIT_MS = 5000;
 const FEATHER_WAIT_TICKS = Math.ceil(FEATHER_WAIT_MS / TICK_MS);
 /** Stringing has no delay (bows.rs2): the inventory changes within a tick or two, so 5s is only a ceiling. */
 const STRING_WAIT_TICKS = FEATHER_WAIT_TICKS;
+/** The longest cut that changes nothing: a stale make menu closed, the menu waited for, the click's XP waited for. */
+const FLETCH_FAILS = failStreak({
+    name: 'fletchFails',
+    limit: FLETCH_FAIL_LIMIT,
+    worstTicks: FLETCH_CLOSE_TICKS + FLETCH_MENU_TICKS + FLETCH_MAKE_TICKS,
+    what: 'fletch attempts',
+});
+/** The longest feather attempt that changes nothing: the use's wait for the game to act, then the wait for shafts to leave. */
+const FEATHER_FAILS = failStreak({
+    name: 'featherFails',
+    limit: FLETCH_FAIL_LIMIT,
+    worstTicks: USE_WAIT_TICKS + FEATHER_WAIT_TICKS,
+});
+/** The longest stringing attempt that changes nothing: the use's wait for the game to act, then the wait for a bow to be strung. */
+const STRING_FAILS = failStreak({
+    name: 'stringFails',
+    limit: FLETCH_FAIL_LIMIT,
+    worstTicks: USE_WAIT_TICKS + STRING_WAIT_TICKS,
+});
 
 const Params = z.object({
     product: z
@@ -130,6 +150,7 @@ export default defineTask({
     ],
     spots: ['Knives: no nearby shop sells one; there is a ground spawn near (3224,3202), and a Shantay Pass shop.'],
     params: Params,
+    silent: [FLETCH_FAILS, FEATHER_FAILS, STRING_FAILS],
 
     preflight(ctx) {
         const s = ctx.state();
@@ -173,7 +194,6 @@ export default defineTask({
             when: ctx => countItems(ctx.state(), exactName(ctx.params.logs)) > 0,
             *run(ctx) {
                 if (!ctx.state().inventory.some(i => KNIFE.test(i.name))) return { fail: 'no knife in inventory' };
-                const fails = ctx.streak('fletchFails');
                 const cut = yield* fletch(
                     ctx,
                     exactName(ctx.params.logs),
@@ -181,12 +201,11 @@ export default defineTask({
                     ctx.params.batch,
                 );
                 if (cut.ok) {
-                    fails.reset();
+                    FLETCH_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`fletch failed: ${cut.message}`);
-                if (fails.add() >= FLETCH_FAIL_LIMIT)
-                    return { fail: `${FLETCH_FAIL_LIMIT} fletch attempts in a row failed (last: ${cut.message})` };
+                return FLETCH_FAILS.miss(ctx, cut.message);
             },
         },
         {
@@ -198,7 +217,6 @@ export default defineTask({
                 const shafts = s.inventory.find(i => SHAFTS.test(i.name));
                 const feathers = s.inventory.find(i => FEATHERS.test(i.name));
                 if (!shafts || !feathers) return;
-                const fails = ctx.streak('featherFails');
                 const before = countItems(s, SHAFTS);
                 const used = yield* useItemOnItem(ctx, feathers, shafts);
                 // The op is satisfied by the first sign the game acted; the headless arrows are made when shafts leave.
@@ -207,14 +225,15 @@ export default defineTask({
                     (yield* wait('shafts consumed', st => countItems(st, SHAFTS) < before, FEATHER_WAIT_TICKS)).kind ===
                         'met';
                 if (consumed) {
-                    fails.reset();
+                    FEATHER_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`attaching feathers failed: ${used.ok ? 'no shafts consumed' : used.message}`);
-                if (fails.add() >= FLETCH_FAIL_LIMIT) {
-                    const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
-                    return { fail: `${FLETCH_FAIL_LIMIT} feather attempts failed (last game message: ${last})` };
-                }
+                const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
+                return FEATHER_FAILS.missWith(
+                    ctx,
+                    `${FLETCH_FAIL_LIMIT} feather attempts failed (last game message: ${last})`,
+                );
             },
         },
         {
@@ -226,7 +245,6 @@ export default defineTask({
                 const bowString = s.inventory.find(i => BOW_STRING.test(i.name));
                 // The `when` guard guarantees both; this narrows the types and fails loudly rather than spin.
                 if (!bow || !bowString) return { fail: 'string step ran without a bow and a Bow string' };
-                const fails = ctx.streak('stringFails');
                 const before = unstrungCount(ctx, s);
                 const used = yield* useItemOnItem(ctx, bowString, bow);
                 // The op is satisfied by the first sign the game acted; the bow is strung when one leaves the unstrung count.
@@ -235,14 +253,15 @@ export default defineTask({
                     (yield* wait('bow strung', st => unstrungCount(ctx, st) < before, STRING_WAIT_TICKS)).kind ===
                         'met';
                 if (strung) {
-                    fails.reset();
+                    STRING_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`stringing failed: ${used.ok ? 'no bow strung' : used.message}`);
-                if (fails.add() >= FLETCH_FAIL_LIMIT) {
-                    const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
-                    return { fail: `${FLETCH_FAIL_LIMIT} stringing attempts failed (last game message: ${last})` };
-                }
+                const last = ctx.state().gameMessages.at(-1)?.text ?? 'none';
+                return STRING_FAILS.missWith(
+                    ctx,
+                    `${FLETCH_FAIL_LIMIT} stringing attempts failed (last game message: ${last})`,
+                );
             },
         },
         {

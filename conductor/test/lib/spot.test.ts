@@ -1,5 +1,8 @@
 import { describe, expect, test } from 'bun:test';
-import { AtSchema } from '../../lib/spot';
+import { z } from 'zod/v4';
+import { AtSchema, walkToSpotSilentTicks, walkToSpotStep } from '../../lib/spot';
+import { defineTask } from '../../lib/task';
+import { stuckWindowMs } from '../../lib/watchdog';
 import interact from '../../tasks/interact';
 import talk from '../../tasks/talk';
 import { walking } from '../react';
@@ -96,5 +99,43 @@ describe('the shared `at`: an exact tile', () => {
             react: walking(),
         });
         expect(r.steps[0]).toBe('interact');
+    });
+});
+
+describe('walkToSpotStep: the stuck window', () => {
+    const START = { x: 3200, z: 3200 };
+    const run = (window: { silent?: number[] }) =>
+        simulate(
+            defineTask({
+                name: 'walker',
+                description: 'spot walk window test',
+                params: z.object({ at: AtSchema.optional() }),
+                steps: [walkToSpotStep(3), { name: 'there', when: () => true, run: () => ({ done: 'at the spot' }) }],
+                ...window,
+            }),
+            {
+                params: { at: { x: START.x + 10, z: START.z } },
+                timeline: world().player({ at: START }).series(1),
+                react: walking(),
+            },
+        );
+
+    test('a task whose silent does not cover the walk errors on it, naming the task', async () => {
+        const r = await run({ silent: [1] });
+        expect(r.result.status).toBe('error');
+        expect(r.result.reason).toContain(
+            `task "walker": its stuck window (${stuckWindowMs(1)} ms) does not cover the spot walk (walkToSpotSilentTicks(3)) (${walkToSpotSilentTicks(3)} ticks); list it in silent`,
+        );
+        expect(r.sends).toEqual([]);
+    });
+
+    test('a task that lists it walks', async () => {
+        const r = await run({ silent: [walkToSpotSilentTicks(3)] });
+        expect(r.result.reason).toBe('there: at the spot');
+    });
+
+    test('a task without silent is not checked', async () => {
+        const r = await run({});
+        expect(r.result.reason).toBe('there: at the spot');
     });
 });

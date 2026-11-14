@@ -99,7 +99,7 @@ Direction, to be designed after a spike:
 
 - Task catalog: done; params are described on their schema fields and `--list` is generated from them
   (design: `conductor/docs/task-catalog.md`).
-- Task bookkeeping: declared silent streaks in place of hand-summed `stuckAfterMs` (25 tasks), one
+- Task bookkeeping: done 2026-11-15 (design `conductor/docs/task-bookkeeping.md`); was: declared silent streaks in place of hand-summed `stuckAfterMs` (25 tasks), one
   streak-then-fail helper (93 blocks), one `waitForRespawn`, one eat step.
 - Param naming: five names for the full-inventory policy; exact names against pattern sources.
 - Outcome codes: three plans match failure wording (`clock-tower`, `monks-friend`,

@@ -1,17 +1,16 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
 import { dismiss } from '../actions/dismiss';
-import { drop } from '../actions/drop';
-import { equip } from '../actions/equip';
+import { DROP_WAIT_TICKS, drop } from '../actions/drop';
+import { EQUIP_WAIT_TICKS, equip } from '../actions/equip';
 import { CONVERSE_MAX_TICKS, converse, type TalkProgress } from '../actions/talk';
-import { unequip } from '../actions/unequip';
-import { useItemOnItem } from '../actions/use';
-import { WALK_MAX_TICKS } from '../actions/walk';
+import { UNEQUIP_WAIT_TICKS, unequip } from '../actions/unequip';
+import { USE_WAIT_TICKS, useItemOnItem } from '../actions/use';
 import { log, wait } from '../core/op';
-import { AtSchema, matcher, patternParam, walkToSpotStep } from '../lib/spot';
+import { AtSchema, matcher, patternParam, walkToSpotSilentTicks, walkToSpotStep } from '../lib/spot';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { INVENTORY_SLOTS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
 
 /** Failed walks or ops in a row before the task fails. */
@@ -20,7 +19,39 @@ const FAIL_LIMIT = 3;
 export const COMBINE_SETTLE_TICKS = 3;
 /** A walk, then the op or a dialog of up to CONVERSE_MAX_TICKS: both fit one step. */
 const STEP_TIMEOUT_MS = 360_000;
-const STUCK_AFTER_MS = stuckWindowMs(CONVERSE_MAX_TICKS, failStreakTicks(FAIL_LIMIT, WALK_MAX_TICKS));
+// worstTicks: one failed use, the wait for its effect (USE_WAIT_TICKS).
+const COMBINE_FAILS = failStreak({
+    name: 'combineFails',
+    limit: FAIL_LIMIT,
+    worstTicks: USE_WAIT_TICKS,
+    what: 'tries',
+});
+// One use that changed nothing: the wait for its effect, then COMBINE_SETTLE_TICKS for a product or menu.
+const COMBINE_NO_EFFECT = failStreak({
+    name: 'combineNoEffect',
+    limit: FAIL_LIMIT,
+    worstTicks: USE_WAIT_TICKS + COMBINE_SETTLE_TICKS,
+});
+// One failed drop: the wait for the item to leave the inventory (DROP_WAIT_TICKS).
+const DROP_FAILS = failStreak({ name: 'dropFails', limit: FAIL_LIMIT, worstTicks: DROP_WAIT_TICKS, what: 'drops' });
+// One failed unequip: the wait for the item to leave the equipment (UNEQUIP_WAIT_TICKS).
+const UNEQUIP_FAILS = failStreak({
+    name: 'unequipFails',
+    limit: FAIL_LIMIT,
+    worstTicks: UNEQUIP_WAIT_TICKS,
+    what: 'tries',
+});
+// One failed equip: the wait for the item to show as worn (EQUIP_WAIT_TICKS).
+const EQUIP_FAILS = failStreak({ name: 'equipFails', limit: FAIL_LIMIT, worstTicks: EQUIP_WAIT_TICKS });
+const SILENT = [
+    CONVERSE_MAX_TICKS,
+    walkToSpotSilentTicks(FAIL_LIMIT),
+    COMBINE_FAILS,
+    COMBINE_NO_EFFECT,
+    DROP_FAILS,
+    UNEQUIP_FAILS,
+    EQUIP_FAILS,
+];
 
 /** Worn slot numbers of the equipment container, by the names a plan gives them (server obj `wearpos`). */
 export const WORN_SLOTS: Record<string, number> = {
@@ -266,7 +297,7 @@ export default defineTask({
     // A drop may open a dialog that is left (or answered here) on purpose: the dialog guard must not click under it.
     allow: ['dialog'],
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const p = ctx.params;
@@ -358,9 +389,8 @@ export default defineTask({
                 if (typeof pair === 'string') return { fail: `${pair} before the combine` };
                 const { item, target } = pair;
                 const used = yield* useItemOnItem(ctx, item, target);
-                const fails = ctx.streak('combineFails');
                 if (used.ok) {
-                    fails.reset();
+                    COMBINE_FAILS.clear(ctx);
                     // The product (or the menu that asks for it) may land a tick after the use's own wait ended.
                     const settled = yield* wait(
                         'combine effect',
@@ -374,29 +404,30 @@ export default defineTask({
                                 fail: `using ${item.name} on ${target.name} opened a choice (${menu.options.map(o => o.text).join(' | ')}): give \`choice\``,
                             };
                         // Each menu cycle counts as a use: a menu answered every time that never makes the product ends.
-                        if (ctx.streak('combineNoEffect').add() >= FAIL_LIMIT)
-                            return {
-                                fail: `used ${item.name} on ${target.name} and answered its menu ${FAIL_LIMIT} times: no product appeared (a level requirement?)`,
-                            };
+                        const failed = COMBINE_NO_EFFECT.missWith(
+                            ctx,
+                            `used ${item.name} on ${target.name} and answered its menu ${FAIL_LIMIT} times: no product appeared (a level requirement?)`,
+                        );
+                        if (failed) return failed;
                         ctx.memory.dialogOpened = true;
                         return;
                     }
                     // An ok use that used nothing up and made no product (both inputs kept, no `product` given).
-                    const idle = ctx.streak('combineNoEffect');
-                    if (combineDone(ctx)) idle.reset();
-                    else if (idle.add() >= FAIL_LIMIT)
-                        return {
-                            fail: `used ${item.name} on ${target.name} ${FAIL_LIMIT} times: nothing was used up and no product appeared (give \`product\` if both items are kept)`,
-                        };
-                    return;
+                    if (combineDone(ctx)) {
+                        COMBINE_NO_EFFECT.clear(ctx);
+                        return;
+                    }
+                    return COMBINE_NO_EFFECT.missWith(
+                        ctx,
+                        `used ${item.name} on ${target.name} ${FAIL_LIMIT} times: nothing was used up and no product appeared (give \`product\` if both items are kept)`,
+                    );
                 }
                 yield* log(`using ${item.name} on ${target.name} failed: ${used.message}`);
                 // A use that already made its product (an earlier send landing late) is not a failure.
                 if (combineDone(ctx)) return;
                 // The game said it does nothing: trying again cannot change that.
                 if (used.reason === 'nothing-happened') return { fail: used.message };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} tries in a row failed (last: ${used.message})` };
+                return COMBINE_FAILS.miss(ctx, used.message);
             },
         },
         {
@@ -416,9 +447,8 @@ export default defineTask({
                 if (held.size > 1 || (held.size === 1 && !held.has(pinned)))
                     return { fail: `${entry.item} matches several different items now: name one exactly` };
                 const dropped = yield* drop(ctx, matcher(entry.item), dropLeft(ctx, i), { untilDialog: true });
-                const fails = ctx.streak('dropFails');
                 if (dropped.ok) {
-                    fails.reset();
+                    DROP_FAILS.clear(ctx);
                     if (dropped.dialogOpened) {
                         ctx.memory.dialogOpened = true;
                         yield* log(`dropping ${entry.item} opened a dialog`);
@@ -428,8 +458,7 @@ export default defineTask({
                 yield* log(`drop of ${entry.item} failed: ${dropped.message}`);
                 if (dropped.reason === 'no-item' || dropped.reason === 'too-few' || dropped.reason === 'invalid-amount')
                     return { fail: dropped.message };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} drops in a row failed (last: ${dropped.message})` };
+                return DROP_FAILS.miss(ctx, dropped.message);
             },
         },
         {
@@ -439,16 +468,14 @@ export default defineTask({
                 const item = toTakeOff(ctx)[0];
                 if (!item) return;
                 const removed = yield* unequip(ctx, item);
-                const fails = ctx.streak('unequipFails');
                 if (removed.ok) {
-                    fails.reset();
+                    UNEQUIP_FAILS.clear(ctx);
                     ctx.memory.moved++;
                     return;
                 }
                 yield* log(`taking off ${item.name} failed: ${removed.message}`);
                 if (removed.reason === 'no-room') return { fail: removed.message };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} tries in a row failed (last: ${removed.message})` };
+                return UNEQUIP_FAILS.miss(ctx, removed.message);
             },
         },
         {
@@ -466,9 +493,8 @@ export default defineTask({
                 if (!item) return { fail: `no ${nameOf(want)} in the inventory to wear` };
                 const before = ctx.state().equipment.map(e => e.name);
                 const worn = yield* equip(ctx, item);
-                const fails = ctx.streak('equipFails');
                 if (worn.ok) {
-                    fails.reset();
+                    EQUIP_FAILS.clear(ctx);
                     ctx.memory.moved++;
                     const off = before.filter(n => !ctx.state().equipment.some(e => e.name === n));
                     ctx.memory.lastOff = off.length ? `${item.name} took ${off.join(', ')} off` : item.name;
@@ -476,10 +502,10 @@ export default defineTask({
                 }
                 yield* log(`wearing ${item.name} failed: ${worn.message}`);
                 if (worn.reason === 'no-option') return { fail: worn.message };
-                if (fails.add() >= FAIL_LIMIT)
-                    return {
-                        fail: `${FAIL_LIMIT} tries in a row failed (last: ${worn.message}; a level requirement?)`,
-                    };
+                return EQUIP_FAILS.missWith(
+                    ctx,
+                    `${FAIL_LIMIT} tries in a row failed (last: ${worn.message}; a level requirement?)`,
+                );
             },
         },
     ],

@@ -1,12 +1,26 @@
 import { z } from 'zod/v4';
 import type { BotWorldState, InventoryItem } from '../../sdk/types';
-import { brewPotion, cleanHerb } from '../actions/herblore';
+import { brewPotion, cleanHerb, HERB_WAIT_TICKS } from '../actions/herblore';
 import { log } from '../core/op';
+import { failStreak } from '../lib/streak';
 import { defineTask, type TaskContext } from '../lib/task';
 import { countItemId, findSkill } from '../lib/util';
+import { DEFAULT_WINDOW_TICKS } from '../lib/watchdog';
 
 /** Consecutive failed uses of one kind before the task fails. */
 const FAIL_LIMIT = 3;
+/** Each use is one send and one HERB_WAIT_TICKS wait for the product. */
+const CLEAN_FAILS = failStreak({ name: 'cleanFails', limit: FAIL_LIMIT, worstTicks: HERB_WAIT_TICKS });
+const UNFINISHED_FAILS = failStreak({
+    name: 'unfinishedFails',
+    limit: FAIL_LIMIT,
+    worstTicks: HERB_WAIT_TICKS,
+});
+const FINISH_FAILS = failStreak({
+    name: 'finishFails',
+    limit: FAIL_LIMIT,
+    worstTicks: HERB_WAIT_TICKS,
+});
 
 /**
  * The herbs the Herblore scripts know (server/content/scripts/skill_herblore/configs/herbs.obj for the
@@ -273,6 +287,7 @@ export default defineTask({
         "Eye of newt 3 gp at Jatix in Taverley, vials of water 2 gp at Aemad's in East Ardougne, chocolate dust at Funch's.",
     ],
     params: Params,
+    silent: [CLEAN_FAILS, UNFINISHED_FAILS, FINISH_FAILS, DEFAULT_WINDOW_TICKS],
     memory: (): HerbloreMemory => ({ cleaned: 0, unfinished: 0, finished: 0 }),
     diagnostics: ctx => ({ diagnostics: { ...ctx.memory } }),
 
@@ -293,16 +308,14 @@ export default defineTask({
             *run(ctx) {
                 const t = cleanTarget(ctx);
                 if (!t) return;
-                const fails = ctx.streak('cleanFails');
                 const r = yield* cleanHerb(ctx, t.item);
                 if (r.ok) {
-                    fails.reset();
+                    CLEAN_FAILS.clear(ctx);
                     ctx.memory.cleaned += 1;
                     return;
                 }
                 yield* log(`clean ${t.herb.key} failed: ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} cleans in a row failed (${r.reason}: ${r.message})` };
+                return CLEAN_FAILS.missWith(ctx, `${FAIL_LIMIT} cleans in a row failed (${r.reason}: ${r.message})`);
             },
         },
         {
@@ -311,16 +324,17 @@ export default defineTask({
             *run(ctx) {
                 const t = unfinishedTarget(ctx);
                 if (!t) return;
-                const fails = ctx.streak('unfinishedFails');
                 const r = yield* brewPotion(ctx, t.herbItem, t.vial, t.herb.unf);
                 if (r.ok) {
-                    fails.reset();
+                    UNFINISHED_FAILS.clear(ctx);
                     ctx.memory.unfinished += 1;
                     return;
                 }
                 yield* log(`unfinished ${t.herb.key} failed: ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} unfinished potions in a row failed (${r.reason}: ${r.message})` };
+                return UNFINISHED_FAILS.missWith(
+                    ctx,
+                    `${FAIL_LIMIT} unfinished potions in a row failed (${r.reason}: ${r.message})`,
+                );
             },
         },
         {
@@ -329,16 +343,17 @@ export default defineTask({
             *run(ctx) {
                 const t = finishTarget(ctx);
                 if (!t) return;
-                const fails = ctx.streak('finishFails');
                 const r = yield* brewPotion(ctx, t.secItem, t.unfItem, t.recipe.product);
                 if (r.ok) {
-                    fails.reset();
+                    FINISH_FAILS.clear(ctx);
                     ctx.memory.finished += 1;
                     return;
                 }
                 yield* log(`${t.recipe.potion} failed: ${r.message}`);
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} ${t.recipe.potion}s in a row failed (${r.reason}: ${r.message})` };
+                return FINISH_FAILS.missWith(
+                    ctx,
+                    `${FAIL_LIMIT} ${t.recipe.potion}s in a row failed (${r.reason}: ${r.message})`,
+                );
             },
         },
         {

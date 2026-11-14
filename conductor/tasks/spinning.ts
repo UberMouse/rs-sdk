@@ -14,9 +14,9 @@ import { log, ticks, wait } from '../core/op';
 import { chebyshev } from '../lib/connectors';
 import { WORLD } from '../lib/world-index';
 import { UNDER_ATTACK_NOTE, underAttackGuard } from '../lib/interrupts';
+import { failStreak } from '../lib/streak';
 import { defineTask, stepBudgetTicks, type TaskContext } from '../lib/task';
 import { countItems, findSkill, INVENTORY_SLOTS } from '../lib/util';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 import { squareReachesWilderness } from '../lib/wilderness';
 
 const WHEEL = /^spinning wheel$/i;
@@ -35,7 +35,14 @@ export const SPIN_MAX_TICKS =
 export const WHEEL_WALK_TICKS = Math.min(WALK_MAX_TICKS, stepBudgetTicks(STEP_TIMEOUT_MS) - SPIN_MAX_TICKS);
 /** The longest attempt that changes nothing the watchdog sees: a walk that never moves the bot, then the op. */
 export const ATTEMPT_SILENT_TICKS = WHEEL_WALK_TICKS + SPIN_MAX_TICKS;
-const STUCK_AFTER_MS = stuckWindowMs(failStreakTicks(FAIL_LIMIT, ATTEMPT_SILENT_TICKS));
+const WALK_FAILS = failStreak({ name: 'walkFails', limit: FAIL_LIMIT, worstTicks: ATTEMPT_SILENT_TICKS });
+const SPIN_FAILS = failStreak({
+    name: 'spinFails',
+    limit: FAIL_LIMIT,
+    worstTicks: ATTEMPT_SILENT_TICKS,
+    what: 'spins',
+});
+const SILENT = [WALK_FAILS, SPIN_FAILS];
 
 const Params = z.object({
     material: z
@@ -126,7 +133,7 @@ export default defineTask({
     ],
     params: Params,
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
     guards: [underAttackGuard],
 
     preflight(ctx) {
@@ -154,7 +161,6 @@ export default defineTask({
             *run(ctx) {
                 const wheel = ctx.params.wheel;
                 if (!wheel) return;
-                const fails = ctx.streak('walkFails');
                 const stand = standTile(wheel);
                 const before = ctx.distanceTo(stand.x, stand.z);
                 const w = yield* walkTo(ctx, stand.x, stand.z, STAND_REACH, {
@@ -164,43 +170,40 @@ export default defineTask({
                 if (w.ok) {
                     // A walk that arrived yet leaves the bot away from the wheel changed nothing: count it, never loop.
                     if (!awayFromWheel(ctx)) {
-                        fails.reset();
+                        WALK_FAILS.clear(ctx);
                         return;
                     }
                     yield* log(`walk to the wheel ended away from it: ${w.message}`);
-                    if (fails.add() >= FAIL_LIMIT)
-                        return { fail: `can't get within reach of the wheel (${w.message})` };
+                    const failed = WALK_FAILS.missWith(ctx, `can't get within reach of the wheel (${w.message})`);
+                    if (failed) return failed;
                     yield* ticks(1);
                     return;
                 }
                 yield* log(`walk to the wheel failed: ${w.message}`);
                 // A walk that ran out of ticks closer than it started is progress (a far wheel, a floor change).
                 if (timedOutAdvancing(w, before, ctx.distanceTo(stand.x, stand.z))) return;
-                if (fails.add() >= FAIL_LIMIT) return { fail: `can't reach the wheel (${w.message})` };
+                return WALK_FAILS.missWith(ctx, `can't reach the wheel (${w.message})`);
             },
         },
         {
             name: 'spin',
             when: () => true,
             *run(ctx) {
-                const fails = ctx.streak('spinFails');
                 const seen = yield* wait('wheel in view', st => findWheel(st) !== null, STATION_WAIT_TICKS);
                 const wheel = findWheel(seen.state);
                 if (!wheel) {
-                    if (fails.add() >= FAIL_LIMIT) return { fail: 'no reachable spinning wheel nearby (pass `wheel`)' };
-                    return;
+                    return SPIN_FAILS.missWith(ctx, 'no reachable spinning wheel nearby (pass `wheel`)');
                 }
                 const r = yield* spin(ctx, wheel, ctx.params.material);
                 if (r.ok) {
-                    fails.reset();
+                    SPIN_FAILS.clear(ctx);
                     return;
                 }
                 yield* log(`spin failed: ${r.message}`, { reason: r.reason });
                 // The level, the members world, the wheel's owner and the menu's products will not change by retrying.
                 if (['level-too-low', 'members', 'not-allowed', 'no-product', 'no-material'].includes(r.reason))
                     return { fail: r.message };
-                if (fails.add() >= FAIL_LIMIT)
-                    return { fail: `${FAIL_LIMIT} spins in a row failed (last: ${r.message})` };
+                return SPIN_FAILS.miss(ctx, r.message);
             },
         },
     ],

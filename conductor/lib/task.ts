@@ -16,7 +16,9 @@ import type { WalkWorld } from './walk-graph';
 import type { Op, Outcome } from '../core/op';
 import type { Epilogue } from './epilogue';
 import type { AllowableGuard, TaskGuard } from './interrupts';
+import type { FailStreak } from './streak';
 import { TICK_MS } from './util';
+import { taskStuckWindowMs } from './watchdog';
 
 /** What a step may report. Returning nothing means "keep looping". */
 export type { Outcome };
@@ -74,6 +76,15 @@ export interface TaskContext<P = unknown, M extends object = UntypedMemory> {
      * waits long (walkTo) caps itself to it (ActionContext).
      */
     stepTicksLeft(): number | undefined;
+    /**
+     * The running task's name, `silent` list and watchdog window (taskStuckWindowMs): a declared fail streak
+     * (lib/streak.ts) checks it is listed, a shared walk step that the window covers it (assertWindowCovers).
+     */
+    readonly task: {
+        readonly name: string;
+        readonly silent?: readonly (FailStreak | number)[];
+        readonly stuckAfterMs: number;
+    };
 }
 
 export interface Step<P = unknown, M extends object = UntypedMemory> {
@@ -172,7 +183,13 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
     steps: Step<z.infer<S>, M>[];
     /** Task-specific completion; return a reason when done. */
     isComplete?(ctx: TaskContext<z.infer<S>, M>): string | null;
-    /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (engine.ts). */
+    /**
+     * Everything that can keep the task from changing XP, position, HP or inventory: its declared fail streaks
+     * (lib/streak.ts) and other silent stretches in ticks. defineTask and the engine size `stuckAfterMs`
+     * from it (taskStuckWindowMs), so a task gives one or the other; a fail streak not listed here throws when used.
+     */
+    silent?: (FailStreak | number)[];
+    /** Watchdog: end as `stuck` when XP, position, inventory and HP are all unchanged this long. Default DEFAULT_STUCK_AFTER_MS (watchdog.ts). */
     stuckAfterMs?: number;
     /**
      * A single step.run() longer than this ends the run as `stuck`, enforced as a tick budget
@@ -200,7 +217,8 @@ export interface TaskDef<S extends z.ZodType = z.ZodType, M extends object = Unt
 export const stepBudgetTicks = (stepTimeoutMs: number): number => Math.ceil(stepTimeoutMs / TICK_MS);
 
 export function defineTask<S extends z.ZodType, M extends object = UntypedMemory>(def: TaskDef<S, M>): TaskDef<S, M> {
-    return def;
+    if (!def.silent) return def;
+    return { ...def, stuckAfterMs: taskStuckWindowMs(def) };
 }
 
 export type TaskStatus = 'done' | 'failed' | 'stuck' | 'error';

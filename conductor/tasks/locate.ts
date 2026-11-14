@@ -3,10 +3,10 @@ import { INTERACT_WAIT_TICKS, interact } from '../actions/interaction';
 import { messageCursor, messageSince } from '../actions/messages';
 import { ROUTE_TOO_LONG, timedOutAdvancing, walkTo } from '../actions/walk';
 import { log, wait } from '../core/op';
-import { AreaSchema, type Area, refuseArea, returnToAreaStep } from '../lib/area';
+import { AreaSchema, type Area, refuseArea, returnToAreaStep, WALK_TO_AREA_SILENT_TICKS } from '../lib/area';
 import { ItemSpec, itemLabel, itemMatches, matcher, missingItem, patternParam } from '../lib/spot';
+import { failStreak } from '../lib/streak';
 import { defineTask } from '../lib/task';
-import { failStreakTicks, stuckWindowMs } from '../lib/watchdog';
 
 /** Locates that got no hint in a row before the task fails. */
 const LOCATE_FAIL_LIMIT = 3;
@@ -24,10 +24,14 @@ export const SPAWN_WAIT_TICKS = 5;
 const HOP_RESERVE_TICKS = 2;
 /** The step covers one locate wait and one walk with room to spare. */
 const STEP_TIMEOUT_MS = 120_000;
-const STUCK_AFTER_MS = stuckWindowMs(
-    failStreakTicks(LOCATE_FAIL_LIMIT, INTERACT_WAIT_TICKS),
-    failStreakTicks(HOP_WALK_FAIL_LIMIT, HOP_WALK_TICKS),
-);
+const LOCATE_FAILS = failStreak({ name: 'locateFails', limit: LOCATE_FAIL_LIMIT, worstTicks: INTERACT_WAIT_TICKS });
+// A failed hop tries up to three goals and then the long way, each walk cut at HOP_WALK_TICKS.
+const HOP_WALK_FAILS = failStreak({
+    name: 'hopWalkFails',
+    limit: HOP_WALK_FAIL_LIMIT,
+    worstTicks: 4 * HOP_WALK_TICKS,
+});
+const SILENT = [LOCATE_FAILS, HOP_WALK_FAILS, WALK_TO_AREA_SILENT_TICKS];
 /** A step never shrinks below this many tiles. */
 const MIN_STEP = 1;
 
@@ -131,7 +135,7 @@ export default defineTask({
     params: Params,
     memory: (): LocateMemory => ({ stepX: 0, stepZ: 0, last: null, relocations: 0 }),
     stepTimeoutMs: STEP_TIMEOUT_MS,
-    stuckAfterMs: STUCK_AFTER_MS,
+    silent: SILENT,
 
     preflight(ctx) {
         const { item, area } = ctx.params;
@@ -169,18 +173,16 @@ export default defineTask({
                 const r = yield* interact(ctx, { kind: 'item', item }, matcher(p.option), {
                     expect: new RegExp(`(?:${p.hint})|(?:${p.stop})`, 'i'),
                 });
-                const fails = ctx.streak('locateFails');
                 if (!r.ok) {
                     yield* log(`${p.option} failed (${r.reason}): ${r.message}`);
                     if (r.reason === 'no-option' || r.reason === 'refused' || r.reason === 'cant-reach')
                         return { fail: `${itemLabel(p.item)} ${p.option}: ${r.message}` };
-                    if (fails.add() >= LOCATE_FAIL_LIMIT)
-                        return {
-                            fail: `${LOCATE_FAIL_LIMIT} locates in a row gave no hint (last ${r.reason}: ${r.message})`,
-                        };
-                    return;
+                    return LOCATE_FAILS.missWith(
+                        ctx,
+                        `${LOCATE_FAIL_LIMIT} locates in a row gave no hint (last ${r.reason}: ${r.message})`,
+                    );
                 }
-                fails.reset();
+                LOCATE_FAILS.clear(ctx);
                 if (matcher(p.stop).test(r.effect)) {
                     // The thing found spawns with the message; give it a few ticks to show, so a phase after this one sees it.
                     const rx = p.target ? matcher(p.target) : undefined;
@@ -230,7 +232,6 @@ export default defineTask({
                 if (goals.length === 0)
                     return { fail: `${r.effect} points out of the area at (${here.worldX},${here.worldZ})` };
 
-                const walkFails = ctx.streak('hopWalkFails');
                 let lastFailure = '';
                 let detoured = false;
                 // Each goal on a route not much longer than the hop; when only the detour stopped them (a stream with the
@@ -257,7 +258,7 @@ export default defineTask({
                         reserveTicks: HOP_RESERVE_TICKS,
                     });
                     if (w.ok || timedOutAdvancing(w, before, ctx.distanceTo(goal.x, goal.z))) {
-                        walkFails.reset();
+                        HOP_WALK_FAILS.clear(ctx);
                         return;
                     }
                     lastFailure = w.message;
@@ -267,8 +268,10 @@ export default defineTask({
                 // Nowhere to go that way (water, a fence): a shorter hop next time.
                 m.stepX = Math.max(MIN_STEP, Math.ceil(m.stepX / 2));
                 m.stepZ = Math.max(MIN_STEP, Math.ceil(m.stepZ / 2));
-                if (walkFails.add() >= HOP_WALK_FAIL_LIMIT)
-                    return { fail: `${HOP_WALK_FAIL_LIMIT} hops in a row could not walk (last: ${lastFailure})` };
+                return HOP_WALK_FAILS.missWith(
+                    ctx,
+                    `${HOP_WALK_FAIL_LIMIT} hops in a row could not walk (last: ${lastFailure})`,
+                );
             },
         },
     ],
