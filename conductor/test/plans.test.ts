@@ -6,6 +6,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO_ROOT } from '../lib/env';
 import { checkPlanMethods } from '../lib/methods';
+import { paramKeys, unknownParams } from '../lib/param-keys';
 import { isPlan, type PlanDef } from '../lib/plan';
 import { lintPlan } from '../lib/plan-lint';
 import { WORLD } from '../lib/world-index';
@@ -39,6 +40,21 @@ test('every promoted plan passes the plan lint', async () => {
         lintPlan(def, source).map(p => `conductor/plans/${file}: ${p}`),
     );
     expect(problems).toEqual([]);
+});
+
+// A plain `z.object` drops a key it does not have, so a misspelt or stale param would run on the task's default.
+// Checked on each phase's value as the loaded plan holds it, spreads and helper-built params included.
+test("no promoted plan's phase passes a top-level param its task does not take", async () => {
+    const unlisted: string[] = [];
+    const dropped: string[] = [];
+    for (const { file, def } of await promotedPlans())
+        for (const p of def.phases) {
+            if (!paramKeys(p.task.params)) unlisted.push(`${file}: phase "${p.name}" (${p.task.name})`);
+            const keys = unknownParams(p.task.params, p.params ?? {});
+            if (keys.length) dropped.push(`${file}: phase "${p.name}" (${p.task.name}) drops ${keys.join(', ')}`);
+        }
+    expect(unlisted).toEqual([]);
+    expect(dropped).toEqual([]);
 });
 
 test('the plans axe pattern takes every real axe and not a broken one, pickaxe, battleaxe or thrownaxe', () => {
