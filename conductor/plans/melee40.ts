@@ -1,6 +1,7 @@
 // Attack and Defence 40 on the Falador farm cows (targetRange visible), Mithril scimitar from Zeke (Al Kharid).
 import { definePlan, phase } from '@conductor/lib/plan';
 import type { PlanView } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
 import interact from '@conductor/tasks/interact';
@@ -82,7 +83,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 2445, z: 3425, radius: 4, level: 1 },
+                area: place('bank:gnome-stronghold-bank').area(4),
                 depositAllExcept: [],
                 withdraw: [{ item: 'Coins', count: 2000 }],
             },

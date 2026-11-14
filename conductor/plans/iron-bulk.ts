@@ -1,15 +1,16 @@
 // Bulk iron smithing: mine a stock of ore (SE Varrock, bank Varrock East) -> smelt at the Al Kharid furnace
 // (bank beside it) -> smith kiteshields at Varrock West anvil (bank beside it). Stages follow bank counts.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import mining from '@conductor/tasks/mining';
 import smithing from '@conductor/tasks/smithing';
 import travel from '@conductor/tasks/travel';
 
 const anvil = { x: 3188, z: 3421, radius: 5 };
-const westBank = { x: 3185, z: 3436, radius: 5 };
-const eastBank = { x: 3254, z: 3420, radius: 3 };
-const akBank = { x: 3269, z: 3167, radius: 3 };
+const westBank = place('bank:varrock-west-bank').area(5);
+const eastBank = place('bank:varrock-east-bank').area(3);
+const akBank = place('bank:al-kharid-bank').area(3);
 const furnace = { x: 3272, z: 3185, radius: 4 };
 const mine = { x: 3285, z: 3365, radius: 10 };
 const keep = ['Adamant pickaxe', 'Coins'];

@@ -1,6 +1,7 @@
 // Iron smithing loop (Smithing 24+): SE Varrock iron -> Lumbridge furnace -> Varrock West anvil -> Varrock West bank.
 // Runs until the run's --until (e.g. level:Smithing:N). Routes avoid the Varrock stone circle (3223,3373) with travel waypoints.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import mining from '@conductor/tasks/mining';
 import smithing from '@conductor/tasks/smithing';
@@ -32,7 +33,7 @@ export default definePlan({
     phases: [
         phase(
             bank,
-            { area: { x: 3185, z: 3436, radius: 5 }, depositAllExcept: keep },
+            { area: place('bank:varrock-west-bank').area(5), depositAllExcept: keep },
             {
                 name: 'bank-products',
                 when: v => v.inv(products) > 0 && v.inv('Iron bar') < 3 && v.inv('Iron ore') === 0,

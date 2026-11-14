@@ -1,6 +1,7 @@
 // Earth runecraft with a 28-slot layout: bank everything but the pickaxe and Earth talisman, wield the pickaxe
 // (the scimitar goes to the bank), then loop Aubury teleport -> mine essence until full -> portal -> Earth altar.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import { inEssenceMine } from '@conductor/lib/runecraft';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
@@ -11,7 +12,7 @@ import runecraft from '@conductor/tasks/runecraft';
 const ESS = /^rune essence$/i;
 const PICK = /^adamant pickaxe$/i;
 const SCIM = /^(steel|mithril) scimitar$/i;
-const BANK_AREA = { x: 3254, z: 3420, radius: 5 };
+const BANK_AREA = place('bank:varrock-east-bank').area(5);
 const pickWorn = (v: { state: { equipment: { name: string }[] } }) => v.state.equipment.some(i => PICK.test(i.name));
 
 export default definePlan({

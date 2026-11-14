@@ -60,7 +60,7 @@ you never commit, and you only touch the bot you were given.
   interpolated from the code's constants. `description` says what the task does, how it ends done or
   failed and what it refuses, opening with one short sentence that is its line in the index, at most 900
   characters. `rules` holds the rules across params and the start requirements (JSON Schema drops
-  `.refine`). `spots` holds verified places, example params and "used by" pointers. Say each fact once.
+  `.refine`). `spots` holds verified places, example params and "used by" pointers. A service a plan walks to is named with `place()` (`bun conductor/tools/places.ts`), not typed as coordinates. Say each fact once.
   A task using the under-attack guard uses `UNDER_ATTACK_NOTE`. After a deliberate params change,
   regenerate the shape fixture: `UPDATE_CATALOG_SHAPES=1 bun test conductor/test/lib/catalog.test.ts`.
 - Params carry the variation (location, target, what to do when full); don't hard-code one spot

@@ -3,6 +3,7 @@
 // at Barbarian Village (pots until level 8, then bowls) -> bank the pottery at Falador East.
 // Ends at Crafting 30 with the pottery banked.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import crafting from '@conductor/tasks/crafting';
 import fill from '@conductor/tasks/fill';
@@ -31,7 +32,7 @@ export default definePlan({
     phases: [
         phase(
             bank,
-            { area: { x: 3013, z: 3355, radius: 4 }, depositAllExcept: keep },
+            { area: place('bank:falador-east-bank').area(4), depositAllExcept: keep },
             {
                 name: 'bank-pottery',
                 when: v => v.inv(pottery) > 0 && v.inv(raw) === 0 && v.inv(waters) === 0,
@@ -92,7 +93,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3092, z: 3243, radius: 3 },
+                area: place('bank:draynor-bank').area(3),
                 depositAllExcept: [],
                 withdraw: [
                     { item: 'Coins', count: 30 },

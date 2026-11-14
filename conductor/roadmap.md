@@ -554,6 +554,30 @@ on its own.
     - A plan the idle rail ends with an unmet `until` reports status done ("plan until not met"), which reads wrongly for a quest
       that did not finish.
     - The wiki page for Gertrude's Cat is misspelt `wiki/quests/gertudes-cat.md`.
+  - Named places: done in part 2026-11-15 (`place()` in `lib/places.ts`, `tools/places.ts`; design `conductor/docs/named-places.md`, how-to `conductor/docs/plans.md` Places by name). Follow-ups: plan parameters; level-band stages; a curated table of unindexed gathering and fighting areas; the coordinates 1 to 3 tiles off a stand (plan-migration); quest-plan coordinates.
+    Plan-migration near-misses (task 3 left these literal). Each `to` point listed is 1 to 3 tiles off a place's stand (file:line (x,z) d=tiles off); they may be the same spot, so check the stand in game before moving one. Five `travel` `to` points exactly on a stand (agility-52.ts:26, agility-from-ardougne.ts:19, gnome-agility.ts:25, iron-bulk.ts:111, khazard-superheat.ts:32) also stay literal, because waypoints were out of scope:
+    - bank:edgeville-bank: agility-wilderness.ts:9 (3094,3492) d=1, agility-wilderness.ts:45 (3094,3492) d=1, giants-att-def.ts:11 (3094,3492) d=1, hill-giants.ts:11 (3094,3492) d=1, magic-blast-giants.ts:14 (3094,3492) d=1
+    - bank:catherby-bank: catherby-swordfish.ts:29 (2812,3441) d=3, catherby-shark-fallback.ts:24 (2812,3441) d=3
+    - range:east-ardougne: catherby-swordfish.ts:31 (2650,3295) d=3, catherby-shark-fallback.ts:26 (2650,3295) d=3
+    - bank:falador-west-bank: fm-99.ts:48 (2945,3368) d=2, herblore-finish.ts:9 (2947,3367) d=1, baby-blues-prayer.ts:109 (2947,3370) d=2, baby-blues-prayer.ts:115 (2947,3367) d=1, iron-varrock-99.ts:25 (2947,3367) d=1, ranged-dragons.ts:84 (2947,3370) d=2, ranged-dragons.ts:108 (2947,3367) d=1, prayer-99.ts:66 (2947,3370) d=2, prayer-99.ts:72 (2947,3367) d=1, wc-oaks-99.ts:21 (2947,3367) d=1
+    - water-source:asgarnia: herblore-finish.ts:32 (2891,3438) d=1, pottery-craft.ts:67 (3038,3353) d=1, pottery-craft.ts:72 (3038,3353) d=1
+    - spinning-wheel:seers-village: fletch-99.ts:53 (2711,3471) d=1, flax-spin.ts:26 (2711,3471) d=1
+    - bank:seers-village-bank: fletch-99.ts:59 (2727,3494) d=1, fletch-99.ts:74 (2727,3494) d=1, flax-spin.ts:31 (2727,3494) d=1, willow-longbows.ts:33 (2726,3495) d=2
+    - bank:ardougne-south-bank: knight-thieve.ts:13 (2657,3285) d=2, knight-thieve-bankfood.ts:9 (2657,3285) d=2
+    - range:catherby: knight-thieve.ts:15 (2817,3444) d=1
+    - water-source:catherby: knight-thieve.ts:76 (2834,3443) d=3
+    - anvil:varrock: iron-smith.ts:10 (3188,3421) d=3, iron-smith.ts:74 (3188,3425) d=1, iron-bulk.ts:10 (3188,3421) d=3, iron-bulk.ts:55 (3188,3425) d=1, superheat-mine.ts:35 (3247,3406) d=2, superheat-banked.ts:32 (3247,3406) d=2
+    - furnace:lumbridge: iron-smith.ts:11 (3225,3256) d=1
+    - spinning-wheel:tree-gnome-stronghold: melee40.ts:79 (2475,3401) d=3, crafting80.ts:17 (2475,3398) d=1, crafting80.ts:66 (2475,3401) d=3
+    - anvil:port-khazard: khazard-superheat.ts:9 (2651,3165) d=1
+    - range:varrock: earth-runecraft.ts:54 (3238,3404) d=1, earth-runecraft-28.ts:40 (3238,3404) d=1, agility-52.ts:38 (3238,3404) d=1
+    - pottery-oven:barbarian-village: pottery-craft.ts:14 (3086,3408) d=2
+    - furnace:falador: ks-prep.ts:15 (2975,3368) d=1
+    - water-source:rimmington: ks-prep.ts:18 (2966,3209) d=1
+    - furnace:al-kharid: iron-bulk.ts:14 (3272,3185) d=2
+    - bank:varrock-east-bank: magic-blast-giants.ts:119 (3254,3418) d=2
+    - water-source:al-kharid: thieving-40.ts:20 (3292,3172) d=1
+    - range:al-kharid: thieving-40.ts:29 (3271,3180) d=1
   - Task catalog: done 2026-11-14 (every param described on its schema field, `rules` and `spots`, `--list` an index and `--list <task>` an entry, a guard test; design `conductor/docs/task-catalog.md`). Follow-ups:
     - `MAX_FAILURE_DAMAGE = 2` in `conductor/tasks/thieving.ts` understates the pickpocket damage of Knights, Watchmen and Paladins (3) and the Hero (4) in the pickpocket dbrow, so a no-food run on those targets can drop below the low-HP line after one caught attempt and end "no food" where it should have waited to regenerate. The `STUN_TICKS` comment in `conductor/actions/pickpocket.ts` says 8 for every target though the Hero's stun is 10, and the task's wait of 8 + 2 ticks leaves no slack for it.
     - `fletching` stringing XP is 0.1 below the cut for willow shortbows and maple longbows; the catalog says "about the same", a wording note.

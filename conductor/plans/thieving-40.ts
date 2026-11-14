@@ -1,5 +1,6 @@
 // Raw chicken, then Men in Lumbridge to Thieving 25, then bank, shrimps in Al Kharid and Al-Kharid warriors to 40.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
 import cooking from '@conductor/tasks/cooking';
@@ -39,7 +40,7 @@ export default definePlan({
         ),
         phase(
             bank,
-            { area: { x: 3269, z: 3167, radius: 5 }, depositAllExcept: kept },
+            { area: place('bank:al-kharid-bank').area(5), depositAllExcept: kept },
             { name: 'bank', when: v => v.level('Thieving') >= 25 && v.runs('bank') === 0 },
         ),
         phase(

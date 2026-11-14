@@ -1,5 +1,6 @@
 // Altar exit done earlier. Varrock East bank (stash runes, fetch scimitar + fish) -> wield scimitar -> bank pickaxe -> travel to Stronghold -> gnome laps.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import agility from '@conductor/tasks/agility';
 import bank from '@conductor/tasks/bank';
 import combat from '@conductor/tasks/combat';
@@ -7,7 +8,7 @@ import travel from '@conductor/tasks/travel';
 
 const SCIM = /^steel scimitar$/i;
 const PICK = /^adamant pickaxe$/i;
-const BANK_AREA = { x: 3254, z: 3420, radius: 5 };
+const BANK_AREA = place('bank:varrock-east-bank').area(5);
 const scimWorn = (v: { state: { equipment: { name: string }[] } }) => v.state.equipment.some(i => SCIM.test(i.name));
 const atCourse = (v: { state: { player?: { worldX: number; worldZ: number } | null } }) => {
     const p = v.state.player;

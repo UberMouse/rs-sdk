@@ -1,6 +1,7 @@
 // Buy a steel axe (Bob, Lumbridge) and a fly fishing rod (Gerrant, Port Sarim), then fly fish -> cook -> bank
 // at Lumbridge/Varrock East until Fishing 60, Cooking 55 and 50 cooked trout/salmon are banked.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import cooking from '@conductor/tasks/cooking';
 import fishing from '@conductor/tasks/fishing';
@@ -9,7 +10,7 @@ import shop from '@conductor/tasks/shop';
 const cooked = /^(trout|salmon)$/i;
 const raw = /^raw (trout|salmon)$/i;
 const pot = { x: 3232, z: 3238, radius: 5 };
-const vbank = { x: 3254, z: 3420, radius: 3 };
+const vbank = place('bank:varrock-east-bank').area(3);
 const keep = ['Fly fishing rod', 'Feather', 'Coins'];
 
 export default definePlan({
@@ -29,7 +30,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3269, z: 3167, radius: 3 },
+                area: place('bank:al-kharid-bank').area(3),
                 depositAllExcept: ['Coins'],
                 withdraw: [{ item: 'Feather', count: 155, upTo: true }],
             },

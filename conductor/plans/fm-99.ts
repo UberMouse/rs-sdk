@@ -1,5 +1,6 @@
 // Firemaking 1 -> 99: tinderbox from Falador general store, normal trees at Lumbridge to FM 30, then Draynor willows.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import firemaking from '@conductor/tasks/firemaking';
 import shop from '@conductor/tasks/shop';
@@ -61,7 +62,7 @@ export default definePlan({
         phase(
             bank,
             {
-                area: { x: 3092, z: 3243, radius: 3 },
+                area: place('bank:draynor-bank').area(3),
                 depositAllExcept: ['Coins', 'Dusty key', 'Tinderbox'],
                 withdraw: [
                     { item: 'Adamant axe', count: 1, upTo: true },

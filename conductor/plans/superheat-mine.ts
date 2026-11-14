@@ -2,14 +2,15 @@
 // (worn Staff of fire, nature runes), walk to the SE anvil (3247,3404), smith iron platebodies (5 bars each),
 // bank at Varrock East and go back. Never carries coal.
 import { definePlan, phase } from '@conductor/lib/plan';
+import { place } from '@conductor/lib/places';
 import bank from '@conductor/tasks/bank';
 import mining from '@conductor/tasks/mining';
 import smithing from '@conductor/tasks/smithing';
 import spellItems from '@conductor/tasks/spell-items';
 import travel from '@conductor/tasks/travel';
 
-const anvil = { x: 3247, z: 3404, radius: 5 };
-const eastBank = { x: 3254, z: 3420, radius: 3 };
+const anvil = place('anvil:varrock', { near: { x: 3247, z: 3404 } }).area(5);
+const eastBank = place('bank:varrock-east-bank').area(3);
 const mine = { x: 3285, z: 3365, radius: 10 };
 const pick = 'Adamant pickaxe';
 type V = { state: { player?: { worldX: number; worldZ: number } | null } };
