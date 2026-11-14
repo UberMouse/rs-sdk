@@ -78,10 +78,19 @@ Direction, to be designed after a spike:
   record for steps that leave no trace.
 - The stage probe: every quest has a `*_journal.rs2` script on its quest-tab button whose text is
   built from the stage varp (`quest_priest/scripts/priest_journal.rs2`). Clicking the entry opens
-  `questjournal_scroll`; the client holds each component's text but does not publish an open
-  interface's plain text today (`StateCollector.collectInterfaceState`), so the probe needs a client
-  state addition like the one that added `questTab`. The spike: open a journal on a worker and read
-  it, at two stages of one quest.
+  `questjournal_scroll`.
+- Spike result (2026-11-14, worker `conductor3w1` on `lib:dragon-slayer-ship-deck`, lite client,
+  `bots/conductor3w1/journal-spike.ts`): `sdk.sendClickComponent(7383)` (`questlist:dragon` in
+  `server/content/pack/interface.pack`) opened interface 8134 within 3 ticks, and
+  `state.interface.debugInfo` listed every journal line as a component's text (`qj1` is component
+  8145), ending "Now I should go to my ship in Port Sarim and set sail for Crandor!"; the same click
+  on `questlist:priest` (7337, not started) read "I can start this quest by speaking to Father
+  Aereck...". So the stage is readable with no client or server change on the lite client. The
+  browser client's `StateCollector.collectInterfaceState` publishes no `debugInfo`, so a probe run
+  there would need that added. The colour codes that mark finished lines (`@str@`) do not appear in
+  the text read, so a stage is told by the last lines, not by which are struck through. Still to
+  check: the journal modal's cost in ticks per probe, and that it never opens over a dialog a phase
+  is holding.
 
 ## Other follow-ups from the audit (not in this build)
 
